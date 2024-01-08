@@ -1,10 +1,12 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useMemo } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
+import { TabMenu } from 'primereact/tabmenu';
 
 interface DropdownItem {
     name: string;
@@ -12,6 +14,8 @@ interface DropdownItem {
 }
 
 const FormLayoutDemo = () => {
+
+    const router = useRouter();
     const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
     const dropdownItems: DropdownItem[] = useMemo(
         () => [
@@ -22,6 +26,21 @@ const FormLayoutDemo = () => {
         []
     );
 
+    const items = [
+        { label: 'Informatii generale', icon: 'pi pi-home' ,
+        command: () => {
+            router.push('/uikit/input');
+        }
+    },
+        { label: 'Date Financiare', icon: 'pi pi-chart-line' },
+        { label: 'Continut Contract', icon: 'pi pi-list' },
+        { label: 'Document Atasate', icon: 'pi pi-inbox' },
+        { label: 'Flux aprobare', icon: 'pi pi-list' },
+        { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' },
+        { label: 'Istoric', icon: 'pi pi-fw pi-table' },
+        { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
+    ];
+
     useEffect(() => {
         setDropdownItem(dropdownItems[1]);
     }, [dropdownItems]);
@@ -30,13 +49,26 @@ const FormLayoutDemo = () => {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    <h5>Advanced</h5>
-                    <div className="p-fluid formgrid grid">
-                        <div className="field col-12 md:col-6">
+                    
+                    <div className="field lg:col-12 xs:col-3 md:col-12">
+                         <TabMenu model={items} />
+                    </div>
+
+                    <div className="p-fluid formgrid grid pt-2">
+
+                        <div className="field col-12  md:col-3">
                             <label htmlFor="firstname2">Firstname</label>
                             <InputText id="firstname2" type="text" />
                         </div>
-                        <div className="field col-12 md:col-6">
+                        <div className="field col-12 md:col-3">
+                            <label htmlFor="lastname2">Lastname</label>
+                            <InputText id="lastname2" type="text" />
+                        </div>
+                        <div className="field col-12 md:col-3">
+                            <label htmlFor="lastname2">Lastname</label>
+                            <InputText id="lastname2" type="text" />
+                        </div>
+                        <div className="field col-12 md:col-3">
                             <label htmlFor="lastname2">Lastname</label>
                             <InputText id="lastname2" type="text" />
                         </div>
