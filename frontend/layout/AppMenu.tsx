@@ -16,10 +16,11 @@ const AppMenu = () => {
             items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
         },
         {
-            label: 'UI Components',
+            label: 'Contracts',
             items: [
-                { label: 'Contracte', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
-                { label: 'Formular', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
+                { label: 'Contracte', icon: 'pi pi-fw pi-id-card', to: '/uikit/contractlist' },
+                { label: 'Formular1', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },
+                { label: 'Formular2', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
                 // { label: 'Float Label', icon: 'pi pi-fw pi-bookmark', to: '/uikit/floatlabel' },
                 // { label: 'Invalid State', icon: 'pi pi-fw pi-exclamation-circle', to: '/uikit/invalidstate' },
                 // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
@@ -27,7 +28,17 @@ const AppMenu = () => {
                 // { label: 'List', icon: 'pi pi-fw pi-list', to: '/uikit/list' },
             ]
         },
-
+        {
+            label: 'Settings',
+            icon: 'pi pi-fw pi-briefcase',
+            items: [
+                {
+                    label: 'Lookups',
+                    icon: 'pi pi-fw pi-globe',
+                    to: '/uikit/lookups'
+                },
+            ]
+        }
         // {
         //     label: 'Pages',
         //     icon: 'pi pi-fw pi-briefcase',
@@ -81,7 +92,7 @@ const AppMenu = () => {
         //         }
         //     ]
         // },
-        
+
     ];
 
     return (

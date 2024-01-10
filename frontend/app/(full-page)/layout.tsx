@@ -15,7 +15,7 @@ export default function SimpleLayout({ children }: SimpleLayoutProps) {
     return (
         <React.Fragment>
             {children}
-            <AppConfig simple /> show menu config 
+            {/* <AppConfig simple /> show menu config  */}
         </React.Fragment>
     );
 }
