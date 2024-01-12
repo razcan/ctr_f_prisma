@@ -33,7 +33,7 @@ const AppMenu = () => {
             icon: 'pi pi-fw pi-briefcase',
             items: [
                 {
-                    label: 'Lookups',
+                    label: 'Nomenclatoare',
                     icon: 'pi pi-fw pi-globe',
                     to: '/uikit/lookups'
                 },

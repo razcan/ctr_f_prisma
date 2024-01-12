@@ -1,7 +1,6 @@
 "use client"
 
-import React, { useContext, useEffect, useState } from 'react';
-import { Editor } from "primereact/editor";
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { TabMenu } from 'primereact/tabmenu';
 import { useRouter } from 'next/navigation';
 import { InputText } from 'primereact/inputtext';
@@ -18,49 +17,56 @@ import {
 } from '@tanstack/react-query'
 import axios from 'axios';
 import { classNames } from 'primereact/utils';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Dialog } from 'primereact/dialog';
 import { UserContext, UserContextProvider, AuthUser, UserContextType, ThemeContext, ThemeContextType } from '../../../../layout/context/appcontext'
 import { AppContext, AppProvider } from '../../../../layout/context/app2Context'
-
+import { Toast } from 'primereact/toast';
 
 const queryClient = new QueryClient();
 
-
-
 const LookupsPage = () => {
 
-    const [user, setUser] = useState<AuthUser>({
-        email: "vasile",
-        name: "petre"
-    })
-
     const [category, setCategory] = useState('');
+    const [categoryIndex, setCategoryIndex] = useState<number>(0);
+
     const [departament, setDepartament] = useState('');
+    const [departamentIndex, setDepartamentIndex] = useState<number>(0);
+
     const [cashflow, setCashFlow] = useState('');
     const [activeIndex, setActiveIndex] = useState(0);
     const router = useRouter();
-    const [categoryIndex, setCategoryIndex] = useState<number>(0);
-    const [theme, setTheme] = useState<ThemeContextType>("light");
-    const [activeMenu, setActiveMenu] = useState('xxx');
 
+    const [theme, setTheme] = useState<ThemeContextType>("light");
+    const [activeMenu, setActiveMenu] = useState('');
+    const toast = useRef(null);
+
+
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
 
     useEffect(() => {
         setTheme("blue")
     }, []);
 
-    // useEffect(() => {
-    //     checkActiveIndex();
-    // }, [checkActiveIndex]);
 
     const items = [
-        { label: 'Categorie', icon: 'pi pi-chart-line' },
-        { label: 'Departament', icon: 'pi pi-list' },
+        { label: 'Categorii', icon: 'pi pi-chart-line' },
+        { label: 'Departamente', icon: 'pi pi-list' },
         { label: 'CashFlow', icon: 'pi pi-inbox' },
-        { label: 'Articol calculatie', icon: 'pi pi-list' },
-        { label: 'Centru Cost/Profit', icon: 'pi pi-fw  pi-exclamation-circle' },
+        { label: 'Articole calculatie', icon: 'pi pi-list' },
+        { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Entitati', icon: 'pi pi-fw pi-table' },
-        { label: 'Tip Partener', icon: 'pi pi-fw pi-mobile' },
+        { label: 'Tipuri Partener', icon: 'pi pi-fw pi-mobile' },
         { label: 'Obiecte de contract', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Status', icon: 'pi pi-fw pi-table' }
     ];
@@ -75,17 +81,50 @@ const LookupsPage = () => {
             name: category
         }
 
-        try {
+        if (toAdd.name.length > 2) {
+            try {
 
-            const response = await axios.post('http://localhost:3000/contracts/category',
-                toAdd
-            );
-
-            setCategoryIndex((prevKey: number) => prevKey + 1);
-            console.log('category added:', response.data);
-        } catch (error) {
-            console.error('Error creating category:', error);
+                const response = await axios.post('http://localhost:3000/contracts/category',
+                    toAdd
+                );
+                showSuccess(`Categoria ${toAdd.name} a fost adaugata!`)
+                setCategoryIndex((prevKey: number) => prevKey + 1);
+                setCategory('');
+                // console.log('category added:', response.data);
+            } catch (error) {
+                showError(`Nu a putut fi adaugata categoria! ${error}'`)
+            }
         }
+        else showError('Categoria trebuie sa contina minim 3 caractere!')
+
+    }
+
+    const addDepartment = async () => {
+
+        interface Department {
+            name: string,
+        }
+
+        let toAdd: Department = {
+            name: departament
+        }
+
+        if (toAdd.name.length > 2) {
+            try {
+
+                const response = await axios.post('http://localhost:3000/contracts/department',
+                    toAdd
+                );
+                showSuccess(`Departmentul ${toAdd.name} a fost adaugat!`)
+                setDepartamentIndex((prevKey: number) => prevKey + 1);
+                setDepartament('');
+                // console.log('category added:', response.data);
+            } catch (error) {
+                showError(`Nu a putut fi adaugat departamentul! ${error}'`)
+            }
+        }
+        else showError('Departamentul trebuie sa contina minim 3 caractere!')
+
     }
 
     return (
@@ -96,7 +135,8 @@ const LookupsPage = () => {
                     <div className="grid">
                         <div className="col-12">
                             <div className="card">
-                                <h5>Lookup Page {activeMenu}</h5>
+                                <Toast ref={toast} />
+                                <h5>Nomenclatoare</h5>
                                 <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
                             </div>
                             <div className="card">
@@ -111,8 +151,11 @@ const LookupsPage = () => {
                                         </div>
                                         <div className='pt-2'><Button label="Adauga" onClick={addCategory} /></div>
                                         <div className='pt-4'>
-                                            <Category key={categoryIndex} />
+                                            <Category
+                                                key={categoryIndex}
+                                                executeFunction={setCategoryIndex} />
                                         </div>
+
                                     </div>
                                     : null
                                 }
@@ -123,7 +166,12 @@ const LookupsPage = () => {
                                             <label htmlFor="departament">Departament </label>
                                             <InputText id="departament" type="text" value={departament} onChange={(e) => setDepartament(e.target.value)} />
                                         </div>
-                                        <div><Button label="Adauga" /></div>
+                                        <div className='pt-2'><Button label="Adauga" onClick={addDepartment} /></div>
+                                        <div className='pt-4'>
+                                            <Department
+                                                key={departamentIndex}
+                                                executeFunction={setDepartamentIndex} />
+                                        </div>
                                     </div>
                                     : null
                                 }
@@ -134,9 +182,7 @@ const LookupsPage = () => {
                                             <label htmlFor="cashflow">Cashflow </label>
                                             <InputText id="cashflow" type="text" value={cashflow} onChange={(e) => setCashFlow(e.target.value)} />
                                         </div>
-
                                         <div className="field col-12  md:col-3"><Button label="Adauga" /></div>
-
                                     </div>
                                     : null
                                 }
@@ -149,33 +195,44 @@ const LookupsPage = () => {
     );
 };
 
-const Category = () => {
+const Category = ({ executeFunction }: any) => {
 
-    const appContext = useContext(AppContext);
+    // const appContext = useContext(AppContext);
     // console.log('appContext:', appContext)
-
     // const { activeMenu, setActiveMenu } = useContext(AppContext);
-
     // const x = MyContextProvider();
-
-    const themeContext = useContext(ThemeContext);
+    // const themeContext = useContext(ThemeContext);
     // console.log('themeContext:', themeContext)
 
 
     const [categorySelected, setCategorySelected] = useState('');
     const [visible, setVisible] = useState(false);
+    const toast = useRef<undefined | null | any>(null);
+
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
+
 
     const deleteCategorySelected = async (event: any) => {
         try {
             const response = await axios.delete(`http://localhost:3000/contracts/category/${event.id}`);
-            // setCategoryIndex((prevKey: number) => prevKey + 1);
             console.log('category deleted:', response.data);
+            executeFunction((prevKey: number) => prevKey + 1)
+            showSuccess(`Categoria ${event.name} a fost stearsa`)
+
         } catch (error) {
-            console.error('Error deleting category:', error);
+            console.error('Eroare la stergerea categoriei:', error);
+            showError('Categoria nu a putut fi stearsa!')
         }
-
-
-        http://localhost:3000/contracts/category/12
         setVisible(false)
     }
 
@@ -184,13 +241,11 @@ const Category = () => {
     }, [categorySelected]);
 
 
-    // can use the useQuery hook here
     const { isLoading, error, data } = useQuery({
         queryKey: ['contractsData'],
         queryFn: () =>
             fetch('http://localhost:3000/contracts/category').then(res => res.json()),
     });
-
 
     if (isLoading) return (
         <ProgressSpinner
@@ -205,20 +260,14 @@ const Category = () => {
 
 
     const deleteCategory = (event: any) => {
-        setVisible(true)
         setCategorySelected(event)
-        //confirm2(event)
     }
-
-    // const activeza = () => {
-    //     setActiveMenu('Test')
-    //}
 
     return (
         <div>
             {/* <ConfirmDialog /> */}
-
-            <Dialog visible={visible} modal style={{ width: '30rem' }} onHide={() => setVisible(false)}>
+            <Toast ref={toast} />
+            <Dialog visible={visible} modal style={{ width: '24rem' }} onHide={() => setVisible(false)}>
 
                 <span className="font-bold white-space-nowrap">Doriti sa stergeti categoria ({categorySelected.name}) ?</span>
                 <div className='pt-4'>
@@ -230,7 +279,7 @@ const Category = () => {
                             }} />
                         </div>
                         {/* <div className='col-1'></div> */}
-                        <div className='col-1 pl-6'>
+                        <div className='col-1 pl-7'>
                             <Button label="Nu" severity="success" onClick={() => setVisible(false)} autoFocus />
                         </div>
                     </div>
@@ -264,6 +313,104 @@ const Category = () => {
                     }
                 }
             >
+                <Column field="id" header="Cod" sortable></Column>
+                <Column field="name" header="Nume" sortable></Column>
+                <Column selectionMode="single" header="Sterge" headerStyle={{ width: '3rem' }}></Column>
+            </DataTable>
+        </div >
+    );
+}
+
+
+const Department = ({ executeFunction }: any) => {
+
+    const [departmentSelected, setDepartmentSelected] = useState('');
+    const [visible, setVisible] = useState(false);
+    const toast = useRef<undefined | null | any>(null);
+
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
+
+
+    const deleteDepartmentSelected = async (event: any) => {
+        try {
+            const response = await axios.delete(`http://localhost:3000/contracts/department/${event.id}`);
+            console.log('departament deleted:', response.data);
+            executeFunction((prevKey: number) => prevKey + 1)
+            showSuccess(`Departamentul ${event.name} a fost sters`)
+
+        } catch (error) {
+            console.error('Eroare la stergerea departamentului:', error);
+            showError('Departamentul nu a putut fi sters!')
+        }
+        setVisible(false)
+    }
+
+    useEffect(() => {
+        setDepartmentSelected(departmentSelected);
+    }, [departmentSelected]);
+
+
+    const { isLoading, error, data } = useQuery({
+        queryKey: ['contractsData'],
+        queryFn: () =>
+            fetch('http://localhost:3000/contracts/department').then(res => res.json()),
+    });
+
+    if (isLoading) return (
+        <ProgressSpinner
+            style={{ width: "100px", height: "100px" }}
+            strokeWidth="4"
+            fill="var(--surface-ground)"
+            animationDuration=".5s"
+        />
+    );
+
+    if (error) return 'An error has occurred: ' + error.message;
+
+
+    const deleteDepartment = (event: any) => {
+        setDepartmentSelected(event)
+    }
+
+    return (
+        <div>
+            {/* <ConfirmDialog /> */}
+            <Toast ref={toast} />
+            <Dialog visible={visible} modal style={{ width: '24rem' }} onHide={() => setVisible(false)}>
+
+                <span className="font-bold white-space-nowrap">Doriti sa stergeti departamentul ({departmentSelected.name}) ?</span>
+                <div className='pt-4'>
+                    <div className='grid'>
+                        <div className='col-1 '>
+                            <Button label="Da" severity="danger" onClick={() => {
+                                deleteDepartmentSelected(departmentSelected)
+
+                            }} />
+                        </div>
+                        <div className='col-1 pl-7'>
+                            <Button label="Nu" severity="success" onClick={() => setVisible(false)} autoFocus />
+                        </div>
+                    </div>
+                </div>
+            </Dialog>
+            <DataTable value={data} size="small" stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={5} rowsPerPageOptions={[5, 10, 15]} sortMode="multiple"
+                selectionMode="radiobutton"
+                // cellSelection selectionMode="single"
+                onSelectionChange={
+                    (e) => {
+                        deleteDepartment(e.value)
+                        setVisible(true)
+                    }}>
                 <Column field="id" header="Cod" sortable></Column>
                 <Column field="name" header="Nume" sortable></Column>
                 <Column selectionMode="single" header="Sterge" headerStyle={{ width: '3rem' }}></Column>

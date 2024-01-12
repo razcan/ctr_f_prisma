@@ -9,7 +9,6 @@ import { TabMenu } from 'primereact/tabmenu';
 import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
-
 import {
     QueryClient,
     QueryClientProvider,
@@ -17,6 +16,9 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query'
+import { ProgressSpinner } from 'primereact/progressspinner';
+
+const queryClient = new QueryClient();
 
 
 interface DropdownItem {
@@ -33,7 +35,8 @@ interface Contract {
     end?: Date,
     sign?: Date,
     completion?: Date,
-    remarks?: string
+    remarks?: string,
+    category?: string
 }
 
 const FormLayoutDemo = () => {
@@ -50,6 +53,8 @@ const FormLayoutDemo = () => {
     const [completion, setCompletionDate] = useState(null);
     const [remarks, setRemarks] = useState(null);
     const [status, setStatus] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState([]);
 
     const dropdownItems: DropdownItem[] = useMemo(
         () => [
@@ -59,6 +64,25 @@ const FormLayoutDemo = () => {
         ],
         []
     );
+
+
+    const fetchCategoriesData = () => {
+        fetch("http://localhost:3000/contracts/category")
+            .then(response => {
+                return response.json()
+            })
+            .then(categories => {
+                setCategories(categories)
+                // setProducts(coins)
+                // console.log(coins)
+            })
+    }
+
+    useEffect(() => {
+        fetchCategoriesData()
+    }, [])
+
+
 
     const items = [
         {
@@ -80,6 +104,9 @@ const FormLayoutDemo = () => {
         setDropdownItem(dropdownItems['']);
     }, [dropdownItems]);
 
+
+
+
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
         let addedContract: Contract = {
@@ -91,7 +118,8 @@ const FormLayoutDemo = () => {
             end: (end ? end.toISOString() : null),
             sign: (sign ? sign.toISOString() : null),
             completion: (completion ? completion.toISOString() : null),
-            remarks: remarks
+            remarks: remarks,
+            category: selectedCategory.name
         }
 
         try {
@@ -104,14 +132,6 @@ const FormLayoutDemo = () => {
         } catch (error) {
             console.error('Error creating contract:', error);
         }
-
-        // const queryClient = new QueryClient()
-
-        // const mutation = useMutation({
-        //     mutationFn: (newContract) => {
-        //         return axios.post('http://localhost:3000/contracts', newContract)
-        //     },
-        // })
 
     }
 
@@ -166,6 +186,16 @@ const FormLayoutDemo = () => {
                             </label>
                             <Calendar id="buttondisplay" value={completion} onChange={(e) => setCompletionDate(e.value)} showIcon />
                         </div>
+
+                        <div className="field col-12 md:col-3">
+                            <label htmlFor="state">Categorie</label>
+                            <Dropdown id="state" value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+                        {/* <div className="field col-12 md:col-3">
+                            <label htmlFor="state">Stare</label>
+                            <Dropdown id="state" value={status} onChange={(e) => setStatus(e.value)} options={departmentItems} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div> */}
+
                         <div className="field col-12 md:col-12">
                             <Editor value={remarks} onTextChange={(e) => setRemarks(e.htmlValue)}
                                 className='max-w-screen' style={{ height: '320px' }}
