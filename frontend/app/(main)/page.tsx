@@ -241,27 +241,27 @@ const ChartDemo = () => {
   return (
     <div className="grid p-fluid">
       <div className="col-12 xl:col-6">
-        <div className="card">
+        <div className="card" >
           <h5>Linear Chart</h5>
-          <Chart type="line" data={data.lineData} options={options.lineOptions}></Chart>
+          <Chart style={{ height: '30vh' }} type="line" data={data.lineData} options={options.lineOptions}></Chart>
         </div>
       </div>
       <div className="col-12 xl:col-6">
         <div className="card">
           <h5>Bar Chart</h5>
-          <Chart type="bar" data={data.barData} options={options.barOptions}></Chart>
+          <Chart style={{ height: '30vh' }} type="bar" data={data.barData} options={options.barOptions}></Chart>
         </div>
       </div>
       <div className="col-12 xl:col-6">
         <div className="card flex flex-column align-items-center">
           <h5 className="text-left w-full">Pie Chart</h5>
-          <Chart type="pie" data={data.pieData} options={options.pieOptions}></Chart>
+          <Chart style={{ height: '30vh' }} type="pie" data={data.pieData} options={options.pieOptions}></Chart>
         </div>
       </div>
       <div className="col-12 xl:col-6">
         <div className="card flex flex-column align-items-center">
           <h5 className="text-left w-full">Doughnut Chart</h5>
-          <Chart type="doughnut" data={data.pieData} options={options.pieOptions}></Chart>
+          <Chart style={{ height: '30vh' }} type="doughnut" data={data.pieData} options={options.pieOptions}></Chart>
         </div>
       </div>
     </div>

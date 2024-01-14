@@ -23,3 +23,38 @@ pentru fiecare inregistrare de mai sus trebuie facut un tabel cu id - denumire e
 trebuie facut un meniu de settings->lookups
 
 
+header ctr - 
+adrese/persoane de contact/prelungire automata, valoare,note/tip document(ctr/act aditional/)tags
+parteneri - nume,tip,note,adresa,contacte,iban,
+campuri in lista de contracte : tip ctr, short descriere, tags,prelugire automata, start, data finalizare, ultima modificare, 
+campurile custom sunt doar de tip text(se introduce denumire camp  si ordine)
+alertele sun setate la nivel de ctr - se vor loga alertele trimise si cele ce urmeaza a fi trimise / sunt de tipul trimite nda / obligatoriu/nu / moment - cu zile inainte de req data/expiration departamente
+
+header ctr - 
+
+
+
+Draft:
+The contract has been created but is not yet finalized or ready for execution.
+Pending Approval:
+The contract has been submitted and is awaiting approval from relevant parties.
+Under Review:
+The contract is being reviewed by legal, financial, or other stakeholders.
+        Approved:
+The contract has received approval and is ready for execution.
+        Executed:
+All parties involved have signed the contract, and it is now legally binding.
+        Active:
+The contract is currently in effect, and the parties are fulfilling their obligations.
+        Expired:
+The contract term has ended, and all obligations have been fulfilled.
+        Terminated:
+The contract has been terminated before completion due to specific conditions or breaches.
+        Renewed:
+The contract has been extended or renewed for a specified period.
+        Amended:
+Changes have been made to the original contract terms.
+        Cancelled:
+The contract has been cancelled before execution or during a specific stage.
+        Disputed:
+There is a disagreement or dispute between the parties regarding the contract terms or execution.

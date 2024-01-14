@@ -29,19 +29,19 @@
             margin: .75rem 0;
         }
 
-        > a {
+        >a {
             display: none;
         }
     }
 
     li.active-menuitem {
-        > a {
+        >a {
             .layout-submenu-toggler {
                 transform: rotate(-180deg);
             }
         }
 
-        > ul {
+        >ul {
             max-height: auto;
         }
     }
