@@ -19,6 +19,7 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
 import { useRouter } from 'next/navigation'
+import { Toolbar } from 'primereact/toolbar';
 // Code,Denumire,Tip(client,furnizor,entitate - radio button), email, stare, Nr. reg com, Cod fiscal,Note,
 // IBAN(banca/iban/implicit), adresa,tip adresa(comerciala/corespondenta/sociala), vizibilitate entitate /persoane de contact(nume,telefon,email,functie,reprezentant legal)
 const Partner = ({ executeFunction }: any) => {
@@ -35,7 +36,6 @@ const Partner = ({ executeFunction }: any) => {
             })
             .then(partners => {
                 setPartners(partners)
-                console.log(partners)
             })
     }
 
@@ -61,7 +61,6 @@ const Partner = ({ executeFunction }: any) => {
     const gotoSelectedPartner = (partner: any) => {
         setSelectedPartner(partner)
         router.push(`/uikit/lookups/partnerdetails/page?partnerid=${partner.id}`);
-        console.log(partner)
     }
 
 
@@ -70,8 +69,12 @@ const Partner = ({ executeFunction }: any) => {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    <div>Date Generale</div>
+
+
+
                     <div className="field col-12  md:col-12">
+                        <div><Button label="Adauga" /></div>
+
                         <DataTable value={partners} selectionMode="single" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                             selection={selectedPartner} onSelectionChange={(e) => { gotoSelectedPartner(e.value) }}>
                             <Column field="name" header="Nume"></Column>
@@ -90,3 +93,8 @@ const Partner = ({ executeFunction }: any) => {
 }
 
 export default Partner;
+
+
+//     header={
+//     <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga" />
+// }

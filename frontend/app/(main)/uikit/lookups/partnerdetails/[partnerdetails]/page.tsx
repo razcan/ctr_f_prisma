@@ -90,6 +90,13 @@ const Partner = () => {
     const fetchPartnerDetails = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/partners/${partnerid}`).then(res => res.json().then(res => {
             setPersons(res.Persons);
+
+            setPerson_name(res.Persons.name)
+            setPerson_phone(res.Persons.phone);
+            setPerson_email(res.Persons.email);
+            setPerson_legalrepresent(res.Persons.legalrepresent);
+            setPerson_role(res.Persons.role);
+
             setName(res.name);
             setFiscalCode(res.fiscal_code);
             setCommercialReg(res.commercial_reg);
@@ -100,6 +107,7 @@ const Partner = () => {
 
         })
         )
+
     }
 
     useEffect(() => {
@@ -118,6 +126,7 @@ const Partner = () => {
     }
 
     const sendPersonData = async () => {
+
         let addPerson: Person = {
             name: person_name,
             phone: person_phone,
@@ -125,15 +134,9 @@ const Partner = () => {
             legalrepresent: person_legalrepresent.name,
             role: person_role,
             partner: {
-                "create":
+                "connect":
                 {
-                    name: name,
-                    fiscal_code: fiscal_code,
-                    commercial_reg: commercial_reg,
-                    state: selectedStatusType.name,
-                    type: selectedType.name,
-                    email: email,
-                    remarks: remarks
+                    id: parseInt(partnerid)
                 }
             }
         }
@@ -143,6 +146,14 @@ const Partner = () => {
                 addPerson
             );
             console.log('Partner added:', response.data);
+
+            setVisiblePerson(false)
+
+            setPerson_email('')
+            setPerson_legalrepresent('')
+            setPerson_name('');
+            setPerson_role('');
+            setPerson_phone('');
         } catch (error) {
             console.error('Error creating partner:', error);
         }
@@ -289,8 +300,8 @@ const Partner = () => {
                                 <Column field="name" header="Nume"></Column>
                                 <Column field="phone" header="Telefon"></Column>
                                 <Column field="email" header="Email"></Column>
-                                <Column field="position" header="Rol"></Column>
-                                <Column field="legal_rep" header="Reprezentant Legal"></Column>
+                                <Column field="role" header="Rol"></Column>
+                                <Column field="legalrepresent" header="Reprezentant Legal"></Column>
                             </DataTable>
                         </div>
                     </div>
