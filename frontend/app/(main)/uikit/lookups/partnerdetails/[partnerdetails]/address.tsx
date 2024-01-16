@@ -24,10 +24,6 @@ import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
 
-//adresa cumulata - tip adresa, adresa efectiva, togle button
-//adresa campuri/ nume adresa/tip adresa/tara/judet/oras/strada/numar/status/implicita/cod postal/
-//tip adresa(comerciala/corespondenta/sociala/facturare)
-
 const PartnerAddress = ({ params }: any) => {
     const partnerid = params[0]
     const [visibleAddress, setVisibleAddress] = useState<any>('');
@@ -56,14 +52,12 @@ const PartnerAddress = ({ params }: any) => {
     const fetchPartnerAddress = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/address/${partnerid}`).then(res => res.json())
         setReceivedAddress(response);
-        console.log(response);
     }
 
     useEffect(() => {
         fetchPartnerAddress()
     }, [])
 
-    console.log(completeAddress)
     const sendAddressData = async () => {
 
         interface Address {
@@ -114,18 +108,18 @@ const PartnerAddress = ({ params }: any) => {
         }
     }
 
-    const statusTemplate = (rowData) => {
+    const statusTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                <Checkbox id="default" onChange={e => setSelectedDefault(e.checked)} checked={selectedDefault}></Checkbox>
+                {rowData.Status === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
             </div>
         );
     };
 
-    const activeTemplate = (rowData) => {
+    const activeTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                <Checkbox id="default" onChange={e => setSelectedDefault(e.checked)} checked={selectedDefault}></Checkbox>
+                {rowData.Default === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
             </div>
         );
     };
@@ -267,9 +261,9 @@ const PartnerAddress = ({ params }: any) => {
                 >
                     <Column field="addressName" header="Nume adresa"></Column>
                     <Column field="addressType" header="Tip Adresa"></Column>
+                    <Column field="completeAddress" header="Adresa Completa"></Column>
                     <Column header="Status" style={{ width: '10vh' }} body={statusTemplate} />
                     <Column header="Default" style={{ width: '10vh' }} body={activeTemplate} />
-                    <Column field="completeAddress" header="Adresa Completa"></Column>
 
                 </DataTable>
             </div>

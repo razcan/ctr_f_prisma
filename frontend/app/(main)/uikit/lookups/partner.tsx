@@ -20,8 +20,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
 import { useRouter } from 'next/navigation'
 import { Toolbar } from 'primereact/toolbar';
-// Code,Denumire,Tip(client,furnizor,entitate - radio button), email, stare, Nr. reg com, Cod fiscal,Note,
-// IBAN(banca/iban/implicit), adresa,tip adresa(comerciala/corespondenta/sociala), vizibilitate entitate /persoane de contact(nume,telefon,email,functie,reprezentant legal)
+
 const Partner = ({ executeFunction }: any) => {
 
 
