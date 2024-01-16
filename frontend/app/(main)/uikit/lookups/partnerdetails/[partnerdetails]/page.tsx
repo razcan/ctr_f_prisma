@@ -22,12 +22,14 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
 import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
+import PartnerAddress from './address'
 
 
 const queryClient = new QueryClient();
 
 // Code,Denumire,Tip(client,furnizor,entitate - radio button), email, stare, Nr. reg com, Cod fiscal,Note,
-// IBAN(banca/iban/implicit), adresa,tip adresa(comerciala/corespondenta/sociala), vizibilitate entitate /persoane de contact(nume,telefon,email,functie,reprezentant legal)
+// IBAN(banca/iban/implicit), adresa,tip adresa(comerciala/corespondenta/sociala/facturare), vizibilitate entitate /persoane de contact(nume,telefon,email,functie,reprezentant legal)
+
 const Partner = () => {
 
     // console.log("id ruta : ", params)
@@ -170,6 +172,7 @@ const Partner = () => {
     }
 
     const sendPartnerData = async () => {
+        // sendPersonData()
         //  console.log(name, fiscal_code, email, commercial_reg, remarks, selectedStatusType, selectedType)
         let addPartner: Partner = {
             name: name,
@@ -308,6 +311,7 @@ const Partner = () => {
                 </div>
                 <div className="card">
                     Adrese
+                    <PartnerAddress params={[partnerid]} />
                 </div>
                 <div className="card">
                     Conturi bancare

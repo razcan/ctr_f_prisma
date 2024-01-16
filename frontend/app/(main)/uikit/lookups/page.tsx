@@ -76,13 +76,14 @@ const LookupsPage = () => {
 
 
     const items = [
-        { label: 'Categorii', icon: 'pi pi-chart-line' },
+        { label: 'Parteneri', icon: 'pi pi-fw pi-mobile' },
         { label: 'Departamente', icon: 'pi pi-list' },
         { label: 'CashFlow', icon: 'pi pi-inbox' },
         { label: 'Obiecte de contract', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-exclamation-circle' },
-        { label: 'Entitati', icon: 'pi pi-fw pi-table' },
-        { label: 'Parteneri', icon: 'pi pi-fw pi-mobile' },
+        { label: 'Categorii', icon: 'pi pi-chart-line' },
+        // { label: 'Entitati', icon: 'pi pi-fw pi-table' },
+
     ];
 
     const addCategory = async () => {
@@ -266,21 +267,15 @@ const LookupsPage = () => {
                             <div className="card">
 
                                 {activeIndex === 0 ?
-                                    <div>
-                                        <div className="field col-12  md:col-3">
-                                            <span className="p-float-label">
-                                                <InputText id="category" value={category} onChange={(e) => setCategory(e.target.value)} />
-                                                <label htmlFor="category">Adauga o categorie</label>
-                                            </span>
-                                        </div>
-                                        <div className='pt-2'><Button label="Adauga" onClick={addCategory} /></div>
-                                        <div className='pt-4'>
-                                            <Category
-                                                key={categoryIndex}
-                                                executeFunction={setCategoryIndex} />
-                                        </div>
 
+                                    <div>
+                                        <div className='pt-4'>
+                                            <Partner
+                                                key={departamentIndex}
+                                                executeFunction={setDepartamentIndex} />
+                                        </div>
                                     </div>
+
                                     : null
                                 }
 
@@ -353,7 +348,7 @@ const LookupsPage = () => {
                                     </div>
                                     : null
                                 }
-                                {activeIndex === 5 ?
+                                {/* {activeIndex === 5 ?
                                     <div>
                                         <div className="field col-12  md:col-3">
                                             <span className="p-float-label">
@@ -369,15 +364,23 @@ const LookupsPage = () => {
                                         </div>
                                     </div>
                                     : null
-                                }
-                                {activeIndex === 6 ?
+                                } */}
+                                {activeIndex === 5 ?
                                     <div>
+                                        <div className="field col-12  md:col-3">
+                                            <span className="p-float-label">
+                                                <InputText id="category" value={category} onChange={(e) => setCategory(e.target.value)} />
+                                                <label htmlFor="category">Adauga o categorie</label>
+                                            </span>
+                                        </div>
+                                        <div className='pt-2'><Button label="Adauga" onClick={addCategory} /></div>
                                         <div className='pt-4'>
-                                            <Partner
-                                                key={departamentIndex}
-                                                executeFunction={setDepartamentIndex} />
+                                            <Category
+                                                key={categoryIndex}
+                                                executeFunction={setCategoryIndex} />
                                         </div>
                                     </div>
+
                                     : null
                                 }
                             </div>
