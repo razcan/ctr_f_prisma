@@ -36,12 +36,8 @@ const Person = ({ params }: any) => {
     const [person_role, setPerson_role] = useState('');
     const [visiblePerson, setVisiblePerson] = useState<any>('');
     const [selectedPerson, setSelectedPerson] = useState<any>([]);
+    const [selectedDefault, setSelectedDefault] = useState<any>(true);
 
-
-    const isLegalRepresent: DropdownItem[] = [
-        { name: "Da", code: "Da" },
-        { name: "Nu", code: "Nu" }
-    ];
 
     const fetchPersons = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/persons/${partnerid}`).then(res => res.json().then(res => {
@@ -73,7 +69,7 @@ const Person = ({ params }: any) => {
             name: person_name,
             phone: person_phone,
             email: person_email,
-            legalrepresent: person_legalrepresent.name,
+            legalrepresent: String(person_legalrepresent),
             role: person_role,
             partner: {
                 "connect":
@@ -100,10 +96,21 @@ const Person = ({ params }: any) => {
         }
     }
 
+    const deletePersonData = async () => {
+
+        try {
+            const response = await axios.delete(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
+            );
+        } catch (error) {
+            console.error('Error deleting person:', error);
+        }
+
+    }
+
     const LegalrepresentTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                {rowData.legalrepresent === "Da" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
+                {rowData.legalrepresent === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
             </div>
         );
     };
@@ -134,9 +141,9 @@ const Person = ({ params }: any) => {
                                     <InputText id="email" type="text" value={person_email} onChange={(e) => setPerson_email(e.target.value)} />
                                 </div>
 
-                                <div className="field col-12 md:col-12">
-                                    <label htmlFor="legalrepresent">Reprezentat Legal</label>
-                                    <Dropdown id="legalrepresent" value={person_legalrepresent} onChange={(e) => setPerson_legalrepresent(e.value)} options={isLegalRepresent} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <div className="field-checkbox col-12 md:col-12">
+                                    <Checkbox id="legalrepresent" onChange={e => setPerson_legalrepresent(e.checked)} checked={person_legalrepresent === "true" ? true : false}></Checkbox>
+                                    <label htmlFor="legalrepresent" className="ml-2">Reprezentat Legal</label>
                                 </div>
 
                                 <div className="field col-12 md:col-12">
@@ -147,7 +154,7 @@ const Person = ({ params }: any) => {
                                     <div className='grid'>
                                         <div className='flex flex-wrap justify-content-left gap-3'>
                                             <Button label="Salveaza" severity="success" onClick={sendPersonData} />
-                                            <Button label="Stege" severity="danger" />
+                                            <Button label="Sterge" severity="danger" onClick={deletePersonData} />
                                         </div>
                                     </div>
                                 </div>
@@ -156,16 +163,22 @@ const Person = ({ params }: any) => {
                     </div>
                 </Dialog>
                 <DataTable value={persons} selectionMode="single"
+                    paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     selection={selectedPerson} onSelectionChange={(e) => {
                         setSelectedPerson(e.value)
+                        setPerson_name(e.value.name)
+                        setPerson_phone(e.value.phone)
+                        setPerson_email(e.value.email)
+                        setPerson_role(e.value.role)
+                        setPerson_legalrepresent(e.value.legalrepresent)
                         setVisiblePerson(true)
                     }}>
+                    <Column field="id" header="id"></Column>
                     <Column field="name" header="Nume"></Column>
                     <Column field="phone" header="Telefon"></Column>
                     <Column field="email" header="Email"></Column>
                     <Column field="role" header="Rol"></Column>
                     <Column header="Reprezentant Legal" style={{ width: '10vh' }} body={LegalrepresentTemplate} />
-                    {/* <Column field="legalrepresent" header="Reprezentant Legal"></Column> */}
                 </DataTable>
             </div>
         </div>

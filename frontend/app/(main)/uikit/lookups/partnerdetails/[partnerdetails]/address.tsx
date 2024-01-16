@@ -272,3 +272,5 @@ const PartnerAddress = ({ params }: any) => {
 }
 
 export default PartnerAddress;
+
+//to - refresh fiecare nomenclator/editare/stergere/modificat form ctr sa tina cont de aceste date/adaugat pk-uri si obligativitate campuri
