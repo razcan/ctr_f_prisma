@@ -270,9 +270,7 @@ const LookupsPage = () => {
 
                                     <div>
                                         <div className='pt-4'>
-                                            <Partner
-                                                key={departamentIndex}
-                                                executeFunction={setDepartamentIndex} />
+                                            <Partner />
                                         </div>
                                     </div>
 

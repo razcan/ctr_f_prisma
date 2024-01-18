@@ -25,14 +25,14 @@ import { useSearchParams } from 'next/navigation'
 import PartnerAddress from './address'
 import PartnerBank from './bank'
 
-const Person = ({ params }: any) => {
+const Person = ({ params, setPersonIndex }: any) => {
     const partnerid = params[0]
 
     const [persons, setPersons] = useState('');
     const [person_name, setPerson_name] = useState('');
     const [person_phone, setPerson_phone] = useState('');
     const [person_email, setPerson_email] = useState('');
-    const [person_legalrepresent, setPerson_legalrepresent] = useState('');
+    const [person_legalrepresent, setPerson_legalrepresent] = useState(false);
     const [person_role, setPerson_role] = useState('');
     const [visiblePerson, setVisiblePerson] = useState<any>('');
     const [selectedPerson, setSelectedPerson] = useState<any>([]);
@@ -58,48 +58,95 @@ const Person = ({ params }: any) => {
         name: string,
         phone?: string,
         email?: string,
-        legalrepresent: string,
+        legalrepresent?: boolean,
         role?: string,
         partner: any
     }
 
-    const sendPersonData = async () => {
+    const AddPersonData = () => {
+        setSelectedPerson(null)
 
-        let addPerson: Person = {
-            name: person_name,
-            phone: person_phone,
-            email: person_email,
-            legalrepresent: String(person_legalrepresent),
-            role: person_role,
-            partner: {
-                "connect":
-                {
-                    id: parseInt(partnerid)
+        setPerson_email('')
+        setPerson_legalrepresent(false)
+        setPerson_name('');
+        setPerson_role('');
+        setPerson_phone('');
+
+        setVisiblePerson(true)
+    }
+
+    const sendPersonData = async () => {
+        if (selectedPerson.id) {
+            //update
+            let addPerson: Person = {
+                name: person_name,
+                phone: person_phone,
+                email: person_email,
+                legalrepresent: person_legalrepresent,
+                role: person_role,
+                partner: {
+                    "connect":
+                    {
+                        id: parseInt(partnerid)
+                    }
                 }
+            }
+            try {
+                const response = await axios.patch(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
+                    addPerson
+                );
+                setPersonIndex((prevKey: number) => prevKey + 1);
+                setVisiblePerson(false)
+
+                console.log('Person updated:', response.data);
+            }
+            catch (error) {
+                console.error('Error updating person:', error);
+            }
+        }
+        else {
+            //create
+
+            let addPerson: Person = {
+                name: person_name,
+                phone: person_phone,
+                email: person_email,
+                legalrepresent: person_legalrepresent,
+                role: person_role,
+                partner: {
+                    "connect":
+                    {
+                        id: parseInt(partnerid)
+                    }
+                }
+            }
+
+            try {
+                const response = await axios.post('http://localhost:3000/nomenclatures/persons',
+                    addPerson
+                );
+                console.log('Partner added:', response.data);
+
+                setPersonIndex((prevKey: number) => prevKey + 1);
+                setVisiblePerson(false)
+
+                setPerson_email('')
+                setPerson_legalrepresent(false)
+                setPerson_name('');
+                setPerson_role('');
+                setPerson_phone('');
+            } catch (error) {
+                console.error('Error creating partner:', error);
             }
         }
 
-        try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/persons',
-                addPerson
-            );
-            console.log('Partner added:', response.data);
-
-            setVisiblePerson(false)
-            setPerson_email('')
-            setPerson_legalrepresent('')
-            setPerson_name('');
-            setPerson_role('');
-            setPerson_phone('');
-        } catch (error) {
-            console.error('Error creating partner:', error);
-        }
     }
 
     const deletePersonData = async () => {
 
         try {
             const response = await axios.delete(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
+                setPersonIndex((prevKey: number) => prevKey + 1)
             );
         } catch (error) {
             console.error('Error deleting person:', error);
@@ -110,7 +157,7 @@ const Person = ({ params }: any) => {
     const LegalrepresentTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                {rowData.legalrepresent === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
+                <Checkbox id="default" checked={rowData.legalrepresent}></Checkbox>
             </div>
         );
     };
@@ -119,7 +166,7 @@ const Person = ({ params }: any) => {
     return (
         <div className="p-fluid formgrid grid pt-2">
             <div className="field col-12 md:col-1 pt-4">
-                <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga" onClick={() => setVisiblePerson(true)} />
+                <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga" onClick={() => AddPersonData()} />
             </div>
             <div className="field col-12">
                 <Dialog header="Persoana" visible={visiblePerson} style={{ width: '30vw' }} onHide={() => setVisiblePerson(false)}>
@@ -142,7 +189,10 @@ const Person = ({ params }: any) => {
                                 </div>
 
                                 <div className="field-checkbox col-12 md:col-12">
-                                    <Checkbox id="legalrepresent" onChange={e => setPerson_legalrepresent(e.checked)} checked={person_legalrepresent === "true" ? true : false}></Checkbox>
+                                    <Checkbox id="legalrepresent" onChange={e => setPerson_legalrepresent(e.checked)}
+                                        checked={person_legalrepresent}
+                                    // checked={person_legalrepresent === "false" ? false : true}
+                                    ></Checkbox>
                                     <label htmlFor="legalrepresent" className="ml-2">Reprezentat Legal</label>
                                 </div>
 
@@ -163,6 +213,9 @@ const Person = ({ params }: any) => {
                     </div>
                 </Dialog>
                 <DataTable value={persons} selectionMode="single"
+                    sortField="id"
+                    //sortOrder={-1} //desc
+                    sortOrder={1} //cres
                     paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     selection={selectedPerson} onSelectionChange={(e) => {
                         setSelectedPerson(e.value)

@@ -44,6 +44,7 @@ const Partner = () => {
     const [selectedType, setType] = useState<any>('');
     const [selectedPerson, setSelectedPerson] = useState<any>([]);
     const [visiblePerson, setVisiblePerson] = useState<any>('');
+    const [personIndex, setPersonIndex] = useState<number>(0);
 
     const [persons, setPersons] = useState('');
 
@@ -174,15 +175,28 @@ const Partner = () => {
                 </div>
                 <div className="card">
                     Persoane
-                    <Person params={[partnerid]} />
+                    <Person
+                        params={partnerid}
+                        key={personIndex}
+                        setPersonIndex={setPersonIndex}
+
+                    />
                 </div>
                 <div className="card">
                     Adrese
-                    <PartnerAddress params={[partnerid]} />
+                    <PartnerAddress
+                        params={partnerid}
+                        key={personIndex}
+                        setpersonIndex={setPersonIndex}
+                    />
                 </div>
                 <div className="card">
                     Conturi bancare
-                    <PartnerBank params={[partnerid]} />
+                    <PartnerBank
+                        params={partnerid}
+                        key={personIndex}
+                        setpersonIndex={setPersonIndex}
+                    />
                 </div>
                 <div className='card'>
                     <div className='flex flex-wrap justify-content-left gap-3'>
