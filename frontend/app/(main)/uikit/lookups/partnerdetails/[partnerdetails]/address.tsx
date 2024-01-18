@@ -24,6 +24,7 @@ import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
 import countries from "./country.json"
+import { Judete } from './judete'
 
 const PartnerAddress = ({ params }: any) => {
     const partnerid = params[0]
@@ -32,8 +33,8 @@ const PartnerAddress = ({ params }: any) => {
     const [addressName, setAddressName] = useState<any>('');
     const [selectedaddressType, setSelectedAddressType] = useState<any>('');
     const [Country, setCountry] = useState<any>({ "code": "RO", "name": "Romania" });
-    const [County, setCounty] = useState<any>('');
-    const [City, setCity] = useState<any>('');
+    const [County, setCounty] = useState<any>([]);
+    const [City, setCity] = useState<any>([]);
     const [Street, setStreet] = useState<any>('');
     const [Number, setNumber] = useState<any>('');
     const [postalCode, setPostalCode] = useState<any>('');
@@ -43,6 +44,59 @@ const PartnerAddress = ({ params }: any) => {
     const [completeAddress, setCompleteAddress] = useState<any>(['Tara:, Judet:, Oras:, Strada:, Numar:, Cod Postal:']);
     const [receivedAddress, setReceivedAddress] = useState<any>([]);
 
+    const judete = Judete;
+    const [listajudete, setListajudete] = useState<any>(null);
+    const [listaorase, setListaorase] = useState<any>(null);
+    const getJudete = () => {
+        const judeteAll: any = [];
+        judete.map((localitate: { nume: any; }) => {
+            judeteAll.push({ judet: `${localitate.nume}` })
+
+        })
+        setListajudete(judeteAll)
+
+    }
+
+    const filterbycounty = () => {
+
+        type MyObject = {
+            judet: string;
+            localitate: string;
+        };
+        const myArray: MyObject[] = []
+
+        judete.map((localitate: { localitati: string | any[]; nume: any; }) => {
+            for (let i = 0; i < localitate.localitati.length; i++) {
+                myArray.push({ judet: `${localitate.nume}`, localitate: `${localitate.localitati[i].nume}` })
+            }
+            // console.log(myArray)
+        })
+
+        if (County) {
+            const filteredItems = myArray
+                .filter(item => item.judet.includes(County.judet))
+            setListaorase(filteredItems)
+        }
+    }
+
+
+    useEffect(() => {
+        if (Country.name === "Romania") {
+            getJudete(),
+                filterbycounty()
+        }
+        else {
+            setListajudete('')
+            setListaorase('')
+        }
+
+    },
+        [Country, County]
+    )
+
+    // useEffect(() => {
+    //     getJudete()
+    // }, [])
 
     const AddressType: any = [
         { name: "Adresa Sociala" },
@@ -72,9 +126,9 @@ const PartnerAddress = ({ params }: any) => {
             Street: String,
             Number: String,
             postalCode: String,
-            Status: String,
-            Default: String,
-            aggregate: String,
+            Status: Boolean,
+            Default: Boolean,
+            aggregate: Boolean,
             completeAddress: String,
             partner: any
         }
@@ -83,15 +137,15 @@ const PartnerAddress = ({ params }: any) => {
             addressName: addressName,
             addressType: selectedaddressType.name,
             Country: Country.name,
-            County: County,
-            City: City,
+            County: County.judet,
+            City: City.localitate,
             Street: Street,
             Number: Number,
             postalCode: postalCode,
-            Status: String(selectedStatus),
-            Default: String(selectedDefault),
-            aggregate: String(aggregate),
-            completeAddress: aggregate ? String(`Tara:${Country}, Judet:${County}, Oras:${City}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress,
+            Status: selectedStatus,
+            Default: selectedDefault,
+            aggregate: aggregate,
+            completeAddress: aggregate ? String(`Tara:${Country.name}, Judet:${County.judet}, Oras:${City.localitate}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress,
             partner: {
                 "connect":
                 {
@@ -110,10 +164,16 @@ const PartnerAddress = ({ params }: any) => {
         }
     }
 
+    const getCountry = (countryToFind: string) => {
+        return countries.find((obj: { name: string; }) => obj.name === countryToFind);
+    };
+    //    in dropdown valoarea =  value = { getCountry(Country) }
+
     const statusTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                {rowData.Status === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
+                {/* {rowData.Status === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>} */}
+                <Checkbox id="default" checked={selectedStatus}></Checkbox>
             </div>
         );
     };
@@ -121,12 +181,13 @@ const PartnerAddress = ({ params }: any) => {
     const activeTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                {rowData.Default === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
+                {/* {rowData.Default === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>} */}
+                <Checkbox id="default" checked={selectedDefault}></Checkbox>
             </div>
         );
     };
 
-    const selectedCountryTemplate = (option, props) => {
+    const selectedCountryTemplate = (option: any, props: any) => {
         if (option) {
             return (
                 <div className="flex align-items-center">
@@ -139,7 +200,7 @@ const PartnerAddress = ({ params }: any) => {
         return <span>{props.placeholder}</span>;
     };
 
-    const countryOptionTemplate = (option) => {
+    const countryOptionTemplate = (option: any) => {
         return (
             <div className="flex align-items-center">
                 <img alt={option.name} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`mr-2 flag flag-${option.code.toLowerCase()}`} style={{ width: '18px' }} />
@@ -186,18 +247,52 @@ const PartnerAddress = ({ params }: any) => {
                                             <label htmlFor="Country">Tara</label>
                                             <Dropdown value={Country} onChange={(e) => setCountry(e.value)} options={countries} optionLabel="name" placeholder="Select One"
                                                 filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate}
-                                            // className="w-full md:w-14rem" 
                                             />
                                         </div>
 
-                                        <div className="field col-12  md:col-4">
+
+                                        {/* <div className="field col-12  md:col-4">
                                             <label htmlFor="County">Judet</label>
                                             <InputText id="County" type="text" value={County} onChange={(e) => setCounty(e.target.value)} />
-                                        </div>
+                                        </div> */}
+
 
                                         <div className="field col-12  md:col-4">
+                                            <label htmlFor="Country">Judet</label>
+                                            <Dropdown
+                                                value={County}
+                                                onChange={(e: any) => {
+                                                    setCounty(e.value)
+                                                    console.log(e.value)
+                                                }}
+                                                options={listajudete}
+                                                optionLabel="judet"
+                                                editable
+                                                filter
+                                                placeholder="Select a County"
+
+                                            />
+                                        </div>
+
+                                        {/* //to be implemented -- daca tara este romania atunci afisam dropdown altfel input-uri pt judet si oras */}
+
+                                        <div className="field col-12  md:col-4">
+                                            {/* <label htmlFor="County">Oras</label>
+                                            <InputText id="County" type="text" value={City} onChange={(e) => setCity(e.target.value)} /> */}
                                             <label htmlFor="County">Oras</label>
-                                            <InputText id="County" type="text" value={City} onChange={(e) => setCity(e.target.value)} />
+                                            <Dropdown
+                                                value={City}
+                                                onChange={(e: any) => {
+                                                    setCity(e.value)
+                                                    console.log(e.value)
+                                                }}
+                                                options={listaorase}
+                                                optionLabel="localitate"
+                                                editable
+                                                filter
+                                                // disabled={County}
+                                                placeholder="Select a City"
+                                            />
                                         </div>
 
 
@@ -207,8 +302,8 @@ const PartnerAddress = ({ params }: any) => {
                                         </div>
 
 
-                                        <div className="field col-12 md:col-4">
-                                            <label htmlFor="number">Numar</label>
+                                        <div className="field col-12 md:col-8">
+                                            <label htmlFor="number">Numar/Bloc/Scara/Apartament/Etaj</label>
                                             <InputText id="number" type="text" value={Number} onChange={(e) => setNumber(e.target.value)} />
                                         </div>
 
