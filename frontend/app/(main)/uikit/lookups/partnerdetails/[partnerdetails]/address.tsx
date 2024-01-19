@@ -26,7 +26,7 @@ import { InputSwitch } from "primereact/inputswitch";
 import countries from "./country.json"
 import { Judete } from './judete'
 
-const PartnerAddress = ({ params }: any) => {
+const PartnerAddress = ({ params, setAddressIndex }: any) => {
     const partnerid = params[0]
     const [visibleAddress, setVisibleAddress] = useState<any>('');
 
@@ -43,6 +43,7 @@ const PartnerAddress = ({ params }: any) => {
     const [aggregate, setAggregate] = useState<any>(true);
     const [completeAddress, setCompleteAddress] = useState<any>(['Tara:, Judet:, Oras:, Strada:, Numar:, Cod Postal:']);
     const [receivedAddress, setReceivedAddress] = useState<any>([]);
+    const [selectedAddress, setselectedAddress] = useState<any>([]);
 
     const judete = Judete;
     const [listajudete, setListajudete] = useState<any>(null);
@@ -81,14 +82,14 @@ const PartnerAddress = ({ params }: any) => {
 
 
     useEffect(() => {
-        if (Country.name === "Romania") {
-            getJudete(),
-                filterbycounty()
-        }
-        else {
-            setListajudete('')
-            setListaorase('')
-        }
+        // if (Country.name === "Romania") {
+        getJudete(),
+            filterbycounty()
+        // }
+        // else {
+        //     setListajudete('')
+        //     setListaorase('')
+        // }
 
     },
         [Country, County]
@@ -133,41 +134,100 @@ const PartnerAddress = ({ params }: any) => {
             partner: any
         }
 
-        let addAddress: Address = {
-            addressName: addressName,
-            addressType: selectedaddressType.name,
-            Country: Country.name,
-            County: County.judet,
-            City: City.localitate,
-            Street: Street,
-            Number: Number,
-            postalCode: postalCode,
-            Status: selectedStatus,
-            Default: selectedDefault,
-            aggregate: aggregate,
-            completeAddress: aggregate ? String(`Tara:${Country.name}, Judet:${County.judet}, Oras:${City.localitate}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress,
-            partner: {
-                "connect":
-                {
-                    id: parseInt(partnerid)
+        if (selectedAddress.id) {
+            let updateAddress: Address = {
+                addressName: addressName,
+                addressType: selectedaddressType.name,
+                Country: Country.name,
+                County: County.judet,
+                City: City.localitate,
+                Street: Street,
+                Number: Number,
+                postalCode: postalCode,
+                Status: selectedStatus,
+                Default: selectedDefault,
+                aggregate: aggregate,
+                completeAddress: completeAddress,
+                partner: {
+                    "connect":
+                    {
+                        id: parseInt(partnerid)
+                    }
                 }
             }
-        }
+            try {
+                const response = await axios.patch(`http://localhost:3000/nomenclatures/address/${selectedAddress.id}`,
+                    updateAddress
+                );
+                setAddressIndex((prevKey: number) => prevKey + 1),
+                    setVisibleAddress(false)
 
-        try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/address',
-                addAddress
-            );
-            console.log('Adress added:', response.data);
-        } catch (error) {
-            console.error('Error creating address:', error);
+                console.log('Address updated:', response.data);
+            }
+            catch (error) {
+                console.error('Error updating address:', error);
+            }
+        }
+        else {
+            let addAddress: Address = {
+                addressName: addressName,
+                addressType: selectedaddressType.name,
+                Country: Country.name,
+                County: County.judet,
+                City: City.localitate,
+                Street: Street,
+                Number: Number,
+                postalCode: postalCode,
+                Status: selectedStatus,
+                Default: selectedDefault,
+                aggregate: aggregate,
+                completeAddress: aggregate ? String(`Tara:${Country.name}, Judet:${County.judet}, Oras:${City.localitate}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress,
+                partner: {
+                    "connect":
+                    {
+                        id: parseInt(partnerid)
+                    }
+                }
+            }
+
+            try {
+                const response = await axios.post('http://localhost:3000/nomenclatures/address',
+                    addAddress
+                );
+                setAddressIndex((prevKey: number) => prevKey + 1),
+                    setVisibleAddress(false)
+                console.log('Adress added:', response.data);
+            } catch (error) {
+                console.error('Error creating address:', error);
+            }
         }
     }
 
     const getCountry = (countryToFind: string) => {
         return countries.find((obj: { name: string; }) => obj.name === countryToFind);
     };
-    //    in dropdown valoarea =  value = { getCountry(Country) }
+
+    const getCounty = (countyToFind: string) => {
+        return listajudete.find((obj: { judet: string; }) => obj.judet === countyToFind);
+    };
+
+    const getAddressType = (AddressTypeToFind: string) => {
+        return AddressType.find((obj: { name: string; }) => obj.name === AddressTypeToFind);
+    };
+
+    const deleteAddress = async () => {
+
+        try {
+            const response = await axios.delete(`http://localhost:3000/nomenclatures/address/${selectedAddress.id}`,
+            );
+            setAddressIndex((prevKey: number) => prevKey + 1),
+                setVisibleAddress(false)
+        } catch (error) {
+            console.error('Error deleting address:', error);
+        }
+
+    }
+
 
     const statusTemplate = (rowData: any) => {
         return (
@@ -263,7 +323,7 @@ const PartnerAddress = ({ params }: any) => {
                                                 value={County}
                                                 onChange={(e: any) => {
                                                     setCounty(e.value)
-                                                    console.log(e.value)
+
                                                 }}
                                                 options={listajudete}
                                                 optionLabel="judet"
@@ -284,7 +344,7 @@ const PartnerAddress = ({ params }: any) => {
                                                 value={City}
                                                 onChange={(e: any) => {
                                                     setCity(e.value)
-                                                    console.log(e.value)
+
                                                 }}
                                                 options={listaorase}
                                                 optionLabel="localitate"
@@ -303,7 +363,7 @@ const PartnerAddress = ({ params }: any) => {
 
 
                                         <div className="field col-12 md:col-8">
-                                            <label htmlFor="number">Numar/Bloc/Scara/Apartament/Etaj</label>
+                                            <label htmlFor="number">Alte Detalii(Numar/Bloc/Scara/Apartament/Etaj)</label>
                                             <InputText id="number" type="text" value={Number} onChange={(e) => setNumber(e.target.value)} />
                                         </div>
 
@@ -365,7 +425,7 @@ const PartnerAddress = ({ params }: any) => {
                                     <div className='grid'>
                                         <div className='flex flex-wrap justify-content-left gap-3'>
                                             <Button label="Salveaza" severity="success" onClick={sendAddressData} />
-                                            <Button label="Stege" severity="danger" />
+                                            <Button label="Stege" severity="danger" onClick={deleteAddress} />
                                         </div>
                                     </div>
                                 </div>
@@ -375,14 +435,26 @@ const PartnerAddress = ({ params }: any) => {
                 </Dialog>
                 <DataTable value={receivedAddress} selectionMode="single"
                     paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-                // selection={selectedAddress}
-                // onSelectionChange={(e) => {
-                //     setSelectedAddress(e.value)
-                //     setVisibleAddress(true)
-                // }}
-                >
-                    <Column field="addressName" header="Nume adresa"></Column>
-                    <Column field="addressType" header="Tip Adresa"></Column>
+                    selection={selectedAddress} onSelectionChange={(e) => {
+
+                        setselectedAddress(e.value)
+                        setAddressName(e.value.addressName)
+                        setCountry(getCountry(e.value.Country));
+                        setCounty(getCounty(e.value.County));
+                        setSelectedAddressType(getAddressType(e.value.addressType));
+                        setCity(e.value.City)
+                        setStreet(e.value.Street)
+                        setNumber(e.value.Number)
+                        setPostalCode(e.value.postalCode)
+                        setSelectedStatus(e.value.Status)
+                        setSelectedDefault(e.value.Default)
+                        setAggregate(e.value.aggregate)
+                        setVisibleAddress(true)
+                        setCompleteAddress(e.value.completeAddress)
+                    }}>
+                    <Column field="id" header="Cod"></Column>
+                    <Column field="addressName" header="Nume"></Column>
+                    <Column field="addressType" header="Tip"></Column>
                     <Column field="completeAddress" header="Adresa Completa"></Column>
                     <Column header="Status" style={{ width: '10vh' }} body={statusTemplate} />
                     <Column header="Default" style={{ width: '10vh' }} body={activeTemplate} />

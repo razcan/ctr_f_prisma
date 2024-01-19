@@ -226,7 +226,7 @@ const Person = ({ params, setPersonIndex }: any) => {
                         setPerson_legalrepresent(e.value.legalrepresent)
                         setVisiblePerson(true)
                     }}>
-                    <Column field="id" header="id"></Column>
+                    <Column field="id" header="Cod"></Column>
                     <Column field="name" header="Nume"></Column>
                     <Column field="phone" header="Telefon"></Column>
                     <Column field="email" header="Email"></Column>

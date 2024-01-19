@@ -45,6 +45,8 @@ const Partner = () => {
     const [selectedPerson, setSelectedPerson] = useState<any>([]);
     const [visiblePerson, setVisiblePerson] = useState<any>('');
     const [personIndex, setPersonIndex] = useState<number>(0);
+    const [addressIndex, setAddressIndex] = useState<number>(0);
+
 
     const [persons, setPersons] = useState('');
 
@@ -186,8 +188,8 @@ const Partner = () => {
                     Adrese
                     <PartnerAddress
                         params={partnerid}
-                        key={personIndex}
-                        setpersonIndex={setPersonIndex}
+                        key={addressIndex}
+                        setAddressIndex={setAddressIndex}
                     />
                 </div>
                 <div className="card">
