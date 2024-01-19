@@ -46,6 +46,8 @@ const Partner = () => {
     const [visiblePerson, setVisiblePerson] = useState<any>('');
     const [personIndex, setPersonIndex] = useState<number>(0);
     const [addressIndex, setAddressIndex] = useState<number>(0);
+    const [bankIndex, setBankIndex] = useState<number>(0);
+
 
 
     const [persons, setPersons] = useState('');
@@ -88,6 +90,20 @@ const Partner = () => {
             setRemarks(res.remarks);
         })
         )
+    }
+
+    const deletePartner = async () => {
+        console.log('id', partnerid)
+
+        try {
+            const response = await axios.delete(`http://localhost:3000/nomenclatures/partners/${partnerid}`,
+            );
+            console.log(response);
+        } catch (error) {
+            console.error('Error deleting partner:', error);
+        }
+
+
     }
 
     useEffect(() => {
@@ -196,14 +212,14 @@ const Partner = () => {
                     Conturi bancare
                     <PartnerBank
                         params={partnerid}
-                        key={personIndex}
-                        setpersonIndex={setPersonIndex}
+                        key={bankIndex}
+                        setBankIndex={setBankIndex}
                     />
                 </div>
                 <div className='card'>
                     <div className='flex flex-wrap justify-content-left gap-3'>
                         <Button label="Salveaza" severity="success" onClick={sendPartnerData} />
-                        <Button label="Stege" severity="danger" />
+                        <Button label="Stege2" severity="danger" onClick={deletePartner} />
                     </div>
                 </div>
             </div>

@@ -23,15 +23,18 @@ import { InputText } from "primereact/inputtext"
 import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
+import { get } from 'http';
 
-const PartnerBank = ({ params }: any) => {
+const PartnerBank = ({ params, setBankIndex }: any) => {
     const partnerid = params[0]
     const [visibleBank, setVisibleBank] = useState<any>('');
     const [selectedBank, setSelectedBank] = useState<any>([]);
+    const [sBank, setsBank] = useState<any>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<any>([]);
     const [Branch, setBranch] = useState<any>('');
     const [IBAN, setIBAN] = useState<any>('');
     const [selectedStatus, setSelectedStatus] = useState<any>(true);
+    const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
 
     //nume banca, filiala, Cont, Valuta
@@ -101,6 +104,14 @@ const PartnerBank = ({ params }: any) => {
         { code: "THB", name: "Bahtul thailandez" }
     ]
 
+    const getCurrency = (CurrencyToFind: string) => {
+        return Currency.find((obj: { code: string; }) => obj.code === CurrencyToFind);
+    };
+
+    const getBank = (BankToFind: string) => {
+        return Bank.find((obj: { name: string; }) => obj.name === BankToFind);
+    };
+
     const fetchPartnerBanks = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/bank/${partnerid}`).then(res => res.json())
         setAllBanks(response);
@@ -110,6 +121,18 @@ const PartnerBank = ({ params }: any) => {
         fetchPartnerBanks()
     }, [])
 
+    const deleteBankAccount = async () => {
+
+        try {
+            const response = await axios.delete(`http://localhost:3000/nomenclatures/bank/${sBank.id}`,
+            );
+            setBankIndex((prevKey: number) => prevKey + 1),
+                setVisibleBank(false)
+        } catch (error) {
+            console.error('Error deleting address:', error);
+        }
+
+    }
 
 
     const sendAddressData = async () => {
@@ -119,38 +142,68 @@ const PartnerBank = ({ params }: any) => {
             currency: String,
             branch: String,
             iban: String,
-            status: String
+            status: Boolean
             partner: any
         }
-        let addBank: Bank = {
-            bank: selectedBank.name,
-            currency: selectedCurrency.code,
-            branch: Branch,
-            iban: IBAN,
-            status: String(selectedStatus),
-            partner: {
-                "connect":
-                {
-                    id: parseInt(partnerid)
+        if (sBank.id) {
+            let addBank: Bank = {
+                bank: selectedBank.name,
+                currency: selectedCurrency.code,
+                branch: Branch,
+                iban: IBAN,
+                status: selectedStatus,
+                partner: {
+                    "connect":
+                    {
+                        id: parseInt(partnerid)
+                    }
                 }
             }
+            try {
+                const response = await axios.patch(`http://localhost:3000/nomenclatures/bank/${sBank.id}`,
+                    addBank
+                );
+                setBankIndex((prevKey: number) => prevKey + 1),
+                    setVisibleBank(false)
+                console.log('Bank added:', response.data);
+            } catch (error) {
+                console.error('Error updating bank:', error);
+            }
+
         }
-        try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/bank',
-                addBank
-            );
-            console.log('Bank added:', response.data);
-        } catch (error) {
-            console.error('Error creating bank:', error);
+        else {
+            let addBank: Bank = {
+                bank: selectedBank.name,
+                currency: selectedCurrency.code,
+                branch: Branch,
+                iban: IBAN,
+                status: selectedStatus,
+                partner: {
+                    "connect":
+                    {
+                        id: parseInt(partnerid)
+                    }
+                }
+            }
+            try {
+                const response = await axios.post('http://localhost:3000/nomenclatures/bank',
+                    addBank
+                );
+                setBankIndex((prevKey: number) => prevKey + 1),
+                    setVisibleBank(false)
+                console.log('Bank added:', response.data);
+            } catch (error) {
+                console.error('Error creating bank:', error);
+            }
         }
     }
 
 
     const statusTemplate = (rowData: any) => {
-
+        // console.log('rand', rowData)
         return (
             <div className="flex align-items-center gap-2">
-                {rowData.status === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>}
+                <Checkbox id="default" checked={rowData.status}></Checkbox>
             </div>
         );
     };
@@ -201,7 +254,7 @@ const PartnerBank = ({ params }: any) => {
                                 <div className='grid'>
                                     <div className='flex flex-wrap justify-content-left gap-3'>
                                         <Button label="Salveaza" severity="success" onClick={sendAddressData} />
-                                        <Button label="Stege" severity="danger" />
+                                        <Button label="Stege" severity="danger" onClick={deleteBankAccount} />
                                     </div>
                                 </div>
                             </div>
@@ -211,11 +264,24 @@ const PartnerBank = ({ params }: any) => {
                 </Dialog>
                 <DataTable value={allBanks} selectionMode="single"
                     paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-                >
+                    selection={selectedBank} onSelectionChange={(e) => {
+                        console.log(e.value)
+
+                        setSelectedBank(getBank(e.value.bank))
+                        setSelectedCurrency(getCurrency(e.value.currency))
+                        setBranch(e.value.branch)
+                        setIBAN(e.value.iban)
+                        setSelectedStatus(e.value.status)
+                        setsBank(e.value)
+                        setStatus(e.value.status)
+                        setVisibleBank(true)
+                    }}>
+                    <Column field="id" header="Cod"></Column>
                     <Column field="bank" header="Banca"></Column>
                     <Column field="currency" header="Valuta"></Column>
                     <Column field="branch" header="Filiala"></Column>
                     <Column field="iban" header="IBAN"></Column>
+                    <Column field="status" header="status"></Column>
                     <Column header="Activ" style={{ width: '10vh' }} body={statusTemplate} />
 
 

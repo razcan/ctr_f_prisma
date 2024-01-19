@@ -64,7 +64,7 @@ const Person = ({ params, setPersonIndex }: any) => {
     }
 
     const AddPersonData = () => {
-        setSelectedPerson(null)
+        // setSelectedPerson(null)
 
         setPerson_email('')
         setPerson_legalrepresent(false)
