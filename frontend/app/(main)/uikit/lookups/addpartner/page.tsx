@@ -22,18 +22,25 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
 import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
+// import PartnerAddress from '../partnerdetails/[partnerdetails]/address'
 import PartnerAddress from './address'
-import PartnerBank from './bank'
-import Person from './person'
+import PartnerBank from '../partnerdetails/[partnerdetails]/bank'
+import Person from '../partnerdetails/[partnerdetails]/person'
 
 const queryClient = new QueryClient();
 
 const Partner = () => {
 
-    // console.log("id ruta : ", params)
-    const pathname = usePathname()
-    const partnerid = useSearchParams().get("partnerid")
+    //logica treb sa fie urmatorea - cand se apasa pe salveaza header. se foloseste un delay si se preia id, dupa care se paseaza catre subocomp id-ul
+    //in subcomponente, salvarea se face in array-uri locale - nu se mai face save direct in bd
+    //cand se salveaza partenrul, atunci se trimit si datele din arrayurile locale
+    //toate subcomponentele treb modif
 
+    // console.log("id ruta : ", params)
+    //const pathname = usePathname()
+    //const partnerid = useSearchParams().get("partnerid")
+
+    const partnerid = 0;
 
     const [name, setName] = useState<any>('');
     const [fiscal_code, setFiscalCode] = useState<any>('');
@@ -46,12 +53,8 @@ const Partner = () => {
     const [visiblePerson, setVisiblePerson] = useState<any>('');
     const [personIndex, setPersonIndex] = useState<number>(0);
     const [addressIndex, setAddressIndex] = useState<number>(0);
+    const [addressChild, setAddressChild] = useState([]);
     const [bankIndex, setBankIndex] = useState<number>(0);
-
-
-
-    const [persons, setPersons] = useState('');
-
 
     interface DropdownItem {
         name: string;
@@ -74,41 +77,6 @@ const Partner = () => {
         { name: "Entitate", code: "03" }
     ];
 
-    const getType = (status: string) => {
-        return Type.find((obj) => obj.name === status);
-    };
-
-
-    const fetchPartnerDetails = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/partners/${partnerid}`).then(res => res.json().then(res => {
-            setName(res.name);
-            setFiscalCode(res.fiscal_code);
-            setCommercialReg(res.commercial_reg);
-            setStatusType(getstatusType(res.state));
-            setType(getType(res.type));
-            setEmail(res.email);
-            setRemarks(res.remarks);
-        })
-        )
-    }
-
-    const deletePartner = async () => {
-        console.log('id', partnerid)
-
-        try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/partners/${partnerid}`,
-            );
-            console.log(response);
-        } catch (error) {
-            console.error('Error deleting partner:', error);
-        }
-
-
-    }
-
-    useEffect(() => {
-        fetchPartnerDetails()
-    }, [])
 
     interface Partner {
         name: string,
@@ -117,10 +85,29 @@ const Partner = () => {
         state: string,
         type: string,
         email?: string,
-        remarks?: string
+        remarks?: string,
+        Address?: any
+    }
+
+    interface Address {
+        id: Number,
+        addressName: String,
+        addressType: String,
+        Country: String,
+        County: String,
+        City: String,
+        Street: String,
+        Number: String,
+        postalCode: String,
+        Status: Boolean,
+        Default: Boolean,
+        aggregate: Boolean,
+        completeAddress: String,
     }
 
     const sendPartnerData = async () => {
+        console.log("nume", addressChild)
+
         let addPartner: Partner = {
             name: name,
             fiscal_code: fiscal_code,
@@ -128,26 +115,54 @@ const Partner = () => {
             state: selectedStatusType.name,
             type: selectedType.name,
             email: email,
-            remarks: remarks
+            remarks: remarks,
+            Address: {
+                "createMany":
+                {
+                    data: addressChild
+
+                    // addressName: addressChild[0].addressName,
+                    // addressType: addressChild[0].addressType,
+                    // Country: addressChild[0].Country,
+                    // County: addressChild[0].County,
+                    // City: addressChild[0].City,
+                    // Street: addressChild[0].Street,
+                    // Number: addressChild[0].Number,
+                    // postalCode: addressChild[0].postalCode,
+                    // Status: addressChild[0].Status,
+                    // Default: addressChild[0].Default,
+                    // aggregate: addressChild[0].aggregate,
+                    // completeAddress: addressChild[0].completeAddress
+                }
+            }
         }
 
         try {
             const response = await axios.post('http://localhost:3000/nomenclatures/partners',
                 addPartner
             );
-            console.log('Person added:', response.data);
+            console.log('Partner added:', response.data);
         } catch (error) {
-            console.error('Error creating person:', error);
+            console.error('Error creating partner:', error);
         }
     }
+
+    useEffect(() => {
+        console.log(addressIndex)
+    }, [addressIndex])
+
+    useEffect(() => {
+        console.log("addressChild", addressChild)
+    }, [addressChild])
 
 
 
     return (
+
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    <div>Date Generale</div>
+                    <div>Adaugare Partener</div>
                     <div className="p-fluid formgrid grid pt-2">
                         <div className="field col-12  md:col-3">
                             <label htmlFor="name">Nume</label>
@@ -191,7 +206,7 @@ const Partner = () => {
                         </div>
                     </div>
                 </div>
-                <div className="card">
+                {/* <div className="card">
                     Persoane
                     <Person
                         params={partnerid}
@@ -199,32 +214,34 @@ const Partner = () => {
                         setPersonIndex={setPersonIndex}
 
                     />
-                </div>
+                </div> */}
                 <div className="card">
                     Adrese
                     <PartnerAddress
                         params={partnerid}
                         key={addressIndex}
                         setAddressIndex={setAddressIndex}
+                        setAddressChild={setAddressChild}
                     />
                 </div>
-                <div className="card">
+                {/* <div className="card">
                     Conturi bancare
                     <PartnerBank
                         params={partnerid}
                         key={bankIndex}
                         setBankIndex={setBankIndex}
                     />
-                </div>
+                </div> */}
                 <div className='card'>
                     <div className='flex flex-wrap justify-content-left gap-3'>
                         <Button label="Salveaza" severity="success" onClick={sendPartnerData} />
-                        <Button label="Sterge" severity="danger" onClick={deletePartner} />
+                        {/* <Button label="Sterge" severity="danger" onClick={deletePartner} /> */}
                     </div>
                 </div>
             </div>
         </div>
     );
+
 }
 
 export default Partner;

@@ -62,6 +62,9 @@ const Partner = ({ executeFunction }: any) => {
         router.push(`/uikit/lookups/partnerdetails/page?partnerid=${partner.id}`);
     }
 
+    const addPartner = () => {
+        router.push(`/uikit/lookups/addpartner`)
+    }
 
     return (
 
@@ -70,9 +73,8 @@ const Partner = ({ executeFunction }: any) => {
                 <div className="card">
 
 
-
                     <div className="field col-12  md:col-12">
-                        <div><Button label="Adauga" /></div>
+                        <div><Button label="Adauga" onClick={addPartner} /></div>
 
                         <DataTable value={partners} selectionMode="single" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                             selection={selectedPartner} onSelectionChange={(e) => { gotoSelectedPartner(e.value) }}>

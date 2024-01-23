@@ -254,7 +254,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                                 <div className='grid'>
                                     <div className='flex flex-wrap justify-content-left gap-3'>
                                         <Button label="Salveaza" severity="success" onClick={sendAddressData} />
-                                        <Button label="Stege" severity="danger" onClick={deleteBankAccount} />
+                                        <Button label="Sterge" severity="danger" onClick={deleteBankAccount} />
                                     </div>
                                 </div>
                             </div>
