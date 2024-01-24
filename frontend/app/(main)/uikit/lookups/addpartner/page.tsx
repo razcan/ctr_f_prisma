@@ -31,10 +31,6 @@ const queryClient = new QueryClient();
 
 const Partner = () => {
 
-    //logica treb sa fie urmatorea - cand se apasa pe salveaza header. se foloseste un delay si se preia id, dupa care se paseaza catre subocomp id-ul
-    //in subcomponente, salvarea se face in array-uri locale - nu se mai face save direct in bd
-    //cand se salveaza partenrul, atunci se trimit si datele din arrayurile locale
-    //toate subcomponentele treb modif
 
     // console.log("id ruta : ", params)
     //const pathname = usePathname()
@@ -89,22 +85,6 @@ const Partner = () => {
         Address?: any
     }
 
-    interface Address {
-        id: Number,
-        addressName: String,
-        addressType: String,
-        Country: String,
-        County: String,
-        City: String,
-        Street: String,
-        Number: String,
-        postalCode: String,
-        Status: Boolean,
-        Default: Boolean,
-        aggregate: Boolean,
-        completeAddress: String,
-    }
-
     const sendPartnerData = async () => {
         console.log("nume", addressChild)
 
@@ -120,19 +100,6 @@ const Partner = () => {
                 "createMany":
                 {
                     data: addressChild
-
-                    // addressName: addressChild[0].addressName,
-                    // addressType: addressChild[0].addressType,
-                    // Country: addressChild[0].Country,
-                    // County: addressChild[0].County,
-                    // City: addressChild[0].City,
-                    // Street: addressChild[0].Street,
-                    // Number: addressChild[0].Number,
-                    // postalCode: addressChild[0].postalCode,
-                    // Status: addressChild[0].Status,
-                    // Default: addressChild[0].Default,
-                    // aggregate: addressChild[0].aggregate,
-                    // completeAddress: addressChild[0].completeAddress
                 }
             }
         }

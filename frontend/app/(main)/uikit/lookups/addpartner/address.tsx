@@ -47,9 +47,10 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
     const [visibleAddress, setVisibleAddress] = useState<any>('');
 
     const [addressName, setAddressName] = useState<any>('');
+
     const [selectedaddressType, setSelectedAddressType] = useState<any>('');
     const [Country, setCountry] = useState<any>({ "code": "RO", "name": "Romania" });
-    const [County, setCounty] = useState<any>([]);
+    const [County, setCounty] = useState<any>('');
     const [City, setCity] = useState<any>([]);
     const [Street, setStreet] = useState<any>('');
     const [Number, setNumber] = useState<any>('');
@@ -117,26 +118,56 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
 
     const addItemToArray = () => {
 
+
+
         const newAddress: Address = {
             id: myAddressArray.length + 1,
             addressName: addressName,
-            addressType: selectedaddressType.name,
-            Country: Country.name,
-            County: County.judet,
-            City: City.localitate,
+            addressType: ((selectedaddressType) ? selectedaddressType.name : undefined),
+            Country: ((Country) ? Country.name : undefined),
+            County: ((County) ? County.judet : undefined),
+            City: ((City) ? City.localitate : undefined),
             Street: Street,
             Number: Number,
             postalCode: postalCode,
             Status: selectedStatus,
             Default: selectedDefault,
             aggregate: aggregate,
-            completeAddress: aggregate ? String(`Tara:${Country.name}, Judet:${County.judet}, Oras:${City.localitate}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress
+            completeAddress: aggregate ? String(
+                `Tara:${((Country) ? Country.name : undefined)}, 
+                Judet:${((County) ? County.judet : undefined)}, 
+                Oras:${((City) ? City.localitate : undefined)}, 
+                Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress
         };
+
+        //verif daca id exista in array
+        if (selectedAddress.id) { console.log("se editeaza") } else { console.log("se adauga") }
+        //myAddressArray.map((address) => { console.log("iduri", address.id) })
+
+        const newAddressToBeSent: any = {
+            addressName: addressName,
+            addressType: ((selectedaddressType) ? selectedaddressType.name : undefined),
+            Country: ((Country) ? Country.name : undefined),
+            County: ((County) ? County.judet : undefined),
+            City: ((City) ? City.localitate : undefined),
+            Street: Street,
+            Number: Number,
+            postalCode: postalCode,
+            Status: selectedStatus,
+            Default: selectedDefault,
+            aggregate: aggregate,
+            completeAddress: aggregate ? String(
+                `Tara:${((Country) ? Country.name : undefined)}, 
+                Judet:${((County) ? County.judet : undefined)}, 
+                Oras:${((City) ? City.localitate : undefined)}, 
+                Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress
+        };
+
 
         // Update the state by spreading the existing array and adding the new item
         setMyAddressArray((prevArray) => [...prevArray, newAddress]);
 
-        setAddressChild((prevArray) => [...prevArray, newAddress]);
+        setAddressChild((prevArray) => [...prevArray, newAddressToBeSent]);
 
         setselectedAddress('')
         setAddressName('')
@@ -156,44 +187,44 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
 
     };
 
-    const sendAddressData = async () => {
+    // const sendAddressData = async () => {
 
 
 
 
-        let addAddress: Address = {
-            id: 0,
-            addressName: addressName,
-            addressType: selectedaddressType.name,
-            Country: Country.name,
-            County: County.judet,
-            City: City.localitate,
-            Street: Street,
-            Number: Number,
-            postalCode: postalCode,
-            Status: selectedStatus,
-            Default: selectedDefault,
-            aggregate: aggregate,
-            completeAddress: aggregate ? String(`Tara:${Country.name}, Judet:${County.judet}, Oras:${City.localitate}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress,
-            partner: {
-                "connect":
-                {
-                    id: parseInt(partnerid)
-                }
-            }
-        }
+    //     let addAddress: Address = {
+    //         id: 0,
+    //         addressName: addressName,
+    //         addressType: selectedaddressType.name,
+    //         Country: Country.name,
+    //         County: County.judet,
+    //         City: City.localitate,
+    //         Street: Street,
+    //         Number: Number,
+    //         postalCode: postalCode,
+    //         Status: selectedStatus,
+    //         Default: selectedDefault,
+    //         aggregate: aggregate,
+    //         completeAddress: aggregate ? String(`Tara:${Country.name}, Judet:${County.judet}, Oras:${City.localitate}, Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress,
+    //         partner: {
+    //             "connect":
+    //             {
+    //                 id: parseInt(partnerid)
+    //             }
+    //         }
+    //     }
 
-        try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/address',
-                addAddress
-            );
-            setAddressIndex((prevKey: number) => prevKey + 1),
-                setVisibleAddress(false)
-            console.log('Adress added:', response.data);
-        } catch (error) {
-            console.error('Error creating address:', error);
-        }
-    }
+    //     try {
+    //         const response = await axios.post('http://localhost:3000/nomenclatures/address',
+    //             addAddress
+    //         );
+    //         setAddressIndex((prevKey: number) => prevKey + 1),
+    //             setVisibleAddress(false)
+    //         console.log('Adress added:', response.data);
+    //     } catch (error) {
+    //         console.error('Error creating address:', error);
+    //     }
+    // }
 
 
     const getCountry = (countryToFind: string) => {
@@ -216,10 +247,12 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
 
 
         if (addressindex !== -1) {
-            console.log(`Person with id ${selectedAddress.id} found at index ${addressindex}`);
+            console.log(`Address with id ${selectedAddress.id} found at index ${addressindex}`);
             myAddressArray.splice(addressindex, 1);
+            // myAddressArray.filter((element) => element.id !== selectedAddress.id);
+
         } else {
-            console.log(`Person with id ${selectedAddress.id} not found in the array`);
+            console.log(`Address with id ${selectedAddress.id} not found in the array`);
         }
 
 
@@ -240,15 +273,15 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
     const statusTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                <Checkbox id="default" checked={selectedStatus}></Checkbox>
+                <Checkbox id="status" checked={rowData.Status}></Checkbox>
             </div>
         );
     };
 
-    const activeTemplate = (rowData: any) => {
+    const implicitTemplate = (rowData: any) => {
         return (
             <div className="flex align-items-center gap-2">
-                <Checkbox id="default" checked={selectedDefault}></Checkbox>
+                <Checkbox id="default" checked={rowData.Default}></Checkbox>
             </div>
         );
     };
@@ -385,6 +418,8 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
                                             <InputText id="name" type="text" value={addressName} onChange={(e) => setAddressName(e.target.value)} />
                                         </div>
 
+
+
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="type">Tip Adresa</label>
                                             <Dropdown id="type"
@@ -393,6 +428,7 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
                                                 options={AddressType}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
+
 
                                         <div className="field col-12 md:col-6">
                                             <label htmlFor="completeAddress">Adresa</label>
@@ -448,15 +484,15 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
                         setVisibleAddress(true)
                         setCompleteAddress(e.value.completeAddress)
                     }}>
-                    {/* <div className="hidden w-4rem h-4rem bg-primary font-bold p-4 border-round mr-3"> */}
+                    {/* <div className="hidden"> */}
                     <Column field="id" header="Cod"></Column>
                     {/* </div> */}
 
                     <Column field="addressName" header="Nume"></Column>
                     <Column field="addressType" header="Tip"></Column>
                     <Column field="completeAddress" header="Adresa Completa"></Column>
-                    <Column header="Status" style={{ width: '10vh' }} body={statusTemplate} />
-                    <Column header="Default" style={{ width: '10vh' }} body={activeTemplate} />
+                    <Column header="Activa" style={{ width: '10vh' }} body={statusTemplate} />
+                    <Column header="Implicita" style={{ width: '10vh' }} body={implicitTemplate} />
 
                 </DataTable>
             </div>
