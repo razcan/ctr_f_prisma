@@ -27,7 +27,8 @@ import countries from "./country.json"
 import { Judete } from './judete'
 
 const PartnerAddress = ({ params, setAddressIndex }: any) => {
-    const partnerid = params[0]
+    // console.log("params", params)
+    const partnerid = params;
     const [visibleAddress, setVisibleAddress] = useState<any>('');
 
     const [addressName, setAddressName] = useState<any>('');
@@ -109,7 +110,11 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
     const fetchPartnerAddress = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/address/${partnerid}`).then(res => res.json())
         setReceivedAddress(response);
+        console.log(response);
     }
+
+    console.log("partnerid", partnerid)
+    // console.log(receivedAddress)
 
     useEffect(() => {
         fetchPartnerAddress()
@@ -433,33 +438,34 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                         </div>
                     </div>
                 </Dialog>
-                <DataTable value={receivedAddress} selectionMode="single"
-                    paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-                    selection={selectedAddress} onSelectionChange={(e) => {
+                {receivedAddress ?
+                    <DataTable value={receivedAddress} selectionMode="single"
+                        paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                        selection={selectedAddress} onSelectionChange={(e) => {
 
-                        setselectedAddress(e.value)
-                        setAddressName(e.value.addressName)
-                        setCountry(getCountry(e.value.Country));
-                        setCounty(getCounty(e.value.County));
-                        setSelectedAddressType(getAddressType(e.value.addressType));
-                        setCity(e.value.City)
-                        setStreet(e.value.Street)
-                        setNumber(e.value.Number)
-                        setPostalCode(e.value.postalCode)
-                        setSelectedStatus(e.value.Status)
-                        setSelectedDefault(e.value.Default)
-                        setAggregate(e.value.aggregate)
-                        setVisibleAddress(true)
-                        setCompleteAddress(e.value.completeAddress)
-                    }}>
-                    <Column field="id" header="Cod"></Column>
-                    <Column field="addressName" header="Nume"></Column>
-                    <Column field="addressType" header="Tip"></Column>
-                    <Column field="completeAddress" header="Adresa Completa"></Column>
-                    <Column header="Status" style={{ width: '10vh' }} body={statusTemplate} />
-                    <Column header="Default" style={{ width: '10vh' }} body={activeTemplate} />
+                            setselectedAddress(e.value)
+                            setAddressName(e.value.addressName)
+                            setCountry(getCountry(e.value.Country));
+                            setCounty(getCounty(e.value.County));
+                            setSelectedAddressType(getAddressType(e.value.addressType));
+                            setCity(e.value.City)
+                            setStreet(e.value.Street)
+                            setNumber(e.value.Number)
+                            setPostalCode(e.value.postalCode)
+                            setSelectedStatus(e.value.Status)
+                            setSelectedDefault(e.value.Default)
+                            setAggregate(e.value.aggregate)
+                            setVisibleAddress(true)
+                            setCompleteAddress(e.value.completeAddress)
+                        }}>
+                        <Column field="id" header="Cod"></Column>
+                        <Column field="addressName" header="Nume"></Column>
+                        <Column field="addressType" header="Tip"></Column>
+                        <Column field="completeAddress" header="Adresa Completa"></Column>
+                        <Column header="Status" style={{ width: '10vh' }} body={statusTemplate} />
+                        <Column header="Default" style={{ width: '10vh' }} body={activeTemplate} />
 
-                </DataTable>
+                    </DataTable> : null}
             </div>
         </div>
     )
