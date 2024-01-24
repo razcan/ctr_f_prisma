@@ -118,8 +118,6 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
 
     const addItemToArray = () => {
 
-
-
         const newAddress: Address = {
             id: myAddressArray.length + 1,
             addressName: addressName,
@@ -139,10 +137,6 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
                 Oras:${((City) ? City.localitate : undefined)}, 
                 Strada:${Street}, Numar:${Number}, Cod Postal:${postalCode}`) : completeAddress
         };
-
-        //verif daca id exista in array
-        // if (selectedAddress.id) { console.log("se editeaza") } else { console.log("se adauga") }
-        //myAddressArray.map((address) => { console.log("iduri", address.id) })
 
         const newAddressToBeSent: any = {
             addressName: addressName,
@@ -165,57 +159,34 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
 
 
         // Update the state by spreading the existing array and adding the new item
+        //add element
         if (!selectedAddress.id) {
-            console.log("se adauga")
+
             setMyAddressArray((prevArray) => [...prevArray, newAddress]);
             setAddressChild((prevArray) => [...prevArray, newAddressToBeSent]);
-
-            setselectedAddress('')
-            setAddressName('')
-            setCountry('');
-            setCounty('');
-            setSelectedAddressType('');
-            setCity('')
-            setStreet('')
-            setNumber('')
-            setPostalCode('')
-            setSelectedStatus(false)
-            setSelectedDefault(false)
-            setAggregate(true)
-            setCompleteAddress('')
-
-            setVisibleAddress(false)
         }
+        //edit element
         else {
-            console.log("se editeaza")
-
             let addressindex: number = myAddressArray.findIndex(address => address.id === selectedAddress.id);
-            console.log("index de editat ", addressindex);
+            // console.log("index de editat ", addressindex);
             myAddressArray[addressindex] = newAddress;
-
-            setselectedAddress('')
-            setAddressName('')
-            setCountry('');
-            setCounty('');
-            setSelectedAddressType('');
-            setCity('')
-            setStreet('')
-            setNumber('')
-            setPostalCode('')
-            setSelectedStatus(false)
-            setSelectedDefault(false)
-            setAggregate(true)
-            setCompleteAddress('')
-
-            setVisibleAddress(false)
-
-            // if (addressindex !== -1) {
-            //     console.log(`Address with id ${selectedAddress.id} found at index ${addressindex}`);
-            //     myAddressArray.splice(addressindex, 1);
-
-            // }
+            myAddressArray[addressindex].id = selectedAddress.id;
         }
+        setselectedAddress('')
+        setAddressName('')
+        setCountry('');
+        setCounty('');
+        setSelectedAddressType('');
+        setCity('')
+        setStreet('')
+        setNumber('')
+        setPostalCode('')
+        setSelectedStatus(false)
+        setSelectedDefault(false)
+        setAggregate(true)
+        setCompleteAddress('')
 
+        setVisibleAddress(false)
 
 
     };
