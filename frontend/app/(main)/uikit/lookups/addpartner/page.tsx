@@ -85,6 +85,7 @@ const Partner = () => {
         type: string,
         email?: string,
         remarks?: string,
+        Persons?: any,
         Address?: any,
         Banks?: any
     }
@@ -101,6 +102,12 @@ const Partner = () => {
             type: selectedType.name,
             email: email,
             remarks: remarks,
+            Persons: {
+                "createMany":
+                {
+                    data: personChild
+                }
+            },
             Address: {
                 "createMany":
                 {

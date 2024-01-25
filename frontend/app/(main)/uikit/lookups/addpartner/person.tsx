@@ -107,6 +107,23 @@ const Person = ({ params, setPersonIndex, setPersonChild }: any) => {
 
     }
 
+    const deletePerson = async () => {
+
+        let personindex: number = myPersonArray.findIndex(person => person.id === selectedPerson.id);
+        if (personindex !== -1) {
+            myPersonArray.splice(personindex, 1);
+        } else {
+            console.log(`Person with id ${selectedPerson.id} not found in the array`);
+        }
+        setPerson_email('')
+        setPerson_legalrepresent(false)
+        setPerson_name('');
+        setPerson_role('');
+        setPerson_phone('');
+
+        setVisiblePerson(false)
+    }
+
 
     const LegalrepresentTemplate = (rowData: any) => {
         return (
@@ -158,7 +175,7 @@ const Person = ({ params, setPersonIndex, setPersonChild }: any) => {
                                     <div className='grid'>
                                         <div className='flex flex-wrap justify-content-left gap-3'>
                                             <Button label="Salveaza" severity="success" onClick={addItemToArray} />
-                                            <Button label="Sterge" severity="danger" />
+                                            <Button label="Sterge" severity="danger" onClick={deletePerson} />
                                         </div>
                                     </div>
                                 </div>
