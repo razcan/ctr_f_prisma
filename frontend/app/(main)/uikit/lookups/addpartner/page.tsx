@@ -24,8 +24,8 @@ import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 // import PartnerAddress from '../partnerdetails/[partnerdetails]/address'
 import PartnerAddress from './address'
-import PartnerBank from '../partnerdetails/[partnerdetails]/bank'
-import Person from '../partnerdetails/[partnerdetails]/person'
+import PartnerBank from './bank'
+import Person from './person'
 
 const queryClient = new QueryClient();
 
@@ -50,7 +50,10 @@ const Partner = () => {
     const [personIndex, setPersonIndex] = useState<number>(0);
     const [addressIndex, setAddressIndex] = useState<number>(0);
     const [addressChild, setAddressChild] = useState([]);
+    const [personChild, setPersonChild] = useState([]);
+    const [bankChild, setBankChild] = useState([]);
     const [bankIndex, setBankIndex] = useState<number>(0);
+    const [dbPartnerId, setdbPartnerId] = useState<number>(-1);
 
     interface DropdownItem {
         name: string;
@@ -82,11 +85,13 @@ const Partner = () => {
         type: string,
         email?: string,
         remarks?: string,
-        Address?: any
+        Address?: any,
+        Banks?: any
     }
 
     const sendPartnerData = async () => {
-        console.log("nume", addressChild)
+        // console.log("nume", addressChild)
+        //dupa ce se salveaza partenerul, se returneaza id-ul din bd si se stocheaza local ai toate apelurile ulterioare, sa contina partnerid
 
         let addPartner: Partner = {
             name: name,
@@ -101,25 +106,44 @@ const Partner = () => {
                 {
                     data: addressChild
                 }
+            },
+            Banks: {
+                "createMany":
+                {
+                    data: bankChild
+                }
             }
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/partners',
-                addPartner
-            );
-            console.log('Partner added:', response.data);
+            if (dbPartnerId === -1) {
+                const response = await axios.post('http://localhost:3000/nomenclatures/partners',
+                    addPartner
+                );
+                setdbPartnerId(response.data.id)
+                console.log('Partner added:', response.data);
+                console.log("db id", response.data.id)
+            }
+            else {
+                const response = await axios.patch(`http://localhost:3000/nomenclatures/partners/${dbPartnerId}`,
+                    addPartner
+                );
+                console.log('Partner edited:', response.data);
+            }
+
         } catch (error) {
             console.error('Error creating partner:', error);
         }
     }
 
+    //patch  http://localhost:3000/nomenclatures/partners/5
+
     useEffect(() => {
-        console.log(addressIndex)
+        // console.log(addressIndex)
     }, [addressIndex])
 
     useEffect(() => {
-        console.log("addressChild", addressChild)
+        // console.log("addressChild", addressChild)
     }, [addressChild])
 
 
@@ -173,15 +197,15 @@ const Partner = () => {
                         </div>
                     </div>
                 </div>
-                {/* <div className="card">
+                <div className="card">
                     Persoane
                     <Person
                         params={partnerid}
                         key={personIndex}
                         setPersonIndex={setPersonIndex}
-
+                        setPersonChild={setPersonChild}
                     />
-                </div> */}
+                </div>
                 <div className="card">
                     Adrese
                     <PartnerAddress
@@ -191,14 +215,15 @@ const Partner = () => {
                         setAddressChild={setAddressChild}
                     />
                 </div>
-                {/* <div className="card">
+                <div className="card">
                     Conturi bancare
                     <PartnerBank
                         params={partnerid}
                         key={bankIndex}
                         setBankIndex={setBankIndex}
+                        setBankChild={setBankChild}
                     />
-                </div> */}
+                </div>
                 <div className='card'>
                     <div className='flex flex-wrap justify-content-left gap-3'>
                         <Button label="Salveaza" severity="success" onClick={sendPartnerData} />

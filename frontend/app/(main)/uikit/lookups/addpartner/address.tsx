@@ -188,7 +188,6 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
 
         setVisibleAddress(false)
 
-        //dupa ce se salveaza se deschide linkul http://localhost:5500/uikit/lookups/partnerdetails/page?partnerid=28
     };
 
     // const sendAddressData = async () => {

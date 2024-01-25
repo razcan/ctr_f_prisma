@@ -25,7 +25,16 @@ import { useSearchParams } from 'next/navigation'
 import PartnerAddress from './address'
 import PartnerBank from './bank'
 
-const Person = ({ params, setPersonIndex }: any) => {
+interface Person {
+    id: number,
+    name: string,
+    phone?: string,
+    email?: string,
+    legalrepresent?: boolean,
+    role?: string
+}
+
+const Person = ({ params, setPersonIndex, setPersonChild }: any) => {
     const partnerid = params;
 
     const [persons, setPersons] = useState('');
@@ -37,31 +46,9 @@ const Person = ({ params, setPersonIndex }: any) => {
     const [visiblePerson, setVisiblePerson] = useState<any>('');
     const [selectedPerson, setSelectedPerson] = useState<any>([]);
     const [selectedDefault, setSelectedDefault] = useState<any>(true);
+    const [myPersonArray, setMyPersonArray] = useState<Person[]>([]);
 
 
-    const fetchPersons = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/persons/${partnerid}`).then(res => res.json().then(res => {
-            setPersons(res);
-            setPerson_name(res.name)
-            setPerson_phone(res.phone);
-            setPerson_email(res.email);
-            setPerson_legalrepresent(res.legalrepresent);
-            setPerson_role(res.role);
-        })
-        )
-    }
-    useEffect(() => {
-        fetchPersons()
-    }, [])
-
-    interface Person {
-        name: string,
-        phone?: string,
-        email?: string,
-        legalrepresent?: boolean,
-        role?: string,
-        partner: any
-    }
 
     const AddPersonData = () => {
         // setSelectedPerson(null)
@@ -75,84 +62,51 @@ const Person = ({ params, setPersonIndex }: any) => {
         setVisiblePerson(true)
     }
 
-    const sendPersonData = async () => {
-        if (selectedPerson.id) {
-            //update
-            let addPerson: Person = {
-                name: person_name,
-                phone: person_phone,
-                email: person_email,
-                legalrepresent: person_legalrepresent,
-                role: person_role,
-                partner: {
-                    "connect":
-                    {
-                        id: parseInt(partnerid)
-                    }
-                }
-            }
-            try {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
-                    addPerson
-                );
-                setPersonIndex((prevKey: number) => prevKey + 1);
-                setVisiblePerson(false)
 
-                console.log('Person updated:', response.data);
-            }
-            catch (error) {
-                console.error('Error updating person:', error);
-            }
+    const addItemToArray = () => {
+        const newPerson: Person = {
+            id: myPersonArray.length + 1,
+            name: person_name,
+            phone: person_phone,
+            email: person_email,
+            legalrepresent: person_legalrepresent,
+            role: person_role
+
         }
+
+        const newPersonToBeSent: any = {
+            name: person_name,
+            phone: person_phone,
+            email: person_email,
+            legalrepresent: person_legalrepresent,
+            role: person_role
+
+        }
+
+        if (!selectedPerson.id) {
+
+            setMyPersonArray((prevArray) => [...prevArray, newPerson]);
+            setPersonChild((prevArray) => [...prevArray, newPersonToBeSent]);
+        }
+        //edit element
         else {
-            //create
+            let personindex: number = myPersonArray.findIndex(person => person.id === selectedPerson.id);
+            // console.log("index de editat ", addressindex);
+            myPersonArray[personindex] = newPerson;
+            myPersonArray[personindex].id = selectedPerson.id;
 
-            let addPerson: Person = {
-                name: person_name,
-                phone: person_phone,
-                email: person_email,
-                legalrepresent: person_legalrepresent,
-                role: person_role,
-                partner: {
-                    "connect":
-                    {
-                        id: parseInt(partnerid)
-                    }
-                }
-            }
-
-            try {
-                const response = await axios.post('http://localhost:3000/nomenclatures/persons',
-                    addPerson
-                );
-                console.log('Partner added:', response.data);
-
-                setPersonIndex((prevKey: number) => prevKey + 1);
-                setVisiblePerson(false)
-
-                setPerson_email('')
-                setPerson_legalrepresent(false)
-                setPerson_name('');
-                setPerson_role('');
-                setPerson_phone('');
-            } catch (error) {
-                console.error('Error creating partner:', error);
-            }
         }
+
+        setPerson_email('')
+        setPerson_legalrepresent(false)
+        setPerson_name('');
+        setPerson_role('');
+        setPerson_phone('');
+
+        setVisiblePerson(false)
 
     }
 
-    const deletePersonData = async () => {
-
-        try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
-                setPersonIndex((prevKey: number) => prevKey + 1)
-            );
-        } catch (error) {
-            console.error('Error deleting person:', error);
-        }
-
-    }
 
     const LegalrepresentTemplate = (rowData: any) => {
         return (
@@ -203,8 +157,8 @@ const Person = ({ params, setPersonIndex }: any) => {
                                 <div className='p-3 field col-2 md:col-2'>
                                     <div className='grid'>
                                         <div className='flex flex-wrap justify-content-left gap-3'>
-                                            <Button label="Salveaza" severity="success" onClick={sendPersonData} />
-                                            <Button label="Sterge" severity="danger" onClick={deletePersonData} />
+                                            <Button label="Salveaza" severity="success" onClick={addItemToArray} />
+                                            <Button label="Sterge" severity="danger" />
                                         </div>
                                     </div>
                                 </div>
@@ -212,7 +166,7 @@ const Person = ({ params, setPersonIndex }: any) => {
                         </div>
                     </div>
                 </Dialog>
-                <DataTable value={persons} selectionMode="single"
+                <DataTable value={myPersonArray} selectionMode="single"
                     sortField="id"
                     //sortOrder={-1} //desc
                     sortOrder={1} //cres

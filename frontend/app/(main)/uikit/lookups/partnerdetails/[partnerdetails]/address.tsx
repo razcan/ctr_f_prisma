@@ -83,15 +83,8 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
 
 
     useEffect(() => {
-        // if (Country.name === "Romania") {
         getJudete(),
             filterbycounty()
-        // }
-        // else {
-        //     setListajudete('')
-        //     setListaorase('')
-        // }
-
     },
         [Country, County]
     )

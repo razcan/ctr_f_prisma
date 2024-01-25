@@ -25,8 +25,20 @@ import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
 import { get } from 'http';
 
-const PartnerBank = ({ params, setBankIndex }: any) => {
-    const partnerid = params
+interface Bank {
+    id: number,
+    bank: String,
+    currency: String,
+    branch: String,
+    iban: String,
+    status: Boolean
+}
+
+
+const PartnerBank = ({ params, setBankIndex, setBankChild }: any) => {
+
+    const partnerid = params;
+
     const [visibleBank, setVisibleBank] = useState<any>('');
     const [selectedBank, setSelectedBank] = useState<any>([]);
     const [sBank, setsBank] = useState<any>([]);
@@ -36,6 +48,8 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const [selectedStatus, setSelectedStatus] = useState<any>(true);
     const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
+
+    const [myBankArray, setMyBankArray] = useState<Bank[]>([]);
 
     //nume banca, filiala, Cont, Valuta
     const Bank: any = [
@@ -112,92 +126,82 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         return Bank.find((obj: { name: string; }) => obj.name === BankToFind);
     };
 
-    const fetchPartnerBanks = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/bank/${partnerid}`).then(res => res.json())
-        setAllBanks(response);
-    }
+
 
     useEffect(() => {
-        fetchPartnerBanks()
+
     }, [])
 
-    const deleteBankAccount = async () => {
 
-        try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/bank/${sBank.id}`,
-            );
-            setBankIndex((prevKey: number) => prevKey + 1),
-                setVisibleBank(false)
-        } catch (error) {
-            console.error('Error deleting address:', error);
+    const addItemToArray = () => {
+
+        let newBank: Bank = {
+            id: myBankArray.length + 1,
+            bank: selectedBank.name,
+            currency: selectedCurrency.code,
+            branch: Branch,
+            iban: IBAN,
+            status: selectedStatus
         }
 
-    }
-
-
-    const sendAddressData = async () => {
-
-        interface Bank {
-            bank: String,
-            currency: String,
-            branch: String,
-            iban: String,
-            status: Boolean
-            partner: any
+        const newBankToBeSent: any = {
+            bank: selectedBank.name,
+            currency: selectedCurrency.code,
+            branch: Branch,
+            iban: IBAN,
+            status: selectedStatus
         }
-        if (sBank.id) {
-            let addBank: Bank = {
-                bank: selectedBank.name,
-                currency: selectedCurrency.code,
-                branch: Branch,
-                iban: IBAN,
-                status: selectedStatus,
-                partner: {
-                    "connect":
-                    {
-                        id: parseInt(partnerid)
-                    }
-                }
-            }
-            try {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/bank/${sBank.id}`,
-                    addBank
-                );
-                setBankIndex((prevKey: number) => prevKey + 1),
-                    setVisibleBank(false)
-                console.log('Bank added:', response.data);
-            } catch (error) {
-                console.error('Error updating bank:', error);
-            }
 
+        console.log(sBank.id)
+
+        if (!sBank.id) {
+
+            setMyBankArray((prevArray) => [...prevArray, newBank]);
+            setBankChild((prevArray) => [...prevArray, newBankToBeSent]);
         }
+        //edit element
         else {
-            let addBank: Bank = {
-                bank: selectedBank.name,
-                currency: selectedCurrency.code,
-                branch: Branch,
-                iban: IBAN,
-                status: selectedStatus,
-                partner: {
-                    "connect":
-                    {
-                        id: parseInt(partnerid)
-                    }
-                }
-            }
-            try {
-                const response = await axios.post('http://localhost:3000/nomenclatures/bank',
-                    addBank
-                );
-                setBankIndex((prevKey: number) => prevKey + 1),
-                    setVisibleBank(false)
-                console.log('Bank added:', response.data);
-            } catch (error) {
-                console.error('Error creating bank:', error);
-            }
-        }
-    }
+            let bankindex: number = myBankArray.findIndex(bank => bank.id === sBank.id);
+            // console.log("index de editat ", addressindex);
+            myBankArray[bankindex] = newBank;
+            myBankArray[bankindex].id = sBank.id;
 
+        }
+
+        setSelectedBank('')
+        setSelectedCurrency('')
+        setBranch('')
+        setIBAN('')
+        setSelectedStatus('')
+        setsBank('')
+        setStatus('')
+        setVisibleBank(false)
+
+    }
+    const deleteBank = async () => {
+
+        let bankindex: number = myBankArray.findIndex(bank => bank.id === sBank.id);
+
+
+        if (bankindex !== -1) {
+
+            myBankArray.splice(bankindex, 1);
+            // myAddressArray.filter((element) => element.id !== selectedAddress.id);
+
+        } else {
+            console.log(`Address with id ${sBank.id} not found in the array`);
+        }
+
+        setSelectedBank('')
+        setSelectedCurrency('')
+        setBranch('')
+        setIBAN('')
+        setSelectedStatus('')
+        setsBank('')
+        setStatus('')
+        setVisibleBank(false)
+
+    }
 
     const statusTemplate = (rowData: any) => {
         // console.log('rand', rowData)
@@ -253,8 +257,8 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                             <div className='p-3 field col-2 md:col-2'>
                                 <div className='grid'>
                                     <div className='flex flex-wrap justify-content-left gap-3'>
-                                        <Button label="Salveaza" severity="success" onClick={sendAddressData} />
-                                        <Button label="Sterge" severity="danger" onClick={deleteBankAccount} />
+                                        <Button label="Salveaza" severity="success" onClick={addItemToArray} />
+                                        <Button label="Sterge" severity="danger" onClick={deleteBank} />
                                     </div>
                                 </div>
                             </div>
@@ -262,7 +266,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                         </div>
                     </div>
                 </Dialog>
-                <DataTable value={allBanks} selectionMode="single"
+                <DataTable value={myBankArray} selectionMode="single"
                     paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     selection={selectedBank} onSelectionChange={(e) => {
                         console.log(e.value)
@@ -281,7 +285,6 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                     <Column field="currency" header="Valuta"></Column>
                     <Column field="branch" header="Filiala"></Column>
                     <Column field="iban" header="IBAN"></Column>
-                    <Column field="status" header="status"></Column>
                     <Column header="Activ" style={{ width: '10vh' }} body={statusTemplate} />
 
 
