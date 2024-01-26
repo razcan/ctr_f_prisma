@@ -29,10 +29,10 @@ interface DropdownItem {
     code: string;
 }
 
+
 interface Contract {
     number?: number,
     type?: string,
-    partner?: string,
     status?: string,
     start?: Date,
     end?: Date,
@@ -40,6 +40,20 @@ interface Contract {
     completion?: Date,
     remarks?: string,
     category?: string
+    departament?: string,
+    cashflow?: string,
+    item?: string,
+    costcenter?: string,
+    automaticRenewal: boolean,
+    // contract: any,
+    partnersId: number,
+    entityId: number,
+    partnerpersonsId: number,
+    entitypersonsId: number,
+    entityaddressId: number,
+    partneraddressId: number,
+    entitybankId: number,
+    partnerbankId: number
 }
 
 const FormLayoutDemo = () => {
@@ -48,7 +62,6 @@ const FormLayoutDemo = () => {
     const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
 
     const [number, setNumber] = useState(null);
-    const [partner, setPartner] = useState(null);
     const [type, setType] = useState(null);
     const [start, setStartDate] = useState(null);
     const [end, setEndDate] = useState(null);
@@ -71,7 +84,15 @@ const FormLayoutDemo = () => {
     const [selectedItem, setSelectedItem] = useState([]);
 
     const [entity, setEntity] = useState([]);
+    const [partner, setPartner] = useState([]);
     const [selectedEntity, setSelectedEntity] = useState([]);
+    const [selectedPartner, setSelectedPartner] = useState([]);
+    const [persons, setPersons] = useState([]);
+
+    const [partnerdetails, setPartnerdetails] = useState([]);
+    const [entitydetails, setEntitydetails] = useState([]);
+
+    // const [selectedCostCenter, setSelectedCostCenter] = useState([]);
 
     const [automaticRenewalValue, setAutomaticRenewal] = useState<any>(false);
 
@@ -81,6 +102,11 @@ const FormLayoutDemo = () => {
     const [ent_legal_person, setEnt_legal_person] = useState(null);
     const [ent_iban, setEnt_IBAN] = useState(null);
     const [ent_address, setEnt_Address] = useState(null);
+    const [ent_bank, setEnt_bank] = useState(null);
+    const [ent_role, setEnt_role] = useState(null);
+    const [ent_id, setEnt_id] = useState();
+
+
 
     const [party_name, setParty_name] = useState(null);
     const [party_email, setParty_email] = useState(null);
@@ -88,6 +114,10 @@ const FormLayoutDemo = () => {
     const [party_legal_person, setParty_legal_person] = useState(null);
     const [party_iban, setParty_IBAN] = useState(null);
     const [party_address, setParty_Address] = useState(null);
+    const [party_role, setParty_role] = useState(null);
+    const [party_bank, setParty_bank] = useState(null);
+    const [party_id, setParty_id] = useState();
+
 
     const dropdownItems: DropdownItem[] = useMemo(
         () => [
@@ -133,8 +163,50 @@ const FormLayoutDemo = () => {
             })
             .then(categories => {
                 setCategories(categories)
-                // setProducts(coins)
-                // console.log(coins)
+            })
+
+    }
+
+    const fetchEntity = () => {
+        fetch("http://localhost:3000/nomenclatures/entity")
+            .then(response => {
+                return response.json()
+            })
+            .then(entity => {
+                setEntity(entity)
+            })
+    }
+
+    const fetchPartners = () => {
+        fetch("http://localhost:3000/nomenclatures/partners")
+            .then(response => {
+                return response.json()
+            })
+            .then(partner => {
+                setPartner(partner)
+            })
+    }
+
+
+
+
+    const fetchPartnersDetailsData = (partnerId: number) => {
+        fetch(`http://localhost:3000/nomenclatures/partnersdetails/${partnerId}`)
+            .then(response => {
+                return response.json()
+            })
+            .then(partnerdetails => {
+                setPartnerdetails(partnerdetails[0])
+            })
+    }
+
+    const fetchEntityDetailsData = (entityId: number) => {
+        fetch(`http://localhost:3000/nomenclatures/entitydetails/${entityId}`)
+            .then(response => {
+                return response.json()
+            })
+            .then(entitydetails => {
+                setEntitydetails(entitydetails[0])
             })
     }
 
@@ -160,15 +232,17 @@ const FormLayoutDemo = () => {
             })
     }
 
-    const fetchEntity = () => {
-        fetch("http://localhost:3000/contracts/entity")
-            .then(response => {
-                return response.json()
-            })
-            .then(entity => {
-                setEntity(entity)
-            })
-    }
+    // const fetchEntity = () => {
+    //     fetch("http://localhost:3000/contracts/entity")
+    //         .then(response => {
+    //             return response.json()
+
+    //         })
+    //         .then(entity => {
+    //              setEntity(entity)
+    //             // console.log('response')
+    //         })
+    // }
 
     const fetchCostCenter = () => {
         fetch("http://localhost:3000/contracts/costcenter")
@@ -188,8 +262,6 @@ const FormLayoutDemo = () => {
             })
             .then(departments => {
                 setDepartments(departments)
-                // setProducts(coins)
-                // console.log(coins)
             })
     }
 
@@ -197,11 +269,18 @@ const FormLayoutDemo = () => {
         fetchCategoriesData(),
             fetchDepartmentsData(),
             fetchItemsData(),
-            fetchEntity(),
+            // fetchEntity(),
             fetchCostCenter(),
-            fetchCashFlow()
+            fetchCashFlow(),
+            fetchPartners(),
+            fetchEntity()
+        // fetchPartnersDetailsData()
     }, [])
 
+    // auto filter by selectedEntity - nume resp, banca, pers
+    // useEffect(() => {
+
+    // }, [selectedEntity])
 
 
     const items = [
@@ -226,20 +305,12 @@ const FormLayoutDemo = () => {
     }, [dropdownItems]);
 
 
-    const onCheckboxChange = (e: CheckboxChangeEvent) => {
-        let selectedValue = [...checkboxValue];
-        if (e.checked) selectedValue.push(e.value);
-        else selectedValue.splice(selectedValue.indexOf(e.value), 1);
-
-        setCheckboxValue(selectedValue);
-    };
-
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
         let addedContract: Contract = {
             number: number,
-            type: type,
-            partner: partner,
+            type: type.name,
+            // partner: partner,
             status: status.name,
             start: (start ? start.toISOString() : null),
             end: (end ? end.toISOString() : null),
@@ -247,12 +318,22 @@ const FormLayoutDemo = () => {
             completion: (completion ? completion.toISOString() : null),
             remarks: remarks,
             category: selectedCategory.name,
-            item: selectedItem.name,
-            cashflow: selectedCashflow.name,
             departament: selectedDepartment.name,
-            entity: selectedEntity.name,
-            costcenter: selectedCostCenter.name
+            cashflow: selectedCashflow.name,
+            item: selectedItem.name,
+            costcenter: selectedCostCenter.name,
+            automaticRenewal: automaticRenewalValue,
+            // contract: selectedItem,
+            partnersId: selectedPartner.id,
+            entityId: selectedEntity.id,
+            partnerpersonsId: party_id,
+            entitypersonsId: ent_id,
+            entityaddressId: ent_address.id,
+            partneraddressId: party_address.id,
+            entitybankId: ent_iban.id,
+            partnerbankId: party_iban.id
         }
+        // console.log(addedContract);
 
         try {
             const response = await axios.post('http://localhost:3000/contracts',
@@ -279,7 +360,7 @@ const FormLayoutDemo = () => {
                     <div className="p-fluid formgrid grid pt-2">
 
                         <Accordion className="field lg:col-12 xs:col-3 md:col-12" multiple
-                        // activeIndex={[0]}
+                            activeIndex={[0, 1]}
                         >
                             <AccordionTab
                                 header={
@@ -294,31 +375,73 @@ const FormLayoutDemo = () => {
                                         <div className="p-fluid formgrid grid pt-2">
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="entity">Entitate</label>
-                                                <Dropdown id="entity" value={selectedEntity} onChange={(e) => setSelectedEntity(e.value)} options={entity} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                <Dropdown id="entity" value={selectedEntity}
+                                                    onChange={(e) => {
+                                                        setSelectedEntity(e.value)
+                                                        // fetchPartnersDetailsData(e.value.id)
+                                                        fetchEntityDetailsData(e.value.id)
+                                                        console.log(e.value)
+                                                    }}
+                                                    options={entity}
+                                                    optionLabel="name" placeholder="Select One"></Dropdown>
+                                            </div>
+                                            <div className="field col-12 md:col-3">
+                                                <label htmlFor="entity">Nume Responsabil</label>
+                                                <Dropdown id="entity" value={ent_name}
+                                                    onChange={(e) => {
+                                                        setEnt_id(e.target.value.id)
+                                                        setEnt_name(e.target.value.name)
+                                                        setEnt_email(e.target.value.email)
+                                                        setEnt_phone(e.target.value.phone)
+                                                        setEnt_legal_person(e.target.value.legalrepresent)
+                                                        setEnt_role(e.target.value.role)
+                                                    }
+                                                    }
+                                                    options={entitydetails.Persons}
+                                                    optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_name">Nume Responsabil</label>
-                                                <InputText id="ent_name" type="text" value={ent_name} onChange={(e) => setEnt_name(e.target.value)} />
+                                                <label htmlFor="ent_email">Rol</label>
+                                                <InputText disabled id="ent_email" type="text" value={ent_role} />
                                             </div>
+
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="ent_email">Email Responsabil</label>
-                                                <InputText id="ent_email" type="text" value={ent_email} onChange={(e) => setEnt_email(e.target.value)} />
+                                                <InputText disabled id="ent_email" type="text" value={ent_email} onChange={(e) => setEnt_email(e.target.value)} />
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="ent_phone">Telefon Responsabil</label>
-                                                <InputText id="ent_phone" keyfilter="int" type="text" value={ent_phone} onChange={(e) => setEnt_phone(e.target.value)} />
+                                                <InputText disabled id="ent_phone" keyfilter="int" type="text" value={ent_phone} onChange={(e) => setEnt_phone(e.target.value)} />
+                                            </div>
+                                            <div className="field-checkbox col-12 md:col-3">
+                                                <Checkbox id="default" checked={ent_legal_person}></Checkbox>
+                                                <label htmlFor="default" className="ml-2">Reprezentant Legal</label>
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_legal_person">Reprezentant Legal</label>
-                                                <InputText id="ent_legal_person" type="text" value={ent_legal_person} onChange={(e) => setEnt_legal_person(e.target.value)} />
+                                                <label htmlFor="ent_legal_person">Banca</label>
+                                                <InputText disabled id="ent_legal_person" type="text" value={ent_bank} />
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="ent_iban">IBAN</label>
-                                                <InputText id="ent_iban" type="text" value={ent_iban} onChange={(e) => setEnt_IBAN(e.target.value)} />
+                                                <Dropdown id="entity" value={ent_iban}
+                                                    onChange={(e) => {
+                                                        setEnt_IBAN(e.target.value)
+                                                        setEnt_bank(e.target.value.bank)
+                                                    }
+                                                    }
+                                                    options={entitydetails.Banks}
+                                                    optionLabel="iban" placeholder="Select One"></Dropdown>
                                             </div>
-                                            <div className="field col-12  md:col-6">
+                                            <div className="field col-12  md:col-12">
                                                 <label htmlFor="number">Adresa</label>
-                                                <InputTextarea value={ent_address} onChange={(e) => setEnt_Address(e.target.value)} rows={1} cols={30} />
+                                                <Dropdown id="entity" value={ent_address}
+                                                    onChange={(e) => {
+                                                        setEnt_Address(e.target.value)
+                                                    }
+                                                    }
+                                                    options={entitydetails.Address}
+                                                    optionLabel="completeAddress" placeholder="Select One"></Dropdown>
+
                                             </div>
                                         </div>
                                     </div>
@@ -327,7 +450,7 @@ const FormLayoutDemo = () => {
                             </AccordionTab>
                             <AccordionTab header={
                                 <span className="flex align-items-center gap-2 w-full">
-                                    Partener: {partner}
+                                    Partener: {selectedPartner.name}
                                 </span>
                             }>
                                 <div className="grid">
@@ -335,31 +458,72 @@ const FormLayoutDemo = () => {
                                         <div className="p-fluid formgrid grid pt-2">
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="partner">Partner</label>
-                                                <InputText id="partner" type="text" value={partner} onChange={(e) => setPartner(e.target.value)} />
+                                                <Dropdown id="entity" value={selectedPartner}
+                                                    onChange={(e) => {
+                                                        setSelectedPartner(e.value)
+                                                        fetchPartnersDetailsData(e.value.id)
+                                                        console.log(e.value)
+                                                    }}
+                                                    options={partner}
+                                                    optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="party_name">Nume Responsabil</label>
-                                                <InputText id="party_name" type="text" value={party_name} onChange={(e) => setParty_name(e.target.value)} />
+                                                <Dropdown id="entity" value={party_name}
+                                                    onChange={(e) => {
+                                                        setParty_id(e.target.value.id)
+                                                        setParty_name(e.target.value)
+                                                        setParty_email(e.target.value.email)
+                                                        setParty_phone(e.target.value.phone)
+                                                        setParty_legal_person(e.target.value.legalrepresent)
+                                                        setParty_role(e.target.value.role)
+                                                    }
+                                                    }
+                                                    options={partnerdetails.Persons}
+                                                    optionLabel="name" placeholder="Select One"></Dropdown>
+                                            </div>
+                                            <div className="field col-12  md:col-3">
+                                                <label htmlFor="ent_email">Rol</label>
+                                                <InputText disabled id="ent_email" type="text" value={party_role} />
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="party_email">Email Responsabil</label>
-                                                <InputText id="party_email" type="text" value={party_email} onChange={(e) => setParty_email(e.target.value)} />
+                                                <InputText disabled id="party_email" type="text" value={party_email} onChange={(e) => setParty_email(e.target.value)} />
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="party_phone">Telefon Responsabil</label>
-                                                <InputText id="party_phone" keyfilter="int" type="text" value={party_phone} onChange={(e) => setParty_phone(e.target.value)} />
+                                                <InputText disabled id="party_phone" keyfilter="int" type="text" value={party_phone} onChange={(e) => setParty_phone(e.target.value)} />
+                                            </div>
+                                            <div className="field-checkbox col-12 md:col-3">
+                                                <Checkbox id="default" checked={party_legal_person}></Checkbox>
+                                                <label htmlFor="default" className="ml-2">Reprezentant Legal</label>
+
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="party_legal_person">Reprezentant Legal</label>
-                                                <InputText id="party_legal_person" type="text" value={party_legal_person} onChange={(e) => setParty_legal_person(e.target.value)} />
+                                                <label htmlFor="ent_legal_person">Banca</label>
+                                                <InputText disabled id="ent_legal_person" type="text" value={party_bank} />
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="party_iban">IBAN</label>
-                                                <InputText id="party_iban" type="text" value={party_iban} onChange={(e) => setParty_IBAN(e.target.value)} />
+                                                <label htmlFor="ent_iban">IBAN</label>
+                                                <Dropdown id="party" value={party_iban}
+                                                    onChange={(e) => {
+                                                        setParty_IBAN(e.target.value)
+                                                        setParty_bank(e.target.value.bank)
+                                                    }
+                                                    }
+                                                    options={partnerdetails.Banks}
+                                                    optionLabel="iban" placeholder="Select One"></Dropdown>
                                             </div>
-                                            <div className="field col-12  md:col-6">
-                                                <label htmlFor="party_address">Adresa</label>
-                                                <InputTextarea value={party_address} onChange={(e) => setParty_Address(e.target.value)} rows={1} cols={30} />
+                                            <div className="field col-12  md:col-12">
+                                                <label htmlFor="number">Adresa</label>
+                                                <Dropdown id="entity" value={party_address}
+                                                    onChange={(e) => {
+                                                        setParty_Address(e.target.value)
+                                                    }
+                                                    }
+                                                    options={partnerdetails.Address}
+                                                    optionLabel="completeAddress" placeholder="Select One"></Dropdown>
+
                                             </div>
                                         </div>
                                     </div>

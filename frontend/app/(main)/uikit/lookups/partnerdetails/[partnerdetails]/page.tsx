@@ -132,12 +132,13 @@ const Partner = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/partners',
+            // const response = await axios.post('http://localhost:3000/nomenclatures/partners',
+            const response = await axios.patch(`http://localhost:3000/nomenclatures/partners/${partnerid}`,
                 addPartner
             );
-            console.log('Person added:', response.data);
+            console.log('Partner edited:', response.data);
         } catch (error) {
-            console.error('Error creating person:', error);
+            console.error('Error edited partner:', error);
         }
     }
 
