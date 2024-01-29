@@ -32,18 +32,18 @@ interface DropdownItem {
 
 interface Contract {
     number?: number,
-    type?: string,
-    status?: string,
+    typeId?: number,
+    statusId?: number,
     start?: Date,
     end?: Date,
     sign?: Date,
     completion?: Date,
     remarks?: string,
-    category?: string
-    departament?: string,
-    cashflow?: string,
-    item?: string,
-    costcenter?: string,
+    categoryId?: number,
+    departmentId?: number,
+    cashflowId?: number,
+    itemId?: number,
+    costcenterId?: number,
     automaticRenewal: boolean,
     // contract: any,
     partnersId: number,
@@ -59,10 +59,11 @@ interface Contract {
 const FormLayoutDemo = () => {
 
     const router = useRouter();
-    const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
-
+    // const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
+    const [contractStatus, setContractStatus] = useState([]);
     const [number, setNumber] = useState(null);
     const [type, setType] = useState(null);
+    const [contractType, setContractType] = useState([]);
     const [start, setStartDate] = useState(null);
     const [end, setEndDate] = useState(null);
     const [sign, setSignDate] = useState(null);
@@ -119,41 +120,88 @@ const FormLayoutDemo = () => {
     const [party_id, setParty_id] = useState();
 
 
-    const dropdownItems: DropdownItem[] = useMemo(
-        () => [
-            { name: 'In lucru', code: 'Draft' },
-            { name: 'Asteapta aprobarea', code: 'Pending Approval' },
-            { name: 'In curs de revizuire', code: 'Under Review' },
-            { name: 'Aprobat', code: 'Approved' },
-            { name: 'In executie', code: 'Executed' },
-            { name: 'Activ', code: 'Active' },
-            { name: 'Expirat', code: 'Expired' },
-            { name: 'Finalizat', code: 'Terminated' },
-            { name: 'Reinnoit', code: 'Renewed' },
-            { name: 'Modificat', code: 'Amended' },
-            { name: 'Inchis inainte de termen', code: 'Cancelled' },
-            { name: 'Contestat', code: 'Disputed' },
-        ],
-        []
-    );
+    // const dropdownItems: DropdownItem[] = useMemo(
+    //     () => [
+    //         { name: 'In lucru', code: 'Draft' },
+    //         { name: 'Asteapta aprobarea', code: 'Pending Approval' },
+    //         { name: 'In curs de revizuire', code: 'Under Review' },
+    //         { name: 'Aprobat', code: 'Approved' },
+    //         { name: 'In executie', code: 'Executed' },
+    //         { name: 'Activ', code: 'Active' },
+    //         { name: 'Expirat', code: 'Expired' },
+    //         { name: 'Finalizat', code: 'Terminated' },
+    //         { name: 'Reinnoit', code: 'Renewed' },
+    //         { name: 'Modificat', code: 'Amended' },
+    //         { name: 'Inchis inainte de termen', code: 'Cancelled' },
+    //         { name: 'Contestat', code: 'Disputed' },
+    //     ],
+    //     []
+    // );
 
-    const contractType: DropdownItem[] = [
-        { name: "Contracte de Vanzare-Cumparare", code: "01" },
-        { name: "Contracte de Inchiriere", code: "02" },
-        { name: "Contracte de Servicii", code: "03" },
-        { name: "Contracte de Parteneriat", code: "04" },
-        { name: "Contracte de Colaborare", code: "05" },
-        { name: "Contracte de Constructie", code: "06" },
-        { name: "Contracte de Licentiere", code: "07" },
-        { name: "Contracte de Franciza", code: "08" },
-        { name: "Contracte de Imprumut", code: "09" },
-        { name: "Contracte de Agent", code: "10" },
-        { name: "Contracte de Dezvoltare Software", code: "11" },
-        { name: "Contracte de Asigurare", code: "12" },
-        { name: "Contracte Imobiliare", code: "13" },
-        { name: "Contracte de Mentenanta", code: "14" },
-        { name: "Contracte Abonament", code: "15" },
-    ];
+    // const contractType: DropdownItem[] = [
+    //     { name: "Contracte de Vanzare-Cumparare", code: "01" },
+    //     { name: "Contracte de inchiriere", code: "02" },
+    //     { name: "Contracte de servicii", code: "03" },
+    //     { name: "Contracte de parteneriat", code: "04" },
+    //     { name: "Contracte de colaborare", code: "05" },
+    //     { name: "Contracte de constructie", code: "06" },
+    //     { name: "Contracte de licentiere", code: "07" },
+    //     { name: "Contracte de franciză", code: "08" },
+    //     { name: "Contracte de imprumut", code: "09" },
+    //     { name: "Contracte de agent", code: "10" },
+    //     { name: "Contracte de dezvoltare Software", code: "11" },
+    //     { name: "Contracte de asigurare", code: "12" },
+    //     { name: "Contracte imobiliare", code: "13" },
+    //     { name: "Contracte de mentenanta", code: "14" },
+    //     { name: "Contracte abonament", code: "15" },
+    //     { name: "Contract de schimb", code: "16" },
+    //     { name: "Contract de furnizare de produse", code: "17" },
+    //     { name: "Contract de report", code: "18" },
+    //     { name: "Contract de antrepriză", code: "19" },
+    //     { name: "Contract de asociere în participație", code: "20" },
+    //     { name: "Contract de transport", code: "21" },
+    //     { name: "Contract de mandat", code: "22" },
+    //     { name: "Contract de comision", code: "23" },
+    //     { name: "Contract de consignație", code: "24" },
+    //     { name: "Contract de agenție", code: "25" },
+    //     { name: "Contract de intermediere", code: "26" },
+    //     { name: "Contract de depozit", code: "27" },
+    //     { name: "Contract de închiriere", code: "28" },
+    //     { name: "Contract de cont curent", code: "29" },
+    //     { name: "Contract de cont curent bancar", code: "30" },
+    //     { name: "Contract de asigurare", code: "31" },
+    //     { name: "Contract de rentă viageră", code: "32" },
+    //     { name: "Contract de joc și pariu", code: "33" },
+    //     { name: "Contract de donație", code: "34" },
+    //     { name: "Contract de fiducie", code: "35" },
+    //     { name: "Contract de leasing", code: "36" },
+    //     { name: "Contract de factoring", code: "37" },
+
+    // ];
+
+
+    const fetchTypeData = () => {
+        fetch("http://localhost:3000/nomenclatures/contracttype")
+            .then(response => {
+                return response.json()
+            })
+            .then(type => {
+                setContractType(type)
+            })
+
+    }
+
+    const fetchStatusData = () => {
+        fetch("http://localhost:3000/nomenclatures/contractstatus")
+            .then(response => {
+                return response.json()
+            })
+            .then(status => {
+                setContractStatus(status)
+            })
+
+    }
+
 
 
     const fetchCategoriesData = () => {
@@ -273,7 +321,9 @@ const FormLayoutDemo = () => {
             fetchCostCenter(),
             fetchCashFlow(),
             fetchPartners(),
-            fetchEntity()
+            fetchEntity(),
+            fetchTypeData(),
+            fetchStatusData()
         // fetchPartnersDetailsData()
     }, [])
 
@@ -300,28 +350,28 @@ const FormLayoutDemo = () => {
         { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
     ];
 
-    useEffect(() => {
-        setDropdownItem(dropdownItems['']);
-    }, [dropdownItems]);
+    // useEffect(() => {
+    //     setDropdownItem(dropdownItems['']);
+    // }, [dropdownItems]);
 
 
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
         let addedContract: Contract = {
             number: number,
-            type: type.name,
+            typeId: type.id,
             // partner: partner,
-            status: status.name,
+            statusId: status.id,
             start: (start ? start.toISOString() : null),
             end: (end ? end.toISOString() : null),
             sign: (sign ? sign.toISOString() : null),
             completion: (completion ? completion.toISOString() : null),
             remarks: remarks,
-            category: selectedCategory.name,
-            departament: selectedDepartment.name,
-            cashflow: selectedCashflow.name,
-            item: selectedItem.name,
-            costcenter: selectedCostCenter.name,
+            categoryId: selectedCategory.id,
+            departmentId: selectedDepartment.id,
+            cashflowId: selectedCashflow.id,
+            itemId: selectedItem.id,
+            costcenterId: selectedCostCenter.id,
             automaticRenewal: automaticRenewalValue,
             // contract: selectedItem,
             partnersId: selectedPartner.id,
@@ -544,7 +594,7 @@ const FormLayoutDemo = () => {
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="state">Stare</label>
-                            <Dropdown id="state" value={status} onChange={(e) => setStatus(e.value)} options={dropdownItems} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="state" value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <label htmlFor="category">Categorie</label>

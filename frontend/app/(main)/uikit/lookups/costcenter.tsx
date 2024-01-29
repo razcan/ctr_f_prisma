@@ -40,8 +40,8 @@ const CostCenter = ({ executeFunction }: any) => {
             showSuccess(`Centrul de cost/profit ${event.name} a fost sters`)
 
         } catch (error) {
-            console.error('Eroare la stergerea centrului de cost/profit:', error);
-            showError('Centrul de cost/profit nu a putut fi sters!')
+            console.error('Eroare la stergerea centrului de cost/profit:', error.response.data.error);
+            showError(`Centrul de cost/profit nu a putut fi sters! ${error.response.data.error}`)
         }
         setVisible(false)
     }
