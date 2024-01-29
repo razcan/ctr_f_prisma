@@ -23,6 +23,11 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 
 const queryClient = new QueryClient();
 
+function addOneDay(date: Date): Date {
+    const newDate = new Date(date);
+    newDate.setDate(date.getDate() + 1);
+    return newDate;
+}
 
 interface DropdownItem {
     name: string;
@@ -362,10 +367,10 @@ const FormLayoutDemo = () => {
             typeId: type.id,
             // partner: partner,
             statusId: status.id,
-            start: (start ? start.toISOString() : null),
-            end: (end ? end.toISOString() : null),
-            sign: (sign ? sign.toISOString() : null),
-            completion: (completion ? completion.toISOString() : null),
+            start: (start ? addOneDay(start) : null),
+            end: (end ? addOneDay(end) : null),
+            sign: (sign ? addOneDay(sign) : null),
+            completion: (completion ? addOneDay(completion) : null),
             remarks: remarks,
             categoryId: selectedCategory.id,
             departmentId: selectedDepartment.id,

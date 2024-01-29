@@ -106,7 +106,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
         console.log(response);
     }
 
-    console.log("partnerid", partnerid)
+    // console.log("partnerid", partnerid)
     // console.log(receivedAddress)
 
     useEffect(() => {
