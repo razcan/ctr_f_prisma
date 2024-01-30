@@ -23,6 +23,7 @@ import {
     useQueryClient
 } from '@tanstack/react-query'
 import { ProgressSpinner } from 'primereact/progressspinner';
+import PartnerBank from '../../lookups/partnerdetails/[partnerdetails]/bank';
 
 const queryClient = new QueryClient();
 
@@ -100,12 +101,16 @@ export default function EditContract() {
     const [entityBanks, setEntityBanks] = useState([]);
     const [entityAddress, setEntityAddress] = useState([]);
 
+    const [partnerPersons, setPartnerPersons] = useState([]);
+    const [partnerBanks, setPartnerBanks] = useState([]);
+    const [partnerAddress, setPartnerAddress] = useState([]);
+
     const [partnerdetails, setPartnerdetails] = useState([]);
     const [entitydetails, setEntitydetails] = useState([]);
 
     // const [selectedCostCenter, setSelectedCostCenter] = useState([]);
 
-    const [automaticRenewalValue, setAutomaticRenewal] = useState<any>(false);
+    const [automaticRenewalValue, setAutomaticRenewal] = useState<any>();
 
     const [ent_name, setEnt_name] = useState(null);
     const [ent_email, setEnt_email] = useState(null);
@@ -120,6 +125,7 @@ export default function EditContract() {
     const [ent_id, setEnt_id] = useState();
 
 
+    const [party_person, setParty_person] = useState<any>([]);
     const [party_name, setParty_name] = useState(null);
     const [party_email, setParty_email] = useState(null);
     const [party_phone, setParty_phone] = useState(null);
@@ -130,9 +136,6 @@ export default function EditContract() {
     const [party_bank, setParty_bank] = useState(null);
     const [party_id, setParty_id] = useState();
 
-    const [options, setOptions] = useState([]);
-
-
     const fetchContractData = () => {
         fetch(`http://localhost:3000/contracts/details/${Id}`)
             .then(response => {
@@ -140,11 +143,32 @@ export default function EditContract() {
             })
             .then(contractdetails => {
                 setContractDetails(contractdetails)
-                setSelectedEntity(contractdetails[0].entity)
 
-                console.log(contractdetails)
+                const formated_start_date = new Date(contractdetails[0].start);
+                const formated_end_date = new Date(contractdetails[0].end);
+                const formated_completion_date = new Date(contractdetails[0].completion);
+                const formated_sign_date = new Date(contractdetails[0].sign);
+
+                setStartDate(formated_start_date)
+                setEndDate(formated_end_date)
+                setSignDate(formated_sign_date)
+                setCompletionDate(formated_completion_date)
+                setNumber(contractdetails[0].number)
+                setAutomaticRenewal(contractdetails[0].automaticRenewal)
+
+                setType(contractdetails[0].type)
+                setStatus(contractdetails[0].status)
+                setSelectedCategory(contractdetails[0].Category)
+                setSelectedDepartment(contractdetails[0].departament)
+                setSelectedItem(contractdetails[0].item)
+                setSelectedCostCenter(contractdetails[0].costcenter)
+                setSelectedCashflow(contractdetails[0].cashflow)
+
+                setSelectedEntity(contractdetails[0].entity)
+                setSelectedPartner(contractdetails[0].partner)
 
                 setEnt_person(contractdetails[0].EntityPerson.name)
+                setParty_person(contractdetails[0].PartnerPerson.name)
 
                 const fetchEntityPersons = async () => {
                     const response = await fetch(`http://localhost:3000/nomenclatures/persons/${contractdetails[0].entity.id}`).then(res => res.json().then(res => {
@@ -153,13 +177,11 @@ export default function EditContract() {
                     )
                 }
                 fetchEntityPersons()
-
                 const fetchEntityBanks = async () => {
                     const response = await fetch(`http://localhost:3000/nomenclatures/bank/${contractdetails[0].entity.id}`).then(res => res.json())
                     setEntityBanks(response);
                 }
                 fetchEntityBanks()
-
                 const fetchEntityAddress = async () => {
                     const response = await fetch(`http://localhost:3000/nomenclatures/address/${contractdetails[0].entity.id}`).then(res => res.json())
                     setEntityAddress(response);
@@ -176,6 +198,38 @@ export default function EditContract() {
                 setEnt_bank(contractdetails[0].EntityBank.bank)
                 setEnt_Address(contractdetails[0].entityaddressId)
 
+                const fetchPartnerPersons = async () => {
+                    const response = await fetch(`http://localhost:3000/nomenclatures/persons/${contractdetails[0].partner.id}`).then(res => res.json().then(res => {
+                        setPartnerPersons(res);
+
+                    })
+                    )
+                }
+                fetchPartnerPersons()
+
+                const fetchPartnerBanks = async () => {
+                    const response = await fetch(`http://localhost:3000/nomenclatures/bank/${contractdetails[0].partner.id}`).then(res => res.json())
+                    setPartnerBanks(response);
+                }
+                fetchPartnerBanks()
+                const fetchPartnerAddress = async () => {
+                    const response = await fetch(`http://localhost:3000/nomenclatures/address/${contractdetails[0].partner.id}`).then(res => res.json())
+                    setPartnerAddress(response);
+                }
+                fetchPartnerAddress()
+
+                setParty_id(contractdetails[0].PartnerPerson.id)
+                setParty_name(contractdetails[0].PartnerPerson.name)
+                setParty_email(contractdetails[0].PartnerPerson.email)
+                setParty_phone(contractdetails[0].PartnerPerson.phone)
+                setParty_legal_person(contractdetails[0].PartnerPerson.legalrepresent)
+                setParty_IBAN(contractdetails[0].PartnerBank.iban)
+                setParty_bank(contractdetails[0].PartnerBank.bank)
+                setParty_Address(contractdetails[0].partneraddressId)
+                setParty_role(contractdetails[0].PartnerPerson.role)
+
+
+
 
                 setRemarks(contractdetails[0].remarks)
             })
@@ -184,14 +238,20 @@ export default function EditContract() {
     const getPersonJson = (name: string) => {
         return entityPersons.find((obj) => obj.name === name);
     };
-
+    const getPartnerPersonJson = (name: string) => {
+        return partnerPersons.find((obj) => obj.name === name);
+    };
     const getBankJson = (iban: string) => {
         return entityBanks.find((obj) => obj.iban === iban);
     };
-
-
+    const getPartnerBankJson = (iban: string) => {
+        return partnerBanks.find((obj) => obj.iban === iban);
+    };
     const getAddressJson = (id: string) => {
         return entityAddress.find((obj) => obj.id === id);
+    };
+    const getPartnerAddressJson = (id: string) => {
+        return partnerAddress.find((obj) => obj.id === id);
     };
 
 
@@ -246,27 +306,6 @@ export default function EditContract() {
             })
             .then(partner => {
                 setPartner(partner)
-            })
-    }
-
-
-    const fetchPartnersDetailsData = (partnerId: number) => {
-        fetch(`http://localhost:3000/nomenclatures/partnersdetails/${partnerId}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(partnerdetails => {
-                setPartnerdetails(partnerdetails[0])
-            })
-    }
-
-    const fetchEntityDetailsData = (entityId: number) => {
-        fetch(`http://localhost:3000/nomenclatures/entitydetails/${entityId}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(entitydetails => {
-                setEntitydetails(entitydetails[0])
             })
     }
 
@@ -327,12 +366,6 @@ export default function EditContract() {
             fetchStatusData()
 
     }, [])
-
-    // auto filter by selectedEntity - nume resp, banca, pers
-    // useEffect(() => {
-
-    // }, [selectedEntity])
-
 
     const items = [
         {
@@ -413,7 +446,7 @@ export default function EditContract() {
                                 <AccordionTab
                                     header={
                                         <span className="flex align-items-center gap-2 w-full">
-                                            Entitate:
+                                            Entitate:  {selectedEntity.name}
                                         </span>
                                     }
 
@@ -510,16 +543,17 @@ export default function EditContract() {
                                                     <label htmlFor="partner">Partner</label>
                                                     <Dropdown id="entity" value={selectedPartner}
                                                         onChange={(e) => {
-                                                            setSelectedPartner(e.value)
-                                                            fetchPartnersDetailsData(e.value.id)
-                                                            console.log(e.value)
+                                                            setSelectedPartner(e.value.id)
+                                                            // fetchPartnersDetailsData(e.value.id)
+
+
                                                         }}
                                                         options={partner}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-3">
                                                     <label htmlFor="party_name">Nume Responsabil</label>
-                                                    <Dropdown id="entity" value={party_name}
+                                                    <Dropdown id="entity" value={getPartnerPersonJson(party_name)}
                                                         onChange={(e) => {
                                                             setParty_id(e.target.value.id)
                                                             setParty_name(e.target.value)
@@ -529,7 +563,7 @@ export default function EditContract() {
                                                             setParty_role(e.target.value.role)
                                                         }
                                                         }
-                                                        options={partnerdetails.Persons}
+                                                        options={partnerPersons}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-3">
@@ -555,23 +589,23 @@ export default function EditContract() {
                                                 </div>
                                                 <div className="field col-12  md:col-3">
                                                     <label htmlFor="ent_iban">IBAN</label>
-                                                    <Dropdown id="party" value={party_iban}
+                                                    <Dropdown id="party" value={getPartnerBankJson(party_iban)}
                                                         onChange={(e) => {
                                                             setParty_IBAN(e.target.value)
                                                             setParty_bank(e.target.value.bank)
                                                         }
                                                         }
-                                                        options={partnerdetails.Banks}
+                                                        options={partnerBanks}
                                                         optionLabel="iban" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-12">
                                                     <label htmlFor="number">Adresa</label>
-                                                    <Dropdown id="entity" value={party_address}
+                                                    <Dropdown id="entity" value={getPartnerAddressJson(party_address)}
                                                         onChange={(e) => {
                                                             setParty_Address(e.target.value)
                                                         }
                                                         }
-                                                        options={partnerdetails.Address}
+                                                        options={partnerAddress}
                                                         optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                                 </div>
@@ -604,7 +638,11 @@ export default function EditContract() {
                                 <label className="font-bold block mb-2">
                                     Data Start
                                 </label>
-                                <Calendar id="buttondisplay" value={start} onChange={(e) => setStartDate(e.value)} showIcon />
+                                <Calendar id="buttondisplay" value={start} onChange={(e) => {
+                                    setStartDate(e.value)
+                                }
+
+                                } showIcon dateFormat="dd/mm/yy" />
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label className="font-bold block mb-2">

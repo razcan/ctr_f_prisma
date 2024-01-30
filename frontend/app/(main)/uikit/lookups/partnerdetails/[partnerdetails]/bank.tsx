@@ -37,73 +37,9 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
 
-    //nume banca, filiala, Cont, Valuta
-    const Bank: any = [
-        { name: "Alpha Bank" },
-        { name: "BRCI" },
-        { name: "Banca FEROVIARA" },
-        { name: "Intesa Sanpaolo" },
-        { name: "BCR" },
-        { name: "BCR Banca pentru Locuinţe" },
-        { name: "Eximbank" },
-        { name: "Banca Românească" },
-        { name: "Banca Transilvania" },
-        { name: "Leumi" },
-        { name: "BRD" },
-        { name: "CEC Bank" },
-        { name: "Crédit Agricole" },
-        { name: "Credit Europe" },
-        { name: "Garanti Bank" },
-        { name: "Idea Bank" },
-        { name: "Libra Bank" },
-        { name: "Vista Bank" },
-        { name: "OTP Bank" },
-        { name: "Patria Bank" },
-        { name: "First Bank" },
-        { name: "Porsche Bank" },
-        { name: "ProCredit Bank" },
-        { name: "Raiffeisen" },
-        { name: "Aedificium Banca pentru Locuinte" },
-        { name: "UniCredit" },
-        { name: "Alior Bank" },
-        { name: "BLOM Bank France" },
-        { name: "BNP Paribas" },
-        { name: "Citibank" },
-        { name: "ING" },
-        { name: "TBI " }]
-        ;
+    const [Bank, setBank] = useState<any>([]);
 
-    const Currency: any = [
-        { code: "RON", name: "LEU" },
-        { code: "EUR", name: "Euro" },
-        { code: "USD", name: "Dolarul SUA" },
-        { code: "CHF", name: "Francul elveţian" },
-        { code: "GBP", name: "Lira sterlină" },
-        { code: "BGN", name: "Leva bulgarească" },
-        { code: "RUB", name: "Rubla rusească" },
-        { code: "ZAR", name: "Randul sud-african" },
-        { code: "BRL", name: "Realul brazilian" },
-        { code: "CNY", name: "Renminbi-ul chinezesc" },
-        { code: "INR", name: "Rupia indiană" },
-        { code: "MXN", name: "Peso-ul mexican" },
-        { code: "NZD", name: "Dolarul neo-zeelandez" },
-        { code: "RSD", name: "Dinarul sârbesc" },
-        { code: "UAH", name: "Hryvna ucraineană" },
-        { code: "TRY", name: "Noua lira turcească" },
-        { code: "AUD", name: "Dolarul australian" },
-        { code: "CAD", name: "Dolarul canadian" },
-        { code: "CZK", name: "Coroana cehă" },
-        { code: "DKK", name: "Coroana daneză" },
-        { code: "EGP", name: "Lira egipteană" },
-        { code: "HUF", name: "Forinți maghiari" },
-        { code: "JPY", name: "Yeni japonezi" },
-        { code: "MDL", name: "Leul moldovenesc" },
-        { code: "NOK", name: "Coroana norvegiană" },
-        { code: "PLN", name: "Zlotul polonez" },
-        { code: "SEK", name: "Coroana suedeză" },
-        { code: "AED", name: "Dirhamul Emiratelor Arabe" },
-        { code: "THB", name: "Bahtul thailandez" }
-    ]
+    const [Currency, setCurrency] = useState<any>([]);
 
     const getCurrency = (CurrencyToFind: string) => {
         return Currency.find((obj: { code: string; }) => obj.code === CurrencyToFind);
@@ -118,8 +54,22 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         setAllBanks(response);
     }
 
+    const fetchAllBanks = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        setBank(response);
+    }
+
+    const fetchAllCurrencies = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
+        setCurrency(response);
+    }
+
+    setCurrency
+
     useEffect(() => {
-        fetchPartnerBanks()
+        fetchPartnerBanks(),
+            fetchAllBanks(),
+            fetchAllCurrencies()
     }, [])
 
     const deleteBankAccount = async () => {
@@ -214,7 +164,19 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         <div className="p-fluid formgrid grid pt-2">
             <div className="field col-12 md:col-1 pt-4">
                 <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga"
-                    onClick={() => setVisibleBank(true)}
+                    onClick={() => {
+                        setSelectedBank('')
+                        setSelectedCurrency('')
+                        setBranch('')
+                        setIBAN('')
+                        setSelectedStatus('')
+                        setsBank('')
+                        setStatus('')
+
+                        setVisibleBank(true)
+                    }
+
+                    }
                 />
             </div>
             <div className="field col-12">
@@ -282,7 +244,6 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                     <Column field="currency" header="Valuta"></Column>
                     <Column field="branch" header="Filiala"></Column>
                     <Column field="iban" header="IBAN"></Column>
-                    <Column field="status" header="status"></Column>
                     <Column header="Activ" style={{ width: '10vh' }} body={statusTemplate} />
 
 
