@@ -19,7 +19,7 @@ const AppMenu = () => {
             label: 'Contracts',
             items: [
                 { label: 'Contracte', icon: 'pi pi-fw pi-id-card', to: '/uikit/contractlist' },
-                { label: 'Adauga Contract', icon: 'pi pi-fw pi-id-card', to: '/uikit/addcontract' },
+                // { label: 'Adauga Contract', icon: 'pi pi-fw pi-id-card', to: '/uikit/addcontract' },
                 // { label: 'Formular2', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
                 // { label: 'Float Label', icon: 'pi pi-fw pi-bookmark', to: '/uikit/floatlabel' },
                 // { label: 'Invalid State', icon: 'pi pi-fw pi-exclamation-circle', to: '/uikit/invalidstate' },

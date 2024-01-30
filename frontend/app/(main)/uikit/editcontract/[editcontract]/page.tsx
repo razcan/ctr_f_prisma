@@ -123,7 +123,8 @@ export default function EditContract() {
     const [ent_bank, setEnt_bank] = useState(null);
     const [ent_role, setEnt_role] = useState(null);
     const [ent_id, setEnt_id] = useState();
-
+    const [entitybankId, setEntitybankId] = useState();
+    const [entityaddressId, setEntityaddressId] = useState();
 
     const [party_person, setParty_person] = useState<any>([]);
     const [party_name, setParty_name] = useState(null);
@@ -135,6 +136,8 @@ export default function EditContract() {
     const [party_role, setParty_role] = useState(null);
     const [party_bank, setParty_bank] = useState(null);
     const [party_id, setParty_id] = useState();
+    const [partnerbankId, setPartnerbankId] = useState();
+    const [partneraddressId, setPartneraddressId] = useState();
 
     const fetchContractData = () => {
         fetch(`http://localhost:3000/contracts/details/${Id}`)
@@ -143,6 +146,13 @@ export default function EditContract() {
             })
             .then(contractdetails => {
                 setContractDetails(contractdetails)
+
+                console.log(contractdetails[0])
+
+                setPartnerbankId(contractdetails[0].PartnerBank.id)
+                setPartneraddressId(contractdetails[0].PartnerAddress.id)
+                setEntitybankId(contractdetails[0].EntityBank.id)
+                setEntityaddressId(contractdetails[0].EntityAddress.id)
 
                 const formated_start_date = new Date(contractdetails[0].start);
                 const formated_end_date = new Date(contractdetails[0].end);
@@ -177,6 +187,7 @@ export default function EditContract() {
                     )
                 }
                 fetchEntityPersons()
+
                 const fetchEntityBanks = async () => {
                     const response = await fetch(`http://localhost:3000/nomenclatures/bank/${contractdetails[0].entity.id}`).then(res => res.json())
                     setEntityBanks(response);
@@ -227,9 +238,6 @@ export default function EditContract() {
                 setParty_bank(contractdetails[0].PartnerBank.bank)
                 setParty_Address(contractdetails[0].partneraddressId)
                 setParty_role(contractdetails[0].PartnerPerson.role)
-
-
-
 
                 setRemarks(contractdetails[0].remarks)
             })
@@ -374,10 +382,10 @@ export default function EditContract() {
                 router.push('/uikit/input');
             }
         },
+        { label: 'Documente Atasate', icon: 'pi pi-inbox' },
         { label: 'Acte Aditionale', icon: 'pi pi-chart-line' },
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
-        { label: 'Documente Atasate', icon: 'pi pi-inbox' },
         { label: 'Flux aprobare', icon: 'pi pi-list' },
         { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Istoric', icon: 'pi pi-fw pi-table' },
@@ -386,7 +394,6 @@ export default function EditContract() {
 
 
     const saveContract = async () => {
-        // console.log(number, partner, start, end, completion, sign, type, remarks, status)
         let addedContract: Contract = {
             number: number,
             typeId: type.id,
@@ -408,24 +415,24 @@ export default function EditContract() {
             entityId: selectedEntity.id,
             partnerpersonsId: party_id,
             entitypersonsId: ent_id,
-            entityaddressId: ent_address.id,
-            partneraddressId: party_address.id,
-            entitybankId: ent_iban.id,
-            partnerbankId: party_iban.id
+            entityaddressId: entityaddressId,
+            partneraddressId: partneraddressId,
+            //entitybankId: ent_iban.id,
+            // partnerbankId: party_iban.id,
+            entitybankId: entitybankId,
+            partnerbankId: partnerbankId
         }
         // console.log(addedContract);
 
         try {
             const response = await axios.post('http://localhost:3000/contracts',
                 addedContract
-                // number, partner, start, end, completion, sign, type, remarks, status
             );
 
             console.log('Contract added:', response.data);
         } catch (error) {
             console.error('Error creating contract:', error);
         }
-
     }
 
     return (
@@ -437,31 +444,25 @@ export default function EditContract() {
                         <div className="field lg:col-12 xs:col-3 md:col-12">
                             <TabMenu model={items} />
                         </div>
-
                         <div className="p-fluid formgrid grid pt-2">
-
                             <Accordion className="field lg:col-12 xs:col-3 md:col-12" multiple
-                                activeIndex={[0, 1]}
-                            >
+                                activeIndex={[0, 1]}>
                                 <AccordionTab
                                     header={
                                         <span className="flex align-items-center gap-2 w-full">
                                             Entitate:  {selectedEntity.name}
                                         </span>
-                                    }
-
-                                >
+                                    }>
                                     <div className="grid">
                                         <div className="col-12">
                                             <div className="p-fluid formgrid grid pt-2">
                                                 <div className="field col-12 md:col-3">
                                                     <label htmlFor="entity">Entitate</label>
                                                     <Dropdown id="entity" value={selectedEntity}
+                                                        filter
                                                         onChange={(e) => {
                                                             setSelectedEntity(e.value)
-                                                            // fetchPartnersDetailsData(e.value.id)
-                                                            // fetchEntityDetailsData(e.value.id)
-                                                            // console.log(e.value)
+
                                                         }}
                                                         options={entity}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
@@ -469,6 +470,7 @@ export default function EditContract() {
                                                 <div className="field col-12 md:col-3">
                                                     <label htmlFor="entity_person">Nume Responsabil</label>
                                                     <Dropdown id="entity_person" value={getPersonJson(ent_person)}
+                                                        filter
                                                         onChange={(e) => {
                                                             setEnt_id(e.target.value.id)
                                                             setEnt_name(e.target.value.name)
@@ -505,23 +507,22 @@ export default function EditContract() {
                                                 </div>
                                                 <div className="field col-12  md:col-3">
                                                     <label htmlFor="ent_iban">IBAN</label>
-                                                    <Dropdown id="entity" value={getBankJson(ent_iban)}
+                                                    <Dropdown id="iban" filter value={getBankJson(ent_iban)}
                                                         onChange={(e) => {
-                                                            setEnt_IBAN(e.target.value)
+                                                            setEnt_IBAN(e.target.value.iban)
                                                             setEnt_bank(e.target.value.bank)
-                                                        }
-                                                        }
+                                                            setEntitybankId(e.target.value.id)
+                                                        }}
                                                         options={entityBanks}
                                                         optionLabel="iban" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-12">
                                                     <label htmlFor="number">Adresa</label>
-                                                    <Dropdown id="entity" value={getAddressJson(ent_address)}
+                                                    <Dropdown id="address" filter value={getAddressJson(ent_address)}
                                                         onChange={(e) => {
                                                             // console.log("adresa", e.target.value)
                                                             setEnt_Address(e.target.value.id)
-                                                        }
-                                                        }
+                                                        }}
                                                         options={entityAddress}
                                                         optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
@@ -541,19 +542,17 @@ export default function EditContract() {
                                             <div className="p-fluid formgrid grid pt-2">
                                                 <div className="field col-12 md:col-3">
                                                     <label htmlFor="partner">Partner</label>
-                                                    <Dropdown id="entity" value={selectedPartner}
+                                                    <Dropdown id="partner" value={selectedPartner} filter
                                                         onChange={(e) => {
                                                             setSelectedPartner(e.value.id)
                                                             // fetchPartnersDetailsData(e.value.id)
-
-
                                                         }}
                                                         options={partner}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-3">
                                                     <label htmlFor="party_name">Nume Responsabil</label>
-                                                    <Dropdown id="entity" value={getPartnerPersonJson(party_name)}
+                                                    <Dropdown id="party_name" value={getPartnerPersonJson(party_name)} filter
                                                         onChange={(e) => {
                                                             setParty_id(e.target.value.id)
                                                             setParty_name(e.target.value)
@@ -561,8 +560,7 @@ export default function EditContract() {
                                                             setParty_phone(e.target.value.phone)
                                                             setParty_legal_person(e.target.value.legalrepresent)
                                                             setParty_role(e.target.value.role)
-                                                        }
-                                                        }
+                                                        }}
                                                         options={partnerPersons}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
@@ -589,22 +587,22 @@ export default function EditContract() {
                                                 </div>
                                                 <div className="field col-12  md:col-3">
                                                     <label htmlFor="ent_iban">IBAN</label>
-                                                    <Dropdown id="party" value={getPartnerBankJson(party_iban)}
+                                                    <Dropdown id="ent_iban" value={getPartnerBankJson(party_iban)} filter
                                                         onChange={(e) => {
-                                                            setParty_IBAN(e.target.value)
+                                                            setParty_IBAN(e.target.value.iban)
                                                             setParty_bank(e.target.value.bank)
-                                                        }
-                                                        }
+                                                            setPartnerbankId(e.target.value.id)
+                                                            console.log(e.target.value)
+                                                        }}
                                                         options={partnerBanks}
                                                         optionLabel="iban" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-12">
-                                                    <label htmlFor="number">Adresa</label>
-                                                    <Dropdown id="entity" value={getPartnerAddressJson(party_address)}
+                                                    <label htmlFor="address">Adresa</label>
+                                                    <Dropdown id="address" value={getPartnerAddressJson(party_address)} filter
                                                         onChange={(e) => {
                                                             setParty_Address(e.target.value)
-                                                        }
-                                                        }
+                                                        }}
                                                         options={partnerAddress}
                                                         optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
@@ -612,33 +610,29 @@ export default function EditContract() {
                                             </div>
                                         </div>
                                     </div>
-
                                 </AccordionTab>
                             </Accordion>
-
                             <div className="field col-12  md:col-3">
                                 <label htmlFor="number">Numar</label>
                                 <InputText id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
                             </div>
-
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="state">Tip</label>
-                                <Dropdown id="state" value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="type" filter value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
-
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="state">Stare</label>
-                                <Dropdown id="state" value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="state" filter value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="category">Categorie</label>
-                                <Dropdown id="category" value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="category" filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label className="font-bold block mb-2">
                                     Data Start
                                 </label>
-                                <Calendar id="buttondisplay" value={start} onChange={(e) => {
+                                <Calendar id="start" value={start} onChange={(e) => {
                                     setStartDate(e.value)
                                 }
 
@@ -648,38 +642,38 @@ export default function EditContract() {
                                 <label className="font-bold block mb-2">
                                     Data Final
                                 </label>
-                                <Calendar id="buttondisplay" value={end} onChange={(e) => setEndDate(e.value)} showIcon />
+                                <Calendar id="end" value={end} onChange={(e) => setEndDate(e.value)} showIcon dateFormat="dd/mm/yy" />
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label className="font-bold block mb-2">
                                     Data Semnare
                                 </label>
-                                <Calendar id="buttondisplay" value={sign} onChange={(e) => setSignDate(e.value)} showIcon />
+                                <Calendar id="sign" value={sign} onChange={(e) => setSignDate(e.value)} showIcon dateFormat="dd/mm/yy" />
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label className="font-bold block mb-2">
                                     Inchis la data
                                 </label>
-                                <Calendar id="buttondisplay" value={completion} onChange={(e) => setCompletionDate(e.value)} showIcon />
+                                <Calendar id="completion" value={completion} onChange={(e) => setCompletionDate(e.value)} showIcon dateFormat="dd/mm/yy" />
                             </div>
 
 
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="department">Departament</label>
-                                <Dropdown id="department" value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="department" filter value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="item">Obiect de contract</label>
-                                <Dropdown id="item" value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="item" filter value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
 
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="costcenter">Centru de cost&profit</label>
-                                <Dropdown id="costcenter" value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="costcenter" filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
                             <div className="field col-12 md:col-3">
                                 <label htmlFor="cashflow">CashFlow</label>
-                                <Dropdown id="cashflow" value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
+                                <Dropdown id="cashflow" filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
                             </div>
                             <div className="field col-12 md:col-3">
                                 <div className="field-checkbox">

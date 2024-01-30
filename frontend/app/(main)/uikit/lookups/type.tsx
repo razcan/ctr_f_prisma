@@ -13,9 +13,9 @@ import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 
 
-const Entity = ({ executeFunction }: any) => {
+const Type = ({ executeFunction }: any) => {
 
-    const [EntitySelected, setEntitySelected] = useState('');
+    const [typeSelected, settypeSelected] = useState('');
     const [visible, setVisible] = useState(false);
     const toast = useRef<undefined | null | any>(null);
 
@@ -32,29 +32,29 @@ const Entity = ({ executeFunction }: any) => {
     }
 
 
-    const deleteEntitySelected = async (event: any) => {
+    const deletetypeSelected = async (event: any) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/contracts/entity/${event.id}`);
-            console.log('departament deleted:', response.data);
+            const response = await axios.delete(`http://localhost:3000/contracts/type/${event.id}`);
+            console.log('contract type deleted:', response.data);
             executeFunction((prevKey: number) => prevKey + 1)
-            showSuccess(`Entitatea ${event.name} a fost stearsa`)
+            showSuccess(`Tipul de contract ${event.name} a fost sters`)
 
         } catch (error) {
-            console.error('Eroare la stergerea entitatii:', error);
-            showError('Entitatea nu a putut fi stearsa!')
+            console.error('Eroare la stergerea tipului de contract:', error);
+            showError('Tipul de contract nu a putut fi sters!')
         }
         setVisible(false)
     }
 
     useEffect(() => {
-        setEntitySelected(EntitySelected);
-    }, [EntitySelected]);
+        settypeSelected(typeSelected);
+    }, [typeSelected]);
 
 
     const { isLoading, error, data } = useQuery({
         queryKey: ['contractsData'],
         queryFn: () =>
-            fetch('http://localhost:3000/contracts/entity').then(res => res.json()),
+            fetch('http://localhost:3000/contracts/type').then(res => res.json()),
     });
 
     if (isLoading) return (
@@ -69,8 +69,8 @@ const Entity = ({ executeFunction }: any) => {
     if (error) return 'An error has occurred: ' + error.message;
 
 
-    const deleteEntity = (event: any) => {
-        setEntitySelected(event)
+    const deleteType = (event: any) => {
+        settypeSelected(event)
     }
 
     return (
@@ -79,12 +79,12 @@ const Entity = ({ executeFunction }: any) => {
             <Toast ref={toast} />
             <Dialog visible={visible} modal style={{ width: '24rem' }} onHide={() => setVisible(false)}>
 
-                <span className="font-bold white-space-nowrap">Doriti sa stergeti entitatea ({EntitySelected.name}) ?</span>
+                <span className="font-bold white-space-nowrap">Doriti sa stergeti tipul de contract ({typeSelected.name}) ?</span>
                 <div className='pt-4'>
                     <div className='grid'>
                         <div className='col-1 '>
                             <Button label="Da" severity="danger" onClick={() => {
-                                deleteEntitySelected(EntitySelected)
+                                deletetypeSelected(typeSelected)
 
                             }} />
                         </div>
@@ -96,10 +96,9 @@ const Entity = ({ executeFunction }: any) => {
             </Dialog>
             <DataTable value={data} size="small" stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={5} rowsPerPageOptions={[5, 10, 15]} sortMode="multiple"
                 selectionMode="radiobutton"
-                // cellSelection selectionMode="single"
                 onSelectionChange={
                     (e) => {
-                        deleteEntity(e.value)
+                        deleteType(e.value)
                         setVisible(true)
                     }}>
                 <Column field="id" header="Cod" sortable></Column>
@@ -110,4 +109,4 @@ const Entity = ({ executeFunction }: any) => {
     );
 }
 
-export default Entity;
+export default Type;

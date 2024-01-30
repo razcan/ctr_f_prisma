@@ -6,7 +6,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
-
+import { Button } from 'primereact/button';
 import {
     QueryClient,
     QueryClientProvider,
@@ -14,6 +14,8 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query'
+import { InputText } from 'primereact/inputtext';
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
 
 const queryClient = new QueryClient();
 
@@ -38,10 +40,8 @@ function Contracts() {
     const [selectedContract, setselectedContract] = useState(null);
     const [data, setData] = useState([]);
     const [metaKey, setMetaKey] = useState(true);
+    const [globalFilterValue, setGlobalFilterValue] = useState('');
 
-    const editContract = (id: any) => {
-        router.push(`/uikit/editcontract/ctr?Id=${id}`);
-    }
 
     // can use the useQuery hook here
     // const { isLoading, error, data } = useQuery({
@@ -95,10 +95,46 @@ function Contracts() {
         return <span>{formattedDate}</span>;
     };
 
+    const editContract = (id: any) => {
+        router.push(`/uikit/editcontract/ctr?Id=${id}`);
+    }
+
+    const addContract = () => {
+        router.push(`/uikit/addcontract`)
+    }
+
+    const [filters, setFilters] = useState({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    });
+
+    const onGlobalFilterChange = (e) => {
+        const value = e.target.value;
+        let _filters = { ...filters };
+        _filters['global'].value = value;
+        setGlobalFilterValue(value);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div className="flex justify-content-end">
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                </span>
+            </div>
+        );
+    };
+
+    const header = renderHeader();
+
+
     return (
         <div>
-
-            <DataTable value={data} stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={12} rowsPerPageOptions={[6, 12, 24, 48, 100]} sortMode="multiple"
+            <div><Button label="Adauga" onClick={addContract} /></div>
+            <DataTable value={data}
+                filters={filters}
+                globalFilterFields={['number', 'partner.name', 'entity.name', 'type.name', 'status.name', 'start', 'Category.name']} header={header}
+                stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
                 selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
                     setselectedContract(e.value),
                         editContract(e.value.id)

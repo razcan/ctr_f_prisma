@@ -24,7 +24,7 @@ import Department from './department';
 import CashFlow from './cashflow';
 import Item from './item';
 import CostCenter from './costcenter';
-import Entity from './entity';
+import Type from './type';
 import Partner from './partner';
 
 const queryClient = new QueryClient();
@@ -82,7 +82,7 @@ const LookupsPage = () => {
         { label: 'Obiecte de contract', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Categorii', icon: 'pi pi-chart-line' },
-        // { label: 'Entitati', icon: 'pi pi-fw pi-table' },
+        { label: 'Tip Contracte', icon: 'pi pi-fw pi-table' },
 
     ];
 
@@ -346,23 +346,23 @@ const LookupsPage = () => {
                                     </div>
                                     : null
                                 }
-                                {/* {activeIndex === 5 ?
+                                {activeIndex === 6 ?
                                     <div>
                                         <div className="field col-12  md:col-3">
                                             <span className="p-float-label">
                                                 <InputText id="costcenter" type="text" value={entity} onChange={(e) => setEntity(e.target.value)} />
-                                                <label htmlFor="costcenter">Entitati</label>
+                                                <label htmlFor="costcenter">Tip Contracte</label>
                                             </span>
                                         </div>
                                         <div className='pt-2'><Button label="Adauga" onClick={addEntity} /></div>
                                         <div className='pt-4'>
-                                            <Entity
+                                            <Type
                                                 key={entityIndex}
                                                 executeFunction={setEntityIndex} />
                                         </div>
                                     </div>
                                     : null
-                                } */}
+                                }
                                 {activeIndex === 5 ?
                                     <div>
                                         <div className="field col-12  md:col-3">
