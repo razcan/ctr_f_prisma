@@ -29,7 +29,7 @@ const Partner = ({ executeFunction }: any) => {
     const [partners, setPartners] = useState(false);
 
     const fetchPartnersData = () => {
-        fetch("http://localhost:3000/nomenclatures/partners")
+        fetch("http://localhost:3000/nomenclatures/allparties")
             .then(response => {
                 return response.json()
             })

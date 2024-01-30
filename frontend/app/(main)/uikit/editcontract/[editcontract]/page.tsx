@@ -94,7 +94,11 @@ export default function EditContract() {
     const [partner, setPartner] = useState([]);
     const [selectedEntity, setSelectedEntity] = useState([]);
     const [selectedPartner, setSelectedPartner] = useState([]);
-    const [persons, setPersons] = useState([]);
+
+
+    const [entityPersons, setEntityPersons] = useState([]);
+    const [entityBanks, setEntityBanks] = useState([]);
+    const [entityAddress, setEntityAddress] = useState([]);
 
     const [partnerdetails, setPartnerdetails] = useState([]);
     const [entitydetails, setEntitydetails] = useState([]);
@@ -107,12 +111,13 @@ export default function EditContract() {
     const [ent_email, setEnt_email] = useState(null);
     const [ent_phone, setEnt_phone] = useState(null);
     const [ent_legal_person, setEnt_legal_person] = useState(null);
+    const [ent_person, setEnt_person] = useState<any>([]);
+    const [ent_selected_person, setEnt_selected_person] = useState<any>();
     const [ent_iban, setEnt_IBAN] = useState(null);
     const [ent_address, setEnt_Address] = useState(null);
     const [ent_bank, setEnt_bank] = useState(null);
     const [ent_role, setEnt_role] = useState(null);
     const [ent_id, setEnt_id] = useState();
-
 
 
     const [party_name, setParty_name] = useState(null);
@@ -125,6 +130,8 @@ export default function EditContract() {
     const [party_bank, setParty_bank] = useState(null);
     const [party_id, setParty_id] = useState();
 
+    const [options, setOptions] = useState([]);
+
 
     const fetchContractData = () => {
         fetch(`http://localhost:3000/contracts/details/${Id}`)
@@ -135,23 +142,58 @@ export default function EditContract() {
                 setContractDetails(contractdetails)
                 setSelectedEntity(contractdetails[0].entity)
 
-                setEnt_id(contractdetails[0].PartnerPerson.id)
-                setEnt_name(contractdetails[0].PartnerPerson.name)
-                setEnt_email(contractdetails[0].PartnerPerson.email)
-                setEnt_phone(contractdetails[0].PartnerPerson.phone)
-                setEnt_legal_person(contractdetails[0].PartnerPerson.legalrepresent)
-                setEnt_role(contractdetails[0].PartnerPerson.role)
+                console.log(contractdetails)
 
+                setEnt_person(contractdetails[0].EntityPerson.name)
+
+                const fetchEntityPersons = async () => {
+                    const response = await fetch(`http://localhost:3000/nomenclatures/persons/${contractdetails[0].entity.id}`).then(res => res.json().then(res => {
+                        setEntityPersons(res);
+                    })
+                    )
+                }
+                fetchEntityPersons()
+
+                const fetchEntityBanks = async () => {
+                    const response = await fetch(`http://localhost:3000/nomenclatures/bank/${contractdetails[0].entity.id}`).then(res => res.json())
+                    setEntityBanks(response);
+                }
+                fetchEntityBanks()
+
+                const fetchEntityAddress = async () => {
+                    const response = await fetch(`http://localhost:3000/nomenclatures/address/${contractdetails[0].entity.id}`).then(res => res.json())
+                    setEntityAddress(response);
+                }
+                fetchEntityAddress()
+
+                setEnt_id(contractdetails[0].EntityPerson.id)
+                setEnt_name(contractdetails[0].EntityPerson.name)
+                setEnt_email(contractdetails[0].EntityPerson.email)
+                setEnt_phone(contractdetails[0].EntityPerson.phone)
+                setEnt_legal_person(contractdetails[0].EntityPerson.legalrepresent)
+                setEnt_role(contractdetails[0].EntityPerson.role)
                 setEnt_IBAN(contractdetails[0].EntityBank.iban)
                 setEnt_bank(contractdetails[0].EntityBank.bank)
-                // setEnt_Address(contractdetails[0].EnitityAddress[0].completeAddress)
+                setEnt_Address(contractdetails[0].entityaddressId)
+
 
                 setRemarks(contractdetails[0].remarks)
             })
     }
 
-    console.log("contractDetails", contractDetails)
-    console.log("ent_iban", ent_iban)
+    const getPersonJson = (name: string) => {
+        return entityPersons.find((obj) => obj.name === name);
+    };
+
+    const getBankJson = (iban: string) => {
+        return entityBanks.find((obj) => obj.iban === iban);
+    };
+
+
+    const getAddressJson = (id: string) => {
+        return entityAddress.find((obj) => obj.id === id);
+    };
+
 
     const fetchTypeData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttype")
@@ -385,25 +427,26 @@ export default function EditContract() {
                                                         onChange={(e) => {
                                                             setSelectedEntity(e.value)
                                                             // fetchPartnersDetailsData(e.value.id)
-                                                            fetchEntityDetailsData(e.value.id)
-                                                            console.log(e.value)
+                                                            // fetchEntityDetailsData(e.value.id)
+                                                            // console.log(e.value)
                                                         }}
                                                         options={entity}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12 md:col-3">
-                                                    <label htmlFor="entity">Nume Responsabil</label>
-                                                    <Dropdown id="entity" value={ent_name}
+                                                    <label htmlFor="entity_person">Nume Responsabil</label>
+                                                    <Dropdown id="entity_person" value={getPersonJson(ent_person)}
                                                         onChange={(e) => {
                                                             setEnt_id(e.target.value.id)
                                                             setEnt_name(e.target.value.name)
+                                                            setEnt_person(e.target.value.name)
                                                             setEnt_email(e.target.value.email)
                                                             setEnt_phone(e.target.value.phone)
                                                             setEnt_legal_person(e.target.value.legalrepresent)
                                                             setEnt_role(e.target.value.role)
                                                         }
                                                         }
-                                                        options={entitydetails.Persons}
+                                                        options={entityPersons}
                                                         optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-3">
@@ -429,23 +472,24 @@ export default function EditContract() {
                                                 </div>
                                                 <div className="field col-12  md:col-3">
                                                     <label htmlFor="ent_iban">IBAN</label>
-                                                    <Dropdown id="entity" value={ent_iban}
+                                                    <Dropdown id="entity" value={getBankJson(ent_iban)}
                                                         onChange={(e) => {
                                                             setEnt_IBAN(e.target.value)
                                                             setEnt_bank(e.target.value.bank)
                                                         }
                                                         }
-                                                        options={entitydetails.Banks}
+                                                        options={entityBanks}
                                                         optionLabel="iban" placeholder="Select One"></Dropdown>
                                                 </div>
                                                 <div className="field col-12  md:col-12">
                                                     <label htmlFor="number">Adresa</label>
-                                                    <Dropdown id="entity" value={ent_address}
+                                                    <Dropdown id="entity" value={getAddressJson(ent_address)}
                                                         onChange={(e) => {
-                                                            setEnt_Address(e.target.value)
+                                                            // console.log("adresa", e.target.value)
+                                                            setEnt_Address(e.target.value.id)
                                                         }
                                                         }
-                                                        options={entitydetails.Address}
+                                                        options={entityAddress}
                                                         optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                                 </div>

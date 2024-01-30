@@ -74,6 +74,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         ;
 
     const Currency: any = [
+        { code: "RON", name: "LEU" },
         { code: "EUR", name: "Euro" },
         { code: "USD", name: "Dolarul SUA" },
         { code: "CHF", name: "Francul elveţian" },
