@@ -90,8 +90,8 @@ export default function Documents() {
     const itemTemplate = (file, props) => {
         return (
             <div className="flex align-items-center flex-wrap">
-                <div className="flex align-items-center" style={{ width: '40%' }}>
-                    <img alt={file.name} role="presentation" src={file.objectURL} width={100} />
+                <div className="flex align-items-center pr-4" style={{ width: '40%' }}>
+                    <img alt={file.name} role="presentation" src={file.objectURL} width={300} />
                     <span className="flex flex-column text-left ml-3">
                         {file.name}
                         <small>{new Date().toLocaleDateString()}</small>
@@ -130,19 +130,26 @@ export default function Documents() {
         }
     }
 
-    useEffect(() => { onUpload }, [picturefiles])
+    useEffect(() => { SendDocuments }, [picturefiles])
 
-    const onUpload = ({ files }: any) => {
+    // const onUpload = ({ files }: any) => {
+
+    //     SendDocuments(files);
+    // }
+
+
+
+
+    const SendDocuments = ({ files }: any) => {
+        // onUpload(picturefiles);
         setPicturefiles(files);
-        SendDocuments(files);
-    }
-
-    const SendDocuments = () => {
         var formdata = new FormData();
 
         for (let i = 0; i < picturefiles.length; i++) {
             formdata.append("files", picturefiles[i]);
         }
+
+
 
         var requestOptions: any = {
             method: 'POST',
@@ -150,11 +157,11 @@ export default function Documents() {
             redirect: 'follow'
         };
 
-        fetch("http://localhost:3000/contracts/upload", requestOptions)
+        fetch("http://localhost:3000/contracts/uploadm", requestOptions)
             .then(response => response.text())
             .then(result => {
                 console.log(result)
-                showSuccess();
+                // showSuccess();
                 //  router.push('/admin');
             }
             )
@@ -170,19 +177,52 @@ export default function Documents() {
             <div className="col-6">
                 <Toast ref={toast}></Toast>
 
-                <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
+                {/* <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
                 <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-                <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+                <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" /> */}
 
-                <FileUpload ref={fileUploadRef} name="upload"
+                {/* <FileUpload ref={fileUploadRef} name="upload"
                     // url="http://localhost:3000/contracts/upload"
                     multiple accept="*" maxFileSize={10000000}
                     customUpload={true} uploadHandler={onUpload}
                     auto
+                    // clear()
+                    // getUploadedFiles()
                     onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                     headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
                     chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
-                <Button label="Submit" icon="pi pi-check" onClick={onUpload} />
+                <Button label="Submit" icon="pi pi-check" onClick={onUpload} /> */}
+
+                <FileUpload
+                    name="files"
+                    //auto
+                    // customUpload={true} uploadHandler={SendDocuments}
+                    url={'http://localhost:3000/contracts/file'}
+                    multiple
+                    accept="*"
+                    maxFileSize={1000000}
+                    pt={{
+                        content: { className: 'surface-ground' },
+                        message: {
+                            root: {
+                                className: "w-1rem"
+                            }
+                        }
+                    }}
+                    emptyTemplate={<p className="m-0">Drag and drop files to here to upload.</p>}
+                />
+
+                {/* <FileUpload
+                    multiple accept="*"
+                    // mode="basic"
+                    maxFileSize={1000000}
+                    customUpload={true}
+                    auto
+                    //uploadHandler={setPicturefiles(files)}
+                    uploadHandler={onUpload} auto
+                    chooseLabel="Upload"
+                /> */}
+
             </div>
         </div>
     );
