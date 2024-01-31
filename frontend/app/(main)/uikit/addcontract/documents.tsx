@@ -33,10 +33,10 @@ export default function Documents() {
 
     const router = useRouter();
     const [contractStatus, setContractStatus] = useState([]);
+    const [picturefiles, setPicturefiles] = useState<any>([]);
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef(null);
-    const [picturefiles, setPicturefiles] = useState<any>();
 
     const onTemplateSelect = (e) => {
         let _totalSize = totalSize;
@@ -71,7 +71,7 @@ export default function Documents() {
 
     const headerTemplate = (options) => {
         const { className, chooseButton, uploadButton, cancelButton } = options;
-        const value = totalSize / 100000;
+        const value = totalSize / 10000;
         const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
 
         return (
@@ -106,7 +106,7 @@ export default function Documents() {
     const emptyTemplate = () => {
         return (
             <div className="flex align-items-center flex-column">
-                <i className="pi pi-image mt-3 p-5" style={{ fontSize: '10em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
+                <i className="pi pi-image mt-3 p-5" style={{ fontSize: '5em', borderRadius: '50%', backgroundColor: 'var(--surface-b)', color: 'var(--surface-d)' }}></i>
                 <span style={{ fontSize: '1.2em', color: 'var(--text-color-secondary)' }} className="my-5">
                     Drag and Drop Image Here
                 </span>
@@ -118,26 +118,71 @@ export default function Documents() {
     const uploadOptions = { icon: 'pi pi-fw pi-cloud-upload', iconOnly: true, className: 'custom-upload-btn p-button-success p-button-rounded p-button-outlined' };
     const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
+    const showSuccess = () => {
+        if (toast.current != null) {
+            toast.current.show({ severity: 'success', summary: 'Result', detail: 'The coin was saved succesfully', life: 3000 });
+        }
+    }
+
+    const showError = () => {
+        if (toast.current != null) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'The coin was saved succesfully', life: 3000 });
+        }
+    }
+
+    useEffect(() => { onUpload }, [picturefiles])
+
     const onUpload = ({ files }: any) => {
         setPicturefiles(files);
+        SendDocuments(files);
+    }
+
+    const SendDocuments = () => {
+        var formdata = new FormData();
+
+        for (let i = 0; i < picturefiles.length; i++) {
+            formdata.append("files", picturefiles[i]);
+        }
+
+        var requestOptions: any = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        fetch("http://localhost:3000/contracts/upload", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                console.log(result)
+                showSuccess();
+                //  router.push('/admin');
+            }
+            )
+            .catch(error => {
+                showError();
+                console.log('error', error)
+            });
     }
 
     return (
         // <FileUpload name="demo[]" url={'/api/upload'} multiple accept="image/*" maxFileSize={1000000} emptyTemplate={<p className="m-0">Drag and drop files to here to upload.</p>} />
         <div className="grid">
             <div className="col-6">
-
                 <Toast ref={toast}></Toast>
 
                 <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
                 <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
                 <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
-                <FileUpload ref={fileUploadRef} name="demo[]" url="/api/upload" multiple accept="image/*" maxFileSize={1000000}
-                    customUpload={true} uploadHandler={onUpload} auto
+                <FileUpload ref={fileUploadRef} name="upload"
+                    // url="http://localhost:3000/contracts/upload"
+                    multiple accept="*" maxFileSize={10000000}
+                    customUpload={true} uploadHandler={onUpload}
+                    auto
                     onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                     headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
                     chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
+                <Button label="Submit" icon="pi pi-check" onClick={onUpload} />
             </div>
         </div>
     );
