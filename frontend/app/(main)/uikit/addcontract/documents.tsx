@@ -34,7 +34,8 @@ import { Dialog } from 'primereact/dialog';
 export default function Documents() {
 
     const router = useRouter();
-    const [picturefiles, setPicturefiles] = useState<any>([]);
+    const [selectedFile, setSelectedFile] = useState<any>([]);
+    const [selectedoriginalname, setSelecteoriginalname] = useState<any>([]);
     const [attachmentsfiles, setAttachmentsfiles] = useState<any>([]);
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
@@ -43,7 +44,6 @@ export default function Documents() {
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [metaKey, setMetaKey] = useState(true);
     const [selectedCell, setSelectedCell] = useState(null);
-    const [rowClick, setRowClick] = useState(true);
 
 
     const onTemplateSelect = (e) => {
@@ -86,7 +86,7 @@ export default function Documents() {
 
     const headerTemplate = (options) => {
         const { className, chooseButton, uploadButton, cancelButton } = options;
-        const value = totalSize / 2000000;
+        const value = totalSize / 200000;
         const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
         return (
             <div className={className} style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
@@ -140,31 +140,6 @@ export default function Documents() {
     const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
 
-
-    const showSuccess = () => {
-        if (toast.current != null) {
-            toast.current.show({ severity: 'success', summary: 'Result', detail: 'The file/s was saved succesfully', life: 3000 });
-        }
-    }
-
-    const showError = () => {
-        if (toast.current != null) {
-            toast.current.show({ severity: 'error', summary: 'Error', detail: "The file/s wasn't saved!", life: 3000 });
-        }
-    }
-
-    const onUpload = () => {
-        //        // Clear the FileUpload component after uploading
-        if (fileUploadRef.current) {
-            fileUploadRef.current.clear();
-        }
-    }
-
-    const handleFileUpload = (event) => {
-        // After successfully handling the upload, clear the FileUpload component
-        fileUploadRef.current.clear();
-    };
-
     const fetchAttachmentsData = () => {
         fetch(`http://localhost:3000/contracts/file`)
             .then(response => {
@@ -179,45 +154,15 @@ export default function Documents() {
         fetchAttachmentsData()
     }, [])
 
-    // const SendDocuments = ({ files }: any) => {
-    //     // onUpload(picturefiles);
-    //     setPicturefiles(files);
-    //     var formdata = new FormData();
-
-    //     for (let i = 0; i < picturefiles.length; i++) {
-    //         formdata.append("files", picturefiles[i]);
-    //     }
-
-
-
-    //     var requestOptions: any = {
-    //         method: 'POST',
-    //         body: formdata,
-    //         redirect: 'follow'
-    //     };
-
-    //     fetch("http://localhost:3000/contracts/file", requestOptions)
-    //         .then(response => response.text())
-    //         .then(result => {
-    //             console.log(result)
-    //             showSuccess();
-    //             //  router.push('/admin');
-    //         }
-    //         )
-    //         .catch(error => {
-    //             showError();
-    //             console.log('error', error)
-    //         });
-    // }
-
 
     const deleteTemplate = (event) => {
-        return <Tag severity="danger" value="Delete"></Tag>
+        return <i className="pi pi-delete-left" style={{ color: 'red' }}></i>
+        // <Tag severity="danger" value="Delete"></Tag>
     };
 
     const downloadTemplate = (rowData) => {
         return (<div>
-            <Tag severity="info" value="Download"></Tag>
+            <i className="pi pi-download" style={{ color: 'green' }}></i>
         </div>)
     };
 
@@ -230,6 +175,7 @@ export default function Documents() {
 
             if (response.ok) {
                 console.log(`File ${file} deleted successfully.`);
+                fetchAttachmentsData()
             } else {
                 const errorMessage = await response.text();
                 console.error(`Error deleting file ${file}: ${errorMessage}`);
@@ -239,7 +185,10 @@ export default function Documents() {
         }
     };
 
-    const downloadile = async (file: string): Promise<void> => {
+    const downloadile = async (file: string, originalname: string): Promise<void> => {
+
+        // console.log("originalname", originalname)
+
         try {
             const response = await fetch(`http://localhost:3000/contracts/download/${file}`, {
                 method: 'GET',
@@ -250,8 +199,11 @@ export default function Documents() {
                 const url = window.URL.createObjectURL(blob);
 
                 const link = document.createElement('a');
+
+                // Set a custom file name here
+                link.download = `${originalname}`;
+
                 link.href = url;
-                link.setAttribute('download', file);
 
                 document.body.appendChild(link);
                 link.click();
@@ -259,13 +211,13 @@ export default function Documents() {
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
 
-                console.log(`File ${file} downloaded successfully.`);
+                console.log(`File ${originalname} downloaded successfully.`);
             } else {
                 const errorMessage = await response.text();
-                console.error(`Error on downloading file ${file}: ${errorMessage}`);
+                console.error(`Error on downloading file ${originalname}: ${errorMessage}`);
             }
         } catch (error) {
-            console.error(`Error ${file}: ${error.message}`);
+            console.error(`Error ${originalname}: ${error.message}`);
         }
     };
 
@@ -274,15 +226,17 @@ export default function Documents() {
         console.log(event.cellIndex)
 
         if (event.cellIndex === 5) {
-            deleteFile(event.rowData.filename)
+            setDeleteVisible(true)
+            setSelectedFile(event.rowData.filename)
+            setSelecteoriginalname(event.rowData.originalname)
+            // deleteFile(event.rowData.filename)
             fetchAttachmentsData()
         }
         if (event.cellIndex === 6) {
-            downloadile(event.rowData.filename)
+            downloadile(event.rowData.filename, event.rowData.originalname)
             fetchAttachmentsData()
         }
 
-        //trebuie facuta logica in functie de cele 2 col de mai sus
         // toast.current.show({ severity: 'info', summary: 'Cell Selected', detail: `Name: ${event.value}`, life: 3000 });
     };
 
@@ -298,7 +252,6 @@ export default function Documents() {
                 <Toast ref={toast} />
                 <DataTable value={attachmentsfiles} tableStyle={{ minWidth: '50rem' }}
                     cellSelection selectionMode="single" selection={selectedCell}
-                    // selectionMode={rowClick ? null : 'radiobutton'}
                     onSelectionChange={(e) => setSelectedCell(e.value)}
                     onCellSelect={onCellSelect}
                     //onCellUnselect={onCellUnselect}
@@ -320,19 +273,21 @@ export default function Documents() {
                     <Button label="Incarca Fisiere" icon="pi pi-external-link" onClick={() => setVisible(true)} />
                 </div>
 
-                <Dialog visible={deleteVisible} modal style={{ width: '24rem' }} onHide={() => setDeleteVisible(false)}>
+                <Dialog visible={deleteVisible} modal style={{ width: '34rem' }} onHide={() => setDeleteVisible(false)}>
 
-                    <span className="font-bold white-space-nowrap">Doriti sa stergeti fisierul  ?</span>
+                    <span className="font-bold white-space-nowrap">Doriti sa stergeti fisierul {selectedoriginalname} ?</span>
                     <div className='pt-4'>
                         <div className='grid'>
                             <div className='col-1 '>
-                                {/* <Button label="Da" severity="danger" onClick={() => {
-                                    deleteSelectedFile(departmentSelected)
-
-                                }} /> */}
+                                <Button label="Da" severity="danger"
+                                    onClick={() => {
+                                        deleteFile(selectedFile)
+                                        setDeleteVisible(false)
+                                    }}
+                                />
                             </div>
                             <div className='col-1 pl-7'>
-                                <Button label="Nu" severity="success" onClick={() => setVisible(false)} autoFocus />
+                                <Button label="Nu" severity="success" onClick={() => setDeleteVisible(false)} autoFocus />
                             </div>
                         </div>
                     </div>
@@ -348,7 +303,7 @@ export default function Documents() {
                     <FileUpload ref={fileUploadRef} name="files" url="http://localhost:3000/contracts/file"
                         // customUpload={true}
                         // uploadHandler={SendDocuments}
-                        multiple accept="*" maxFileSize={2000000}
+                        multiple accept="*" maxFileSize={20000000}
                         onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                         headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
                         chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
