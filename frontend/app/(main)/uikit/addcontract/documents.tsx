@@ -195,6 +195,8 @@ export default function Documents() {
             });
 
             if (response.ok) {
+                // const customFileName = prompt('Enter file name:', file) || file;
+
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
 
@@ -202,6 +204,7 @@ export default function Documents() {
 
                 // Set a custom file name here
                 link.download = `${originalname}`;
+
 
                 link.href = url;
 
@@ -222,8 +225,8 @@ export default function Documents() {
     };
 
     const onCellSelect = (event) => {
-        console.log(event.rowData.id)
-        console.log(event.cellIndex)
+        // console.log(event.rowData.id)
+        // console.log(event.cellIndex)
 
         if (event.cellIndex === 5) {
             setDeleteVisible(true)
@@ -273,9 +276,10 @@ export default function Documents() {
                     <Button label="Incarca Fisiere" icon="pi pi-external-link" onClick={() => setVisible(true)} />
                 </div>
 
-                <Dialog visible={deleteVisible} modal style={{ width: '34rem' }} onHide={() => setDeleteVisible(false)}>
+                <Dialog visible={deleteVisible} modal style={{ width: '40rem' }} onHide={() => setDeleteVisible(false)}>
 
-                    <span className="font-bold white-space-nowrap">Doriti sa stergeti fisierul {selectedoriginalname} ?</span>
+                    <span className="font-bold white-space-nowrap">Doriti sa stergeti fisierul </span>
+                    <span style={{ color: "red" }}>{selectedoriginalname}?</span>
                     <div className='pt-4'>
                         <div className='grid'>
                             <div className='col-1 '>
