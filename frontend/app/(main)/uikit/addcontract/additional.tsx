@@ -2,24 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useMemo } from 'react';
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { Editor } from 'primereact/editor';
-import axios from 'axios';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-    useMutation,
-    useQueryClient
-} from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { OrganizationChart } from 'primereact/organizationchart';
 
 // numar versiune, tip act aditional, nr act aditional, data act ad, 
@@ -92,7 +75,12 @@ export default function AddContract() {
                             setSelection(e.data)
                         }}
                         nodeTemplate={nodeTemplate} />
+
+                    <div className="col-2 md:col-2 ">
+                        <Button label="Adauga act aditional" />
+                    </div>
                 </div>
+
             </div>
         </div>
 

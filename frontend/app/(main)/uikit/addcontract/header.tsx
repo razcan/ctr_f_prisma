@@ -546,11 +546,11 @@ const HeaderContract = () => {
                             className='max-w-screen' style={{ height: '220px' }}
                         />
                     </div>
+
+                    <div className="field col-1 md:col-1 ">
+                        <Button label="Salveaza" onClick={saveContract} />
+                    </div>
                 </div>
-                <div className="field col-1 md:col-1">
-                    <Button label="Salveaza" onClick={saveContract} />
-                </div>
-                {/* </div> */}
             </div>
         </div>
     );

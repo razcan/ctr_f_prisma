@@ -2,24 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useMemo } from 'react';
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { Editor } from 'primereact/editor';
-import axios from 'axios';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-    useMutation,
-    useQueryClient
-} from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { FileUpload } from 'primereact/fileupload';
 import { useRef } from 'react';
 import { Toast } from 'primereact/toast';
