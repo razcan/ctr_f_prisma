@@ -22,6 +22,8 @@ import {
 import { ProgressSpinner } from 'primereact/progressspinner';
 import Documents from './documents'
 import HeaderContract from './header';
+import Additional from './additional'
+import Financial from './financial'
 
 
 export default function AddContract() {
@@ -43,7 +45,14 @@ export default function AddContract() {
                 router.push('/uikit/addcontract');
             }
         },
-        { label: 'Acte Aditionale', icon: 'pi pi-chart-line' },
+        {
+            label: 'Acte Aditionale', icon: 'pi pi-chart-line'
+            // ,
+            // command: () => {
+            //     router.push('/uikit/additional');
+            // }
+        },
+
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
         { label: 'Flux aprobare', icon: 'pi pi-list' },
@@ -81,6 +90,27 @@ export default function AddContract() {
 
                         : null
                     }
+                    {activeIndex === 2 ?
+
+                        <div>
+                            <div className='pt-4'>
+                                <Additional />
+                            </div>
+                        </div>
+
+                        : null
+                    }
+                    {activeIndex === 3 ?
+
+                        <div>
+                            <div className='pt-4'>
+                                <Financial />
+                            </div>
+                        </div>
+
+                        : null
+                    }
+
                     {/* </div> */}
                 </div>
             </div>

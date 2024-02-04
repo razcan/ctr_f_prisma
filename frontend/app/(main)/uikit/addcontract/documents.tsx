@@ -29,7 +29,7 @@ import { Tag } from 'primereact/tag';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
-
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 export default function Documents() {
 
@@ -37,6 +37,7 @@ export default function Documents() {
     const [selectedFile, setSelectedFile] = useState<any>([]);
     const [selectedoriginalname, setSelecteoriginalname] = useState<any>([]);
     const [attachmentsfiles, setAttachmentsfiles] = useState<any>([]);
+    const [calattachmentsfiles, setCalAttachmentsfiles] = useState<any>([]);
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef(null);
@@ -147,6 +148,21 @@ export default function Documents() {
             })
             .then(attachmentsfiles => {
                 setAttachmentsfiles(attachmentsfiles)
+
+                // Specify the column you want to divide
+                const columnName = 'size';
+                const originalname = 'originalname';
+
+                // Use map to create a new array with the transformation
+                const newArray = attachmentsfiles.map((item) =>
+                ({
+                    ...item,
+
+                    [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+                    // [originalname]: item[originalname].toUpperCase()
+                }));
+
+                setCalAttachmentsfiles(newArray);
             })
     }
 
@@ -247,73 +263,74 @@ export default function Documents() {
     //     toast.current.show({ severity: 'warn', summary: 'Cell Unselected', detail: `Name: ${event.value}`, life: 3000 });
     // };
 
+    const accept = () => {
+        deleteFile(selectedFile)
+        setDeleteVisible(false)
+    }
+
+
+    const reject = () => {
+        setDeleteVisible(false)
+    }
+
+    const messageDelete = () => {
+        return <div>Doriti stergerea fisierului {selectedoriginalname}?</div>
+    }
 
     return (
-        <div className="grid">
-            <div className="col-12">
+        <div className="card">
+            <div className="grid">
+                <div className="col-12">
 
-                <Toast ref={toast} />
-                <DataTable value={attachmentsfiles} tableStyle={{ minWidth: '50rem' }}
-                    cellSelection selectionMode="single" selection={selectedCell}
-                    onSelectionChange={(e) => setSelectedCell(e.value)}
-                    onCellSelect={onCellSelect}
-                    //onCellUnselect={onCellUnselect}
-                    metaKeySelection={false}
-                    stripedRows paginator rows={5} rowsPerPageOptions={[5, 10, 20, 40, 100]} sortMode="multiple"
-                    dataKey="id">
-                    <Column hidden field="id" header="id" ></Column>
-                    <Column field="originalname" header="Nume Fisier" style={{ textAlign: 'left' }} ></Column>
-                    <Column hidden field="filename" header="filename" ></Column>
-                    <Column hidden field="path" header="path"></Column>
-                    <Column field="size" header="Marime Fisier(MB)" ></Column>
-                    <Column field="id" header="Sterge" body={deleteTemplate}  ></Column>
-                    <Column field="id" header="Salveaza" body={downloadTemplate}  ></Column>
-                    {/* <Column selectionMode="single" headerStyle={{ width: '3rem' }}></Column> */}
+                    <Toast ref={toast} />
+                    <DataTable value={calattachmentsfiles} tableStyle={{ minWidth: '50rem' }}
+                        cellSelection selectionMode="single" selection={selectedCell}
+                        onSelectionChange={(e) => setSelectedCell(e.value)}
+                        onCellSelect={onCellSelect}
+                        //onCellUnselect={onCellUnselect}
+                        metaKeySelection={false}
+                        stripedRows paginator rows={5} rowsPerPageOptions={[5, 10, 20, 40, 100]} sortMode="multiple"
+                        dataKey="id">
+                        <Column hidden field="id" header="id" ></Column>
+                        <Column field="originalname" header="Nume Fisier" style={{ textAlign: 'left' }} ></Column>
+                        <Column hidden field="filename" header="filename" ></Column>
+                        <Column hidden field="path" header="path"></Column>
+                        <Column field="size" header="Marime Fisier(MB)" ></Column>
+                        <Column field="id" header="Sterge" body={deleteTemplate} style={{ width: '5vh' }} ></Column>
+                        <Column field="id" header="Salveaza" body={downloadTemplate} style={{ width: '5vh' }} ></Column>
+                        {/* <Column selectionMode="single" headerStyle={{ width: '3rem' }}></Column> */}
 
-                </DataTable>
+                    </DataTable>
 
-                <div className='pt-3'>
-                    <Button label="Incarca Fisiere" icon="pi pi-external-link" onClick={() => setVisible(true)} />
-                </div>
-
-                <Dialog visible={deleteVisible} modal style={{ width: '40rem' }} onHide={() => setDeleteVisible(false)}>
-
-                    <span className="font-bold white-space-nowrap">Doriti sa stergeti fisierul </span>
-                    <span style={{ color: "red" }}>{selectedoriginalname}?</span>
-                    <div className='pt-4'>
-                        <div className='grid'>
-                            <div className='col-1 '>
-                                <Button label="Da" severity="danger"
-                                    onClick={() => {
-                                        deleteFile(selectedFile)
-                                        setDeleteVisible(false)
-                                    }}
-                                />
-                            </div>
-                            <div className='col-1 pl-7'>
-                                <Button label="Nu" severity="success" onClick={() => setDeleteVisible(false)} autoFocus />
-                            </div>
-                        </div>
+                    <div className='pt-3'>
+                        <Button label="Incarca Fisiere" icon="pi pi-external-link" onClick={() => setVisible(true)} />
                     </div>
-                </Dialog>
-
-                <Dialog header="Ataseaza fisiere" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
 
 
-                    <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
-                    <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-                    <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
-
-                    <FileUpload ref={fileUploadRef} name="files" url="http://localhost:3000/contracts/file"
-                        // customUpload={true}
-                        // uploadHandler={SendDocuments}
-                        multiple accept="*" maxFileSize={20000000}
-                        onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
-                        headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
-                        chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
-                </Dialog>
+                    <ConfirmDialog group="declarative" visible={deleteVisible} onHide={() => setDeleteVisible(false)}
+                        // message='Doriti sa stergeti fisierul?'
+                        message={messageDelete}
+                        header="Stergere fisier" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
 
 
+                    <Dialog header="Ataseaza fisiere" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
+
+
+                        <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
+                        <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
+                        <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+
+                        <FileUpload ref={fileUploadRef} name="files" url="http://localhost:3000/contracts/file"
+                            // customUpload={true}
+                            // uploadHandler={SendDocuments}
+                            multiple accept="*" maxFileSize={20000000}
+                            onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
+                            headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
+                            chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />
+                    </Dialog>
+
+
+                </div>
             </div>
         </div>
     );
