@@ -13,15 +13,17 @@ import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import * as XLSX from 'xlsx';
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
+import { InputNumber } from 'primereact/inputnumber';
+import { Tag } from 'primereact/tag';
 
 export default function Financial() {
 
     const [financialVisible, setfinancialVisible] = useState(false);
-
+    const [indexTable, setIndextable] = useState(0)
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const [contractValue, setContractValue] = useState();
-    const [totalContractValue, setTotalContractValue] = useState(0);
+    const [totalContractValue, setTotalContractValue] = useState(1000);
     const [currency, setCurrency] = useState([]);
     const [allCurrency, setAllCurrency] = useState([]);
     const [currencyPercent, setCurrencyPercent] = useState(1);
@@ -46,10 +48,25 @@ export default function Financial() {
     const [isInvoiced, setIsInvoiced] = useState(false);
     const [isPayed, setIsPayed] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState();
+    const [checked, setChecked] = useState(false);
 
+    const [selectedRows, setSelectedRows] = useState([]);
+
+    const [data, setData] = useState([
+        { id: 1, column1: false, column2: false },
+        { id: 2, column1: false, column2: false },
+        { id: 3, column1: false, column2: false }
+    ]);
+
+    const handleCheckboxChange = (event, rowData, field) => {
+        const newData = [...data];
+        const rowIndex = newData.findIndex(item => item.id === rowData.id);
+        newData[rowIndex][field] = event.checked;
+        setData(newData);
+    };
 
     const dt = useRef(null);
-    const [data, setData] = useState(null);
+    // const [data, setData] = useState(null);
 
     const cols = [
         { field: 'item', header: 'item' },
@@ -63,6 +80,7 @@ export default function Financial() {
         { field: 'platit', header: 'platit' },
     ];
 
+
     const exportColumns = cols.map((col) => ({ title: col.header, dataKey: col.field }));
 
 
@@ -70,6 +88,26 @@ export default function Financial() {
         { name: "Servicii chirie", start: "2022-01-01", final: "2022-01-31", cantitate: "1", pret: "200", valoare: "200 EUR", interval: "Lunar", facturat: "true" },
         { name: "Tarif de administrare", start: "2023-02-01", final: "2022-02-29", cantitate: "1", pret: "400", valoare: "400 EUR", interval: "Lunar", facturat: "false" }
     ]
+
+    const [selectedCell, setSelectedCell] = useState(null);
+    const [editingCell, setEditingCell] = useState(null);
+
+    const handleCellClick = (event, rowData, field) => {
+        setSelectedCell({ rowData, field });
+    };
+
+    const handleCellDoubleClick = (event, rowData, field) => {
+        setEditingCell({ rowData, field });
+    };
+
+    const handleCellBlur = () => {
+        setEditingCell(null);
+    };
+
+    const handleCellChange = (event, rowData, field) => {
+        // Here you can update your rowData with the new value
+        rowData[field] = event.target.value;
+    };
 
     //la nivel de partener trebuie adaugata o bifa, daca este sau nu platitor TVA
 
@@ -106,6 +144,12 @@ export default function Financial() {
             fetchAllPaymentType(),
             fetchAllMeasuringUnit()
     }, [])
+
+    useEffect(() => {
+        setIndextable(indexTable + 1)
+    }, [scadentar])
+
+
 
     const exportCSV = (selectionOnly) => {
         dt.current.exportCSV({ selectionOnly });
@@ -183,27 +227,10 @@ export default function Financial() {
     };
 
 
-
-    const isInvoicedTemplate = (rowData: any) => {
-        return (
-            <div className="flex align-items-center gap-2">
-                <Checkbox id="isInvoiced" onChange={e => setIsInvoiced(e.checked)} checked={rowData.isInvoiced}></Checkbox>
-            </div>
-        );
-    };
-
-    const isPayedTemplate = (rowData: any) => {
-        return (
-            <div className="flex align-items-center gap-2">
-                <Checkbox id="isPayed" onChange={e => setIsPayed(e.checked)} checked={rowData.isPayed}></Checkbox>
-            </div>
-        );
-    };
-
     const generateTimeTable = () => {
 
         var startDate: any = '2021-01-01'
-        var endDate: any = '2024-07-01'
+        var endDate: any = '2022-07-01'
 
         // month sch
         if (billingFrequency) {
@@ -212,9 +239,12 @@ export default function Financial() {
                 var enddate_month = new Date(endDate).getMonth()
                 var startdate_month = new Date(startDate).getMonth()
                 var result = 1 + (year * 12) + (enddate_month - startdate_month)
-                // console.log("year:", year, startDate, enddate_month, startdate_month, "result: ", result)
 
-                const array: { item: string, data: string, um: string, cantitate: Number, pret: Number, valoare: Number, moneda: string }[] = [];
+                const array: {
+                    id: Number
+                    itemid: Number, item: string, data: string, um: string, measuringunitid: Number, cantitate: Number, pret: Number,
+                    valoare: Number, billingValue: Number, moneda: string, currencyid: Number, isPayed: Number, isInvoiced: Number
+                }[] = [];
 
 
                 for (let i = 0; i < result; i++) {
@@ -223,19 +253,18 @@ export default function Financial() {
 
                     const year = oneMonthAhead.getFullYear();
                     const month = String(oneMonthAhead.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-                    // const day = String(oneMonthAhead.getDate()).padStart(2, '0');
                     const day = String(billingDay).padStart(2, '0');
                     const formattedDate = `${year}-${month}-${day}`;
 
+                    array.push({
+                        id: i,
+                        itemid: selectedItem.id, item: selectedItem.name, data: formattedDate, um: measuringUnit.name, measuringunitid: measuringUnit.id,
+                        cantitate: billingQtty, pret: totalContractValue, valoare: (billingQtty * totalContractValue),
+                        billingValue: (billingQtty * totalContractValue), moneda: currency.code, currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
+                    })
 
-                    array.push({ item: selectedItem.name, data: formattedDate, um: measuringUnit.name, cantitate: billingQtty, pret: totalContractValue, valoare: (billingQtty * totalContractValue), moneda: currency.code })
-
-                    // console.log(startDate, oneMonthAhead, day)
-                    console.log(selectedItem.id, new Date(oneMonthAhead), totalContractValue, currency.id, billingQtty, measuringUnit.id, billingFrequency.id)
                     setScadentar(array)
-
                 }
-
             }
         }
     }
@@ -261,8 +290,26 @@ export default function Financial() {
     );
 
     const onCellSelect = (event) => {
-        // console.log(event.rowData.id)
-        // console.log(event.cellIndex)
+        //trebuie gasita in array linia dupa id si modificata valoarea
+
+        if (event.cellIndex == 9) {
+            let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
+
+            scadentar[schIndex].isInvoiced = !event.rowData.isInvoiced;
+        }
+
+        if (event.cellIndex == 10) {
+            let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
+
+            scadentar[schIndex].isPayed = !event.rowData.isPayed;
+        }
+
+
+
+        setIndextable(indexTable + 1)
+
+        console.log(event.rowData.id)
+        console.log(event.cellIndex)
         console.log(event.rowData)
     };
 
@@ -277,11 +324,49 @@ export default function Financial() {
     //in cazul saptm - zi facturare reprez ziua din sapt de la 1 - 7
     //se sparge in func de start end la nr de intervale si se copiaza valoarile in tabel.
 
+
+    const statusInvoiceTemplate = (product) => {
+        return <Tag value={product.isInvoiced} severity={getSeverity(product)}></Tag>;
+    };
+
+    const getSeverity = (product) => {
+        switch (product.isInvoiced) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
+
+
+    const statusPayedTemplate = (product) => {
+        return <Tag value={product.isPayed} severity={getSeverity2(product)}></Tag>;
+    };
+
+    const getSeverity2 = (product) => {
+        switch (product.isPayed) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
+
+
     return (
         <div className='card'>
             <div className="grid">
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
+
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="item">Obiect de contract</label>
@@ -355,6 +440,8 @@ export default function Financial() {
                             <label htmlFor="default" className="ml-2">Exista scrisoare garantie?</label>
                         </div>
 
+                        {/* <Checkbox onChange={e => setChecked(e.checked)} checked={checked}></Checkbox> */}
+
                         {guaranteeLetter ?
                             <div className="col-12 md:col-12">
                                 <div className="p-fluid formgrid grid pt-2">
@@ -378,20 +465,18 @@ export default function Financial() {
                                         </label>
                                         <Dropdown id="guaranteeLetterCurrency" filter value={guaranteeLetterCurrency} onChange={(e) => setGuaranteeLetterCurrency(e.target.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
                                     </div>
-
-
                                 </div>
                             </div> : null}
 
 
                         <div className="field col-12 md:col-12 pt-4">
 
-                            <DataTable ref={dt} className='pt-2' value={scadentar} tableStyle={{ minWidth: '50rem' }} header={header}
+                            <DataTable key={indexTable} ref={dt} className='pt-2' value={scadentar} tableStyle={{ minWidth: '50rem' }} header={header}
                                 cellSelection selectionMode="single" selection={selectedSchedule}
                                 onCellSelect={onCellSelect}
                                 onSelectionChange={(e) => {
                                     setSelectedSchedule(e.value)
-                                    // console.log("linie selectata: ", e.value)
+                                    console.log("linie selectata: ", e.value.rowData.isInvoiced)
                                 }}
                                 stripedRows
                                 sortMode="multiple"
@@ -399,7 +484,6 @@ export default function Financial() {
                                 dataKey="data"
                                 sortOrder={1} //cres
                             >
-
                                 <Column field="item" header="item"></Column>
                                 <Column field="data" header="data"></Column>
                                 <Column field="um" header="um"></Column>
@@ -407,31 +491,22 @@ export default function Financial() {
                                 <Column field="pret" header="pret"></Column>
                                 <Column field="valoare" header="valoare"></Column>
                                 <Column field="moneda" header="moneda"></Column>
-                                <Column header="facturat" style={{ width: '10vh' }} body={isInvoicedTemplate} />
+                                {/* <Column header="facturat" style={{ width: '10vh' }} body={isInvoicedTemplate} />
                                 <Column header="platit" style={{ width: '10vh' }} body={isPayedTemplate} />
+                                <Column header="facturat2" style={{ width: '10vh' }} body={
+                                    scadentar.isInvoiced ? console.log("true") : console.log("false")
+                                    // <i className="pi pi-circle-fill" style={{ fontSize: '1rem', color: 'green' }}></i>
+                                    // : < i className="pi pi-circle" style={{ fontSize: '1rem', color: 'green' }}></i >
+                                } /> */}
+
+                                <Column hidden field="isInvoiced" header="isInvoiced"></Column>
+                                <Column hidden field="isPayed" header="isPayed"></Column>
+                                <Column header="Facturat" body={statusInvoiceTemplate}></Column>
+                                <Column header="Platit" body={statusPayedTemplate}></Column>
+
+
                             </DataTable>
 
-                            {/* <DataTable ref={dt} value={data} header={header} tableStyle={{ minWidth: '50rem' }}>
-                                {cols.map((col, index) => (
-                                    <Column key={index} field={col.field} header={col.header} />
-                                ))}
-                            </DataTable> */}
-
-                            {/* <div className='pt-4'>
-                                <InputText type="file" className="p-inputtext-sm" placeholder="Importa Scadentar" onChange={handleFileUpload} />
-                                {data && (
-                                    <div>
-                                        <h2>Parsed Data:</h2>
-                                        <pre>{JSON.stringify(data, null, 2)}</pre>
-                                    </div>
-                                )}
-                            </div> */}
-
-                            {/* <DataTable className='pt-8' ref={dt} value={data} tableStyle={{ minWidth: '50rem' }}>
-                                {cols.map((col, index) => (
-                                    <Column key={index} field={col.field} header={col.header} />
-                                ))}
-                            </DataTable> */}
 
                         </div>
                         <div className="field col-12 md:col-2">
