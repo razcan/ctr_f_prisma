@@ -63,7 +63,7 @@ export default function EditContract() {
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-
+    console.log("Id: ", Id)
     const [contractDetails, setContractDetails] = useState([]);
 
     const [contractStatus, setContractStatus] = useState([]);
@@ -425,13 +425,13 @@ export default function EditContract() {
         // console.log(addedContract);
 
         try {
-            const response = await axios.post('http://localhost:3000/contracts',
+            const response = await axios.patch(`http://localhost:3000/contracts/${Id}`,
                 addedContract
             );
 
-            console.log('Contract added:', response.data);
+            console.log('Contract edited:', response.data);
         } catch (error) {
-            console.error('Error creating contract:', error);
+            console.error('Error edited contract:', error);
         }
     }
 

@@ -20,26 +20,70 @@ import axios from 'axios';
 
 export default function History() {
 
-    const [text, setText] = useState('');
-    const [products, setProducts] = useState([]);
+    const [logs, setLogs] = useState('');
 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/contracts/content/${32}`).then(res => res.json())
+        const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${4}`).then(res => res.json())
         //treb modificat pe id de ctr
-        setText(response.content);
+        setLogs(response);
     }
 
+    useEffect(() => {
+        fetchContent()
+    }, [])
+
+    const StartBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.start_date);
+        return <span>{formattedDate}</span>;
+    };
+
+    const EndBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.end_date);
+        return <span>{formattedDate}</span>;
+    };
+
+    const SignBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.sign_date);
+        return <span>{formattedDate}</span>;
+    };
+
+    const CompletionBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.completion_date);
+        return <span>{formattedDate}</span>;
+    };
+
+    const formatDate = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
 
     return (
         <div className="grid">
             <div className="col-12">
                 <div className="card">
                     Istoric
-                    <DataTable value={products} tableStyle={{ minWidth: '50rem' }}>
-                        <Column field="code" header="Code"></Column>
-                        <Column field="name" header="Name"></Column>
-                        <Column field="category" header="Category"></Column>
-                        <Column field="quantity" header="Quantity"></Column>
+                    <DataTable value={logs} tableStyle={{ minWidth: '50rem' }}
+                        paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                    >
+                        <Column field="contract_id" header="contract_id"></Column>
+                        <Column field="tip_modificare" sortable header="tip_modificare"></Column>
+                        <Column field="data_modificare" sortable header="data_modificare"></Column>
+                        <Column field="contract_number" header="contract_number"></Column>
+                        <Column field="nume_partener" header="nume_partener"></Column>
+                        <Column field="nume_entitate" header="nume_entitate"></Column>
+                        <Column field="stare" sortable header="stare"></Column>
+                        <Column field="nume_categorie" sortable header="nume_categorie"></Column>
+                        <Column field="departament" header="departament"></Column>
+                        <Column field="start_date" sortable header="start_date" body={StartBodyTemplate} ></Column>
+                        <Column field="sign_date" sortable header="sign_date" body={SignBodyTemplate} ></Column>
+                        <Column field="end_date" sortable header="end_date" body={EndBodyTemplate} ></Column>
+                        <Column field="completion_date" sortable header="completion_date" body={CompletionBodyTemplate} ></Column>
+                        <Column field="cashflow" header="cashflow"></Column>
+                        <Column field="tip_contract" header="tip_contract"></Column>
+                        <Column field="centru_cost" header="centru_cost"></Column>
+
                     </DataTable>
 
                 </div>
