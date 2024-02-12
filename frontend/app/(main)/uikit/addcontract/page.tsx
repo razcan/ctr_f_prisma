@@ -24,26 +24,30 @@ import Documents from './documents'
 import HeaderContract from './header';
 import Additional from './additional'
 import Financial from './financial'
+import Content from './content'
+import History from './history'
 
 
 export default function AddContract() {
 
     const router = useRouter();
-    const [number, setNumber] = useState(null);
+    const [number, setNumber] = useState();
     const [activeIndex, setActiveIndex] = useState(0);
 
     const items = [
         {
-            label: 'Informatii generale', icon: 'pi pi-home',
-            command: () => {
-                router.push('/uikit/addcontract');
-            }
+            label: 'Informatii generale', icon: 'pi pi-home'
+            // ,
+            // command: () => {
+            //     router.push('/uikit/addcontract');
+            // }
         },
         {
-            label: 'Documente Atasate', icon: 'pi pi-inbox',
-            command: () => {
-                router.push('/uikit/addcontract');
-            }
+            label: 'Documente Atasate', icon: 'pi pi-inbox'
+            // ,
+            // command: () => {
+            //     router.push('/uikit/addcontract');
+            // }
         },
         {
             label: 'Acte Aditionale', icon: 'pi pi-chart-line'
@@ -110,6 +114,28 @@ export default function AddContract() {
 
                         : null
                     }
+                    {activeIndex === 4 ?
+
+                        <div>
+                            <div className='pt-4'>
+                                <Content />
+                            </div>
+                        </div>
+
+                        : null
+                    }
+                    {activeIndex === 7 ?
+
+                        <div>
+                            <div className='pt-4'>
+                                <History />
+                            </div>
+                        </div>
+
+                        : null
+                    }
+
+
 
                     {/* </div> */}
                 </div>

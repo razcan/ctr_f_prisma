@@ -168,6 +168,7 @@ const Partner = () => {
                         <div className="field col-12 md:col-3">
                             <label htmlFor="state">Status</label>
                             <Dropdown id="state"
+                                showClear
                                 value={selectedStatusType}
                                 onChange={(e) => setStatusType(e.value)}
                                 options={statusType}
@@ -177,6 +178,7 @@ const Partner = () => {
                         <div className="field col-12 md:col-3">
                             <label htmlFor="type">Tip</label>
                             <Dropdown id="type"
+                                showClear
                                 value={selectedType}
                                 onChange={(e) => setType(e.value)} options={Type} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>

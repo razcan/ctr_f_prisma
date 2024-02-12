@@ -295,6 +295,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                                             <label htmlFor="type">Tip Adresa</label>
                                             <Dropdown id="type"
                                                 value={selectedaddressType}
+                                                showClear
                                                 onChange={(e) => setSelectedAddressType(e.value)}
                                                 options={AddressType}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
@@ -303,7 +304,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
 
                                         <div className="field col-12  md:col-4">
                                             <label htmlFor="Country">Tara</label>
-                                            <Dropdown value={Country} onChange={(e) => setCountry(e.value)} options={countries} optionLabel="name" placeholder="Select One"
+                                            <Dropdown value={Country} showClear onChange={(e) => setCountry(e.value)} options={countries} optionLabel="name" placeholder="Select One"
                                                 filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate}
                                             />
                                         </div>
@@ -319,6 +320,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                                             <label htmlFor="Country">Judet</label>
                                             <Dropdown
                                                 value={County}
+                                                showClear
                                                 onChange={(e: any) => {
                                                     setCounty(e.value)
 
@@ -339,6 +341,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                                             <InputText id="County" type="text" value={City} onChange={(e) => setCity(e.target.value)} /> */}
                                             <label htmlFor="County">Oras</label>
                                             <Dropdown
+                                                showClear
                                                 value={City}
                                                 onChange={(e: any) => {
                                                     setCity(e.value)
@@ -390,6 +393,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="type">Tip Adresa</label>
                                             <Dropdown id="type"
+                                                showClear
                                                 value={selectedaddressType}
                                                 onChange={(e) => setSelectedAddressType(e.value)}
                                                 options={AddressType}

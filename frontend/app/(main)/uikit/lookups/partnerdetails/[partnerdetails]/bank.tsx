@@ -187,6 +187,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                             <div className="field col-12  md:col-12">
                                 <label htmlFor="type">Banca</label>
                                 <Dropdown id="type"
+                                    showClear
                                     value={selectedBank}
                                     onChange={(e) => setSelectedBank(e.value)}
                                     options={Bank}
@@ -199,6 +200,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                             <div className="field col-12  md:col-12">
                                 <label htmlFor="type">Moneda</label>
                                 <Dropdown id="type"
+                                    showClear
                                     value={selectedCurrency}
                                     onChange={(e) => setSelectedCurrency(e.value)}
                                     options={Currency}

@@ -67,15 +67,15 @@ const HeaderContract = () => {
     const router = useRouter();
     // const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
     const [contractStatus, setContractStatus] = useState([]);
-    const [number, setNumber] = useState(null);
-    const [type, setType] = useState(null);
+    const [number, setNumber] = useState();
+    const [type, setType] = useState();
     const [contractType, setContractType] = useState([]);
-    const [start, setStartDate] = useState(null);
-    const [end, setEndDate] = useState(null);
-    const [sign, setSignDate] = useState(null);
-    const [completion, setCompletionDate] = useState(null);
-    const [remarks, setRemarks] = useState(null);
-    const [status, setStatus] = useState(null);
+    const [start, setStartDate] = useState();
+    const [end, setEndDate] = useState();
+    const [sign, setSignDate] = useState();
+    const [completion, setCompletionDate] = useState();
+    const [remarks, setRemarks] = useState();
+    const [status, setStatus] = useState();
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -103,26 +103,26 @@ const HeaderContract = () => {
 
     const [automaticRenewalValue, setAutomaticRenewal] = useState<any>(false);
 
-    const [ent_name, setEnt_name] = useState(null);
-    const [ent_email, setEnt_email] = useState(null);
-    const [ent_phone, setEnt_phone] = useState(null);
-    const [ent_legal_person, setEnt_legal_person] = useState(null);
-    const [ent_iban, setEnt_IBAN] = useState(null);
-    const [ent_address, setEnt_Address] = useState(null);
-    const [ent_bank, setEnt_bank] = useState(null);
-    const [ent_role, setEnt_role] = useState(null);
+    const [ent_name, setEnt_name] = useState();
+    const [ent_email, setEnt_email] = useState();
+    const [ent_phone, setEnt_phone] = useState();
+    const [ent_legal_person, setEnt_legal_person] = useState();
+    const [ent_iban, setEnt_IBAN] = useState();
+    const [ent_address, setEnt_Address] = useState();
+    const [ent_bank, setEnt_bank] = useState();
+    const [ent_role, setEnt_role] = useState();
     const [ent_id, setEnt_id] = useState();
 
 
 
-    const [party_name, setParty_name] = useState(null);
-    const [party_email, setParty_email] = useState(null);
-    const [party_phone, setParty_phone] = useState(null);
-    const [party_legal_person, setParty_legal_person] = useState(null);
-    const [party_iban, setParty_IBAN] = useState(null);
-    const [party_address, setParty_Address] = useState(null);
-    const [party_role, setParty_role] = useState(null);
-    const [party_bank, setParty_bank] = useState(null);
+    const [party_name, setParty_name] = useState();
+    const [party_email, setParty_email] = useState();
+    const [party_phone, setParty_phone] = useState();
+    const [party_legal_person, setParty_legal_person] = useState();
+    const [party_iban, setParty_IBAN] = useState();
+    const [party_address, setParty_Address] = useState();
+    const [party_role, setParty_role] = useState();
+    const [party_bank, setParty_bank] = useState();
     const [party_id, setParty_id] = useState();
 
 
@@ -268,7 +268,7 @@ const HeaderContract = () => {
             entitybankId: ent_iban.id,
             partnerbankId: party_iban.id
         }
-        // console.log(addedContract);
+        console.log(addedContract);
 
         try {
             const response = await axios.post('http://localhost:3000/contracts',
@@ -306,6 +306,7 @@ const HeaderContract = () => {
                                         <div className="field col-12 md:col-3">
                                             <label htmlFor="entity">Entitate</label>
                                             <Dropdown id="entity"
+                                                showClear
                                                 filter
                                                 value={selectedEntity}
                                                 onChange={(e) => {
@@ -321,6 +322,7 @@ const HeaderContract = () => {
                                             <label htmlFor="entity">Nume Responsabil</label>
                                             <Dropdown id="entity"
                                                 filter
+                                                showClear
                                                 value={ent_name}
                                                 onChange={(e) => {
                                                     setEnt_id(e.target.value.id)
@@ -357,7 +359,7 @@ const HeaderContract = () => {
                                         </div>
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="ent_iban">IBAN</label>
-                                            <Dropdown id="entity" value={ent_iban}
+                                            <Dropdown id="entity" showClear value={ent_iban}
                                                 filter
                                                 onChange={(e) => {
                                                     setEnt_IBAN(e.target.value)
@@ -369,7 +371,7 @@ const HeaderContract = () => {
                                         </div>
                                         <div className="field col-12  md:col-12">
                                             <label htmlFor="number">Adresa</label>
-                                            <Dropdown id="entity" value={ent_address}
+                                            <Dropdown id="entity" showClear value={ent_address}
                                                 onChange={(e) => {
                                                     setEnt_Address(e.target.value)
                                                 }
@@ -395,6 +397,7 @@ const HeaderContract = () => {
                                             <label htmlFor="partner">Partner</label>
                                             <Dropdown id="entity"
                                                 filter
+                                                showClear
                                                 value={selectedPartner}
                                                 onChange={(e) => {
                                                     setSelectedPartner(e.value)
@@ -406,7 +409,7 @@ const HeaderContract = () => {
                                         </div>
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="party_name">Nume Responsabil</label>
-                                            <Dropdown id="entity" value={party_name}
+                                            <Dropdown id="entity" showClear value={party_name}
                                                 filter
                                                 onChange={(e) => {
                                                     setParty_id(e.target.value.id)
@@ -443,7 +446,7 @@ const HeaderContract = () => {
                                         </div>
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="ent_iban">IBAN</label>
-                                            <Dropdown id="party" value={party_iban}
+                                            <Dropdown id="party" showClear value={party_iban}
                                                 filter
                                                 onChange={(e) => {
                                                     setParty_IBAN(e.target.value)
@@ -455,7 +458,7 @@ const HeaderContract = () => {
                                         </div>
                                         <div className="field col-12  md:col-12">
                                             <label htmlFor="number">Adresa</label>
-                                            <Dropdown id="entity" value={party_address}
+                                            <Dropdown id="entity" showClear value={party_address}
                                                 filter
                                                 onChange={(e) => {
                                                     setParty_Address(e.target.value)
@@ -479,16 +482,16 @@ const HeaderContract = () => {
 
                     <div className="field col-12 md:col-3">
                         <label htmlFor="type">Tip</label>
-                        <Dropdown id="type" filter value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="type" filter showClear value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
 
                     <div className="field col-12 md:col-3">
                         <label htmlFor="status">Stare</label>
-                        <Dropdown id="status" filter value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field col-12 md:col-3">
                         <label htmlFor="category">Categorie</label>
-                        <Dropdown id="category" filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="category" filter showClear value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field col-12 md:col-3">
                         <label className="font-bold block mb-2">
@@ -518,22 +521,22 @@ const HeaderContract = () => {
 
                     <div className="field col-12 md:col-3">
                         <label htmlFor="department">Departament</label>
-                        <Dropdown id="department" filter value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="department" filter showClear value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
-                    <div className="field col-12 md:col-3">
+                    <div className="field  col-12 md:col-3">
                         <label htmlFor="item">Obiect de contract</label>
-                        <Dropdown id="item" filter value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
 
                     <div className="field col-12 md:col-3">
                         <label htmlFor="costcenter">Centru de cost&profit</label>
-                        <Dropdown id="costcenter" filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="costcenter" showClear filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field col-12 md:col-3">
                         <label htmlFor="cashflow">CashFlow</label>
-                        <Dropdown id="cashflow" filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="cashflow" showClear filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
-                    <div className="field col-12 md:col-3">
+                    <div className="field col-12 md:col-3 pt-6">
                         <div className="field-checkbox">
                             <Checkbox onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>
                             <label htmlFor="auto_renewal">Prelungire Automata</label>
@@ -541,10 +544,11 @@ const HeaderContract = () => {
                     </div>
 
                     <div className="field col-12 md:col-12">
-                        <label htmlFor="cashflow">Note</label>
-                        <Editor value={remarks} onTextChange={(e) => setRemarks(e.htmlValue)}
+                        <label htmlFor="cashflow">Scurta descriere a contractului</label>
+                        {/* <Editor value={remarks} onTextChange={(e) => setRemarks(e.htmlValue)}
                             className='max-w-screen' style={{ height: '220px' }}
-                        />
+                        /> */}
+                        <InputTextarea className='max-w-screen' value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
                     </div>
 
                     <div className="field col-1 md:col-1 ">

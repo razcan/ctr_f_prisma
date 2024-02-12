@@ -682,11 +682,15 @@ export default function EditContract() {
                                 </div>
                             </div>
 
-                            <div className="field col-12 md:col-12">
+                            {/* <div className="field col-12 md:col-12">
                                 <label htmlFor="cashflow">Note</label>
                                 <Editor value={remarks} onTextChange={(e) => setRemarks(e.htmlValue)}
                                     className='max-w-screen' style={{ height: '220px' }}
                                 />
+                            </div> */}
+                            <div className="field col-12 md:col-12">
+                                <label htmlFor="cashflow">Scurta descriere a contractului</label>
+                                <InputTextarea className='max-w-screen' value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
                             </div>
                         </div>
                         <Button label="Salveaza" onClick={saveContract} />

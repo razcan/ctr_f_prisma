@@ -272,7 +272,9 @@ export default function Documents() {
                         onCellSelect={onCellSelect}
                         //onCellUnselect={onCellUnselect}
                         metaKeySelection={false}
-                        stripedRows paginator rows={5} rowsPerPageOptions={[5, 10, 20, 40, 100]} sortMode="multiple"
+                        stripedRows
+                        // paginator rows={5} rowsPerPageOptions={[5, 10, 20, 40, 100]} 
+                        sortMode="multiple"
                         dataKey="id">
                         <Column hidden field="id" header="id" ></Column>
                         <Column field="originalname" header="Nume Fisier" style={{ textAlign: 'left' }} ></Column>
@@ -299,9 +301,9 @@ export default function Documents() {
                     <Dialog header="Ataseaza fisiere" visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)}>
 
 
-                        <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
-                        <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
-                        <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
+                        <Tooltip target=".custom-choose-btn" content="Alege fisiere" position="bottom" />
+                        <Tooltip target=".custom-upload-btn" content="Incarca" position="bottom" />
+                        <Tooltip target=".custom-cancel-btn" content="Goleste" position="bottom" />
 
                         <FileUpload ref={fileUploadRef} name="files" url="http://localhost:3000/contracts/file"
                             // customUpload={true}

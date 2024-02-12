@@ -48,22 +48,7 @@ export default function Financial() {
     const [isInvoiced, setIsInvoiced] = useState(false);
     const [isPayed, setIsPayed] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState();
-    const [checked, setChecked] = useState(false);
 
-    const [selectedRows, setSelectedRows] = useState([]);
-
-    const [data, setData] = useState([
-        { id: 1, column1: false, column2: false },
-        { id: 2, column1: false, column2: false },
-        { id: 3, column1: false, column2: false }
-    ]);
-
-    const handleCheckboxChange = (event, rowData, field) => {
-        const newData = [...data];
-        const rowIndex = newData.findIndex(item => item.id === rowData.id);
-        newData[rowIndex][field] = event.checked;
-        setData(newData);
-    };
 
     const dt = useRef(null);
     // const [data, setData] = useState(null);
@@ -76,8 +61,10 @@ export default function Financial() {
         { field: 'pret', header: 'pret' },
         { field: 'valoare', header: 'valoare' },
         { field: 'moneda', header: 'moneda' },
-        { field: 'facturat', header: 'facturat' },
-        { field: 'platit', header: 'platit' },
+        { field: 'isInvoiced', header: 'isInvoiced' },
+        { field: 'isPayed', header: 'isPayed' }
+        // { field: 'facturat', header: 'facturat' },
+        // { field: 'platit', header: 'platit' },
     ];
 
 
@@ -91,23 +78,6 @@ export default function Financial() {
 
     const [selectedCell, setSelectedCell] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
-
-    const handleCellClick = (event, rowData, field) => {
-        setSelectedCell({ rowData, field });
-    };
-
-    const handleCellDoubleClick = (event, rowData, field) => {
-        setEditingCell({ rowData, field });
-    };
-
-    const handleCellBlur = () => {
-        setEditingCell(null);
-    };
-
-    const handleCellChange = (event, rowData, field) => {
-        // Here you can update your rowData with the new value
-        rowData[field] = event.target.value;
-    };
 
     //la nivel de partener trebuie adaugata o bifa, daca este sau nu platitor TVA
 
@@ -263,6 +233,8 @@ export default function Financial() {
                         billingValue: (billingQtty * totalContractValue), moneda: currency.code, currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
 
+
+
                     setScadentar(array)
                 }
             }
@@ -290,7 +262,6 @@ export default function Financial() {
     );
 
     const onCellSelect = (event) => {
-        //trebuie gasita in array linia dupa id si modificata valoarea
 
         if (event.cellIndex == 9) {
             let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
@@ -304,13 +275,11 @@ export default function Financial() {
             scadentar[schIndex].isPayed = !event.rowData.isPayed;
         }
 
-
-
         setIndextable(indexTable + 1)
 
-        console.log(event.rowData.id)
-        console.log(event.cellIndex)
-        console.log(event.rowData)
+        // console.log(event.rowData.id)
+        // console.log(event.cellIndex)
+        // console.log(event.rowData)
     };
 
     const saveData = () => {
@@ -370,7 +339,7 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="item">Obiect de contract</label>
-                            <Dropdown id="item" filter value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12  md:col-3">
@@ -380,7 +349,7 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="currency">Valuta</label>
-                            <Dropdown id="currency" filter value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                            <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12  md:col-3">
@@ -406,18 +375,18 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="measuringUnit">Unitate de masura</label>
-                            <Dropdown id="measuringUnit" filter value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="paymentType">Tip plata</label>
-                            <Dropdown id="paymentType" filter value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="billingFrequency">Interval facturare</label>
-                            <Dropdown id="billingFrequency" filter value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="billingFrequency" filter showClear value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12 md:col-3">
@@ -501,8 +470,8 @@ export default function Financial() {
 
                                 <Column hidden field="isInvoiced" header="isInvoiced"></Column>
                                 <Column hidden field="isPayed" header="isPayed"></Column>
-                                <Column header="Facturat" body={statusInvoiceTemplate}></Column>
-                                <Column header="Platit" body={statusPayedTemplate}></Column>
+                                <Column header="facturat" body={statusInvoiceTemplate}></Column>
+                                <Column header="platit" body={statusPayedTemplate}></Column>
 
 
                             </DataTable>
