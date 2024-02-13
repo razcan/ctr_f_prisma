@@ -66,6 +66,7 @@ export default function History() {
                     Istoric
                     <DataTable value={logs} tableStyle={{ minWidth: '50rem' }}
                         paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                        sortField="data_modificare"
                     >
                         <Column field="contract_id" header="contract_id"></Column>
                         <Column field="tip_modificare" sortable header="tip_modificare"></Column>

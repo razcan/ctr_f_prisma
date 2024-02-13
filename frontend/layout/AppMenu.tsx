@@ -37,6 +37,11 @@ const AppMenu = () => {
                     icon: 'pi pi-fw pi-globe',
                     to: '/uikit/lookups'
                 },
+                {
+                    label: 'Alerte',
+                    icon: 'pi pi-fw pi-briefcase',
+                    to: '/uikit/alerts',
+                }
             ]
         }
         // {
