@@ -29,13 +29,13 @@ export default function Tasks() {
     const [visible, setVisible] = useState(false);
 
     const [taskName, setTaskName] = useState('');
-    const [progress, setProgress] = useState();
-    const [status, setStatus] = useState();
-    const [statusDate, setStatusDate] = useState();
-    const [requestor, setRequestor] = useState();
-    const [assigned, setAssigned] = useState('');
-    const [Due, setDue] = useState();
-    const [notes, setNotes] = useState();
+    const [progress, setProgress] = useState(0);
+    const [status, setStatus] = useState(0);
+    const [statusDate, setStatusDate] = useState(new Date());
+    const [requestor, setRequestor] = useState(0);
+    const [assigned, setAssigned] = useState(0);
+    const [due, setDue] = useState(new Date());
+    const [notes, setNotes] = useState('');
 
     const [tasks, setTasks] = useState([]);
     const [selectedTask, setselectedTask] = useState([]);
@@ -46,23 +46,74 @@ export default function Tasks() {
         { id: 3, name: "Anulat" },
     ]
 
+    const fetchTasksData = () => {
+        fetch("http://localhost:3000/contracts/task")
+            .then(response => {
+                return response.json()
+            })
+            .then(tasks => {
+                setTasks(tasks)
+            })
+    }
+
+    useEffect(() => {
+        fetchTasksData()
+    }, [])
+
+
 
     //TaskName, Progress, StatusDate , Status, Requestor, Assigned, Due, Notes, LastUpdated, Delete
     //de adaugat nomencaltor status in seed db Status - In Progress, Completed, Canceled
-    // "In Progress" se traduce ca "În curs"
-    // "Completed" se traduce ca "Finalizat"
-    // "Canceled" se traduce ca "Anulat"
+
 
     //Prepare contract review, 30 % completed, , in progress, Laura calcche, vasile petre, data, trebuie sa repede, data, icoana stergere
     //la salvare se trimite email catre cel caruia i-a fost asignat si catre solicitant
     //ui tabel cu taskuri - modal cu adaugare
     //nomenclarorul de persoane se ia de la nivel de entitate pe care este ctr.
+
+    const SaveTask = async () => {
+
+        interface Task {
+            taskName: String,
+            // contractId: Number,
+            progress: Number,
+            status: Number,
+            statusDate: Date,
+            requestor: Number,
+            assigned: Number,
+            due: Date,
+            notes: String
+        }
+
+        let Task: Task = {
+            taskName: taskName,
+            // contractId: contractId,
+            progress: Number.parseInt(progress, 10),
+            status: status.id,
+            statusDate: statusDate,
+            requestor: requestor.id,
+            assigned: assigned.id,
+            due: due,
+            notes: notes
+        }
+
+        try {
+            const response = await axios.post('http://localhost:3000/contracts/task',
+                Task
+            );
+            setVisible(false)
+            console.log('Task added:', response.data);
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
+
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
                     Config  taskuri
-                    <Button label="Show" icon="pi pi-external-link" onClick={() => setVisible(true)} />
 
                     <Dialog header="Adauga Task" visible={visible} style={{ width: '60vw' }} onHide={() => setVisible(false)}>
                         <div className='card'>
@@ -90,7 +141,7 @@ export default function Tasks() {
                                             <label className="font-bold block mb-2">
                                                 De rezolvat pana la data
                                             </label>
-                                            <Calendar id="start" value={Due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                            <Calendar id="start" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
                                         </div>
 
 
@@ -103,7 +154,7 @@ export default function Tasks() {
 
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="progress">Progres Actual(%)</label>
-                                            <InputText id="progress" type="text" value={progress} onChange={(e) => setProgress(e.target.value)} />
+                                            <InputText id="progress" type="int" value={progress} onChange={(e) => setProgress(e.target.value)} />
                                         </div>
 
 
@@ -125,14 +176,39 @@ export default function Tasks() {
                                         </div>
 
                                         <div className="field-checkbox col-12 md:col-12">
-                                            <InputTextarea value={notes} rows={3} cols={60} />
+                                            <InputTextarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
                                         </div>
                                     </div>
-                                    <Button label="Salveaza" />
+                                    <Button label="Salveaza" onClick={SaveTask} />
                                 </div>
                             </div>
                         </div>
                     </Dialog>
+
+                    <DataTable className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
+
+                        selectionMode="single" selection={selectedTask} onSelectionChange={(e) => {
+                            setselectedTask(e.value),
+                                setVisible(true)
+                        }}
+                        stripedRows
+                        sortMode="multiple"
+                        sortField="data"
+                        dataKey="data"
+                        sortOrder={1}
+                    >
+                        <Column field="progress" header="progress"></Column>
+                        <Column field="status" header="status"></Column>
+                        <Column field="statusDate" header="statusDate"></Column>
+                        <Column field="requestor" header="Solicitant"></Column>
+                        <Column field="assigned" header="Responsabil"></Column>
+                        <Column field="due" header="Data Limita"></Column>
+                        <Column field="notes" header="Detalii"></Column>
+                        <Column field="createdAt" header="createdAt"></Column>
+                        <Column field="updatedAt" header="updatedAt"></Column>
+
+                    </DataTable>
+
                 </div>
             </div>
         </div >
