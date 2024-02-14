@@ -52,10 +52,8 @@ export default function Alerts() {
     //     setLogs(response);
     // }
 
-    // console.log(alerts)
-
     const fetchAlertsData = () => {
-        fetch("http://localhost:3000/nomenclatures/alerts")
+        fetch("http://localhost:3000/alerts")
             .then(response => {
                 console.log(response);
                 return response.json()
@@ -73,15 +71,11 @@ export default function Alerts() {
     //     setari alerte,
     //         alerte prestabilite in functie de data de expirare
     //             in ecranul de ctr, se vor vedea doar cand se vor transmite urmatoarele alerte prestabilite
-    // o alerte trebuie sa contina: summary, continut cu placeholdere, tip, nr zile transmitere in functie de datele din ctr,
-    //         adresele de email catre care se trimit intern, bifa catre resp ctr, bifa catre partener
     //             in ecranul de alerte, un buton de afisare trimise sau ce urmeaza a fi trimise
     //o lista de alerte predefinite
     // 9.meniu setari alerte(expira inainte cu n zile, s - a inchis inainte de termen, s - a schimbat resp ctr, nu a ajuns factura, modificat stare/ctr, facturi nesosite/emise)
-    //definire structura tabele alerte( Ora,  Nr zile, Parametru in functie de ce camp din ctr se trimite alerta - lookup, ) lista placeholdere ce pot fi folosite in alerta. @@
-    //o sg fereastra si configurarile prin modale - nr ctr, partener, data ctr, scurta descriere, entitate, 
-    // 1. ui
-    // 2.bd
+    // de facut o tabela in care se genereaza toate alertele la nivel de contract ContractAlertSchedule( ContractId, AlertId,IsActive,Status, AlertDate, Subject, ScheduleDate( 2 days before... ) )
+    //generarea de alerte la nivel de ctr se face prin serviciu
 
     const saveAlert = async () => {
         // console.log("Alerta:", name, isActive, subject, text, internal_emails, nrofdays, param, isActivePartner, isActivePerson)
@@ -111,7 +105,7 @@ export default function Alerts() {
         }
 
         try {
-            const response = await axios.patch(`http://localhost:3000/nomenclatures/alerts/${selectedAlert.id}`,
+            const response = await axios.patch(`http://localhost:3000/alerts/${selectedAlert.id}`,
                 Alert
             );
             setVisible(false)
@@ -208,7 +202,7 @@ export default function Alerts() {
                                         </div>
 
                                         <div className="field-checkbox col-12 md:col-6">
-                                            <InputTextarea value={"@@NumarContract, @@DataContract, @@Partener, @@Entitate, @@ScurtaDescriere"} rows={3} cols={60} />
+                                            <InputTextarea value={"@@NumarContract, @@DataContract,@@DataFinal, @@Partener, @@Entitate, @@ScurtaDescriere"} rows={3} cols={60} />
                                             <label className="ml-2">Lista Placeholdere ce pot fi folosite in Continut Alerta</label>
                                         </div>
 

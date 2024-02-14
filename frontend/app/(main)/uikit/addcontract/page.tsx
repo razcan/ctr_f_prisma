@@ -27,6 +27,7 @@ import Financial from './financial'
 import Content from './content'
 import History from './history'
 import Alerts from './alerts';
+import Tasks from './tasks'
 
 
 export default function AddContract() {
@@ -120,6 +121,16 @@ export default function AddContract() {
                         <div>
                             <div className='pt-4'>
                                 <Content />
+                            </div>
+                        </div>
+
+                        : null
+                    }
+                    {activeIndex === 6 ?
+
+                        <div>
+                            <div className='pt-4'>
+                                <Tasks />
                             </div>
                         </div>
 

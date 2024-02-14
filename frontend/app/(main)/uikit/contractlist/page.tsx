@@ -139,7 +139,7 @@ function Contracts() {
                     setselectedContract(e.value),
                         editContract(e.value.id)
                 }} dataKey="id" metaKeySelection={metaKey}>
-                <Column hidden field="id" header="Id"></Column>
+                <Column field="id" header="Id"></Column>
                 <Column field="number" header="Numar" sortable></Column>
                 <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
                 <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>

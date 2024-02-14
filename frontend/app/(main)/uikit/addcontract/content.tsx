@@ -128,7 +128,7 @@ export default function Content() {
 
 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/contracts/content/${1}`).then(res => res.json())
+        const response = await fetch(`http://localhost:3000/contracts/content/${4}`).then(res => res.json())
         //treb modificat pe id de ctr
         setText(response.content);
 

@@ -23,24 +23,54 @@ import "react-quill/dist/quill.snow.css";
 
 export default function Alerts() {
 
-    // const [text, setText] = useState('');
+    const [alerts, setAlerts] = useState([]);
 
-    // const fetchContent = async () => {
-    //     const response = await fetch(`http://localhost:3000/contracts/content/${1}`).then(res => res.json())
-    //     //treb modificat pe id de ctr
-    //     setText(response.content);
+    //it should replace with ctrid 
+    const fetchContent = async () => {
+        const response = await fetch(`http://localhost:3000/alerts/contractId/${6}`).then(res => res.json())
+        setAlerts(response);
 
-    // }
+    }
 
-    // useEffect(() => {
-    //     fetchContent()
-    // }, [])
+    useEffect(() => {
+        fetchContent()
+    }, [])
+
+    console.log(alerts)
+
+    const datetoBeSentTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.datetoBeSent);
+        return <span>{formattedDate}</span>;
+    };
+
+    const nrofdaysTemplate = (rowData: any) => {
+        const result = `Inainte cu ${rowData.nrofdays} zile de Data Final`
+        return <span>{result}</span>;
+    };
+
+    const formatDate = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
 
     return (
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
                     Alerte
+                    <DataTable value={alerts} tableStyle={{ minWidth: '50rem' }}
+                    // paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                    >
+                        <Column hidden field="id" header="id"></Column>
+                        <Column field="alertname" sortable header="Denumire"></Column>
+                        <Column field="datetoBeSent" sortable header="Data transmitere alerta" body={datetoBeSentTemplate} ></Column>
+                        <Column field="isActive" header="Activa"></Column>
+                        <Column field="subject" header="Subiect"></Column>
+                        <Column field="nrofdays" header="Nr. zile" body={nrofdaysTemplate}></Column>
+                    </DataTable>
                 </div>
             </div>
         </div >
