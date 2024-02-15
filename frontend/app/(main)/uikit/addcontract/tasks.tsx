@@ -36,6 +36,7 @@ export default function Tasks() {
     const [assigned, setAssigned] = useState(0);
     const [due, setDue] = useState(new Date());
     const [notes, setNotes] = useState('');
+    const [taskId, setTaskId] = useState('');
 
     const [tasks, setTasks] = useState([]);
     const [persons, setPersons] = useState([]);
@@ -98,11 +99,23 @@ export default function Tasks() {
     //ui tabel cu taskuri - modal cu adaugare
     //nomenclarorul de persoane se ia de la nivel de entitate pe care este ctr.
 
-    const SaveTask = async () => {
+    interface Task {
+        taskName: String,
+        // contractId: Number,
+        progress: Number,
+        status: Number,
+        statusDate: Date,
+        requestor: Number,
+        assigned: Number,
+        due: Date,
+        notes: String
+    }
 
-        interface Task {
+    const EditTask = async () => {
+
+        interface TaskId {
+            id: Number,
             taskName: String,
-            // contractId: Number,
             progress: Number,
             status: Number,
             statusDate: Date,
@@ -111,6 +124,44 @@ export default function Tasks() {
             due: Date,
             notes: String
         }
+
+        let Task: TaskId = {
+            id: taskId.id,
+            taskName: taskName,
+            // contractId: contractId,
+            progress: Number.parseInt(progress, 10),
+            status: status.id,
+            statusDate: statusDate,
+            requestor: requestor.id,
+            assigned: assigned.id,
+            due: due,
+
+            notes: notes
+        }
+        try {
+            const response = await axios.patch(`http://localhost:3000/contracts/task/${id}`,
+                Task
+            );
+            setVisible(false)
+            fetchTasksData()
+            fetchPersonsData()
+
+            setselectedTask(undefined)
+            setProgress(0)
+            setVisible(false)
+            setTaskName('')
+            setNotes('')
+
+            console.log('Task added:', response.data);
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
+
+    }
+
+    const SaveTask = async () => {
+
+
 
         let Task: Task = {
             taskName: taskName,
@@ -129,8 +180,15 @@ export default function Tasks() {
                 Task
             );
             setVisible(false)
-            fetchTasksData(),
-                fetchPersonsData()
+            fetchTasksData()
+            fetchPersonsData()
+
+            setselectedTask(undefined)
+            setProgress(0)
+            setVisible(false)
+            setTaskName('')
+            setNotes('')
+
             console.log('Task added:', response.data);
         } catch (error) {
             console.error('Error adding task:', error);
@@ -220,7 +278,7 @@ export default function Tasks() {
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="status">Stare</label>
-                                                <Dropdown id="status" filter showClear value={getStatusJson(status)} onChange={(e) => setStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                <Dropdown id="status" filter showClear value={getStatusJson(selectedTask.status)} onChange={(e) => setselectedTask(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
                                             <div className="field col-12 md:col-3">
@@ -263,6 +321,10 @@ export default function Tasks() {
                                             <div className="field-checkbox col-12 md:col-12">
                                                 <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
                                             </div>
+                                            <div className="field-checkbox col-12 md:col-3">
+                                                <Button label="Salveaza/E" onClick={EditTask} />
+                                            </div>
+
                                         </div>
                                         :
 
@@ -324,9 +386,14 @@ export default function Tasks() {
                                             <div className="field-checkbox col-12 md:col-12">
                                                 <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
                                             </div>
+                                            <div className="field-checkbox col-12 md:col-3">
+                                                <Button label="Salveaza" onClick={SaveTask} />
+                                            </div>
+
                                         </div>
+
                                     }
-                                    <Button label="Salveaza" onClick={SaveTask} />
+
 
                                 </div>
                             </div>
@@ -346,7 +413,8 @@ export default function Tasks() {
                                 setRequestor(e.value.requestor), setAssigned(e.value.assigned),
                                 setDue(e.value.due),
                                 setNotes(e.value.notes),
-                                setVisible(true)
+                                setTaskId(e.value.id)
+                            setVisible(true)
 
                         }}
                         stripedRows
@@ -355,6 +423,7 @@ export default function Tasks() {
                         dataKey="data"
                         sortOrder={1}
                     >
+                        <Column hidden field="id" header="id"></Column>
                         <Column field="progress" header="Progres(%)"></Column>
                         <Column field="status" header="Stare" body={StatusTaskTemplate}></Column>
                         <Column field="statusDate" header="Stare la data" body={StatusDateTemplate} ></Column>
