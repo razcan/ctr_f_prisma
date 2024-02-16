@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -23,11 +24,14 @@ import "react-quill/dist/quill.snow.css";
 
 export default function Alerts() {
 
+    const router = useRouter();
+    const searchParams = useSearchParams()
+    const Id = parseInt(searchParams.get("Id"));
     const [alerts, setAlerts] = useState([]);
 
     //it should replace with ctrid 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/alerts/contractId/${6}`).then(res => res.json())
+        const response = await fetch(`http://localhost:3000/alerts/contractId/${Id}`).then(res => res.json())
         setAlerts(response);
 
     }

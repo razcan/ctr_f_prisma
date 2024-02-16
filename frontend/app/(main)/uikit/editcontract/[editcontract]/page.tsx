@@ -62,7 +62,7 @@ export default function AddContract() {
 
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
-        { label: 'Flux aprobare', icon: 'pi pi-list' },
+        // { label: 'Flux aprobare', icon: 'pi pi-list' },
         { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Istoric', icon: 'pi pi-fw pi-table' },
         { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }

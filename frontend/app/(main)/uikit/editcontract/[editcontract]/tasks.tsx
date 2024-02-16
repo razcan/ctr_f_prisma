@@ -1,6 +1,6 @@
 'use client';
-
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -25,6 +25,9 @@ import { ProgressBar } from 'primereact/progressbar';
 import { Slider } from 'primereact/slider';
 
 export default function Tasks() {
+    const router = useRouter();
+    const searchParams = useSearchParams()
+    const Id = parseInt(searchParams.get("Id"));
 
     const [visible, setVisible] = useState(false);
 
@@ -53,14 +56,10 @@ export default function Tasks() {
     const [selectedTask, setselectedTask] = useState();
     const [allStatus, setAllStatus] = useState([])
 
-    // const allStatus = [
-    //     { id: 1, name: "In curs" },
-    //     { id: 2, name: "Finalizat" },
-    //     { id: 3, name: "Anulat" },
-    // ]
+
 
     const fetchTasksData = () => {
-        fetch("http://localhost:3000/contracts/task")
+        fetch(`http://localhost:3000/contracts/task/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -111,7 +110,7 @@ export default function Tasks() {
 
     interface Task {
         taskName: String,
-        // contractId: Number,
+        contractId: Number,
         progress: Number,
         status: Number,
         statusDate: Date,
@@ -168,7 +167,7 @@ export default function Tasks() {
 
         let Task: Task = {
             taskName: taskName,
-            // contractId: contractId,
+            contractId: Id,
             progress: Number.parseInt(progress, 10),
             status: status.id,
             statusDate: statusDate,
