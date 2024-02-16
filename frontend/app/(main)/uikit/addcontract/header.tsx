@@ -242,6 +242,12 @@ const HeaderContract = () => {
 
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
+
+
+        // if (party_address !== null && party_address !== undefined) {
+        //     setParty_Address())
+        // }
+
         let addedContract: Contract = {
             number: number,
             typeId: type.id,
@@ -264,11 +270,13 @@ const HeaderContract = () => {
             partnerpersonsId: party_id,
             entitypersonsId: ent_id,
             entityaddressId: ent_address.id,
-            partneraddressId: party_address.id,
+            partneraddressId: party_address?.id ?? null,
             entitybankId: ent_iban.id,
-            partnerbankId: party_iban.id
+            partnerbankId: party_iban?.id ?? null
         }
+
         console.log(addedContract);
+
 
         try {
             const response = await axios.post('http://localhost:3000/contracts',
