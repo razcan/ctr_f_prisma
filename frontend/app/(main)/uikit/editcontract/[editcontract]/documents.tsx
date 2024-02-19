@@ -20,7 +20,7 @@ export default function Documents() {
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-    console.log(Id)
+    // console.log(Id)
     const [selectedFile, setSelectedFile] = useState<any>([]);
     const [selectedoriginalname, setSelecteoriginalname] = useState<any>([]);
     const [attachmentsfiles, setAttachmentsfiles] = useState<any>([]);
