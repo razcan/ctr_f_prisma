@@ -141,10 +141,8 @@ const ChartDemo = () => {
                       startMonth = 1; // Set newMonth to January
                       startnewYear++; // Increment the year
                     }
-
                     // Get the first day of the month
                     const newstartDate = new Date(startnewYear, startMonth, 1);
-
 
                     // Get the last day of the next month, then subtract one day to get the last day of the current month
                     const newDate = new Date(startnewYear, startMonth + 1, 0);
