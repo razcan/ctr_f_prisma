@@ -147,11 +147,10 @@ const ChartDemo = () => {
                     // Get the last day of the next month, then subtract one day to get the last day of the current month
                     const newDate = new Date(startnewYear, startMonth + 1, 0);
 
-                    console.log(expCtr[i], new Date(newstartDate).toLocaleDateString(), new Date(newDate).toLocaleDateString())
+                    //    console.log(expCtr[i], new Date(newstartDate).toLocaleDateString(), new Date(newDate).toLocaleDateString())
                     if (
                       new Date(expCtr[i].date) >= new Date(newstartDate) &&
                       new Date(expCtr[i].date) <= new Date(newDate)) {
-                      console.log('kkt')
                       let add = { month: j, amount: 1 }
                       RezexpCtr.push(add)
                     }
@@ -162,8 +161,6 @@ const ChartDemo = () => {
                   }
                 }
               }
-
-              console.log(RezexpCtr)
 
               const RezexpCtrCount: [] = [];
               const grouped: Map<string, number> = new Map();
@@ -180,7 +177,7 @@ const ChartDemo = () => {
                 RezexpCtrCount.push(toAdd)
               });
 
-              console.log(RezexpCtrCount)
+              // console.log(RezexpCtrCount)
 
               const final: [] = [];
 
@@ -191,11 +188,10 @@ const ChartDemo = () => {
               }
 
 
-
               const monthsBetween = getMonthsBetween(startMonth, endMonth);
               setExpMonth(monthsBetween);
 
-              console.log(final, monthsBetween)
+              // console.log(final, monthsBetween)
 
 
               const barData: ChartData = {

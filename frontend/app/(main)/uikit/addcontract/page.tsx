@@ -62,9 +62,9 @@ export default function AddContract() {
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
         // { label: 'Flux aprobare', icon: 'pi pi-list' },
-        { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' },
-        { label: 'Istoric', icon: 'pi pi-fw pi-table' },
-        { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
+        { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' }
+        // { label: 'Istoric', icon: 'pi pi-fw pi-table' },
+        // { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
     ];
 
     return (
@@ -126,7 +126,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 6 ?
+                    {activeIndex === 5 ?
 
                         <div>
                             <div className='pt-4'>
@@ -136,7 +136,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 7 ?
+                    {/* {activeIndex === 7 ?
 
                         <div>
                             <div className='pt-4'>
@@ -145,8 +145,8 @@ export default function AddContract() {
                         </div>
 
                         : null
-                    }
-                    {activeIndex === 8 ?
+                    } */}
+                    {/* {activeIndex === 8 ?
 
                         <div>
                             <div className='pt-4'>
@@ -155,7 +155,7 @@ export default function AddContract() {
                         </div>
 
                         : null
-                    }
+                    } */}
 
 
 

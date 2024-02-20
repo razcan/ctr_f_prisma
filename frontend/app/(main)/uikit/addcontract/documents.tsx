@@ -136,16 +136,20 @@ export default function Documents() {
                 const columnName = 'size';
                 const originalname = 'originalname';
 
-                // Use map to create a new array with the transformation
-                const newArray = attachmentsfiles.map((item) =>
-                ({
-                    ...item,
+                if (attachmentsfiles.length > 0) {
+                    const newArray = attachmentsfiles.map((item) =>
+                    ({
+                        ...item,
 
-                    [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
-                    // [originalname]: item[originalname].toUpperCase()
-                }));
+                        [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+                        // [originalname]: item[originalname].toUpperCase()
+                    }));
 
-                setCalAttachmentsfiles(newArray);
+                    setCalAttachmentsfiles(newArray);
+                }
+
+
+
             })
     }
 

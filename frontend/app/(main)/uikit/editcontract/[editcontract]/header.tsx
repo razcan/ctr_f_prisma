@@ -149,7 +149,6 @@ export default function EditContract() {
             .then(contractdetails => {
                 setContractDetails(contractdetails)
 
-                console.log(contractdetails)
 
                 if (contractdetails.PartnerBank !== null && contractdetails.PartnerBank !== undefined) {
                     setPartnerbankId(contractdetails.PartnerBank.id)
@@ -160,6 +159,7 @@ export default function EditContract() {
                 }
 
 
+                const referenceDate = new Date('1970-01-02T02:00:00+02:00');
 
                 setEntitybankId(contractdetails.EntityBank.id)
                 setEntityaddressId(contractdetails.EntityAddress.id)
@@ -170,9 +170,22 @@ export default function EditContract() {
                 const formated_sign_date = new Date(contractdetails.sign);
 
                 setStartDate(formated_start_date)
+
                 setEndDate(formated_end_date)
-                setSignDate(formated_sign_date)
-                setCompletionDate(formated_completion_date)
+
+                if (formated_completion_date < referenceDate) {
+                    setCompletionDate('')
+                }
+                else setCompletionDate(formated_completion_date)
+
+                if (formated_sign_date < referenceDate) {
+                    setSignDate('')
+                }
+                else setSignDate(formated_sign_date)
+
+
+
+
                 setNumber(contractdetails.number)
                 setAutomaticRenewal(contractdetails.automaticRenewal)
 
@@ -418,11 +431,11 @@ export default function EditContract() {
             sign: (sign ? addOneDay(sign) : null),
             completion: (completion ? addOneDay(completion) : null),
             remarks: remarks,
-            categoryId: selectedCategory.id,
-            departmentId: selectedDepartment.id,
-            cashflowId: selectedCashflow.id,
-            itemId: selectedItem.id,
-            costcenterId: selectedCostCenter.id,
+            categoryId: (selectedCategory ? selectedCategory.id : null),
+            departmentId: (selectedDepartment ? selectedDepartment.id : null),
+            cashflowId: (selectedCashflow ? selectedCashflow.id : null),
+            itemId: (selectedItem ? selectedItem.id : null),
+            costcenterId: (selectedCostCenter ? selectedCostCenter.id : null),
             automaticRenewal: automaticRenewalValue,
             // contract: selectedItem,
             partnersId: selectedPartner.id,
@@ -495,8 +508,8 @@ export default function EditContract() {
                                                     optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_email">Rol</label>
-                                                <InputText disabled id="ent_email" type="text" value={ent_role} />
+                                                <label htmlFor="ent_role">Rol</label>
+                                                <InputText disabled id="ent_role" type="text" value={ent_role} />
                                             </div>
 
                                             <div className="field col-12  md:col-3">
@@ -508,12 +521,12 @@ export default function EditContract() {
                                                 <InputText disabled id="ent_phone" keyfilter="int" type="text" value={ent_phone} onChange={(e) => setEnt_phone(e.target.value)} />
                                             </div>
                                             <div className="field-checkbox col-12 md:col-3">
-                                                <Checkbox id="default" checked={ent_legal_person} onChange={e => setChecked(e.checked)}></Checkbox>
-                                                <label htmlFor="default" className="ml-2">Reprezentant Legal</label>
+                                                <Checkbox id="ent_legal_person" checked={ent_legal_person} onChange={e => setChecked(e.checked)}></Checkbox>
+                                                <label htmlFor="ent_legal_person" className="ml-2">Reprezentant Legal</label>
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_legal_person">Banca</label>
-                                                <InputText disabled id="ent_legal_person" type="text" value={ent_bank} />
+                                                <label htmlFor="ent_bank">Banca</label>
+                                                <InputText disabled id="ent_bank" type="text" value={ent_bank} />
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="ent_iban">IBAN</label>
@@ -527,8 +540,8 @@ export default function EditContract() {
                                                     optionLabel="iban" placeholder="Select One"></Dropdown>
                                             </div>
                                             <div className="field col-12  md:col-12">
-                                                <label htmlFor="number">Adresa</label>
-                                                <Dropdown id="address" filter value={getAddressJson(ent_address)}
+                                                <label htmlFor="ent_address">Adresa</label>
+                                                <Dropdown id="ent_address" filter value={getAddressJson(ent_address)}
                                                     onChange={(e) => {
                                                         // console.log("adresa", e.target.value)
                                                         setEnt_Address(e.target.value.id)
@@ -553,7 +566,7 @@ export default function EditContract() {
                                         <div className="p-fluid formgrid grid pt-2">
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="partner">Partner</label>
-                                                <Dropdown id="partner" value={selectedPartner} filter
+                                                <Dropdown id="selectedPartner" value={selectedPartner} filter
                                                     onChange={(e) => {
                                                         setSelectedPartner(e.value.id)
                                                         // fetchPartnersDetailsData(e.value.id)
@@ -588,17 +601,17 @@ export default function EditContract() {
                                                 <InputText disabled id="party_phone" keyfilter="int" type="text" value={party_phone} onChange={(e) => setParty_phone(e.target.value)} />
                                             </div>
                                             <div className="field-checkbox col-12 md:col-3">
-                                                <Checkbox id="default" checked={party_legal_person}></Checkbox>
-                                                <label htmlFor="default" className="ml-2">Reprezentant Legal</label>
+                                                <Checkbox id="party_legal_person" checked={party_legal_person}></Checkbox>
+                                                <label htmlFor="party_legal_person" className="ml-2">Reprezentant Legal</label>
 
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_legal_person">Banca</label>
-                                                <InputText disabled id="ent_legal_person" type="text" value={party_bank} />
+                                                <label htmlFor="party_bank">Banca</label>
+                                                <InputText disabled id="party_bank" type="text" value={party_bank} />
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_iban">IBAN</label>
-                                                <Dropdown id="ent_iban" value={getPartnerBankJson(party_iban)} filter
+                                                <label htmlFor="party_iban">IBAN</label>
+                                                <Dropdown id="party_iban" value={getPartnerBankJson(party_iban)} filter
                                                     onChange={(e) => {
                                                         setParty_IBAN(e.target.value.iban)
                                                         setParty_bank(e.target.value.bank)
@@ -609,8 +622,8 @@ export default function EditContract() {
                                                     optionLabel="iban" placeholder="Select One"></Dropdown>
                                             </div>
                                             <div className="field col-12  md:col-12">
-                                                <label htmlFor="address">Adresa</label>
-                                                <Dropdown id="address" value={getPartnerAddressJson(party_address)} filter
+                                                <label htmlFor="party_address">Adresa</label>
+                                                <Dropdown id="party_address" value={getPartnerAddressJson(party_address)} filter
                                                     onChange={(e) => {
                                                         setParty_Address(e.target.value)
                                                     }}
@@ -629,15 +642,15 @@ export default function EditContract() {
                         </div>
                         <div className="field col-12 md:col-3">
                             <label htmlFor="state">Tip</label>
-                            <Dropdown id="type" filter value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="type" showClear filter value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <label htmlFor="state">Stare</label>
-                            <Dropdown id="state" filter value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="state" showClear filter value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <label htmlFor="category">Categorie</label>
-                            <Dropdown id="category" filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="category" showClear filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <label className="font-bold block mb-2">
@@ -671,20 +684,20 @@ export default function EditContract() {
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="department">Departament</label>
-                            <Dropdown id="department" filter value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="department" showClear filter value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <label htmlFor="item">Obiect de contract</label>
-                            <Dropdown id="item" filter value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="item" showClear filter value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="costcenter">Centru de cost&profit</label>
-                            <Dropdown id="costcenter" filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="costcenter" showClear filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <label htmlFor="cashflow">CashFlow</label>
-                            <Dropdown id="cashflow" filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <Dropdown id="cashflow" showClear filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-3">
                             <div className="field-checkbox">

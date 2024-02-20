@@ -127,7 +127,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 6 ?
+                    {activeIndex === 5 ?
 
                         <div>
                             <div className='pt-4'>
@@ -137,7 +137,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 7 ?
+                    {activeIndex === 6 ?
 
                         <div>
                             <div className='pt-4'>
@@ -147,7 +147,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 8 ?
+                    {activeIndex === 7 ?
 
                         <div>
                             <div className='pt-4'>

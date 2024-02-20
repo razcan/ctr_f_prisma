@@ -15,6 +15,7 @@ import * as XLSX from 'xlsx';
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { InputNumber } from 'primereact/inputnumber';
 import { Tag } from 'primereact/tag';
+import axios from 'axios';
 
 export default function Financial() {
 
@@ -44,6 +45,7 @@ export default function Financial() {
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
     const [scadentar, setScadentar] = useState([]);
+    const [active, setActive] = useState(true);
 
     const [isInvoiced, setIsInvoiced] = useState(false);
     const [isPayed, setIsPayed] = useState(false);
@@ -69,12 +71,6 @@ export default function Financial() {
 
 
     const exportColumns = cols.map((col) => ({ title: col.header, dataKey: col.field }));
-
-
-    const item2 = [
-        { name: "Servicii chirie", start: "2022-01-01", final: "2022-01-31", cantitate: "1", pret: "200", valoare: "200 EUR", interval: "Lunar", facturat: "true" },
-        { name: "Tarif de administrare", start: "2023-02-01", final: "2022-02-29", cantitate: "1", pret: "400", valoare: "400 EUR", interval: "Lunar", facturat: "false" }
-    ]
 
     const [selectedCell, setSelectedCell] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
@@ -282,13 +278,144 @@ export default function Financial() {
         // console.log(event.rowData)
     };
 
-    const saveData = () => {
-        console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
-            paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
+    const saveData = async () => {
 
-        console.log("scadentar", scadentar)
-        //treb adaugate id-urile si ascune la afisare - fol doar la export
+        interface financialDetail {
+            itemid?: number,
+            totalContractValue?: boolean,
+            currencyid?: number,
+            currencyValue?: boolean,
+            currencyPercent?: boolean,
+            billingDay?: number,
+            billingQtty?: boolean,
+            billingFrequencyid?: number,
+            measuringUnitid?: number,
+            paymentTypeid?: number,
+            billingPenaltyPercent?: boolean,
+            billingDueDays?: number,
+            remarks?: String,
+            guaranteeLetter?: Boolean,
+            guaranteeLetterCurrencyid?: number,
+            guaranteeLetterDate?: Date,
+            guaranteeLetterValue?: Boolean,
+            contractItemId?: number,
+            active?: boolean
+
+        }
+
+        let addedfinancialDetail: financialDetail = {
+            itemid: selectedItem.id,
+            totalContractValue: totalContractValue,
+            currencyid: currency.id,
+            currencyValue: parseFloat(currencyValue),
+            currencyPercent: currencyPercent,
+            billingDay: billingDay,
+            billingQtty: billingQtty,
+            billingFrequencyid: billingFrequency.id,
+            measuringUnitid: measuringUnit.id,
+            paymentTypeid: paymentType.id,
+            billingPenaltyPercent: billingPenaltyPercent,
+            billingDueDays: billingDueDays,
+            remarks: remarks,
+            guaranteeLetter: guaranteeLetter,
+            guaranteeLetterCurrencyid: guaranteeLetterCurrency.id,
+            guaranteeLetterDate: guaranteeLetterDate,
+            guaranteeLetterValue: parseFloat(guaranteeLetterValue),
+            contractItemId: 1,
+            active: active
+        }
+
+        interface financialDetailSchedule {
+            itemid: number,
+            currencyid?: number,
+            date: Date,
+            measuringUnitid?: number,
+            billingQtty: boolean,
+            totalContractValue: boolean,
+            billingValue: boolean,
+            isInvoiced: boolean,
+            isPayed: boolean,
+            active?: boolean
+
+        }
+
+        const ResultSchedule: financialDetailSchedule[] = []
+        scadentar.forEach(
+            scadenta => {
+                const add: financialDetailSchedule = {
+                    itemid: scadenta.itemid,
+                    currencyid: scadenta.currencyid,
+                    date: new Date(scadenta.data),
+                    measuringUnitid: scadenta.measuringunitid,
+                    billingQtty: scadenta.cantitate,
+                    totalContractValue: scadenta.valoare,
+                    billingValue: scadenta.pret,
+                    isInvoiced: scadenta.isInvoiced,
+                    isPayed: scadenta.isPayed,
+                    active: active
+
+                }
+                ResultSchedule.push(add)
+            }
+        )
+
+        interface financialContractItem {
+            contractId?: number,
+            itemid: number,
+            currencyid?: number,
+            currencyValue?: boolean,
+            billingFrequencyid: number,
+            active?: boolean
+        }
+
+
+        const financialContractItem = {
+            contractId: 1,
+            itemid: selectedItem.id,
+            currencyid: currency.id,
+            currencyValue: totalContractValue,
+            billingFrequencyid: billingFrequency.id,
+            active: active,
+
+        }
+
+
+        // console.log(financialContractItem);
+        // console.log(ResultSchedule);
+
+        // console.log(addedfinancialDetail);
+
+        try {
+
+            const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
+                financialContractItem
+            );
+
+            const response = await axios.post('http://localhost:3000/contracts/financialDetail',
+                addedfinancialDetail
+            );
+
+            const responsesch = await axios.post('http://localhost:3000/contracts/financialDetailSchedule',
+                ResultSchedule
+            );
+
+
+
+
+            console.log('Contract details added:', responseitem.data, response.data, responsesch.data);
+        } catch (error) {
+            console.error('Error creating contract details:', error);
+        }
+
     }
+
+    // const saveData = () => {
+    //     console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
+    //         paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
+
+    //     console.log("scadentar", scadentar)
+    //     //treb adaugate id-urile si ascune la afisare - fol doar la export
+    // }
 
     //in cazul saptm - zi facturare reprez ziua din sapt de la 1 - 7
     //se sparge in func de start end la nr de intervale si se copiaza valoarile in tabel.
@@ -398,6 +525,12 @@ export default function Financial() {
                             <label htmlFor="billingDueDays">Zile scadente</label>
                             <InputText id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
                         </div>
+
+                        <div className="field-checkbox col-12 md:col-12">
+                            <Checkbox id="ent_legal_person" checked={active} onChange={e => setActive(e.checked)}></Checkbox>
+                            <label htmlFor="ent_legal_person" className="ml-2">Activ</label>
+                        </div>
+
 
                         <div className="field col-12 md:col-12">
                             <label htmlFor="guaranteeLetterOtherInfo">Note</label>

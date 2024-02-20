@@ -59,15 +59,15 @@ export default function Tasks() {
     //     { id: 3, name: "Anulat" },
     // ]
 
-    const fetchTasksData = () => {
-        fetch("http://localhost:3000/contracts/task")
-            .then(response => {
-                return response.json()
-            })
-            .then(tasks => {
-                setTasks(tasks)
-            })
-    }
+    // const fetchTasksData = () => {
+    //     fetch("http://localhost:3000/contracts/task")
+    //         .then(response => {
+    //             return response.json()
+    //         })
+    //         .then(tasks => {
+    //             setTasks(tasks)
+    //         })
+    // }
 
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
@@ -90,8 +90,8 @@ export default function Tasks() {
     }
 
     useEffect(() => {
-        fetchTasksData(),
-            fetchPersonsData(),
+        // fetchTasksData(),
+        fetchPersonsData(),
             fetchTasksStatusData()
     }, [])
 
@@ -152,7 +152,6 @@ export default function Tasks() {
                 TaskR
             );
             setVisible(false)
-            fetchTasksData()
             fetchPersonsData()
 
             console.log('Task added:', response.data);
@@ -183,7 +182,6 @@ export default function Tasks() {
                 Task
             );
             setVisible(false)
-            fetchTasksData()
             fetchPersonsData()
 
             setselectedTask(undefined)

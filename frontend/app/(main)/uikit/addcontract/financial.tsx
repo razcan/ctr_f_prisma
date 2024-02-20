@@ -19,11 +19,26 @@ import router from 'next/router';
 
 export default function Financial() {
 
+    const [item, setItem] = useState([]);
 
     const item2 = [
         { code: "1", name: "Servicii chirie", valoare: "200 EUR", interval: "Lunar" },
         { code: "2", name: "Tarif de administrare", valoare: "400 EUR", interval: "Trimestrial" }
     ]
+
+
+
+
+    const fetchTypeData = () => {
+        fetch("http://localhost:3000/contracts/contractItems/1")
+            .then(response => {
+                return response.json()
+            })
+            .then(item => {
+                setItem(item)
+            })
+    }
+
 
     useEffect(() => {
     }, [])
@@ -41,11 +56,13 @@ export default function Financial() {
 
                     <Button label="Adauga" icon="pi pi-external-link" onClick={() => goToDetails()} />
 
-                    <DataTable className='pt-2' value={item2} tableStyle={{ minWidth: '50rem' }}>
-                        <Column field="code" header="Code"></Column>
-                        <Column field="name" header="Name"></Column>
-                        <Column field="valoare" header="valoare"></Column>
-                        <Column field="interval" header="interval"></Column>
+                    <DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}>
+                        <Column field="id" header="Code"></Column>
+                        <Column field="itemid" header="Name"></Column>
+                        <Column field="billingFrequencyid" header="valoare"></Column>
+                        <Column field="currencyid" header="interval"></Column>
+                        <Column field="currencyValue" header="currencyValue"></Column>
+                        <Column field="active" header="active"></Column>
                     </DataTable>
 
                 </div>
