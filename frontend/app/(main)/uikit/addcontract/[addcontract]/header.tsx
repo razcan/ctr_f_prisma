@@ -20,9 +20,10 @@ import {
     useQueryClient
 } from '@tanstack/react-query'
 import { ProgressSpinner } from 'primereact/progressspinner';
-import Documents from './documents'
+import Documents from './documents';
+import { useSearchParams } from 'next/navigation'
 
-const queryClient = new QueryClient();
+
 
 function addOneDay(date: Date): Date {
     const newDate = new Date(date);
@@ -124,6 +125,12 @@ const HeaderContract = () => {
     const [party_role, setParty_role] = useState();
     const [party_bank, setParty_bank] = useState();
     const [party_id, setParty_id] = useState();
+
+    const queryClient = new QueryClient();
+
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
+    console.log("Id: ", Id)
 
 
     const fetchTypeData = () => {

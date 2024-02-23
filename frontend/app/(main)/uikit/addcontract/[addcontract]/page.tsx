@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -28,13 +28,15 @@ import Content from './content'
 import History from './history'
 import Alerts from './alerts';
 import Tasks from './tasks'
-
+import { useSearchParams } from 'next/navigation'
+import { Toast } from 'primereact/toast';
 
 export default function AddContract() {
 
     const router = useRouter();
     const [number, setNumber] = useState();
     const [activeIndex, setActiveIndex] = useState(0);
+    const toast = useRef(null);
 
     const items = [
         {
@@ -46,17 +48,9 @@ export default function AddContract() {
         },
         {
             label: 'Documente Atasate', icon: 'pi pi-inbox'
-            // ,
-            // command: () => {
-            //     router.push('/uikit/addcontract');
-            // }
         },
         {
             label: 'Acte Aditionale', icon: 'pi pi-chart-line'
-            // ,
-            // command: () => {
-            //     router.push('/uikit/additional');
-            // }
         },
 
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
@@ -67,12 +61,43 @@ export default function AddContract() {
         // { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
     ];
 
+    const showError = () => {
+        toast.current.show({
+            severity: 'error', summary: 'Error',
+            detail: 'Inainte sa mergeti mai departe, trebuie sa salvati contractul.', life: 3000
+        });
+    }
+
+    const searchParams = useSearchParams()
+
+    const changeTab = (e) => {
+        const Id = parseInt(searchParams.get("Id"));
+        // console.log("Id: ", Id)
+        // const contrId = parseInt(Id) 
+
+        if (Id == 0 && parseInt(activeIndex) > 0) {
+            console.log(activeIndex)
+            setActiveIndex(0)
+            // console.log("trebuie salvat")
+            showError()
+        }
+        else {
+            setActiveIndex(e)
+        }
+    }
+
+    useEffect(() => {
+        changeTab(activeIndex)
+    }, [activeIndex])
+
     return (
         <div className="grid">
             <div className="col-12">
                 <div className="card">
                     <div className="field lg:col-12 xs:col-3 md:col-12">
-                        <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
+                        <Toast ref={toast} />
+                        <TabMenu model={items} activeIndex={activeIndex}
+                            onTabChange={(e) => changeTab(e.index)} />
                     </div>
                     {/* <div className="p-fluid formgrid grid pt-2"> */}
 

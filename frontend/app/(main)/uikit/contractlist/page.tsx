@@ -100,7 +100,7 @@ function Contracts() {
     }
 
     const addContract = () => {
-        router.push(`/uikit/addcontract`)
+        router.push(`/uikit/addcontract/ctr?Id=${0}`)
     }
 
     const [filters, setFilters] = useState({
