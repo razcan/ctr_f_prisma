@@ -21,13 +21,6 @@ export default function Financial() {
 
     const [item, setItem] = useState([]);
 
-    const item2 = [
-        { code: "1", name: "Servicii chirie", valoare: "200 EUR", interval: "Lunar" },
-        { code: "2", name: "Tarif de administrare", valoare: "400 EUR", interval: "Trimestrial" }
-    ]
-
-
-
 
     const fetchTypeData = () => {
         fetch("http://localhost:3000/contracts/contractItems/1")
@@ -41,6 +34,7 @@ export default function Financial() {
 
 
     useEffect(() => {
+        fetchTypeData()
     }, [])
 
     const router = useRouter();

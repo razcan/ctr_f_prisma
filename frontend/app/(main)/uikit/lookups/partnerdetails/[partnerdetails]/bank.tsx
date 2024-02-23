@@ -64,7 +64,6 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         setCurrency(response);
     }
 
-    setCurrency
 
     useEffect(() => {
         fetchPartnerBanks(),

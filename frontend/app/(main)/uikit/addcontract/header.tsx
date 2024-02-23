@@ -559,7 +559,7 @@ const HeaderContract = () => {
                         <InputTextarea className='max-w-screen' value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
                     </div>
 
-                    <div className="field col-1 md:col-1 ">
+                    <div className="field col-1 md:col-2 ">
                         <Button label="Salveaza" onClick={saveContract} />
                     </div>
                 </div>

@@ -40,7 +40,7 @@ export default function Financial() {
     const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
     const [guaranteeLetterValue, setGuaranteeLetterValue] = useState(0);
-    const [guaranteeLetterDate, setGuaranteeLetterDate] = useState(false);
+    const [guaranteeLetterDate, setGuaranteeLetterDate] = useState('');
     const [guaranteeLetterCurrency, setGuaranteeLetterCurrency] = useState([]);
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
@@ -282,12 +282,12 @@ export default function Financial() {
 
         interface financialDetail {
             itemid?: number,
-            totalContractValue?: boolean,
+            totalContractValue?: number,
             currencyid?: number,
             currencyValue?: boolean,
             currencyPercent?: boolean,
             billingDay?: number,
-            billingQtty?: boolean,
+            billingQtty?: number,
             billingFrequencyid?: number,
             measuringUnitid?: number,
             paymentTypeid?: number,
@@ -296,7 +296,7 @@ export default function Financial() {
             remarks?: String,
             guaranteeLetter?: Boolean,
             guaranteeLetterCurrencyid?: number,
-            guaranteeLetterDate?: Date,
+            guaranteeLetterDate?: Date | undefined,
             guaranteeLetterValue?: Boolean,
             contractItemId?: number,
             active?: boolean
@@ -305,23 +305,23 @@ export default function Financial() {
 
         let addedfinancialDetail: financialDetail = {
             itemid: selectedItem.id,
-            totalContractValue: totalContractValue,
+            totalContractValue: parseFloat(totalContractValue),
             currencyid: currency.id,
             currencyValue: parseFloat(currencyValue),
             currencyPercent: currencyPercent,
-            billingDay: billingDay,
-            billingQtty: billingQtty,
+            billingDay: parseInt(billingDay),
+            billingQtty: parseFloat(billingQtty),
             billingFrequencyid: billingFrequency.id,
             measuringUnitid: measuringUnit.id,
             paymentTypeid: paymentType.id,
             billingPenaltyPercent: billingPenaltyPercent,
             billingDueDays: billingDueDays,
             remarks: remarks,
-            guaranteeLetter: guaranteeLetter,
-            guaranteeLetterCurrencyid: guaranteeLetterCurrency.id,
-            guaranteeLetterDate: guaranteeLetterDate,
-            guaranteeLetterValue: parseFloat(guaranteeLetterValue),
-            contractItemId: 1,
+            guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
+            guaranteeLetterCurrencyid: guaranteeLetterCurrency ? guaranteeLetterCurrency.id : null,
+            guaranteeLetterDate: guaranteeLetterDate ? guaranteeLetterDate : null,
+            guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
+            contractItemId: 15,
             active: active
         }
 
@@ -330,9 +330,9 @@ export default function Financial() {
             currencyid?: number,
             date: Date,
             measuringUnitid?: number,
-            billingQtty: boolean,
-            totalContractValue: boolean,
-            billingValue: boolean,
+            billingQtty: number,
+            totalContractValue: number,
+            billingValue: number,
             isInvoiced: boolean,
             isPayed: boolean,
             active?: boolean
@@ -347,9 +347,9 @@ export default function Financial() {
                     currencyid: scadenta.currencyid,
                     date: new Date(scadenta.data),
                     measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: scadenta.cantitate,
+                    billingQtty: parseFloat(scadenta.cantitate),
                     totalContractValue: scadenta.valoare,
-                    billingValue: scadenta.pret,
+                    billingValue: parseFloat(scadenta.pret),
                     isInvoiced: scadenta.isInvoiced,
                     isPayed: scadenta.isPayed,
                     active: active
@@ -363,7 +363,7 @@ export default function Financial() {
             contractId?: number,
             itemid: number,
             currencyid?: number,
-            currencyValue?: boolean,
+            currencyValue?: number,
             billingFrequencyid: number,
             active?: boolean
         }
@@ -373,17 +373,11 @@ export default function Financial() {
             contractId: 1,
             itemid: selectedItem.id,
             currencyid: currency.id,
-            currencyValue: totalContractValue,
+            currencyValue: parseFloat(totalContractValue),
             billingFrequencyid: billingFrequency.id,
             active: active,
 
         }
-
-
-        // console.log(financialContractItem);
-        // console.log(ResultSchedule);
-
-        // console.log(addedfinancialDetail);
 
         try {
 
@@ -578,7 +572,7 @@ export default function Financial() {
                                 onCellSelect={onCellSelect}
                                 onSelectionChange={(e) => {
                                     setSelectedSchedule(e.value)
-                                    console.log("linie selectata: ", e.value.rowData.isInvoiced)
+                                    // console.log("linie selectata: ", e.value.rowData.isInvoiced)
                                 }}
                                 stripedRows
                                 sortMode="multiple"

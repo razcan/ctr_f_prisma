@@ -56,6 +56,8 @@ export default function Tasks() {
     const [selectedTask, setselectedTask] = useState();
     const [allStatus, setAllStatus] = useState([])
 
+    const [entityId, setEntityId] = useState([])
+
 
 
     const fetchTasksData = () => {
@@ -78,8 +80,20 @@ export default function Tasks() {
             })
     }
 
-    const fetchPersonsData = () => {
-        fetch("   http://localhost:3000/nomenclatures/persons/2")
+
+
+    const fetchEntity = () => {
+        fetch(`http://localhost:3000/contracts/basic/${Id}`)
+            .then(response => {
+                return response.json()
+            })
+            .then(entity => {
+                setEntityId(entity)
+            })
+    }
+
+    const fetchPersonsData = (CtrId: Number) => {
+        fetch(`http://localhost:3000/nomenclatures/persons/${CtrId}`)
             .then(response => {
                 return response.json()
             })
@@ -90,32 +104,25 @@ export default function Tasks() {
 
     useEffect(() => {
         fetchTasksData(),
-            fetchPersonsData(),
+            fetchEntity(),
+            // fetchPersonsData(entityId),
             fetchTasksStatusData()
     }, [])
 
 
+    useEffect(() => {
+        fetchPersonsData(entityId)
+    }, [entityId])
 
-
-
-
-    //TaskName, Progress, StatusDate , Status, Requestor, Assigned, Due, Notes, LastUpdated, Delete
-    //de adaugat nomencaltor status in seed db Status - In Progress, Completed, Canceled
-
-
-    //Prepare contract review, 30 % completed, , in progress, Laura calcche, vasile petre, data, trebuie sa repede, data, icoana stergere
-    //la salvare se trimite email catre cel caruia i-a fost asignat si catre solicitant
-    //ui tabel cu taskuri - modal cu adaugare
-    //nomenclarorul de persoane se ia de la nivel de entitate pe care este ctr.
 
     interface Task {
         taskName: String,
         contractId: Number,
         progress: Number,
-        status: Number,
+        statusId: Number,
         statusDate: Date,
-        requestor: Number,
-        assigned: Number,
+        requestorId: Number,
+        assignedId: Number,
         due: Date,
         notes: String
     }
@@ -125,10 +132,10 @@ export default function Tasks() {
         interface TaskId {
             taskName: String,
             progress: Number,
-            status: Number,
+            statusId: Number,
             statusDate: Date,
-            requestor: Number,
-            assigned: Number,
+            requestorId: Number,
+            assignedId: Number,
             due: Date,
             notes: String
         }
@@ -137,10 +144,10 @@ export default function Tasks() {
             taskName: selectedtaskName,
             // contractId: contractId,
             progress: Number.parseInt(selectedprogress, 10),
-            status: selectedstatus,
+            statusId: selectedstatus.id,
             statusDate: selectedstatusDate,
-            requestor: selectedrequestor,
-            assigned: selectedassigned,
+            requestorId: selectedrequestor.id,
+            assignedId: selectedassigned.id,
             due: selecteddue,
             notes: selectednotes
 
@@ -152,7 +159,6 @@ export default function Tasks() {
             );
             setVisible(false)
             fetchTasksData()
-            fetchPersonsData()
 
             console.log('Task added:', response.data);
         } catch (error) {
@@ -169,22 +175,21 @@ export default function Tasks() {
             taskName: taskName,
             contractId: Id,
             progress: Number.parseInt(progress, 10),
-            status: status.id,
+            statusId: status.id,
             statusDate: statusDate,
-            requestor: requestor.id,
-            assigned: assigned.id,
+            requestorId: requestor.id,
+            assignedId: assigned.id,
             due: due,
             notes: notes
         }
 
+        console.log(Task)
         try {
             const response = await axios.post('http://localhost:3000/contracts/task',
                 Task
             );
             setVisible(false)
             fetchTasksData()
-            fetchPersonsData()
-
             setselectedTask(undefined)
             setProgress(0)
             setVisible(false)
@@ -217,24 +222,7 @@ export default function Tasks() {
         return <span>{formattedDate}</span>;
     };
 
-    const getPersonJsonN = (id: InputNumber) => {
-        return persons.find((obj) => obj.id === id);
-    };
 
-    const RequestorTemplate = (rowData: any) => {
-        const requestor = getPersonJsonN(rowData.requestor);
-        return <span>{requestor.name}</span>;
-    };
-
-    const AssignedTemplate = (rowData: any) => {
-        const requestor = getPersonJsonN(rowData.assigned);
-        return <span>{requestor.name}</span>;
-    };
-
-    const StatusTaskTemplate = (rowData: any) => {
-        const status = getStatusJson(rowData.status);
-        return <span>{status.name}</span>;
-    };
 
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
@@ -243,11 +231,6 @@ export default function Tasks() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
-
-
-    const getStatusJson = (id: InputNumber) => {
-        return allStatus.find((obj) => obj.id === id);
-    };
 
     return (
         <div className="grid">
@@ -280,7 +263,7 @@ export default function Tasks() {
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="status">Stare</label>
-                                                <Dropdown id="status" filter showClear value={getStatusJson(selectedstatus)} onChange={(e) => setselectedStatus(e.value.id)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                <Dropdown id="status" filter showClear value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
                                             <div className="field col-12 md:col-3">
@@ -306,12 +289,12 @@ export default function Tasks() {
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="requestor">Solicitant</label>
-                                                <Dropdown id="requestor" filter showClear value={getPersonJsonN(selectedrequestor)} onChange={(e) => setselectedRequestor(e.value.id)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                <Dropdown id="requestor" filter showClear value={selectedrequestor} onChange={(e) => setselectedRequestor(e.value)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="">Asignat catre</label>
-                                                <Dropdown id="assigned" filter showClear value={getPersonJsonN(selectedassigned)} onChange={(e) => setselectedAssigned(e.value.id)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                <Dropdown id="assigned" filter showClear value={selectedassigned} onChange={(e) => setselectedAssigned(e.value)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
 
@@ -330,69 +313,73 @@ export default function Tasks() {
                                         </div>
                                         :
 
-                                        <div className="p-fluid formgrid grid pt-2">
+                                        <div>
+                                            {persons ?
+                                                <div className="p-fluid formgrid grid pt-2">
+                                                    <div className="field col-12  md:col-12">
+                                                        <ProgressBar value={progress}></ProgressBar>
+                                                    </div>
 
-                                            <div className="field col-12  md:col-12">
-                                                <ProgressBar value={progress}></ProgressBar>
-                                            </div>
+                                                    <div className="field col-12  md:col-6">
+                                                        <label htmlFor="taskName">Nume Task</label>
+                                                        <InputText id="taskName" type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
 
-                                            <div className="field col-12  md:col-6">
-                                                <label htmlFor="taskName">Nume Task</label>
-                                                <InputText id="taskName" type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
+                                                    </div>
 
-                                            </div>
+                                                    <div className="field col-12 md:col-3">
+                                                        <label htmlFor="status">Stare</label>
+                                                        <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                    </div>
 
-                                            <div className="field col-12 md:col-3">
-                                                <label htmlFor="status">Stare</label>
-                                                <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
-                                            </div>
-
-                                            <div className="field col-12 md:col-3">
-                                                <label className="font-bold block mb-2">
-                                                    De rezolvat pana la data
-                                                </label>
-                                                <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                            </div>
-
-
-                                            <div className="field col-12 md:col-3">
-                                                <label className="font-bold block mb-2">
-                                                    Progres la Data
-                                                </label>
-                                                <Calendar id="statusDate" value={statusDate} onChange={(e) => setStatusDate(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                            </div>
-
-                                            <div className="field col-12  md:col-3">
-                                                <label htmlFor="progress">Progres Actual(%)</label>
-                                                <InputText id="progress" type="int" value={progress} onChange={(e) => setProgress(e.target.value)} />
-                                            </div>
+                                                    <div className="field col-12 md:col-3">
+                                                        <label className="font-bold block mb-2">
+                                                            De rezolvat pana la data
+                                                        </label>
+                                                        <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                                    </div>
 
 
+                                                    <div className="field col-12 md:col-3">
+                                                        <label className="font-bold block mb-2">
+                                                            Progres la Data
+                                                        </label>
+                                                        <Calendar id="statusDate" value={statusDate} onChange={(e) => setStatusDate(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                                    </div>
 
-                                            <div className="field col-12 md:col-3">
-                                                <label htmlFor="requestor">Solicitant</label>
-                                                <Dropdown id="requestor" filter showClear value={requestor} onChange={(e) => setRequestor(e.value)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
-                                            </div>
-
-                                            <div className="field col-12 md:col-3">
-                                                <label htmlFor="">Asignat catre</label>
-                                                <Dropdown id="assigned" filter showClear value={assigned} onChange={(e) => setAssigned(e.value)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
-                                            </div>
+                                                    <div className="field col-12  md:col-3">
+                                                        <label htmlFor="progress">Progres Actual(%)</label>
+                                                        <InputText id="progress" type="int" value={progress} onChange={(e) => setProgress(e.target.value)} />
+                                                    </div>
 
 
 
-                                            <div className="field col-12  md:col-12">
-                                                <label className="ml-2">Descriere Task</label>
-                                            </div>
+                                                    <div className="field col-12 md:col-3">
+                                                        <label htmlFor="requestor">Solicitant</label>
+                                                        <Dropdown id="requestor" filter showClear value={requestor} onChange={(e) => setRequestor(e.value)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                    </div>
 
-                                            <div className="field-checkbox col-12 md:col-12">
-                                                <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
-                                            </div>
-                                            <div className="field-checkbox col-12 md:col-3">
-                                                <Button label="Salveaza" onClick={SaveTask} />
-                                            </div>
+                                                    <div className="field col-12 md:col-3">
+                                                        <label htmlFor="">Asignat catre</label>
+                                                        <Dropdown id="assigned" filter showClear value={assigned} onChange={(e) => setAssigned(e.value)} options={persons} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                    </div>
+
+
+
+                                                    <div className="field col-12  md:col-12">
+                                                        <label className="ml-2">Descriere Task</label>
+                                                    </div>
+
+                                                    <div className="field-checkbox col-12 md:col-12">
+                                                        <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
+                                                    </div>
+                                                    <div className="field-checkbox col-12 md:col-3">
+                                                        <Button label="Salveaza" onClick={SaveTask} />
+                                                    </div>
+                                                </div>
+                                                : null}
 
                                         </div>
+
 
                                     }
 
@@ -428,10 +415,10 @@ export default function Tasks() {
                     >
                         <Column field="id" header="id"></Column>
                         <Column field="progress" header="Progres(%)"></Column>
-                        <Column field="status" header="Stare" body={StatusTaskTemplate}></Column>
+                        <Column field="status.name" header="Stare"></Column>
                         <Column field="statusDate" header="Stare la data" body={StatusDateTemplate} ></Column>
-                        <Column field="requestor" header="Solicitant" body={RequestorTemplate}></Column>
-                        <Column field="assigned" header="Responsabil" body={AssignedTemplate}></Column>
+                        <Column field="requestor.name" header="Solicitant" ></Column>
+                        <Column field="assigned.name" header="Responsabil"></Column>
                         <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
                         <Column field="notes" header="Detalii"></Column>
                         <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>

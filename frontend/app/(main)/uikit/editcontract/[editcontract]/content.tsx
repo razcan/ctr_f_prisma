@@ -159,10 +159,13 @@ export default function Content() {
                 contractId: parseInt(Id)
             }
 
-            const response = await axios.post('http://localhost:3000/contracts/content',
+
+            const response_update = await axios.patch(`http://localhost:3000/contracts/content/${Id}`,
                 createContent
             );
-            console.log('Content added:', response.data);
+            console.log('Content added:', response_update.data);
+
+
         } catch (error) {
             console.error('Error creating content:', error);
         }

@@ -39,7 +39,7 @@ export default function Financial() {
     const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
     const [guaranteeLetterValue, setGuaranteeLetterValue] = useState(0);
-    const [guaranteeLetterDate, setGuaranteeLetterDate] = useState(false);
+    const [guaranteeLetterDate, setGuaranteeLetterDate] = useState('');
     const [guaranteeLetterCurrency, setGuaranteeLetterCurrency] = useState([]);
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
@@ -283,10 +283,10 @@ export default function Financial() {
     };
 
     const saveData = () => {
-        console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
-            paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
+        // console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
+        //     paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
 
-        console.log("scadentar", scadentar)
+        // console.log("scadentar", scadentar)
         //treb adaugate id-urile si ascune la afisare - fol doar la export
     }
 
@@ -445,7 +445,7 @@ export default function Financial() {
                                 onCellSelect={onCellSelect}
                                 onSelectionChange={(e) => {
                                     setSelectedSchedule(e.value)
-                                    console.log("linie selectata: ", e.value.rowData.isInvoiced)
+                                    // console.log("linie selectata: ", e.value.rowData.isInvoiced)
                                 }}
                                 stripedRows
                                 sortMode="multiple"

@@ -35,67 +35,32 @@ export default function Financial() {
             })
     }
 
-    const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
-            .then(item => { setAllItems(item) })
-    }
-
-    const fetchAllCurrencies = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
-        setAllCurrency(response);
-    }
-
-    const fetchAllBillingFrequency = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/billingfrequency`).then(res => res.json())
-        setAllBillingFrequency(response);
-    }
-
-
-    const getItemJson = (id: number) => {
-        const item = allitems.find((obj) => obj.id === id);
-        console.log(item)
-    };
-
-    const getBillScheduleJson = (id: number) => {
-        return allBillingFrequency.find((obj) => obj.id === id);
-    };
-
-    const getCurrencyJson = (id: number) => {
-        return allCurrency.find((obj) => obj.id === id);
-    };
-
-
-    // const currencyTemplate = () => {
-    //     return getCurrencyJson(item[0].itemid);
-    // };
-
-    console.log(item)
-
-
     useEffect(() => {
-        fetchTypeData(),
-            fetchItemsData(),
-            fetchAllCurrencies(),
-            fetchAllBillingFrequency()
+        fetchTypeData()
     }, [])
-
-    // console.log(allBillingFrequency)
-    // console.log(allitems)
-    // console.log(allCurrency)
-
-    const x = getItemJson(1)
-    const y = getCurrencyJson(1)
-    const z = getBillScheduleJson(3)
-
-    const itemTemplate = (item) => {
-        return <Tag value={getItemJson(1)}></Tag>;
-    };
 
     const router = useRouter();
 
     const goToDetails = () => {
         router.push('/uikit/addcontract/financialdetails');
     }
+
+    const statusTemplate = (item) => {
+        return <Tag value={item.active} severity={getSeverity(item)}></Tag>;
+    };
+
+    const getSeverity = (item) => {
+        switch (item.active) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="grid">
@@ -106,15 +71,11 @@ export default function Financial() {
 
                     <DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}>
                         <Column field="id" header="id"></Column>
-                        <Column field="itemid" header="itemid"
-                            body={itemTemplate}
-                            style={{ width: '5vh' }} ></Column>
-                        <Column field="billingFrequencyid" header="billingFrequencyid"></Column>
-                        <Column field="currencyid" header="currencyid"
-                        // body={currencyTemplate} 
-                        ></Column>
-                        <Column field="currencyValue" header="currencyValue"></Column>
-                        <Column field="active" header="active"></Column>
+                        <Column field="item.name" header="Articol"></Column>
+                        <Column field="frequency.name" header="Perioada"></Column>
+                        <Column field="currency.code" header="Valuta"></Column>
+                        <Column field="currencyValue" header="Valoare"></Column>
+                        <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
                     </DataTable>
 
                 </div>
