@@ -299,7 +299,8 @@ export default function Financial() {
             guaranteeLetterDate?: Date | undefined,
             guaranteeLetterValue?: Boolean,
             contractItemId?: number,
-            active?: boolean
+            active?: boolean,
+            // contractfinancialItemId: number
 
         }
 
@@ -321,8 +322,9 @@ export default function Financial() {
             guaranteeLetterCurrencyid: guaranteeLetterCurrency ? guaranteeLetterCurrency.id : null,
             guaranteeLetterDate: guaranteeLetterDate ? guaranteeLetterDate : null,
             guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
-            contractItemId: 15,
-            active: active
+            contractItemId: 0,
+            active: active,
+            // contractfinancialItemId: 0
         }
 
         interface financialDetailSchedule {
@@ -335,8 +337,8 @@ export default function Financial() {
             billingValue: number,
             isInvoiced: boolean,
             isPayed: boolean,
-            active?: boolean
-
+            active?: boolean,
+            contractfinancialItemId?: number
         }
 
         const ResultSchedule: financialDetailSchedule[] = []
@@ -352,7 +354,8 @@ export default function Financial() {
                     billingValue: parseFloat(scadenta.pret),
                     isInvoiced: scadenta.isInvoiced,
                     isPayed: scadenta.isPayed,
-                    active: active
+                    active: active,
+                    contractfinancialItemId: 0
 
                 }
                 ResultSchedule.push(add)
@@ -381,22 +384,25 @@ export default function Financial() {
 
         try {
 
+            console.log(financialContractItem)
             const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
-                financialContractItem
+                [financialContractItem, addedfinancialDetail, ResultSchedule]
             );
 
-            const response = await axios.post('http://localhost:3000/contracts/financialDetail',
-                addedfinancialDetail
+            // const response = await axios.post('http://localhost:3000/contracts/financialDetail',
+            //     addedfinancialDetail
+            // );
+
+            // const responsesch = await axios.post('http://localhost:3000/contracts/financialDetailSchedule',
+            //     ResultSchedule
+            // );
+
+
+
+
+            console.log('Contract details added:', responseitem.data
+                // , response.data, responsesch.data
             );
-
-            const responsesch = await axios.post('http://localhost:3000/contracts/financialDetailSchedule',
-                ResultSchedule
-            );
-
-
-
-
-            console.log('Contract details added:', responseitem.data, response.data, responsesch.data);
         } catch (error) {
             console.error('Error creating contract details:', error);
         }
