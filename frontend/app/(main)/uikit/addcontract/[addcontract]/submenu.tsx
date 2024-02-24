@@ -46,10 +46,10 @@ export default function Submenu() {
     const [personIndex, setPersonIndex] = useState<number>(0);
 
     // const { value, updateValue } = useData();
-    const { value } = useData();
+    const { value, updateValue } = useData();
     const [renderCount, setRenderCount] = useState(0);
 
-    console.log(value, "din submenu")
+
 
     const items = [
         {
@@ -105,18 +105,20 @@ export default function Submenu() {
         setParamId(parseInt(searchParams.get("Id")));
     }, [])
 
-    // Utilizați useEffect pentru a actualiza renderCount atunci când valoarea din context se schimbă
-    useEffect(() => {
-        // Incrementați renderCount pentru a declanșa re-renderizarea
-        setRenderCount(prevCount => prevCount + 1);
-        console.log(value, "din submenu")
-    }, [value]); // Re-randăm doar atunci când valoarea din context se schimbă
 
-    console.log("personIndex", personIndex)
+    useEffect(() => {
+        setRenderCount(prevCount => prevCount + 1);
+        updateValue(personIndex);
+        setParamId(personIndex);
+        console.log(value, "din submenu")
+        console.log("personIndex", personIndex)
+    }, [personIndex]);
+
+
 
     return (
         <>
-            <DataProvider key={personIndex}>
+            <DataProvider >
                 <div className="grid">
                     <div className="col-12">
                         <div className="card">
@@ -133,7 +135,7 @@ export default function Submenu() {
                                 <div>
                                     <div className='pt-4'>
                                         <HeaderContract
-                                            key={personIndex}
+                                            //key={personIndex}
                                             setPersonIndex={setPersonIndex}
                                         />
                                     </div>
