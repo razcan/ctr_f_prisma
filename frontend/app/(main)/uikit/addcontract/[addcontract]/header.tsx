@@ -1,7 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import { permanentRedirect } from 'next/navigation'
+import { revalidateTag } from 'next/cache'
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -22,6 +24,9 @@ import {
 import { ProgressSpinner } from 'primereact/progressspinner';
 import Documents from './documents';
 import { useSearchParams } from 'next/navigation'
+import { CurrentContractContext } from './context';
+import { useData } from './DataContext';
+import { DataProvider } from './DataContext';
 
 
 
@@ -63,7 +68,17 @@ interface Contract {
     partnerbankId: number
 }
 
-const HeaderContract = () => {
+
+export default function HeaderContract({ params, setPersonIndex, setPersonChild }: any) {
+
+    const contractId = useContext(CurrentContractContext);
+
+    console.log(contractId)
+
+    const { value, updateValue } = useData();
+    console.log(value, "din header")
+
+    // ctrId = 100;
 
     const router = useRouter();
     // const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
@@ -130,7 +145,8 @@ const HeaderContract = () => {
 
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-    console.log("Id: ", Id)
+    // console.log("Id: ", Id)
+    const [paramId, setParamId] = useState(0);
 
 
     const fetchTypeData = () => {
@@ -282,7 +298,7 @@ const HeaderContract = () => {
             partnerbankId: party_iban?.id ?? null
         }
 
-        console.log(addedContract);
+        // console.log(addedContract);
 
 
         try {
@@ -290,6 +306,14 @@ const HeaderContract = () => {
                 addedContract
                 // number, partner, start, end, completion, sign, type, remarks, status
             );
+
+            console.log('rasp: ', response)
+            setParamId(response.data.id)
+            setPersonIndex(response.data.id)
+            updateValue(response.data.id)
+
+            router.push(`/uikit/addcontract/ctr?Id=${response.data.id}`)
+
 
             console.log('Contract added:', response.data);
         } catch (error) {
@@ -417,7 +441,7 @@ const HeaderContract = () => {
                                                 onChange={(e) => {
                                                     setSelectedPartner(e.value)
                                                     fetchPartnersDetailsData(e.value.id)
-                                                    console.log(e.value)
+                                                    // console.log(e.value)
                                                 }}
                                                 options={partner}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
@@ -574,5 +598,3 @@ const HeaderContract = () => {
         </div>
     );
 };
-
-export default HeaderContract;
