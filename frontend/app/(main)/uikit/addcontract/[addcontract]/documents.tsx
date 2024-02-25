@@ -13,6 +13,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useData } from './DataContext';
+import { DataProvider } from './DataContext';
 
 export default function Documents() {
 
@@ -28,7 +30,7 @@ export default function Documents() {
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [metaKey, setMetaKey] = useState(true);
     const [selectedCell, setSelectedCell] = useState(null);
-
+    const { value, updateValue } = useData();
 
     const onTemplateSelect = (e) => {
         let _totalSize = totalSize;
@@ -125,7 +127,7 @@ export default function Documents() {
 
 
     const fetchAttachmentsData = () => {
-        fetch(`http://localhost:3000/contracts/file`)
+        fetch(`http://localhost:3000/contracts/file/${value}`)
             .then(response => {
                 return response.json()
             })
@@ -264,6 +266,9 @@ export default function Documents() {
         return <div>Doriti stergerea fisierului {selectedoriginalname}?</div>
     }
 
+    const url_link = `http://localhost:3000/contracts/file/${value}`
+
+
     return (
         <div className="card">
             <div className="grid">
@@ -309,7 +314,7 @@ export default function Documents() {
                         <Tooltip target=".custom-upload-btn" content="Incarca" position="bottom" />
                         <Tooltip target=".custom-cancel-btn" content="Goleste" position="bottom" />
 
-                        <FileUpload ref={fileUploadRef} name="files" url="http://localhost:3000/contracts/file"
+                        <FileUpload ref={fileUploadRef} name="files" url={url_link}
                             // customUpload={true}
                             // uploadHandler={SendDocuments}
                             multiple accept="*" maxFileSize={20000000}

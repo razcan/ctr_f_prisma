@@ -387,22 +387,22 @@ const ChartDemo = () => {
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
 
     //to be filled labels and data:
-    const pieData: ChartData = {
-      labels: ['A', 'B'],
-      datasets: [
-        {
-          data: [5, 7],
-          backgroundColor: [
-            // documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
-            documentStyle.getPropertyValue('--blue-500'),
-            documentStyle.getPropertyValue('--yellow-500'),
-            documentStyle.getPropertyValue('--green-500')
-          ],
-          hoverBackgroundColor: [documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7']
+    // const pieData: ChartData = {
+    //   labels: ['A', 'B'],
+    //   datasets: [
+    //     {
+    //       data: [5, 7],
+    //       backgroundColor: [
+    //         // documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
+    //         documentStyle.getPropertyValue('--blue-500'),
+    //         documentStyle.getPropertyValue('--yellow-500'),
+    //         documentStyle.getPropertyValue('--green-500')
+    //       ],
+    //       hoverBackgroundColor: [documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7']
 
-        }
-      ]
-    };
+    //     }
+    //   ]
+    // };
 
 
     // const barData: ChartData = {
@@ -459,12 +459,20 @@ const ChartDemo = () => {
     const pieOptions: ChartOptions = {
       plugins: {
         legend: {
+          position: 'left',
+          // position: { x: 100, y: 100 }, // Set custom legend position
           labels: {
+            // font: {
+            //   size: 8, // Font size
+            //   family: 'Arial', // Font family
+            //   // style: 'italic', // Font style
+            // },
             usePointStyle: true,
             color: textColor
           }
         }
-      }
+      },
+
     };
 
     const lineData: ChartData = {
@@ -621,21 +629,27 @@ const ChartDemo = () => {
       <div className="col-12 xl:col-6">
         <div className="card flex flex-column align-items-center">
           <h5 className="text-left w-full">Tipuri Contracte</h5>
-          <Chart style={{ height: '30vh' }} type="pie" data={myPieData} options={options.pieOptions}></Chart>
+          <Chart
+            style={{ width: '50vh', height: '50vh' }}
+            type="pie" data={myPieData} options={options.pieOptions}></Chart>
         </div>
       </div>
 
       <div className="col-12 xl:col-6">
         <div className="card flex flex-column align-items-center">
           <h5 className="text-left w-full">Stari Contracte</h5>
-          <Chart style={{ height: '30vh' }} type="doughnut" data={myDoughnutData} options={options.pieOptions}></Chart>
+          <Chart
+            style={{ width: '50vh', height: '50vh' }}
+            type="doughnut" data={myDoughnutData} options={options.pieOptions}></Chart>
         </div>
       </div>
 
       <div className="col-12 xl:col-6">
         <div className="card" >
           <h5>Linear Chart</h5>
-          <Chart style={{ height: '30vh' }} type="line" data={data.lineData} options={options.lineOptions}></Chart>
+          <Chart
+            style={{ height: '30vh' }}
+            type="line" data={data.lineData} options={options.lineOptions}></Chart>
         </div>
       </div>
 

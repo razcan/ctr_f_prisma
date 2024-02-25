@@ -23,11 +23,13 @@ import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import { ProgressBar } from 'primereact/progressbar';
 import { Slider } from 'primereact/slider';
+import { useData } from './DataContext';
+import { DataProvider } from './DataContext';
 
 export default function Tasks() {
 
+    const { value, updateValue } = useData();
     const [visible, setVisible] = useState(false);
-
     const [taskName, setTaskName] = useState('');
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState([]);
@@ -53,21 +55,6 @@ export default function Tasks() {
     const [selectedTask, setselectedTask] = useState();
     const [allStatus, setAllStatus] = useState([])
 
-    // const allStatus = [
-    //     { id: 1, name: "In curs" },
-    //     { id: 2, name: "Finalizat" },
-    //     { id: 3, name: "Anulat" },
-    // ]
-
-    // const fetchTasksData = () => {
-    //     fetch("http://localhost:3000/contracts/task")
-    //         .then(response => {
-    //             return response.json()
-    //         })
-    //         .then(tasks => {
-    //             setTasks(tasks)
-    //         })
-    // }
 
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
@@ -95,19 +82,6 @@ export default function Tasks() {
             fetchTasksStatusData()
     }, [])
 
-
-
-
-
-
-    //TaskName, Progress, StatusDate , Status, Requestor, Assigned, Due, Notes, LastUpdated, Delete
-    //de adaugat nomencaltor status in seed db Status - In Progress, Completed, Canceled
-
-
-    //Prepare contract review, 30 % completed, , in progress, Laura calcche, vasile petre, data, trebuie sa repede, data, icoana stergere
-    //la salvare se trimite email catre cel caruia i-a fost asignat si catre solicitant
-    //ui tabel cu taskuri - modal cu adaugare
-    //nomenclarorul de persoane se ia de la nivel de entitate pe care este ctr.
 
     interface Task {
         taskName: String,
@@ -402,7 +376,6 @@ export default function Tasks() {
                     </Dialog>
 
                     <Button label="Adauga Task" onClick={addtask} />
-
                     <DataTable className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
                         selectionMode="single"

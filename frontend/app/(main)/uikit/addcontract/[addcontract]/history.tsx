@@ -17,10 +17,15 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import axios from 'axios';
+import { useData } from './DataContext';
+import { DataProvider } from './DataContext';
+
 
 export default function History() {
 
     const [logs, setLogs] = useState('');
+    const { value, updateValue } = useData();
+    console.log(value, "din history")
 
     const fetchContent = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${4}`).then(res => res.json())

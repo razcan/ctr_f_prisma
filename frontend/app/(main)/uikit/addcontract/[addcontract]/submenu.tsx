@@ -33,31 +33,21 @@ import Alerts from './alerts';
 import Tasks from './tasks'
 import { useSearchParams } from 'next/navigation'
 import { Toast } from 'primereact/toast';
-import { CurrentContractContext } from './context';
 import { DataProvider, useData } from './DataContext';
 
 export default function Submenu() {
 
     const router = useRouter();
-    const [number, setNumber] = useState();
     const [activeIndex, setActiveIndex] = useState(0);
     const [paramId, setParamId] = useState(0);
     const toast = useRef(null);
-    const [personIndex, setPersonIndex] = useState<number>(0);
-
-    // const { value, updateValue } = useData();
+    const [contractId, setContractId] = useState<number>(0);
     const { value, updateValue } = useData();
     const [renderCount, setRenderCount] = useState(0);
-
-
 
     const items = [
         {
             label: 'Informatii generale', icon: 'pi pi-home'
-            // ,
-            // command: () => {
-            //     router.push('/uikit/addcontract');
-            // }
         },
         {
             label: 'Documente Atasate', icon: 'pi pi-inbox'
@@ -90,29 +80,19 @@ export default function Submenu() {
         }
         else if (paramId != 0) {
             setActiveIndex(e)
-            // router.push(`/uikit/addcontract/ctr?Id=${2}`)
-            // permanentRedirect(`/uikit/addcontract/${2}`)
         }
     }
 
-    // const Id = parseInt(searchParams.get("Id"));
-
-    console.log("Id: ", paramId, "activeIndex: ", activeIndex)
-
     useEffect(() => {
-        // setParamId(Id)
-        // changeTab(activeIndex)
         setParamId(parseInt(searchParams.get("Id")));
     }, [])
 
 
     useEffect(() => {
         setRenderCount(prevCount => prevCount + 1);
-        updateValue(personIndex);
-        setParamId(personIndex);
-        console.log(value, "din submenu")
-        console.log("personIndex", personIndex)
-    }, [personIndex]);
+        //updateValue(personIndex);
+        setParamId(contractId);
+    }, [contractId]);
 
 
 
@@ -126,7 +106,6 @@ export default function Submenu() {
                                 <Toast ref={toast} />
                                 <TabMenu model={items} activeIndex={activeIndex}
                                     onTabChange={(e) => changeTab(e.index)} />
-                                <p>Value: {value}</p>
                             </div>
                             {/* <div className="p-fluid formgrid grid pt-2"> */}
 
@@ -135,8 +114,7 @@ export default function Submenu() {
                                 <div>
                                     <div className='pt-4'>
                                         <HeaderContract
-                                            //key={personIndex}
-                                            setPersonIndex={setPersonIndex}
+                                            setContractId={setContractId}
                                         />
                                     </div>
                                 </div>

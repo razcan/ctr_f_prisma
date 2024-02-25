@@ -13,7 +13,6 @@ const DataContext = createContext<ContextValues | undefined>(undefined);
 
 export const DataProvider: React.FC = ({ children }) => {
     const [value, setValue] = useState(0);
-    console.log(value, " din functia de context")
 
     const updateValue = (newValue: number) => {
         setValue(newValue);

@@ -24,7 +24,6 @@ import {
 import { ProgressSpinner } from 'primereact/progressspinner';
 import Documents from './documents';
 import { useSearchParams } from 'next/navigation'
-import { CurrentContractContext } from './context';
 import { useData } from './DataContext';
 import { DataProvider } from './DataContext';
 
@@ -69,19 +68,11 @@ interface Contract {
 }
 
 
-export default function HeaderContract({ params, setPersonIndex, setPersonChild }: any) {
+export default function HeaderContract({ setContractId }: any) {
 
-    const contractId = useContext(CurrentContractContext);
-
-    console.log(contractId)
 
     const { value, updateValue } = useData();
-    console.log(value, "din header")
-
-    // ctrId = 100;
-
     const router = useRouter();
-    // const [dropdownItem, setDropdownItem] = useState<DropdownItem | null>(null);
     const [contractStatus, setContractStatus] = useState([]);
     const [number, setNumber] = useState();
     const [type, setType] = useState();
@@ -304,12 +295,10 @@ export default function HeaderContract({ params, setPersonIndex, setPersonChild 
         try {
             const response = await axios.post('http://localhost:3000/contracts',
                 addedContract
-                // number, partner, start, end, completion, sign, type, remarks, status
             );
 
-            console.log('rasp: ', response)
             setParamId(response.data.id)
-            setPersonIndex(response.data.id)
+            setContractId(response.data.id)
             updateValue(response.data.id)
 
             router.push(`/uikit/addcontract/ctr?Id=${response.data.id}`)
