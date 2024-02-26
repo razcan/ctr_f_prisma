@@ -344,20 +344,20 @@ const ChartDemo = () => {
               {
                 data: data22,
                 backgroundColor: [
-                  // documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
-                  documentStyle.getPropertyValue('--purple-500'),
-                  documentStyle.getPropertyValue('--yellow-500'),
-                  documentStyle.getPropertyValue('--green-500'),
-                  documentStyle.getPropertyValue('--indigo-500'),
-                  documentStyle.getPropertyValue('--blue-500')
+                  documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
+                  // documentStyle.getPropertyValue('--purple-500'),
+                  // documentStyle.getPropertyValue('--yellow-500'),
+                  // documentStyle.getPropertyValue('--green-500'),
+                  // documentStyle.getPropertyValue('--indigo-500'),
+                  // documentStyle.getPropertyValue('--blue-500')
                 ],
                 hoverBackgroundColor: [
-                  // documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
-                  documentStyle.getPropertyValue('--purple-500'),
-                  documentStyle.getPropertyValue('--yellow-500'),
-                  documentStyle.getPropertyValue('--green-500'),
-                  documentStyle.getPropertyValue('--indigo-500'),
-                  documentStyle.getPropertyValue('--blue-500')
+                  documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
+                  // documentStyle.getPropertyValue('--purple-500'),
+                  // documentStyle.getPropertyValue('--yellow-500'),
+                  // documentStyle.getPropertyValue('--green-500'),
+                  // documentStyle.getPropertyValue('--indigo-500'),
+                  // documentStyle.getPropertyValue('--blue-500')
                 ]
 
               }
@@ -459,6 +459,7 @@ const ChartDemo = () => {
     const pieOptions: ChartOptions = {
       plugins: {
         legend: {
+          display: true, // Show the legend on the chart
           position: 'left',
           // position: { x: 100, y: 100 }, // Set custom legend position
           labels: {

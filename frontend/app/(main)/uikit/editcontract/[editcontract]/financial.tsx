@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
 import React, { useState, useEffect, useMemo } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -18,15 +19,20 @@ import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { Tag } from 'primereact/tag';
 
+
 export default function Financial() {
 
+    const router = useRouter();
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
     const [item, setItem] = useState([]);
     const [allitems, setAllItems] = useState([]);
     const [allBillingFrequency, setAllBillingFrequency] = useState([]);
     const [allCurrency, setAllCurrency] = useState([]);
+    const [selectedContractItem, setSelectedContractItem] = useState(null);
 
     const fetchTypeData = () => {
-        fetch("http://localhost:3000/contracts/contractItems/1")
+        fetch(`http://localhost:3000/contracts/contractItems/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -39,11 +45,12 @@ export default function Financial() {
         fetchTypeData()
     }, [])
 
-    const router = useRouter();
-
-    const goToDetails = () => {
-        router.push('/uikit/addcontract/financialdetails');
+    const addContractItem = () => {
+        router.push(`/uikit/editcontract/editcontract/financialdetails/add/ctr?Id=${Id}`);
+        // router.push('/uikit/addcontract/financialdetails');
     }
+
+    // http://localhost:3000/contracts/contractItemsDetails/95
 
     const statusTemplate = (item) => {
         return <Tag value={item.active} severity={getSeverity(item)}></Tag>;
@@ -62,14 +69,26 @@ export default function Financial() {
         }
     };
 
+    const editContractItem = (id: any) => {
+        router.push(`/uikit/editcontract/editcontract/financialdetails/edit/ContractItemId?Id=${id}`);
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
                 <div className="card">
 
-                    <Button label="Adauga" icon="pi pi-external-link" onClick={() => goToDetails()} />
+                    <Button label="Adauga" icon="pi pi-external-link" onClick={() => addContractItem()} />
 
-                    <DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}>
+                    <DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}
+                        stripedRows paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]}
+                        sortMode="multiple"
+                        selectionMode="single"
+                        selection={selectedContractItem} onSelectionChange={(e) => {
+                            setSelectedContractItem(e.value),
+                                editContractItem(e.value.id)
+                        }}
+                    >
                         <Column field="id" header="id"></Column>
                         <Column field="item.name" header="Articol"></Column>
                         <Column field="frequency.name" header="Perioada"></Column>

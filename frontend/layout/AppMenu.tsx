@@ -38,10 +38,21 @@ const AppMenu = () => {
                     to: '/uikit/lookups'
                 },
                 {
+                    label: 'Modele Contracte',
+                    icon: 'pi pi-fw pi-times-circle',
+                    to: '/auth/error'
+                },
+                {
                     label: 'Alerte',
                     icon: 'pi pi-fw pi-briefcase',
                     to: '/uikit/alerts',
-                }
+                },
+
+                {
+                    label: 'Utilizatori',
+                    icon: 'pi pi-fw pi-sign-in',
+                    to: '/auth/login'
+                },
             ]
         }
         // {

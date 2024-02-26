@@ -130,7 +130,7 @@ function Contracts() {
 
     return (
         <div>
-            <div><Button label="Adauga" onClick={addContract} /></div>
+            <div className='p-1'><Button label="Adauga" onClick={addContract} /></div>
             <DataTable value={data}
                 filters={filters}
                 globalFilterFields={['number', 'partner.name', 'entity.name', 'type.name', 'status.name', 'start', 'Category.name']} header={header}

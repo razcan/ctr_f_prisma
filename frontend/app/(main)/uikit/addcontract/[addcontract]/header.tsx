@@ -354,11 +354,12 @@ export default function HeaderContract({ setContractId }: any) {
                                                 value={ent_name}
                                                 onChange={(e) => {
                                                     setEnt_id(e.target.value.id)
-                                                    setEnt_name(e.target.value.name)
+                                                    setEnt_name(e.target.value)
                                                     setEnt_email(e.target.value.email)
                                                     setEnt_phone(e.target.value.phone)
                                                     setEnt_legal_person(e.target.value.legalrepresent)
                                                     setEnt_role(e.target.value.role)
+
                                                 }
                                                 }
                                                 options={entitydetails.Persons}
