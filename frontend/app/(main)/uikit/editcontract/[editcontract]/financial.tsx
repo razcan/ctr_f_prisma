@@ -70,7 +70,7 @@ export default function Financial() {
     };
 
     const editContractItem = (id: any) => {
-        router.push(`/uikit/editcontract/editcontract/financialdetails/edit/ContractItemId?Id=${id}`);
+        router.push(`/uikit/editcontract/editcontract/financialdetails/edit/ContractItemId?Id=${id}&ctrId=${Id}`);
     }
 
     return (

@@ -41,7 +41,7 @@ export default function Financial() {
     const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
     const [guaranteeLetterValue, setGuaranteeLetterValue] = useState(0);
-    const [guaranteeLetterDate, setGuaranteeLetterDate] = useState('');
+    const [guaranteeLetterDate, setGuaranteeLetterDate] = useState();
     const [guaranteeLetterCurrency, setGuaranteeLetterCurrency] = useState([]);
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
@@ -51,11 +51,17 @@ export default function Financial() {
     const [isInvoiced, setIsInvoiced] = useState(false);
     const [isPayed, setIsPayed] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState();
+    const [contractfinancialItemId, setContractfinancialItemId] = useState(0);
+
+
+    const [startContractDate, setStartContractDate] = useState('');
+    const [endContractDate, setEndContractDate] = useState('');
+
 
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-
+    const ctrId = searchParams.get("ctrId");
 
     interface financialDetail {
         itemid?: number,
@@ -81,20 +87,34 @@ export default function Financial() {
 
     }
 
+    interface financialDetailSchedule {
+        itemid: number,
+        currencyid?: number,
+        date: Date,
+        measuringUnitid?: number,
+        billingQtty: number,
+        totalContractValue: number,
+        billingValue: number,
+        isInvoiced: boolean,
+        isPayed: boolean,
+        active?: boolean,
+        contractfinancialItemId?: number
+    }
+
 
     const dt = useRef(null);
     // const [data, setData] = useState(null);
 
     const cols = [
-        { field: 'item', header: 'item' },
-        { field: 'data', header: 'data' },
-        { field: 'um', header: 'um' },
-        { field: 'cantitate', header: 'cantitate' },
-        { field: 'pret', header: 'pret' },
-        { field: 'valoare', header: 'valoare' },
-        { field: 'moneda', header: 'moneda' },
-        { field: 'isInvoiced', header: 'isInvoiced' },
-        { field: 'isPayed', header: 'isPayed' }
+        { field: 'item.name', header: 'Articol' },
+        { field: 'date', header: 'Data' },
+        { field: 'measuringUnit.name', header: 'UM' },
+        { field: 'billingQtty', header: 'Cantitate' },
+        { field: 'totalContractValue', header: 'Pret' },
+        { field: 'billingValue', header: 'Valoare' },
+        { field: 'currency.code', header: 'Moneda' },
+        { field: 'isInvoiced', header: 'Facturat' },
+        { field: 'isPayed', header: 'Platit' }
         // { field: 'facturat', header: 'facturat' },
         // { field: 'platit', header: 'platit' },
     ];
@@ -108,9 +128,9 @@ export default function Financial() {
     //la nivel de partener trebuie adaugata o bifa, daca este sau nu platitor TVA
 
     const fetchContractItemData = () => {
-        fetch(`http://localhost:3000/contracts/contractItemsDetails/${Id}`).then(response => { return response.json() })
+        fetch(`http://localhost:3000/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
             .then(contractItem => {
-                setContractItem(contractItem)
+                // setContractItem(contractItem)
                 setSelectedItem(contractItem[0].item)
                 setCurrency(contractItem[0].ContractFinancialDetail[0].currency)
                 setMeasuringUnit(contractItem[0].ContractFinancialDetail[0].measuringUnit)
@@ -126,8 +146,8 @@ export default function Financial() {
 
                 setBillingPenaltyPercent(contractItem[0].ContractFinancialDetail[0].billingPenaltyPercent)
                 setGuaranteeLetter(contractItem[0].ContractFinancialDetail[0].guaranteeLetter)
-                setGuaranteeLetterCurrency(contractItem[0].ContractFinancialDetail[0].guaranteeLetterCurrencyid)
-                setGuaranteeLetterDate(contractItem[0].ContractFinancialDetail[0].guaranteeLetterDate)
+                setGuaranteeLetterCurrency(contractItem[0].ContractFinancialDetail[0].guaranteecurrency)
+                setGuaranteeLetterDate(new Date(contractItem[0].ContractFinancialDetail[0].guaranteeLetterDate))
                 setGuaranteeLetterValue(contractItem[0].ContractFinancialDetail[0].guaranteeLetterValue)
                 setRemarks(contractItem[0].ContractFinancialDetail[0].remarks)
                 setActive(contractItem[0].ContractFinancialDetail[0].active)
@@ -135,7 +155,17 @@ export default function Financial() {
 
                 setScadentar(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule)
 
+                setStartContractDate(contractItem[0].contract.start)
+                setEndContractDate(contractItem[0].contract.end)
+
+
+                setContractItem(contractItem[0].ContractFinancialDetail[0].items.id)
+
+                setContractfinancialItemId(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
+
+
                 console.log(contractItem)
+                console.log(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
             })
     }
 
@@ -258,8 +288,8 @@ export default function Financial() {
 
     const generateTimeTable = () => {
 
-        var startDate: any = '2021-01-01'
-        var endDate: any = '2022-07-01'
+        var startDate: any = startContractDate;
+        var endDate: any = endContractDate;
 
         // month sch
         if (billingFrequency) {
@@ -271,8 +301,11 @@ export default function Financial() {
 
                 const array: {
                     id: Number
-                    itemid: Number, item: string, data: string, um: string, measuringunitid: Number, cantitate: Number, pret: Number,
-                    valoare: Number, billingValue: Number, moneda: string, currencyid: Number, isPayed: Number, isInvoiced: Number
+                    itemid: Number, 'item.name': string, date: string,
+                    'measuringUnit.name': string,
+                    measuringunitid: Number, cantitate: Number, pret: Number,
+                    valoare: Number, billingValue: Number, 'currency.code': string,
+                    currencyid: Number, isPayed: Number, isInvoiced: Number
                 }[] = [];
 
 
@@ -287,12 +320,15 @@ export default function Financial() {
 
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, item: selectedItem.name, data: formattedDate, um: measuringUnit.name, measuringunitid: measuringUnit.id,
-                        cantitate: billingQtty, pret: totalContractValue, valoare: (billingQtty * totalContractValue),
-                        billingValue: (billingQtty * totalContractValue), moneda: currency.code, currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
+                        itemid: selectedItem.id, 'item.name': selectedItem.name,
+                        date: formattedDate, 'measuringUnit.name': measuringUnit.name,
+                        measuringunitid: measuringUnit.id,
+                        billingQtty: billingQtty, pret: totalContractValue,
+                        totalContractValue: (billingQtty * totalContractValue),
+                        billingValue: totalContractValue,
+                        'currency.code': currency.code,
+                        currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
-
-
 
                     setScadentar(array)
                 }
@@ -300,12 +336,48 @@ export default function Financial() {
         }
     }
 
+    const deleteDataScadentar = async () => {
+
+        const ResultSchedule: financialDetailSchedule[] = []
+        scadentar.forEach(
+            scadenta => {
+                const add: financialDetailSchedule = {
+                    itemid: scadenta.itemid,
+                    currencyid: scadenta.currencyid,
+                    date: new Date(scadenta.date),
+                    measuringUnitid: scadenta.measuringunitid,
+                    billingQtty: parseFloat(scadenta.cantitate),
+                    totalContractValue: scadenta.valoare,
+                    billingValue: parseFloat(scadenta.pret),
+                    isInvoiced: scadenta.isInvoiced,
+                    isPayed: scadenta.isPayed,
+                    active: active,
+                    contractfinancialItemId: contractfinancialItemId
+
+                }
+                ResultSchedule.push(add)
+            }
+        )
+        console.log(ResultSchedule)
+        try {
+            const responseitem = await axios.delete(`http://localhost:3000/contracts/financialDetailSchedule/${Id}`
+            );
+            console.log('Contract details added:', contractfinancialItemId
+            );
+        } catch (error) {
+            console.error('Error creating contract details:', error);
+        }
+
+    }
+
+
     const header = (
         <div className="flex align-items-center justify-content-end gap-2">
             <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" />
             <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
             <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" />
             <Button type="button" icon="pi pi-sign-out" severity="info" rounded onClick={generateTimeTable} />
+            <Button type="button" icon="pi pi-delete-left" severity="danger" rounded onClick={deleteDataScadentar} />
 
             <FileUpload
                 mode="basic"
@@ -341,23 +413,24 @@ export default function Financial() {
         // console.log(event.rowData)
     };
 
+
+
+
     const saveData = async () => {
-
-
 
         let addedfinancialDetail: financialDetail = {
             itemid: selectedItem.id,
             totalContractValue: parseFloat(totalContractValue),
             currencyid: currency.id,
             currencyValue: parseFloat(currencyValue),
-            currencyPercent: currencyPercent,
+            currencyPercent: parseFloat(currencyPercent),
             billingDay: parseInt(billingDay),
             billingQtty: parseFloat(billingQtty),
             billingFrequencyid: billingFrequency.id,
             measuringUnitid: measuringUnit.id,
             paymentTypeid: paymentType.id,
             billingPenaltyPercent: billingPenaltyPercent,
-            billingDueDays: billingDueDays,
+            billingDueDays: parseInt(billingDueDays),
             remarks: remarks,
             guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
             guaranteeLetterCurrencyid: guaranteeLetterCurrency ? guaranteeLetterCurrency.id : null,
@@ -368,19 +441,7 @@ export default function Financial() {
             // contractfinancialItemId: 0
         }
 
-        interface financialDetailSchedule {
-            itemid: number,
-            currencyid?: number,
-            date: Date,
-            measuringUnitid?: number,
-            billingQtty: number,
-            totalContractValue: number,
-            billingValue: number,
-            isInvoiced: boolean,
-            isPayed: boolean,
-            active?: boolean,
-            contractfinancialItemId?: number
-        }
+
 
         const ResultSchedule: financialDetailSchedule[] = []
         scadentar.forEach(
@@ -396,7 +457,7 @@ export default function Financial() {
                     isInvoiced: scadenta.isInvoiced,
                     isPayed: scadenta.isPayed,
                     active: active,
-                    contractfinancialItemId: 0
+                    contractfinancialItemId: contractfinancialItemId
 
                 }
                 ResultSchedule.push(add)
@@ -404,6 +465,7 @@ export default function Financial() {
         )
 
         interface financialContractItem {
+            id: number,
             contractId?: number,
             itemid: number,
             currencyid?: number,
@@ -414,7 +476,8 @@ export default function Financial() {
 
 
         const financialContractItem = {
-            contractId: parseInt(Id),
+            id: parseInt(contractItem),
+            contractId: parseInt(ctrId),
             itemid: selectedItem.id,
             currencyid: currency.id,
             currencyValue: parseFloat(totalContractValue),
@@ -425,8 +488,8 @@ export default function Financial() {
 
         try {
 
-            console.log(financialContractItem)
-            const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
+            // console.log(financialContractItem)
+            const responseitem = await axios.patch(`http://localhost:3000/contracts/updatecontractItems/${Id}/${ctrId}/${contractfinancialItemId}`,
                 [financialContractItem, addedfinancialDetail, ResultSchedule]
             );
 
@@ -652,19 +715,13 @@ export default function Financial() {
                                 <Column hidden field="isPayed" header="isPayed"></Column>
                                 <Column header="facturat" body={statusInvoiceTemplate}></Column>
                                 <Column header="platit" body={statusPayedTemplate}></Column>
-
-
                             </DataTable>
-
 
                         </div>
                         <div className="field col-12 md:col-2">
                             <Button label="Salveaza" onClick={saveData} />
                         </div>
-
-
                     </div>
-
                 </div>
             </div>
         </div >

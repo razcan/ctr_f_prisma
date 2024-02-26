@@ -47,29 +47,71 @@ export default function Financial() {
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
     const [scadentar, setScadentar] = useState([]);
     const [active, setActive] = useState(true);
-
     const [isInvoiced, setIsInvoiced] = useState(false);
     const [isPayed, setIsPayed] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState();
+    const [contract, setContract] = useState([]);
+    const [startContractDate, setStartContractDate] = useState('');
+    const [endContractDate, setEndContractDate] = useState('');
+
 
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
+    console.log(Id)
+
+    interface financialDetail {
+        itemid?: number,
+        totalContractValue?: number,
+        currencyid?: number,
+        currencyValue?: boolean,
+        currencyPercent?: number,
+        billingDay?: number,
+        billingQtty?: number,
+        billingFrequencyid?: number,
+        measuringUnitid?: number,
+        paymentTypeid?: number,
+        billingPenaltyPercent?: boolean,
+        billingDueDays?: number,
+        remarks?: String,
+        guaranteeLetter?: Boolean,
+        guaranteeLetterCurrencyid?: number,
+        guaranteeLetterDate?: Date | undefined,
+        guaranteeLetterValue?: Boolean,
+        contractItemId?: number,
+        active?: boolean,
+        // contractfinancialItemId: number
+
+    }
+
+    interface financialDetailSchedule {
+        itemid: number,
+        currencyid?: number,
+        date: Date,
+        measuringUnitid?: number,
+        billingQtty: number,
+        totalContractValue: number,
+        billingValue: number,
+        isInvoiced: boolean,
+        isPayed: boolean,
+        active?: boolean,
+        contractfinancialItemId?: number
+    }
 
 
     const dt = useRef(null);
     // const [data, setData] = useState(null);
 
     const cols = [
-        { field: 'item', header: 'item' },
-        { field: 'data', header: 'data' },
-        { field: 'um', header: 'um' },
-        { field: 'cantitate', header: 'cantitate' },
-        { field: 'pret', header: 'pret' },
-        { field: 'valoare', header: 'valoare' },
-        { field: 'moneda', header: 'moneda' },
-        { field: 'isInvoiced', header: 'isInvoiced' },
-        { field: 'isPayed', header: 'isPayed' }
+        { field: 'item.name', header: 'Articol' },
+        { field: 'date', header: 'Data' },
+        { field: 'measuringUnit.name', header: 'UM' },
+        { field: 'billingQtty', header: 'Cantitate' },
+        { field: 'totalContractValue', header: 'Pret' },
+        { field: 'billingValue', header: 'Valoare' },
+        { field: 'currency.code', header: 'Moneda' },
+        { field: 'isInvoiced', header: 'Facturat' },
+        { field: 'isPayed', header: 'Platit' }
         // { field: 'facturat', header: 'facturat' },
         // { field: 'platit', header: 'platit' },
     ];
@@ -80,7 +122,15 @@ export default function Financial() {
     const [selectedCell, setSelectedCell] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
 
-    //la nivel de partener trebuie adaugata o bifa, daca este sau nu platitor TVA
+    const fetchContractData = () => {
+        fetch(`http://localhost:3000/contracts/onlycontract/${Id}`).then(response => { return response.json() })
+            .then(contract => {
+                console.log(contract)
+                setContract(contract)
+                setStartContractDate(contract.start)
+                setEndContractDate(contract.end)
+            })
+    }
 
     const fetchItemsData = () => {
         fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
@@ -109,7 +159,8 @@ export default function Financial() {
 
 
     useEffect(() => {
-        fetchItemsData(),
+        fetchContractData(),
+            fetchItemsData(),
             fetchAllCurrencies(),
             fetchAllBillingFrequency(),
             fetchAllPaymentType(),
@@ -200,8 +251,10 @@ export default function Financial() {
 
     const generateTimeTable = () => {
 
-        var startDate: any = '2021-01-01'
-        var endDate: any = '2022-07-01'
+        var startDate: any = startContractDate;
+        var endDate: any = endContractDate;
+
+        console.log(startDate, endDate)
 
         // month sch
         if (billingFrequency) {
@@ -213,8 +266,11 @@ export default function Financial() {
 
                 const array: {
                     id: Number
-                    itemid: Number, item: string, data: string, um: string, measuringunitid: Number, cantitate: Number, pret: Number,
-                    valoare: Number, billingValue: Number, moneda: string, currencyid: Number, isPayed: Number, isInvoiced: Number
+                    itemid: Number, 'item.name': string, date: string,
+                    'measuringUnit.name': string,
+                    measuringunitid: Number, cantitate: Number, pret: Number,
+                    valoare: Number, billingValue: Number, 'currency.code': string,
+                    currencyid: Number, isPayed: Number, isInvoiced: Number
                 }[] = [];
 
 
@@ -229,18 +285,22 @@ export default function Financial() {
 
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, item: selectedItem.name, data: formattedDate, um: measuringUnit.name, measuringunitid: measuringUnit.id,
-                        cantitate: billingQtty, pret: totalContractValue, valoare: (billingQtty * totalContractValue),
-                        billingValue: (billingQtty * totalContractValue), moneda: currency.code, currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
+                        itemid: selectedItem.id, 'item.name': selectedItem.name,
+                        date: formattedDate, 'measuringUnit.name': measuringUnit.name,
+                        measuringunitid: measuringUnit.id,
+                        billingQtty: billingQtty, pret: totalContractValue,
+                        totalContractValue: (billingQtty * totalContractValue),
+                        billingValue: totalContractValue,
+                        'currency.code': currency.code,
+                        currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
-
-
 
                     setScadentar(array)
                 }
             }
         }
     }
+
 
     const header = (
         <div className="flex align-items-center justify-content-end gap-2">
@@ -283,45 +343,56 @@ export default function Financial() {
         // console.log(event.rowData)
     };
 
-    const saveData = async () => {
 
-        interface financialDetail {
-            itemid?: number,
-            totalContractValue?: number,
-            currencyid?: number,
-            currencyValue?: boolean,
-            currencyPercent?: boolean,
-            billingDay?: number,
-            billingQtty?: number,
-            billingFrequencyid?: number,
-            measuringUnitid?: number,
-            paymentTypeid?: number,
-            billingPenaltyPercent?: boolean,
-            billingDueDays?: number,
-            remarks?: String,
-            guaranteeLetter?: Boolean,
-            guaranteeLetterCurrencyid?: number,
-            guaranteeLetterDate?: Date | undefined,
-            guaranteeLetterValue?: Boolean,
-            contractItemId?: number,
-            active?: boolean,
-            // contractfinancialItemId: number
+    const saveDataScadentar = async () => {
 
+        const ResultSchedule: financialDetailSchedule[] = []
+        scadentar.forEach(
+            scadenta => {
+                const add: financialDetailSchedule = {
+                    itemid: scadenta.itemid,
+                    currencyid: scadenta.currencyid,
+                    date: new Date(scadenta.date),
+                    measuringUnitid: scadenta.measuringunitid,
+                    billingQtty: parseFloat(scadenta.cantitate),
+                    totalContractValue: scadenta.valoare,
+                    billingValue: parseFloat(scadenta.pret),
+                    isInvoiced: scadenta.isInvoiced,
+                    isPayed: scadenta.isPayed,
+                    active: active,
+                    contractfinancialItemId: 0
+
+                }
+                ResultSchedule.push(add)
+            }
+        )
+        console.log(ResultSchedule)
+        try {
+            const responseitem = await axios.delete(`http://localhost:3000/contracts/financialDetailSchedule/${Id}`
+            );
+            console.log('Contract details added:'
+            );
+        } catch (error) {
+            console.error('Error creating contract details:', error);
         }
 
+    }
+
+    const saveData = async () => {
+
         let addedfinancialDetail: financialDetail = {
-            itemid: selectedItem.id,
+            itemid: parseInt(selectedItem.id),
             totalContractValue: parseFloat(totalContractValue),
-            currencyid: currency.id,
+            currencyid: parseInt(currency.id),
             currencyValue: parseFloat(currencyValue),
-            currencyPercent: currencyPercent,
+            currencyPercent: parseFloat(currencyPercent),
             billingDay: parseInt(billingDay),
             billingQtty: parseFloat(billingQtty),
             billingFrequencyid: billingFrequency.id,
             measuringUnitid: measuringUnit.id,
             paymentTypeid: paymentType.id,
-            billingPenaltyPercent: billingPenaltyPercent,
-            billingDueDays: billingDueDays,
+            billingPenaltyPercent: parseInt(billingPenaltyPercent),
+            billingDueDays: parseInt(billingDueDays),
             remarks: remarks,
             guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
             guaranteeLetterCurrencyid: guaranteeLetterCurrency ? guaranteeLetterCurrency.id : null,
@@ -332,19 +403,7 @@ export default function Financial() {
             // contractfinancialItemId: 0
         }
 
-        interface financialDetailSchedule {
-            itemid: number,
-            currencyid?: number,
-            date: Date,
-            measuringUnitid?: number,
-            billingQtty: number,
-            totalContractValue: number,
-            billingValue: number,
-            isInvoiced: boolean,
-            isPayed: boolean,
-            active?: boolean,
-            contractfinancialItemId?: number
-        }
+        console.log(scadentar)
 
         const ResultSchedule: financialDetailSchedule[] = []
         scadentar.forEach(
@@ -352,11 +411,11 @@ export default function Financial() {
                 const add: financialDetailSchedule = {
                     itemid: scadenta.itemid,
                     currencyid: scadenta.currencyid,
-                    date: new Date(scadenta.data),
+                    date: new Date(scadenta.date),
                     measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: parseFloat(scadenta.cantitate),
-                    totalContractValue: scadenta.valoare,
-                    billingValue: parseFloat(scadenta.pret),
+                    billingQtty: parseFloat(scadenta.billingQtty),
+                    totalContractValue: scadenta.totalContractValue,
+                    billingValue: parseFloat(scadenta.billingValue),
                     isInvoiced: scadenta.isInvoiced,
                     isPayed: scadenta.isPayed,
                     active: active,
@@ -389,7 +448,7 @@ export default function Financial() {
 
         try {
 
-            console.log(financialContractItem)
+            console.log(financialContractItem, ResultSchedule)
             const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
                 [financialContractItem, addedfinancialDetail, ResultSchedule]
             );
@@ -459,6 +518,19 @@ export default function Financial() {
             default:
                 return null;
         }
+    };
+
+
+    const formatDate = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
+    const StartBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.date);
+        return <span>{formattedDate}</span>;
     };
 
 
@@ -591,20 +663,13 @@ export default function Financial() {
                                 dataKey="data"
                                 sortOrder={1} //cres
                             >
-                                <Column field="item" header="item"></Column>
-                                <Column field="data" header="data"></Column>
-                                <Column field="um" header="um"></Column>
-                                <Column field="cantitate" header="cantitate"></Column>
-                                <Column field="pret" header="pret"></Column>
-                                <Column field="valoare" header="valoare"></Column>
-                                <Column field="moneda" header="moneda"></Column>
-                                {/* <Column header="facturat" style={{ width: '10vh' }} body={isInvoicedTemplate} />
-                                <Column header="platit" style={{ width: '10vh' }} body={isPayedTemplate} />
-                                <Column header="facturat2" style={{ width: '10vh' }} body={
-                                    scadentar.isInvoiced ? console.log("true") : console.log("false")
-                                    // <i className="pi pi-circle-fill" style={{ fontSize: '1rem', color: 'green' }}></i>
-                                    // : < i className="pi pi-circle" style={{ fontSize: '1rem', color: 'green' }}></i >
-                                } /> */}
+                                <Column field="item.name" header="item"></Column>
+                                <Column field="date" header="data" sortable body={StartBodyTemplate}></Column>
+                                <Column field="measuringUnit.name" header="um"></Column>
+                                <Column field="billingQtty" header="cantitate"></Column>
+                                <Column field="billingValue" header="pret"></Column>
+                                <Column field="totalContractValue" header="valoare"></Column>
+                                <Column field="currency.code" header="moneda"></Column>
 
                                 <Column hidden field="isInvoiced" header="isInvoiced"></Column>
                                 <Column hidden field="isPayed" header="isPayed"></Column>
@@ -618,6 +683,9 @@ export default function Financial() {
                         </div>
                         <div className="field col-12 md:col-2">
                             <Button label="Salveaza" onClick={saveData} />
+                        </div>
+                        <div className="field col-12 md:col-2">
+                            <Button label="SalveazaScadentar" onClick={saveDataScadentar} />
                         </div>
 
 
