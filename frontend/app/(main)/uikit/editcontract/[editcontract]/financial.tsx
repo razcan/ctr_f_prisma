@@ -79,26 +79,27 @@ export default function Financial() {
                 <div className="card">
 
                     <Button label="Adauga" icon="pi pi-external-link" onClick={() => addContractItem()} />
-
-                    <DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}
-                        stripedRows paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]}
-                        sortMode="multiple"
-                        selectionMode="single"
-                        selection={selectedContractItem} onSelectionChange={(e) => {
-                            setSelectedContractItem(e.value),
-                                editContractItem(e.value.id)
-                        }}
-                    >
-                        <Column field="id" header="id"></Column>
-                        <Column field="item.name" header="Articol"></Column>
-                        <Column field="frequency.name" header="Perioada"></Column>
-                        <Column field="currency.code" header="Valuta"></Column>
-                        <Column field="currencyValue" header="Valoare"></Column>
-                        <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
-                    </DataTable>
-
+                    {
+                        item.length > 0 ?
+                            < DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}
+                                stripedRows
+                                sortMode="multiple"
+                                selectionMode="single"
+                                selection={selectedContractItem} onSelectionChange={(e) => {
+                                    setSelectedContractItem(e.value),
+                                        editContractItem(e.value.id)
+                                }}
+                            >
+                                <Column field="id" header="id"></Column>
+                                <Column field="item.name" header="Articol"></Column>
+                                <Column field="frequency.name" header="Perioada"></Column>
+                                <Column field="currency.code" header="Valuta"></Column>
+                                <Column field="currencyValue" header="Valoare"></Column>
+                                <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
+                            </DataTable>
+                            : null}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

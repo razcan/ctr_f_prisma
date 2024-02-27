@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { OrganizationChart } from 'primereact/organizationchart';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import router from 'next/router';
 
 
 // numar versiune, tip act aditional, nr act aditional, data act ad, 
@@ -15,7 +16,9 @@ export default function AddContract() {
     const [selection, setSelection] = useState();
     const [additionals, setAdditionals] = useState();
 
-    http://localhost:5500/uikit/editcontract/ctr?Id=1
+    const gotoAddAddtionalAct = () => {
+        router.push('/uikit/addcontract/addcontract/addadditionals');
+    }
 
     return (
         <div className="grid">
@@ -23,7 +26,7 @@ export default function AddContract() {
                 <div className="card">
 
                     <div className="col-2 md:col-2 ">
-                        <Button label="Adauga act aditional" />
+                        <Button label="Adauga act aditional" onClick={gotoAddAddtionalAct} />
                     </div>
 
                     <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}>

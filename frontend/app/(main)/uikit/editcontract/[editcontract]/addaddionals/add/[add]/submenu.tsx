@@ -1,35 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { permanentRedirect } from 'next/navigation'
-import { revalidateTag } from 'next/cache'
 import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
-import { PrimeReactProvider, PrimeReactContext, PrimeIcons } from 'primereact/api';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
 import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { Editor } from 'primereact/editor';
-import axios from 'axios';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-    useMutation,
-    useQueryClient
-} from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
 import Documents from './documents'
 import HeaderContract from './header';
-import Additional from './additional'
 import Financial from './financial'
 import Content from './content'
-import History from './history'
-import Alerts from './alerts';
 import Tasks from './tasks'
 import { useSearchParams } from 'next/navigation'
 import { Toast } from 'primereact/toast';
@@ -53,16 +30,12 @@ export default function Submenu() {
         {
             label: 'Documente Atasate', icon: 'pi pi-inbox'
         },
-        // {
-        //     label: 'Acte Aditionale', icon: 'pi pi-chart-line'
-        // },
-
+        {
+            label: 'Acte Aditionale', icon: 'pi pi-chart-line'
+        },
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
-        // { label: 'Flux aprobare', icon: 'pi pi-list' },
         { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' }
-        // { label: 'Istoric', icon: 'pi pi-fw pi-table' },
-        // { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
     ];
 
     const showError = () => {
@@ -133,7 +106,7 @@ export default function Submenu() {
 
                                 : null
                             }
-                            {/* {activeIndex === 2 ?
+                            {activeIndex === 2 ?
 
                                 <div>
                                     <div className='pt-4'>
@@ -142,7 +115,7 @@ export default function Submenu() {
                                 </div>
 
                                 : null
-                            } */}
+                            }
                             {activeIndex === 3 ?
 
                                 <div>

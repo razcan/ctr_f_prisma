@@ -13,8 +13,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { useData } from './DataContext';
-import { DataProvider } from './DataContext';
 
 export default function Documents() {
 
@@ -30,7 +28,7 @@ export default function Documents() {
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [metaKey, setMetaKey] = useState(true);
     const [selectedCell, setSelectedCell] = useState(null);
-    const { value, updateValue } = useData();
+    const [value, setValue] = useState(0)
 
     const onTemplateSelect = (e) => {
         let _totalSize = totalSize;

@@ -16,14 +16,11 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
-import { useData } from './DataContext';
-import { DataProvider } from './DataContext';
-
 
 export default function Financial() {
 
     const [item, setItem] = useState([]);
-    const { value, updateValue } = useData();
+    const [value, updateValue] = useState(0);
 
     const fetchTypeData = () => {
         fetch(`http://localhost:3000/contracts/contractItems/${value}`)

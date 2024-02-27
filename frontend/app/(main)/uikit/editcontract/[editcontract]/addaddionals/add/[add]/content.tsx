@@ -22,72 +22,12 @@ import axios from 'axios';
 // import ReactQuill from "react-quill";
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { useData } from './DataContext';
+
 
 export default function Content() {
 
     const [text, setText] = useState('');
-    const { value, updateValue } = useData();
-
-    console.log(value)
-
-    // var Font = Quill.import('formats/font');
-    // // We do not add Aref Ruqaa since it is the default
-    // Font.whitelist = ['arial', 'roboto', 'raleway', 'montserrat', 'lato', 'rubik'];
-    // Quill.register(Font, true);
-
-    // var Size = Quill.import('formats/size');
-    // Size.whitelist = [
-    //     '9px',
-    //     '10px',
-    //     '11px',
-    //     '12px',
-    //     '14px',
-    //     '16px',
-    //     '18px',
-    //     '20px',
-    //     '22px',
-    //     '24px',
-    //     '26px',
-    //     '28px'
-    // ];
-    // Quill.register(Size, true);
-
-    // const myColors = [
-    //     "red", "green", "blue", "orange", "violet",
-    //     "purple",
-    //     "#785412",
-    //     "#452632",
-    //     "#856325",
-    //     "#963254",
-    //     "#254563",
-    //     "white"
-    // ];
-    // const modules = {
-    //     toolbar: [
-    //         [
-    //             {
-    //                 'font': [
-    //                     "monospace",
-    //                     "serif",
-    //                     // "raleway",
-    //                     // "montserrat",
-    //                     // "lato",
-    //                     // "rubik",
-    //                     // "roboto"
-    //                 ],
-    //             },
-    //         ],
-    //         [{ header: [1, 2, 3, 4, 5, 6, false] }],
-
-    //         ["bold", "italic", "underline", "strike", "blockquote"],
-    //         [{ align: ["right", "center", "justify"] }],
-    //         [{ list: "ordered" }, { list: "bullet" }],
-    //         ["link", "image"],
-    //         [{ color: myColors }],
-    //         [{ background: myColors }]
-    //     ]
-    // };
+    const [value, updateValue] = useState(0);
 
     const modules = {
         toolbar: {
