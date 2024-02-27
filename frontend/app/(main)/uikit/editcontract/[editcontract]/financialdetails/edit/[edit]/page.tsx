@@ -131,6 +131,7 @@ export default function Financial() {
         fetch(`http://localhost:3000/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
             .then(contractItem => {
                 // setContractItem(contractItem)
+                console.log(contractItem)
                 setSelectedItem(contractItem[0].item)
                 setCurrency(contractItem[0].ContractFinancialDetail[0].currency)
                 setMeasuringUnit(contractItem[0].ContractFinancialDetail[0].measuringUnit)
@@ -140,7 +141,10 @@ export default function Financial() {
 
                 setCurrencyValue(contractItem[0].ContractFinancialDetail[0].currencyValue)
                 setCurrencyPercent(contractItem[0].ContractFinancialDetail[0].currencyPercent)
+
                 setBillingDay(contractItem[0].ContractFinancialDetail[0].billingDay)
+                setBillingDueDays(contractItem[0].ContractFinancialDetail[0].billingDueDays)
+
                 setBillingQtty(contractItem[0].ContractFinancialDetail[0].billingQtty)
                 setBillingFrequency(contractItem[0].frequency)
 
@@ -161,10 +165,11 @@ export default function Financial() {
 
                 setContractItem(contractItem[0].ContractFinancialDetail[0].items.id)
 
-                setContractfinancialItemId(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
+                if (contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0] !== undefined) {
+                    setContractfinancialItemId(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
+                }
 
-
-                console.log(contractItem)
+                // console.log(contractItem)
                 console.log(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
             })
     }
@@ -331,6 +336,7 @@ export default function Financial() {
                     })
 
                     setScadentar(array)
+                    console.log(array)
                 }
             }
         }
@@ -348,7 +354,7 @@ export default function Financial() {
                     measuringUnitid: scadenta.measuringunitid,
                     billingQtty: parseFloat(scadenta.cantitate),
                     totalContractValue: scadenta.valoare,
-                    billingValue: parseFloat(scadenta.pret),
+                    billingValue: parseFloat(scadenta.cantitate * scadenta.valoare),
                     isInvoiced: scadenta.isInvoiced,
                     isPayed: scadenta.isPayed,
                     active: active,
@@ -449,11 +455,11 @@ export default function Financial() {
                 const add: financialDetailSchedule = {
                     itemid: scadenta.itemid,
                     currencyid: scadenta.currencyid,
-                    date: new Date(scadenta.data),
+                    date: new Date(scadenta.date),
                     measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: parseFloat(scadenta.cantitate),
-                    totalContractValue: scadenta.valoare,
-                    billingValue: parseFloat(scadenta.pret),
+                    billingQtty: parseFloat(scadenta.billingQtty),
+                    totalContractValue: scadenta.totalContractValue,
+                    billingValue: parseFloat(scadenta.billingValue),
                     isInvoiced: scadenta.isInvoiced,
                     isPayed: scadenta.isPayed,
                     active: active,

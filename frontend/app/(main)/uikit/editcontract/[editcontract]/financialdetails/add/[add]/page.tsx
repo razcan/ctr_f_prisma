@@ -301,6 +301,10 @@ export default function Financial() {
         }
     }
 
+    const deleteDataScadentar = () => {
+        setScadentar([]);
+    }
+
 
     const header = (
         <div className="flex align-items-center justify-content-end gap-2">
@@ -308,6 +312,7 @@ export default function Financial() {
             <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
             <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" />
             <Button type="button" icon="pi pi-sign-out" severity="info" rounded onClick={generateTimeTable} />
+            <Button type="button" icon="pi pi-delete-left" severity="danger" rounded onClick={deleteDataScadentar} />
 
             <FileUpload
                 mode="basic"
@@ -683,9 +688,6 @@ export default function Financial() {
                         </div>
                         <div className="field col-12 md:col-2">
                             <Button label="Salveaza" onClick={saveData} />
-                        </div>
-                        <div className="field col-12 md:col-2">
-                            <Button label="SalveazaScadentar" onClick={saveDataScadentar} />
                         </div>
 
 
