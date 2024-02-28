@@ -31,6 +31,8 @@ export default function Content() {
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = parseInt(searchParams.get("Id"));
+    const [templates, setTemplates] = useState([]);
+    const [type, setType] = useState();
 
     // var Font = Quill.import('formats/font');
     // // We do not add Aref Ruqaa since it is the default
@@ -141,8 +143,21 @@ export default function Content() {
         )
     }
 
+    const fetchTemplatesData = () => {
+        fetch("http://localhost:3000/nomenclatures/contracttemplates")
+            .then(response => {
+                console.log(response);
+                return response.json()
+            })
+            .then(templates => {
+                setTemplates(templates)
+                console.log(templates)
+            })
+    }
+
     useEffect(() => {
-        fetchContent()
+        fetchContent(),
+            fetchTemplatesData()
     }, [])
 
     const saveContent = async () => {
@@ -175,8 +190,13 @@ export default function Content() {
         <div className="grid">
             <div className="col-12">
 
-                <div className='pl-4'>
+                <div className='col-3'>
                     <Button label="Salveaza" onClick={saveContent} />
+                </div>
+
+                <div className="col-3">
+                    {/* <label htmlFor="type">Tip</label> */}
+                    <Dropdown id="type" filter showClear value={type} onChange={(e) => setType(e.value)} options={templates} optionLabel="name" placeholder="Selecteaza Template"></Dropdown>
                 </div>
 
                 {/* <div className='p-4'>
@@ -191,12 +211,7 @@ export default function Content() {
                         value={text}
                         onChange={handleProcedureContentChange}
                     />
-
                 </div>
-
-
-
-
                 {/* <button onClick={getContent}>Get Content</button> */}
             </div>
 
