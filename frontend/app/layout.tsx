@@ -28,15 +28,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-    <head>
+      <head>
         <link id="theme-css" href={`/themes/lara-dark-indigo/theme.css`} rel="stylesheet"></link>
         {/* <link id="theme-css" href={`/themes/lara-light-indigo/theme.css`} rel="stylesheet"></link> */}
-    </head>
-    <body>
+      </head>
+      <body>
         <PrimeReactProvider>
-            <LayoutProvider>{children}</LayoutProvider>
+          <LayoutProvider>{children}</LayoutProvider>
         </PrimeReactProvider>
-    </body>
+      </body>
     </html>
   )
 }

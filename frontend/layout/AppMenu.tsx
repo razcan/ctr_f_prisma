@@ -40,7 +40,7 @@ const AppMenu = () => {
                 {
                     label: 'Modele Contracte',
                     icon: 'pi pi-fw pi-times-circle',
-                    to: '/auth/error'
+                    to: '/uikit/contractTemplates'
                 },
                 {
                     label: 'Alerte',
