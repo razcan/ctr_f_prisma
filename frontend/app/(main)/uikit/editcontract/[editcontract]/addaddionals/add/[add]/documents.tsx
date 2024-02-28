@@ -13,6 +13,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useData } from './DataContext';
+import { useSearchParams } from 'next/navigation'
 
 export default function Documents() {
 
@@ -28,7 +30,12 @@ export default function Documents() {
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [metaKey, setMetaKey] = useState(true);
     const [selectedCell, setSelectedCell] = useState(null);
-    const [value, setValue] = useState(0)
+
+    const { value, updateValue } = useData();
+
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
+    const ctrId = searchParams.get("ctrId");
 
     const onTemplateSelect = (e) => {
         let _totalSize = totalSize;
@@ -155,7 +162,11 @@ export default function Documents() {
 
     useEffect(() => {
         fetchAttachmentsData()
+        const addId = searchParams.get("addId");
+
+        updateValue(addId)
     }, [])
+
 
 
     const deleteTemplate = (event) => {

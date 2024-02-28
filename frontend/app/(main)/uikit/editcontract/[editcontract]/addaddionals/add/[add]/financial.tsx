@@ -16,11 +16,18 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
+import { useData } from './DataContext';
+import { useSearchParams } from 'next/navigation'
 
 export default function Financial() {
 
     const [item, setItem] = useState([]);
-    const [value, updateValue] = useState(0);
+    const { value, updateValue } = useData();
+    console.log(value)
+
+    const router = useRouter();
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
 
     const fetchTypeData = () => {
         fetch(`http://localhost:3000/contracts/contractItems/${value}`)
@@ -32,15 +39,17 @@ export default function Financial() {
             })
     }
 
-
     useEffect(() => {
         fetchTypeData()
+        const addId = searchParams.get("addId");
+
+        updateValue(addId)
     }, [])
 
-    const router = useRouter();
+
 
     const goToDetails = () => {
-        router.push('/uikit/addcontract/financialdetails');
+        router.push(`/uikit/editcontract/editcontract/addaddionals/add/add/financialdetails/add/a?Id=${Id}&ctrId=${value}`);
     }
 
     return (

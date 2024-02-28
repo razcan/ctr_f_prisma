@@ -19,7 +19,7 @@ export default function Submenu() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [paramId, setParamId] = useState(0);
     const toast = useRef(null);
-    const [contractId, setContractId] = useState<number>(0);
+    const [addContractId, setAddContractId] = useState<number>(0);
     const { value, updateValue } = useData();
     const [renderCount, setRenderCount] = useState(0);
 
@@ -30,9 +30,6 @@ export default function Submenu() {
         {
             label: 'Documente Atasate', icon: 'pi pi-inbox'
         },
-        {
-            label: 'Acte Aditionale', icon: 'pi pi-chart-line'
-        },
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
         { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' }
@@ -41,32 +38,39 @@ export default function Submenu() {
     const showError = () => {
         toast.current.show({
             severity: 'error', summary: 'Error',
-            detail: 'Inainte sa mergeti mai departe, trebuie sa salvati contractul.', life: 3000
+            detail: 'Inainte sa mergeti mai departe, trebuie sa salvati actul aditional.', life: 3000
         });
     }
 
     const searchParams = useSearchParams()
 
+    console.log(paramId, searchParams.get("addId"))
+
     const changeTab = (e) => {
-        setParamId(parseInt(searchParams.get("Id")));
-        if (paramId == 0) {
+        setParamId(parseInt(searchParams.get("addId")));
+
+        const addId = searchParams.get("addId");
+
+        if (parseInt(addId) == 0) {
             showError()
         }
-        else if (paramId != 0) {
+        else if (parseInt(addId) != 0) {
             setActiveIndex(e)
         }
     }
 
+    // setParamId(parseInt(searchParams.get("addId")));
+
     useEffect(() => {
-        setParamId(parseInt(searchParams.get("Id")));
+        setParamId(parseInt(searchParams.get("addId")));
     }, [])
 
 
     useEffect(() => {
         setRenderCount(prevCount => prevCount + 1);
         //updateValue(personIndex);
-        setParamId(contractId);
-    }, [contractId]);
+        setParamId(addContractId);
+    }, [addContractId]);
 
 
 
@@ -81,15 +85,14 @@ export default function Submenu() {
                                 <TabMenu model={items} activeIndex={activeIndex}
                                     onTabChange={(e) => changeTab(e.index)} />
                             </div>
-
-                            {/* <div className="p-fluid formgrid grid pt-2"> */}
+                            <Tag severity="warning" value="Adaugare Act Aditional"></Tag>
 
                             {activeIndex === 0 ?
 
                                 <div>
                                     <div className='pt-4'>
                                         <HeaderContract
-                                            setContractId={setContractId}
+                                            setAddContractId={setAddContractId}
                                         />
                                     </div>
                                 </div>
@@ -110,7 +113,7 @@ export default function Submenu() {
 
                                 <div>
                                     <div className='pt-4'>
-                                        <Additional />
+                                        <Financial />
                                     </div>
                                 </div>
 
@@ -120,23 +123,13 @@ export default function Submenu() {
 
                                 <div>
                                     <div className='pt-4'>
-                                        <Financial />
-                                    </div>
-                                </div>
-
-                                : null
-                            }
-                            {activeIndex === 4 ?
-
-                                <div>
-                                    <div className='pt-4'>
                                         <Content />
                                     </div>
                                 </div>
 
                                 : null
                             }
-                            {activeIndex === 5 ?
+                            {activeIndex === 4 ?
 
                                 <div>
                                     <div className='pt-4'>

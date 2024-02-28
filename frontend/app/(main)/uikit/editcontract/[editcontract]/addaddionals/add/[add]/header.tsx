@@ -22,8 +22,7 @@ import {
     useMutation,
     useQueryClient
 } from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
-import PartnerBank from '../../lookups/partnerdetails/[partnerdetails]/bank';
+import { useData } from './DataContext';
 
 const queryClient = new QueryClient();
 
@@ -59,11 +58,13 @@ interface Contract {
     parentId: number
 }
 
-export default function EditContract() {
+export default function EditContract({ setAddContractId }: any) {
 
+    const { value, updateValue } = useData();
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
+    const addId = searchParams.get("addId");
     // console.log(Id)
     const [contractDetails, setContractDetails] = useState([]);
     const [contractStatus, setContractStatus] = useState([]);
@@ -457,6 +458,12 @@ export default function EditContract() {
             const response = await axios.post('http://localhost:3000/contracts',
                 addedContract
             );
+
+            setAddContractId(response.data.id)
+            updateValue(response.data.id)
+
+
+            router.push(`/uikit/editcontract/editcontract/addaddionals/add/ctr?Id=${Id}&addId=${response.data.id}`)
 
             console.log('Contract edited:', response.data);
         } catch (error) {

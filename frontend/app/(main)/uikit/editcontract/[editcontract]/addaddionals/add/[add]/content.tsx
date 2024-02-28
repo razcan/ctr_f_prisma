@@ -2,32 +2,21 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { Toast } from 'primereact/toast';
-import { Dialog } from 'primereact/dialog';
-import router from 'next/router';
-import { Editor } from 'primereact/editor';
 import axios from 'axios';
 // import Quill from 'quill';
 // import ReactQuill from "react-quill";
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-
+import { useData } from './DataContext';
+import { useSearchParams } from 'next/navigation'
 
 export default function Content() {
 
     const [text, setText] = useState('');
-    const [value, updateValue] = useState(0);
+    const [addId, setaddId] = useState(0);
+    const { value, updateValue } = useData();
+    const searchParams = useSearchParams()
 
     const modules = {
         toolbar: {
@@ -69,16 +58,24 @@ export default function Content() {
     };
 
 
-
-    const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/contracts/content/${value}`).then(res => res.json())
-        setText(response.content);
-
+    const fetchContent = async (value) => {
+        const response = await fetch(`http://localhost:3000/contracts/content/${value}`).then(res => res.json().then(res => {
+            if (res.length > 0) {
+                if (res[0].content !== null && res[0].content !== undefined) {
+                    setText(res[0].content);
+                }
+            }
+        })
+        )
     }
-    console.log(text)
 
     useEffect(() => {
-        fetchContent()
+
+        const addId = searchParams.get("addId");
+        setaddId(addId)
+        updateValue(addId)
+
+        fetchContent(value)
     }, [])
 
     const saveContent = async () => {
@@ -88,15 +85,10 @@ export default function Content() {
                 content: String,
                 // contractId: any
             }
-
-
             let createContent: Content = {
                 content: text,
                 // contractId: 0
             }
-
-
-
             const response = await axios.patch(`http://localhost:3000/contracts/content/${value}`,
                 createContent
             );
@@ -111,7 +103,6 @@ export default function Content() {
             <div className="col-12">
                 <div >
                     {/* <Editor theme='snow' value={text} onTextChange={(e) => setText(e.htmlValue)} style={{ height: '30vw' }} />
-                  
                       </div>*/}
                     <div className='pl-4'>
                         <Button label="Salveaza" onClick={saveContent} />
@@ -128,10 +119,6 @@ export default function Content() {
                         />
 
                     </div>
-
-
-
-
                     {/* <button onClick={getContent}>Get Content</button> */}
                 </div>
 
