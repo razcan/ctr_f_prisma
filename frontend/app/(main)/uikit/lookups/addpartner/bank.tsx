@@ -153,8 +153,6 @@ const PartnerBank = ({ params, setBankIndex, setBankChild }: any) => {
             status: selectedStatus
         }
 
-        console.log(sBank.id)
-
         if (!sBank.id) {
 
             setMyBankArray((prevArray) => [...prevArray, newBank]);

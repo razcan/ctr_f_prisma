@@ -202,20 +202,20 @@ export default function Content() {
 
     const formatDate = (actuallDate: Date) => {
 
-        const originalDate = new Date(actuallDate.toString());
-        const day = originalDate.getDate().toString().padStart(2, '0'); // Get the day and pad with leading zero if needed
-        const month = (originalDate.getMonth() + 1).toString().padStart(2, '0'); // Get the month (January is 0, so we add 1) and pad with leading zero if needed
-        const year = originalDate.getFullYear(); // Get the full year
-
-        const date = `${day}.${month}.${year}`;
-        return (date)
+        if (actuallDate) {
+            const originalDate = new Date(actuallDate.toString());
+            const day = originalDate.getDate().toString().padStart(2, '0'); // Get the day and pad with leading zero if needed
+            const month = (originalDate.getMonth() + 1).toString().padStart(2, '0'); // Get the month (January is 0, so we add 1) and pad with leading zero if needed
+            const year = originalDate.getFullYear(); // Get the full year
+            const date = `${day}.${month}.${year}`;
+            return (date)
+        }
+        else return
     }
 
     const replacePlaceholders = async () => {
 
         const originalString: any = text;
-
-        // default for bank , persons 
 
         const contract_Sign = formatDate(actualContract?.sign);
         const contract_Number = actualContract?.number;
@@ -224,7 +224,6 @@ export default function Content() {
         const contract_Start = formatDate(actualContract?.start);
         const contract_End = formatDate(actualContract?.end);
         const contract_remarks = actualContract?.remarks;
-
         const contract_PartnerFiscalCode = actualContract?.partner.fiscal_code;
         const contract_PartnerComercialReg = actualContract?.partner.commercial_reg;
         const contract_PartnerAddress = actualContract?.PartnerAddress.completeAddress;
@@ -323,7 +322,7 @@ export default function Content() {
                                     }}
                                     options={templates}
                                     optionLabel="name"
-                                    placeholder="Selecteaza Template"></Dropdown>
+                                    placeholder="Selecteaza Template Contract"></Dropdown>
                             </div>
 
                             <div className="field col-12  md:col-3">

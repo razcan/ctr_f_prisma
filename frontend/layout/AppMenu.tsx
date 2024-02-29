@@ -47,12 +47,22 @@ const AppMenu = () => {
                     icon: 'pi pi-fw pi-briefcase',
                     to: '/uikit/alerts',
                 },
-
+                {
+                    label: 'Grupuri Utilizatori',
+                    icon: 'pi pi-fw pi-briefcase',
+                    to: '/uikit/usergroups',
+                },
                 {
                     label: 'Utilizatori',
-                    icon: 'pi pi-fw pi-sign-in',
-                    to: '/auth/login'
+                    icon: 'pi pi-fw pi-briefcase',
+                    to: '/uikit/users',
                 },
+
+                // {
+                //     label: 'Utilizatori',
+                //     icon: 'pi pi-fw pi-sign-in',
+                //     to: '/auth/login'
+                // },
             ]
         }
         // {
