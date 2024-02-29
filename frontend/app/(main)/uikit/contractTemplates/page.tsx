@@ -30,6 +30,121 @@ export default function Alerts() {
     const [contractType, setContractType] = useState([]);
     const [templates, setTemplates] = useState([]);
 
+
+    const placeholders = [
+        {
+            name: 'ContractNumber',
+        },
+        {
+            name: 'SignDate',
+        },
+        {
+            name: 'StartDate',
+        },
+        {
+            name: 'FinalDate',
+        },
+        {
+            name: 'PartnerName',
+        },
+        {
+            name: 'EntityName',
+        },
+        {
+            name: 'ShortDescription',
+        },
+        {
+            name: 'PartnerAddress',
+        },
+        {
+            name: 'PartnerStreet',
+        },
+        {
+            name: 'PartnerCity',
+        },
+        {
+            name: 'PartnerCounty',
+        },
+        {
+            name: 'PartnerCountry',
+        },
+        {
+            name: 'PartnerBank',
+        },
+        {
+            name: 'PartnerBranch',
+        },
+        {
+            name: 'PartnerIban',
+        },
+        {
+            name: 'PartnerCurrency',
+        },
+        {
+            name: 'PartnerPerson',
+        },
+        {
+            name: 'PartnerEmail',
+        },
+        {
+            name: 'PartnerPhone',
+        },
+        {
+            name: 'PartnerRole',
+        },
+        {
+            name: 'EntityAddress',
+        },
+        {
+            name: 'EntityStreet',
+        },
+        {
+            name: 'EntityCity',
+        },
+        {
+            name: 'EntityCounty',
+        },
+        {
+            name: 'EntityCountry',
+        },
+        {
+            name: 'EntityBranch',
+        },
+        {
+            name: 'EntityIban',
+        },
+        {
+            name: 'EntityCurrency',
+        },
+        {
+            name: 'EntityPerson',
+        },
+        {
+            name: 'EntityEmail',
+        },
+        {
+            name: 'EntityPhone',
+        },
+        {
+            name: 'EntityRole',
+        },
+        {
+            name: 'Type',
+        },
+        {
+            name: 'PartnerComercialReg',
+        },
+        {
+            name: 'PartnerFiscalCode',
+        },
+        {
+            name: 'EntityFiscalCode',
+        },
+        {
+            name: 'EntityComercialReg',
+        },
+    ]
+
     const fetchTypeData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttype")
             .then(response => {
@@ -44,12 +159,10 @@ export default function Alerts() {
     const fetchTemplatesData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttemplates")
             .then(response => {
-                console.log(response);
                 return response.json()
             })
             .then(templates => {
                 setTemplates(templates)
-                console.log(templates)
             })
     }
 
@@ -73,8 +186,6 @@ export default function Alerts() {
 
     const saveContracttemplate = async () => {
 
-        console.log(selectedTemplate.id)
-
         interface ContractTemplate {
             name: String,
             active: Boolean,
@@ -94,7 +205,6 @@ export default function Alerts() {
         try {
 
             if (selectedTemplate.id > 0) {
-                console.log("se editeaza")
                 const response = await axios.patch(`http://localhost:3000/nomenclatures/contracttemplates/${selectedTemplate.id}`,
                     template
                 );
@@ -106,8 +216,6 @@ export default function Alerts() {
                 );
                 console.log('Alert edited:', response.data);
             }
-
-
             setVisible(false)
             setSelectedTemplate([])
             fetchTemplatesData()
@@ -143,10 +251,12 @@ export default function Alerts() {
                             }}>
                             {/* <Column hidden field="id" header="Id"></Column> */}
                             <Column field="id" header="Id"></Column>
-                            <Column field="name" header="Denumire"></Column>
-                            <Column field="contractType.name" header="Tip Contract"></Column>
+                            <Column field="name" header="Denumire Mode;"></Column>
+                            <Column field="contractType.name" header="Tip Contract(la care se aplica)"></Column>
                             <Column field="active" header="Activa"></Column>
                         </DataTable>
+
+
                     </div>
 
                     {/* <Button label="Show" icon="pi pi-external-link" onClick={() => setVisible(true)} /> */}
@@ -179,8 +289,11 @@ export default function Alerts() {
                                         </div>
                                         <div className="field-checkbox col-12 md:col-12">
 
-                                            <InputTextarea value={"@@NumarContract, @@DataContract,@@DataFinal, @@Partener, @@Entitate, @@ScurtaDescriere"}
-                                                rows={12} cols={60} style={{ height: '40vh' }} />
+                                            <DataTable value={placeholders} tableStyle={{ minWidth: '10vh' }}
+                                                scrollable scrollHeight="40vh"
+                                            >
+                                                <Column field="name" header=""></Column>
+                                            </DataTable>
                                         </div>
                                     </div>
                                 </div>
