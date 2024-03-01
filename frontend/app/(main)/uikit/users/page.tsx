@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { DataTable } from 'primereact/datatable';
-import { Column } from 'jspdf-autotable';
+import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { Checkbox } from 'primereact/checkbox';
 import { Editor } from 'primereact/editor';
@@ -18,6 +18,7 @@ import { Password } from 'primereact/password';
 import { MultiSelect } from 'primereact/multiselect';
 import { Toast } from 'primereact/toast';
 import axios from 'axios';
+import { FileUpload } from 'primereact/fileupload';
 
 export default function HeaderContract({ setContractId }: any) {
 
@@ -26,7 +27,7 @@ export default function HeaderContract({ setContractId }: any) {
     const [users, setUsers] = useState([]);
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState([]);
-    const [isActive, setIsActive] = useState(true);
+    const [isActive, setIsActive] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -34,14 +35,8 @@ export default function HeaderContract({ setContractId }: any) {
     const [repassword, setRePassword] = useState('');
     const [all_roles, setAll_roles] = useState('');
     const [myBankArray, setMyBankArray] = useState<[]>([]);
-
-
-    // const all_roles = [
-    //     { name: 'Administrare' },
-    //     { name: 'Citire' },
-    //     { name: 'Solicitare' },
-    //     { name: 'Scriere' },
-    // ];
+    const [all_users, setAll_users] = useState([]);
+    const [picturefiles, setPicturefiles] = useState<any>();
 
     const show = () => {
         toast.current.show({ severity: 'error', summary: 'Eroare', detail: 'Nu a putut fi confirmata parola', life: 3000 });
@@ -52,8 +47,14 @@ export default function HeaderContract({ setContractId }: any) {
         setAll_roles(response);
     }
 
+    const fetchAllUsers = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
+        setAll_users(response);
+    }
+
     useEffect(() => {
-        fetchAllUserRoles()
+        fetchAllUserRoles(),
+            fetchAllUsers()
     }, [])
 
     const AddUser = () => {
@@ -68,18 +69,29 @@ export default function HeaderContract({ setContractId }: any) {
         roles: String[]
     }
 
+
+    const url_link = `http://localhost:3000/nomenclatures/users}`
+
+
+    const onUpload = ({ files }: any) => {
+        console.log(files)
+        setPicturefiles(files);
+    }
+
+
     const saveUser = async () => {
 
-        const roleIds: any = []
+        // onUpload(picturefiles);
 
-        // console.log(roles)
+        console.log("kk", picturefiles[0])
+
+        // const roleIds: any = []
+        const roleIds: number[] = [];
 
         for (let i = 0; i < roles.length; i++) {
             roleIds.push(roles[i].id)
         }
-        // console.log("roleIds", roleIds)
 
-        // // Map the array of role IDs to an array of objects in the desired format
         const roles1 = roleIds.map(id => ({
             role: {
                 connect: {
@@ -88,82 +100,82 @@ export default function HeaderContract({ setContractId }: any) {
             }
         }));
 
-        // console.log("roles1", roles1)
-
-        // // Construct the final object with the "create" property containing the array of roles
-        const json = {
-            roles: {
-                create: roles1
-            }
-        };
-
-        const jsonString = JSON.stringify(json, null, 2); // null and 2 are optional parameters for indentation
-
-
-        console.log(jsonString)
-
         if (password !== repassword) {
             show()
         } else {
-
-
 
             let addUser: any = {
                 "name": name,
                 "email": email,
                 "password": password,
                 "status": isActive,
-                "picture": "https://example.com/profile.jpg",
+                "picture": "poza",
                 "roles": {
-                    "create": [
-                        json
-                    ]
+                    "create":
+                        roles1
+
                 }
             }
+            //   console.log(addUser)
+            // formdata.append('picture', picturefiles[0]);
 
-            console.log(addUser)
-            try {
-                const response = await axios.post('http://localhost:3000/nomenclatures/users',
-                    addUser
-                );
-                console.log('User added:', response.data);
-            } catch (error) {
-                console.error('Error creating user:', error);
-            }
-
+            // try {
+            //     const response = await axios.post('http://localhost:3000/nomenclatures/users',
+            //         addUser
+            //     );
+            //     fetchAllUsers()
             //     setVisible(false)
-            //     // console.log(isActive, password, name, email, roles)
-
-            // {
-            //     "name": "John Doe",
-            //         "email": "john@example.com",
-            //             "password": "hashedPassword123",
-            //                 "status": true,
-            //                     "picture": "https://example.com/profile.jpg",
-            //                         "roles": {
-            //         "create": [
-            //             {
-            //                 "role": {
-            //                     "connect": {
-            //                         "id": 1 // ID-ul rolului asociat
-            //                     }
-            //                 }
-            //             },
-            //             {
-            //                 "role": {
-            //                     "connect": {
-            //                         "id": 2 // ID-ul altui rol asociat
-            //                     }
-            //                 }
-            //             }
-            //         ]
-            //     }
+            //     console.log('User added:', response.data);
+            // } catch (error) {
+            //     console.error('Error creating user:', error);
             // }
         }
 
+        const RRoles: any = {
+            "create":
+                roles1
+        }
+
+        const rolesString = JSON.stringify(RRoles);
+
+
+        var formdata = new FormData();
+
+        formdata.append('name', name);
+        formdata.append('email', email);
+        formdata.append('password', password);
+        formdata.append('status', isActive);
+        formdata.append('avatar', picturefiles[0]);
+        formdata.append('picture', "");
+        formdata.append('roles', rolesString);
+        // formdata.append('json', rolesString)
+
+        // Display the key/value pairs
+        // for (var pair of formdata.entries()) {
+        //     console.log(pair[0] + ', ' + pair[1]);
+        // }
+
+        var requestOptions: any = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        fetch("http://localhost:3000/nomenclatures/users", requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                console.log(result)
+                fetchAllUsers()
+                setVisible(false)
+
+            }
+            )
+            .catch(error => {
+                console.log('error', error)
+            });
+
+
     }
-
-
 
     return (
         <div className="grid">
@@ -178,7 +190,7 @@ export default function HeaderContract({ setContractId }: any) {
 
 
                         <div className="field col-12">
-                            <DataTable value={users} tableStyle={{ minWidth: '50rem' }}
+                            <DataTable value={all_users} tableStyle={{ minWidth: '50rem' }}
                                 selectionMode="single" selection={selectedUser}
                                 onSelectionChange={(e) => {
                                     setSelectedUser(e.value),
@@ -197,7 +209,8 @@ export default function HeaderContract({ setContractId }: any) {
                                 <div className="grid">
                                     <div className="col-12">
                                         <div className="p-fluid formgrid grid pt-2">
-                                            <Toast ref={toast} />
+
+                                            <Toast ref={toast}></Toast>
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="nume">Utilizator</label>
                                                 <InputText id="nume" type="text" value={name} onChange={(e) => setName(e.target.value)} />
@@ -211,12 +224,12 @@ export default function HeaderContract({ setContractId }: any) {
 
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="password">Parola</label>
-                                                <Password value={password} onChange={(e) => setPassword(e.target.value)} />
+                                                <Password value={password} feedback={false} onChange={(e) => setPassword(e.target.value)} />
                                             </div>
 
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="repassword">Confirmare Parola</label>
-                                                <Password value={repassword} onChange={(e) => setRePassword(e.target.value)} />
+                                                <Password value={repassword} feedback={false} onChange={(e) => setRePassword(e.target.value)} />
                                             </div>
 
 
@@ -234,6 +247,26 @@ export default function HeaderContract({ setContractId }: any) {
                                                     checked={isActive}
                                                 ></Checkbox>
                                                 <label htmlFor="active" className="ml-2">Activ</label>
+                                            </div>
+
+                                            <div className="field col-12  md:col-12">
+                                                {/* 
+                                                <FileUpload mode="basic"
+                                                    url={url_link} accept="image/*"
+                                                    maxFileSize={10000000} onUpload={onUpload}
+                                                    auto chooseLabel="Avatar" /> */}
+
+                                                <FileUpload
+                                                    accept="image/*"
+                                                    multiple
+                                                    // mode="basic"
+                                                    maxFileSize={1000000}
+                                                    customUpload={true}
+                                                    //uploadHandler={setPicturefiles(files)}
+                                                    uploadHandler={onUpload}
+                                                    auto
+                                                    chooseLabel="Avatar"
+                                                />
                                             </div>
 
                                         </div>
@@ -255,3 +288,30 @@ export default function HeaderContract({ setContractId }: any) {
         </div>
     );
 };
+
+
+// {
+//     "name": "John Doe",
+//         "email": "john@example.com",
+//             "password": "hashedPassword123",
+//                 "status": true,
+//                     "picture": "https://example.com/profile.jpg",
+//                         "roles": {
+// "create": [
+//     {
+//         "role": {
+//             "connect": {
+//                 "id": 1 // ID-ul rolului asociat
+//             }
+//         }
+//     },
+//     {
+//         "role": {
+//             "connect": {
+//                 "id": 2 // ID-ul altui rol asociat
+//             }
+//         }
+//     }
+// ]
+//     }
+// }
