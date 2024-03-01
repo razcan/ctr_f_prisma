@@ -19,6 +19,9 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Toast } from 'primereact/toast';
 import axios from 'axios';
 import { FileUpload } from 'primereact/fileupload';
+import { Avatar } from 'primereact/avatar';
+import { AvatarGroup } from 'primereact/avatargroup';
+import { ToggleButton } from 'primereact/togglebutton';
 
 export default function HeaderContract({ setContractId }: any) {
 
@@ -28,15 +31,18 @@ export default function HeaderContract({ setContractId }: any) {
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState([]);
     const [isActive, setIsActive] = useState('');
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('**');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [roles, setRoles] = useState([]);
-    const [repassword, setRePassword] = useState('');
+    const [repassword, setRePassword] = useState('**');
     const [all_roles, setAll_roles] = useState('');
     const [myBankArray, setMyBankArray] = useState<[]>([]);
     const [all_users, setAll_users] = useState([]);
     const [picturefiles, setPicturefiles] = useState<any>();
+    const [AvatarUser, setAvatar] = useState('avatar-1709299164782-285606945.jpg');
+    const [changeAvatar, setChangeAvatar] = useState(false);
+
 
     const show = () => {
         toast.current.show({ severity: 'error', summary: 'Eroare', detail: 'Nu a putut fi confirmata parola', life: 3000 });
@@ -50,6 +56,18 @@ export default function HeaderContract({ setContractId }: any) {
     const fetchAllUsers = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
         setAll_users(response);
+    }
+
+    const fetchUserById = async (Id) => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
+        console.log(response)
+        // setSelectedUser(response);
+        setIsActive(response.status)
+        setName(response.name)
+        setEmail(response.email)
+        setRoles(response.roles)
+        setAvatar(response.picture)
+
     }
 
     useEffect(() => {
@@ -70,24 +88,15 @@ export default function HeaderContract({ setContractId }: any) {
     }
 
 
-    const url_link = `http://localhost:3000/nomenclatures/users}`
-
-
     const onUpload = ({ files }: any) => {
-        console.log(files)
+        // console.log(files)
         setPicturefiles(files);
     }
 
 
     const saveUser = async () => {
 
-        // onUpload(picturefiles);
-
-        console.log("kk", picturefiles[0])
-
-        // const roleIds: any = []
         const roleIds: number[] = [];
-
         for (let i = 0; i < roles.length; i++) {
             roleIds.push(roles[i].id)
         }
@@ -181,6 +190,7 @@ export default function HeaderContract({ setContractId }: any) {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
+
                     Utilizatori
                     <div className="p-fluid formgrid grid p-3">
 
@@ -194,7 +204,15 @@ export default function HeaderContract({ setContractId }: any) {
                                 selectionMode="single" selection={selectedUser}
                                 onSelectionChange={(e) => {
                                     setSelectedUser(e.value),
-                                        setVisible(true)
+                                        console.log(e.value),
+                                        console.log(e.value.id)
+                                    fetchUserById(e.value.id)
+                                    // const response =
+                                    //     fetch(`http://localhost:3000/nomenclatures/user/${e.value.id}`).then(res => res.json())
+                                    // console.log(response)
+
+                                    // fetchUserById(e.value.id)
+                                    setVisible(true)
                                 }}>
                                 <Column field="id" header="Id"></Column>
                                 <Column field="name" header="Utilizator"></Column>
@@ -206,11 +224,21 @@ export default function HeaderContract({ setContractId }: any) {
 
                         <Dialog header="Adauga User" visible={visible} style={{ width: '30vw' }} onHide={() => setVisible(false)}>
                             <div className='card'>
-                                <div className="grid">
+                                <div className="grid flex justify-content-center flex-wrap">
+                                    <div>
+                                        <span>
+                                            <Avatar image={`http://localhost:3000/nomenclatures/download/${AvatarUser}`}
+                                                size="xlarge" shape="circle" style={{ width: '16vh', height: '16vh' }} />
+                                        </span>
+                                    </div>
+
                                     <div className="col-12">
                                         <div className="p-fluid formgrid grid pt-2">
 
                                             <Toast ref={toast}></Toast>
+
+
+
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="nume">Utilizator</label>
                                                 <InputText id="nume" type="text" value={name} onChange={(e) => setName(e.target.value)} />
@@ -235,39 +263,42 @@ export default function HeaderContract({ setContractId }: any) {
 
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="roles">Rol</label>
-                                                {/* <InputText id="roles" type="text" value={roles} onChange={(e) => setRoles(e.target.value)} /> */}
-
-                                                <MultiSelect value={roles} onChange={(e) => setRoles(e.value)} options={all_roles} optionLabel="roleName"
+                                                <MultiSelect value={roles} onChange={(e) => setRoles(e.value)}
+                                                    options={all_roles} optionLabel="roleName"
                                                     placeholder="Selecteaza Roluri" maxSelectedLabels={5} />
-
                                             </div>
 
-                                            <div className="field-checkbox col-12 md:col-6">
+                                            <div className="field-checkbox col-12 md:col-12">
                                                 <Checkbox id="active" onChange={e => setIsActive(e.checked)}
                                                     checked={isActive}
                                                 ></Checkbox>
                                                 <label htmlFor="active" className="ml-2">Activ</label>
                                             </div>
 
-                                            <div className="field col-12  md:col-12">
-                                                {/* 
-                                                <FileUpload mode="basic"
-                                                    url={url_link} accept="image/*"
-                                                    maxFileSize={10000000} onUpload={onUpload}
-                                                    auto chooseLabel="Avatar" /> */}
-
-                                                <FileUpload
-                                                    accept="image/*"
-                                                    multiple
-                                                    // mode="basic"
-                                                    maxFileSize={1000000}
-                                                    customUpload={true}
-                                                    //uploadHandler={setPicturefiles(files)}
-                                                    uploadHandler={onUpload}
-                                                    auto
-                                                    chooseLabel="Avatar"
-                                                />
+                                            <div className="field col-12  md:col-6">
+                                                <ToggleButton
+                                                    onLabel="Selecteaza" offLabel="Schimba Avatar"
+                                                    onIcon="pi pi-circle" offIcon="pi pi-circle-fill"
+                                                    checked={changeAvatar}
+                                                    onChange={(e) => setChangeAvatar(e.value)} />
                                             </div>
+
+                                            {changeAvatar ?
+                                                <div className="field col-12  md:col-12">
+
+                                                    <FileUpload
+                                                        accept="image/*"
+                                                        multiple
+                                                        // mode="basic"
+                                                        maxFileSize={100000000}
+                                                        customUpload={true}
+                                                        //uploadHandler={setPicturefiles(files)}
+                                                        uploadHandler={onUpload}
+                                                        auto
+                                                        chooseLabel="Avatar"
+                                                    />
+                                                </div>
+                                                : null}
 
                                         </div>
 
