@@ -27,7 +27,6 @@ export default function HeaderContract({ setContractId }: any) {
 
     const toast = useRef(null);
     const router = useRouter();
-    const [users, setUsers] = useState([]);
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState([]);
     const [isActive, setIsActive] = useState('');
@@ -37,11 +36,11 @@ export default function HeaderContract({ setContractId }: any) {
     const [roles, setRoles] = useState([]);
     const [repassword, setRePassword] = useState('**');
     const [all_roles, setAll_roles] = useState('');
-    const [myBankArray, setMyBankArray] = useState<[]>([]);
     const [all_users, setAll_users] = useState([]);
     const [picturefiles, setPicturefiles] = useState<any>();
-    const [AvatarUser, setAvatar] = useState('avatar-1709299164782-285606945.jpg');
+    const [AvatarUser, setAvatar] = useState('avatar-1709367075603-462599146.svg')
     const [changeAvatar, setChangeAvatar] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState(0);
 
 
     const show = () => {
@@ -58,15 +57,41 @@ export default function HeaderContract({ setContractId }: any) {
         setAll_users(response);
     }
 
+
+    const deleteUser = async (file: string): Promise<void> => {
+        try {
+            const response = await fetch(`http://localhost:3000/nomenclatures/user/${selectedUserId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                console.log(`User deleted successfully.`);
+                fetchAllUserRoles()
+                setVisible(false)
+            } else {
+                const errorMessage = await response.text();
+                console.error(`Error deleting user: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error(`Error deleting user`);
+        }
+    };
+
     const fetchUserById = async (Id) => {
         const response = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
-        console.log(response)
-        // setSelectedUser(response);
+
         setIsActive(response.status)
         setName(response.name)
         setEmail(response.email)
-        setRoles(response.roles)
+
         setAvatar(response.picture)
+
+        const roluri = []
+        for (let i = 0; i < response.roles.length; i++) {
+            // console.log('kkmk', response.roles[i].role)
+            roluri.push(response.roles[i].role)
+        }
+        setRoles(roluri)
 
     }
 
@@ -204,14 +229,9 @@ export default function HeaderContract({ setContractId }: any) {
                                 selectionMode="single" selection={selectedUser}
                                 onSelectionChange={(e) => {
                                     setSelectedUser(e.value),
-                                        console.log(e.value),
-                                        console.log(e.value.id)
-                                    fetchUserById(e.value.id)
-                                    // const response =
-                                    //     fetch(`http://localhost:3000/nomenclatures/user/${e.value.id}`).then(res => res.json())
-                                    // console.log(response)
+                                        fetchUserById(e.value.id)
+                                    setSelectedUserId(e.value.id)
 
-                                    // fetchUserById(e.value.id)
                                     setVisible(true)
                                 }}>
                                 <Column field="id" header="Id"></Column>
@@ -263,8 +283,12 @@ export default function HeaderContract({ setContractId }: any) {
 
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="roles">Rol</label>
-                                                <MultiSelect value={roles} onChange={(e) => setRoles(e.value)}
+                                                <MultiSelect value={roles} onChange={(e) => {
+                                                    setRoles(e.value)
+                                                    console.log(e.value)
+                                                }}
                                                     options={all_roles} optionLabel="roleName"
+                                                    display="chip"
                                                     placeholder="Selecteaza Roluri" maxSelectedLabels={5} />
                                             </div>
 
@@ -305,7 +329,7 @@ export default function HeaderContract({ setContractId }: any) {
 
                                         <Button className="pr-2" label="Salveaza" onClick={saveUser} />
 
-                                        <Button className="pl-2" label="Sterge" severity="danger" />
+                                        <Button className="pl-2" label="Sterge" severity="danger" onClick={deleteUser} />
 
 
                                     </div>
