@@ -36,6 +36,8 @@ export default function HeaderContract({ setContractId }: any) {
     const [roles, setRoles] = useState([]);
     const [repassword, setRePassword] = useState('**');
     const [all_roles, setAll_roles] = useState('');
+    const [all_groups, setAll_groups] = useState('');
+    const [selected_groups, setSelected_groups] = useState('');
     const [all_users, setAll_users] = useState([]);
     const [picturefiles, setPicturefiles] = useState<any>();
     const [AvatarUser, setAvatar] = useState('avatar-1709367075603-462599146.svg')
@@ -55,6 +57,11 @@ export default function HeaderContract({ setContractId }: any) {
     const fetchAllUsers = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
         setAll_users(response);
+    }
+
+    const fetchAllgroups = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/groups`).then(res => res.json())
+        setAll_groups(response);
     }
 
 
@@ -88,7 +95,6 @@ export default function HeaderContract({ setContractId }: any) {
 
         const roluri = []
         for (let i = 0; i < response.roles.length; i++) {
-            // console.log('kkmk', response.roles[i].role)
             roluri.push(response.roles[i].role)
         }
         setRoles(roluri)
@@ -97,7 +103,8 @@ export default function HeaderContract({ setContractId }: any) {
 
     useEffect(() => {
         fetchAllUserRoles(),
-            fetchAllUsers()
+            fetchAllUsers(),
+            fetchAllgroups()
     }, [])
 
     const AddUser = () => {
@@ -138,18 +145,18 @@ export default function HeaderContract({ setContractId }: any) {
             show()
         } else {
 
-            let addUser: any = {
-                "name": name,
-                "email": email,
-                "password": password,
-                "status": isActive,
-                "picture": "poza",
-                "roles": {
-                    "create":
-                        roles1
+            // let addUser: any = {
+            //     "name": name,
+            //     "email": email,
+            //     "password": password,
+            //     "status": isActive,
+            //     "picture": "poza",
+            //     "roles": {
+            //         "create":
+            //             roles1
 
-                }
-            }
+            //     }
+            // }
             //   console.log(addUser)
             // formdata.append('picture', picturefiles[0]);
 
@@ -170,7 +177,13 @@ export default function HeaderContract({ setContractId }: any) {
                 roles1
         }
 
+        const Groups: any = {
+            "connect":
+                selected_groups
+        }
+
         const rolesString = JSON.stringify(RRoles);
+        const User_Groups = JSON.stringify(Groups);
 
 
         var formdata = new FormData();
@@ -182,7 +195,7 @@ export default function HeaderContract({ setContractId }: any) {
         formdata.append('avatar', picturefiles[0]);
         formdata.append('picture', "");
         formdata.append('roles', rolesString);
-        // formdata.append('json', rolesString)
+        formdata.append('User_Groups', User_Groups);
 
         // Display the key/value pairs
         // for (var pair of formdata.entries()) {
@@ -242,7 +255,7 @@ export default function HeaderContract({ setContractId }: any) {
 
                         </div>
 
-                        <Dialog header="Adauga User" visible={visible} style={{ width: '30vw' }} onHide={() => setVisible(false)}>
+                        <Dialog header="User" visible={visible} style={{ width: '30vw' }} onHide={() => setVisible(false)}>
                             <div className='card'>
                                 <div className="grid flex justify-content-center flex-wrap">
                                     <div>
@@ -292,6 +305,17 @@ export default function HeaderContract({ setContractId }: any) {
                                                     placeholder="Selecteaza Roluri" maxSelectedLabels={5} />
                                             </div>
 
+                                            <div className="field col-12  md:col-12">
+                                                <label htmlFor="roles">Grup</label>
+                                                <MultiSelect value={selected_groups} onChange={(e) => {
+                                                    setSelected_groups(e.value)
+                                                    console.log(e.value)
+                                                }}
+                                                    options={all_groups} optionLabel="name"
+                                                    display="chip"
+                                                    placeholder="Selecteaza Grupuri" maxSelectedLabels={5} />
+                                            </div>
+
                                             <div className="field-checkbox col-12 md:col-12">
                                                 <Checkbox id="active" onChange={e => setIsActive(e.checked)}
                                                     checked={isActive}
@@ -326,11 +350,14 @@ export default function HeaderContract({ setContractId }: any) {
 
                                         </div>
 
-
-                                        <Button className="pr-2" label="Salveaza" onClick={saveUser} />
-
-                                        <Button className="pl-2" label="Sterge" severity="danger" onClick={deleteUser} />
-
+                                        <div className='p-3 field col-2 md:col-12'>
+                                            <div className='grid'>
+                                                <div className='flex flex-wrap justify-content-left gap-3'>
+                                                    <Button label="Salveaza" severity="success" onClick={saveUser} />
+                                                    <Button label="Sterge" severity="danger" onClick={deleteUser} />
+                                                </div>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>
