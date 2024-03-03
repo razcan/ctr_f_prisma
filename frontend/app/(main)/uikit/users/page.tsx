@@ -29,7 +29,7 @@ export default function HeaderContract({ setContractId }: any) {
     const router = useRouter();
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState([]);
-    const [isActive, setIsActive] = useState('');
+    const [isActive, setIsActive] = useState(true);
     const [password, setPassword] = useState('**');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -41,7 +41,7 @@ export default function HeaderContract({ setContractId }: any) {
     const [all_users, setAll_users] = useState([]);
     const [picturefiles, setPicturefiles] = useState<any>();
     const [AvatarUser, setAvatar] = useState('avatar-1709367075603-462599146.svg')
-    const [changeAvatar, setChangeAvatar] = useState(false);
+    const [changeAvatar, setChangeAvatar] = useState(true);
     const [selectedUserId, setSelectedUserId] = useState(0);
 
 
@@ -90,8 +90,9 @@ export default function HeaderContract({ setContractId }: any) {
         setIsActive(response.status)
         setName(response.name)
         setEmail(response.email)
-
         setAvatar(response.picture)
+        setSelected_groups(response.User_Groups)
+        console.log(response.User_Groups)
 
         const roluri = []
         for (let i = 0; i < response.roles.length; i++) {
@@ -323,13 +324,13 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="active" className="ml-2">Activ</label>
                                             </div>
 
-                                            <div className="field col-12  md:col-6">
+                                            {/* <div className="field col-12  md:col-6">
                                                 <ToggleButton
                                                     onLabel="Selecteaza" offLabel="Schimba Avatar"
                                                     onIcon="pi pi-circle" offIcon="pi pi-circle-fill"
                                                     checked={changeAvatar}
                                                     onChange={(e) => setChangeAvatar(e.value)} />
-                                            </div>
+                                            </div> */}
 
                                             {changeAvatar ?
                                                 <div className="field col-12  md:col-12">
@@ -337,20 +338,20 @@ export default function HeaderContract({ setContractId }: any) {
                                                     <FileUpload
                                                         accept="image/*"
                                                         multiple
-                                                        // mode="basic"
+                                                        mode="basic"
                                                         maxFileSize={100000000}
                                                         customUpload={true}
                                                         //uploadHandler={setPicturefiles(files)}
                                                         uploadHandler={onUpload}
                                                         auto
-                                                        chooseLabel="Avatar"
+                                                        chooseLabel="Fotografie de profil"
                                                     />
                                                 </div>
                                                 : null}
 
                                         </div>
 
-                                        <div className='p-3 field col-2 md:col-12'>
+                                        <div className='field col-2 md:col-12'>
                                             <div className='grid'>
                                                 <div className='flex flex-wrap justify-content-left gap-3'>
                                                     <Button label="Salveaza" severity="success" onClick={saveUser} />
