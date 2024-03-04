@@ -25,6 +25,7 @@ const LoginPage = () => {
     const [token, setToken] = useState([]);
     const toast = useRef<any>(null);
     const [visible, setVisible] = useState(true);
+    const [AvatarUser, setAvatar] = useState('avatar-1709367075603-462599146.svg')
 
     const showSuccess = () => {
         toast.current.show(
@@ -64,6 +65,8 @@ const LoginPage = () => {
             showSuccess();
             router.push('/')
 
+            //de seatat poza de profil langa login
+
             //data la care expira token
             //  console.log(rez.expire_date_token)
             // router.push('/');
@@ -75,6 +78,11 @@ const LoginPage = () => {
             showError();
             console.error('Error submitting :', error);
         }
+    }
+
+    const fetchUserById = async (Id) => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
+        setAvatar(response.picture)
     }
 
     return (

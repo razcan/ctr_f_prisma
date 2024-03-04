@@ -86,9 +86,6 @@ function Contracts() {
             // Assuming response.json() returns the actual data you want to set
             const data = await response.json();
 
-            // Now you can set the data, maybe using some state management
-
-
             if (!response.ok) {
                 const res = `HTTP error! Status: ${response.status}`
                 if (response.status === 401) {
@@ -98,8 +95,6 @@ function Contracts() {
             }
             if (response.ok) {
                 setData(data);
-                // setData(contract)
-                // router.push('http://localhost:3000/contracts');
             }
         }
     }
