@@ -69,15 +69,57 @@ function Contracts() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
-    const fetchContracts = () => {
-        fetch("http://localhost:3000/contracts")
-            .then(response => {
-                return response.json()
-            })
-            .then(contract => {
-                setData(contract)
-            })
+    const fetchContracts = async () => {
+        const session: any = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken) {
+            const jwtTokenf = jwtToken.access_token;
+            const response = await fetch(`http://localhost:3000/contracts`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            // Assuming response.json() returns the actual data you want to set
+            const data = await response.json();
+
+            // Now you can set the data, maybe using some state management
+
+
+            if (!response.ok) {
+                const res = `HTTP error! Status: ${response.status}`
+                if (response.status === 401) {
+                    setData([]);
+                    router.push('http://localhost:5500/auth/login')
+                }
+            }
+            if (response.ok) {
+                setData(data);
+                // setData(contract)
+                // router.push('http://localhost:3000/contracts');
+            }
+        }
     }
+
+
+
+    // const fetchContracts = () => {
+
+    //     fetch("http://localhost:3000/contracts")
+    //         .then(response => {
+    //             // console.log(response)
+    //             if (response.status === 401) {
+    //                 // console.log("neautorizat")
+    //                 router.push(`http://localhost:5500/auth/login`);
+    //             } else return response.json()
+    //         })
+    //         .then(contract => {
+    //             setData(contract)
+    //         })
+    // }
 
     useEffect(() => {
         fetchContracts()

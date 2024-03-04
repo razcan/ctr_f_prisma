@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
+import router from 'next/router';
 
 const Category = ({ executeFunction }: any) => {
 
@@ -20,6 +21,52 @@ const Category = ({ executeFunction }: any) => {
     // const x = MyContextProvider();
     // const themeContext = useContext(ThemeContext);
     // console.log('themeContext:', themeContext)
+
+    const showErrorLogin = () => {
+        toast.current.show({ severity: 'error', summary: 'You are not logged in!', detail: 'You are not logged in!', life: 3000 });
+    }
+
+    const deleteCategorySelected2 = async (event: any) => {
+        const session: any = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken) {
+            const jwtTokenf = jwtToken.access_token;
+            const response = await fetch(`http://localhost:3000/contracts/category/${event.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json',
+                },
+
+            })
+
+            if (!response.ok) {
+                const res = `HTTP error! Status: ${response.status}`
+                // const x = response.status
+                //  showError(res)
+                if (response.status == 401) {
+                    // setVisible(true)
+                    router.push('/login')
+                }
+                //  throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            if (response.ok) {
+                // console.log('Delete successful');
+                router.push('/admin');
+            }
+        }
+        else {
+            showErrorLogin()
+            setTimeout(() => {
+                setVisible(false)
+                router.push('/login')
+
+            }, 1000);
+
+
+        }
+    }
 
 
     const [categorySelected, setCategorySelected] = useState('');
