@@ -1,13 +1,23 @@
 'use client';
 import { ChartData, ChartOptions } from 'chart.js';
 import { Chart } from 'primereact/chart';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, createContext, useState } from 'react';
 import { LayoutContext } from '../../layout/context/layoutcontext'
 import type { ChartDataState, ChartOptionsState } from '@/types';
+import { MyContext, MyProvider } from '../../layout/context/myUserContext'
+
 
 const ChartDemo = () => {
+
+  const useMyContext = () => useContext(MyContext);
+
+  const { userName, setUserName } = useMyContext();
+  const { userId, setUserId } = useMyContext();
+  const { picture, setPicture } = useMyContext();
+
   const [options, setOptions] = useState<ChartOptionsState>({});
   const [data, setChartData] = useState<ChartDataState>({});
+
   const { layoutConfig } = useContext(LayoutContext);
   const [contracts, setContracts] = useState([]);
   const [groupedSum, setGroupedSum] = useState([]);

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -16,6 +16,9 @@ import {
 } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+
+
 
 const queryClient = new QueryClient();
 
@@ -36,6 +39,9 @@ const ContractListPage = () => {
 };
 
 function Contracts() {
+
+
+    const useMyContext = () => useContext(MyContext);
 
     const [selectedContract, setselectedContract] = useState(null);
     const [data, setData] = useState([]);
@@ -166,28 +172,30 @@ function Contracts() {
 
 
     return (
-        <div>
-            <div className='p-1'><Button label="Adauga" onClick={addContract} /></div>
-            <DataTable value={data}
-                filters={filters}
-                globalFilterFields={['number', 'partner.name', 'entity.name', 'type.name', 'status.name', 'start', 'Category.name']} header={header}
-                stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
-                selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
-                    setselectedContract(e.value),
-                        editContract(e.value.id)
-                }} dataKey="id" metaKeySelection={metaKey}>
-                <Column field="id" header="Id"></Column>
-                <Column field="number" header="Numar" sortable></Column>
-                <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
-                <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
-                <Column field="entity.name" header="Entitate" sortable></Column>
-                <Column field="partner.name" header="Partener" sortable></Column>
-                <Column field="status.name" header="Status" sortable></Column>
-                <Column field="type.name" header="Tip" sortable></Column>
-                <Column field="Category.name" header="Categorie" sortable></Column>
+        <MyProvider>
+            <div>
+                <div className='p-1'><Button label="Adauga" onClick={addContract} /></div>
+                <DataTable value={data}
+                    filters={filters}
+                    globalFilterFields={['number', 'partner.name', 'entity.name', 'type.name', 'status.name', 'start', 'Category.name']} header={header}
+                    stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                    selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
+                        setselectedContract(e.value),
+                            editContract(e.value.id)
+                    }} dataKey="id" metaKeySelection={metaKey}>
+                    <Column field="id" header="Id"></Column>
+                    <Column field="number" header="Numar" sortable></Column>
+                    <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
+                    <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
+                    <Column field="entity.name" header="Entitate" sortable></Column>
+                    <Column field="partner.name" header="Partener" sortable></Column>
+                    <Column field="status.name" header="Status" sortable></Column>
+                    <Column field="type.name" header="Tip" sortable></Column>
+                    <Column field="Category.name" header="Categorie" sortable></Column>
 
-            </DataTable>
-        </div>
+                </DataTable>
+            </div>
+        </MyProvider>
     );
 }
 

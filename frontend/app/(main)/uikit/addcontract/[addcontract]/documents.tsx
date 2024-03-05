@@ -14,7 +14,6 @@ import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useData } from './DataContext';
-import { DataProvider } from './DataContext';
 
 export default function Documents() {
 
