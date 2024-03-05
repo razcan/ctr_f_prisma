@@ -7,6 +7,8 @@ import { AppTopbarRef } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
 import { Avatar } from 'primereact/avatar';
 import { MyContext, MyProvider } from '../layout/context/myUserContext'
+import { Badge } from 'primereact/badge';
+import { Chip } from 'primereact/chip';
 
 
 
@@ -30,6 +32,10 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         topbarmenubutton: topbarmenubuttonRef.current
     }));
 
+    const boom = () => {
+        console.log("boom")
+    }
+
     return (
         <MyProvider>
             <div className="layout-topbar">
@@ -48,17 +54,37 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 </button>
 
                 <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
-                    {/* <button type="button" className="p-link layout-topbar-button">
-                    <i className="pi pi-calendar"></i>
-                    <span>Calendar</span>
-                </button> */}
-                    {`[ ${userName} ]`}
-                    <Avatar image={`http://localhost:3000/nomenclatures/download/${picture}`}
+                    {/* <button type="button" className="p-link layout-topbar-button"> */}
+                    <Chip
+                        className="bluegray-900"
+                        label={` ${userName} `}
+                        image={`http://localhost:3000/nomenclatures/download/${picture}`}
+                        removable
+                    />
+                    {/* </button> */}
+
+                    {/* <Avatar image={`http://localhost:3000/nomenclatures/download/${picture}`}
+                        onClick={boom}
                         size="xlarge" shape="circle" style={{ width: '5vh', height: '5vh' }} />
+                    {` ${userName} `}
+                   */}
+                    {/* <button type="button" className="p-link layout-topbar-button">
+                        {` ${userName} `}
+                    </button> */}
+
+
+
+                    {/* <Avatar className="p-overlay-badge"
+                        image={`http://localhost:3000/nomenclatures/download/${picture}`}
+                        shape="circle" style={{ width: '5vh', height: '5vh' }}
+                        size="large">
+                        <Badge value={`[ ${userName} ]`} severity="danger" />
+                    </Avatar> */}
+
                     <Link href="/auth/login">
                         <button type="button" className="p-link layout-topbar-button">
+
                             <i className="pi pi-user"></i>
-                            <span>Profile</span>
 
                         </button>
                     </Link>

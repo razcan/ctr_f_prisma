@@ -11,6 +11,9 @@ export const MyProvider = ({ children }: any) => {
     const [userId, setUserId] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("avatar-1709299164782-285606945.jpg");
+    const Backend_BASE_URL = 'http://localhost:3000'; // Your backend base URL
+    const Frontend_BASE_URL = 'http://localhost:5500'; // Your frontend base URL
+
 
     const login = () => {
         // Logic for logging in
@@ -22,6 +25,57 @@ export const MyProvider = ({ children }: any) => {
         setIsLoggedIn(false);
     };
 
+
+    const fetchWithToken = async (url, options = {}) => {
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+            const headers = {
+                'Authorization': `Bearer ${jwtTokenf}`,
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                const response = await fetch(`${Backend_BASE_URL}/${url}`, {
+                    ...options,
+                    headers,
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || `HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                if (error instanceof TypeError) {
+                    throw new Error('Network error. Please check your internet connection.');
+                }
+                throw error;
+            }
+        } else {
+            throw new Error('No token found.');
+        }
+    };
+
+
+    // Example usage:
+    // const fetchContracts = async () => {
+    //     try {
+    //         const data = await fetchWithToken('contracts', { method: 'GET' });
+    //         setData(data);
+    //     } catch (error) {
+    //         if (error.message === 'No token found.') {
+    //             setData([]);
+    //             router.push('http://localhost:5500/auth/login');
+    //         } else {
+    //             console.error(error.message);
+    //         }
+    //     }
+    // };
+
     // Create an object containing all your variables and functions
     const contextValue = {
         userName,
@@ -32,7 +86,10 @@ export const MyProvider = ({ children }: any) => {
         login,
         logout,
         picture,
-        setPicture
+        setPicture,
+        fetchWithToken,
+        Backend_BASE_URL,
+        Frontend_BASE_URL
     };
 
 

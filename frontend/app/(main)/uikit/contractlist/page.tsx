@@ -41,7 +41,13 @@ const ContractListPage = () => {
 function Contracts() {
 
 
+
     const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL } = useMyContext();
+
+
 
     const [selectedContract, setselectedContract] = useState(null);
     const [data, setData] = useState([]);
@@ -75,7 +81,7 @@ function Contracts() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
-    const fetchContracts = async () => {
+    const fetchContracts_old = async () => {
         const session: any = sessionStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
@@ -104,6 +110,20 @@ function Contracts() {
             }
         }
     }
+
+    const fetchContracts = async () => {
+        try {
+            const data = await fetchWithToken('contracts', { method: 'GET' });
+            setData(data);
+        } catch (error) {
+            if (error.message === 'No token found.') {
+                setData([]);
+                router.push('http://localhost:5500/auth/login');
+            } else {
+                console.error(error.message);
+            }
+        }
+    };
 
 
 
