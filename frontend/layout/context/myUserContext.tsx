@@ -1,5 +1,7 @@
 "use client"
+import router from 'next/router';
 import React, { createContext, useContext, useState } from 'react';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 
 // Step 1: Create the context
 export const MyContext = createContext(null);
@@ -11,9 +13,11 @@ export const MyProvider = ({ children }: any) => {
     const [userId, setUserId] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("avatar-1709299164782-285606945.jpg");
-    const Backend_BASE_URL = 'http://localhost:3000'; // Your backend base URL
-    const Frontend_BASE_URL = 'http://localhost:5500'; // Your frontend base URL
+    const [userRoles, setUserRoles] = useState([]);
+    const Backend_BASE_URL = 'http://localhost:3000'; //  backend base URL
+    const Frontend_BASE_URL = 'http://localhost:5500'; //  frontend base URL
 
+    const router = useRouter()
 
     const login = () => {
         // Logic for logging in
@@ -25,6 +29,7 @@ export const MyProvider = ({ children }: any) => {
         setIsLoggedIn(false);
     };
 
+    console.log("din context: ", userRoles)
 
     const fetchWithToken = async (url, options = {}) => {
         const session = sessionStorage.getItem('token');
@@ -45,6 +50,7 @@ export const MyProvider = ({ children }: any) => {
 
                 if (!response.ok) {
                     const error = await response.json();
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
                     throw new Error(error.message || `HTTP error! Status: ${response.status}`);
                 }
 
@@ -89,7 +95,9 @@ export const MyProvider = ({ children }: any) => {
         setPicture,
         fetchWithToken,
         Backend_BASE_URL,
-        Frontend_BASE_URL
+        Frontend_BASE_URL,
+        userRoles,
+        setUserRoles
     };
 
 

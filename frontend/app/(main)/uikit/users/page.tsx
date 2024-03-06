@@ -22,6 +22,9 @@ import { FileUpload } from 'primereact/fileupload';
 import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { ToggleButton } from 'primereact/togglebutton';
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+
+
 
 export default function HeaderContract({ setContractId }: any) {
 
@@ -29,20 +32,36 @@ export default function HeaderContract({ setContractId }: any) {
     const router = useRouter();
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState([]);
-    const [isActive, setIsActive] = useState(true);
+    const [isActive, setIsActive] = useState('');
     const [password, setPassword] = useState('**');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [roles, setRoles] = useState([]);
     const [repassword, setRePassword] = useState('**');
     const [all_roles, setAll_roles] = useState('');
-    const [all_groups, setAll_groups] = useState('');
-    const [selected_groups, setSelected_groups] = useState('');
     const [all_users, setAll_users] = useState([]);
     const [picturefiles, setPicturefiles] = useState<any>();
     const [AvatarUser, setAvatar] = useState('avatar-1709367075603-462599146.svg')
-    const [changeAvatar, setChangeAvatar] = useState(true);
+    const [changeAvatar, setChangeAvatar] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(0);
+    const [all_groups, setAll_groups] = useState('');
+    const [selected_groups, setSelected_groups] = useState('');
+
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, userRoles
+        // ,
+        // setUserRoles 
+    } = useMyContext();
+
+    // console.log(userRoles);
+
+    const fetchAllgroups = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/groups`).then(res => res.json())
+        setAll_groups(response);
+    }
 
 
     const show = () => {
@@ -57,11 +76,6 @@ export default function HeaderContract({ setContractId }: any) {
     const fetchAllUsers = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
         setAll_users(response);
-    }
-
-    const fetchAllgroups = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/groups`).then(res => res.json())
-        setAll_groups(response);
     }
 
 
@@ -90,12 +104,12 @@ export default function HeaderContract({ setContractId }: any) {
         setIsActive(response.status)
         setName(response.name)
         setEmail(response.email)
+
         setAvatar(response.picture)
-        setSelected_groups(response.User_Groups)
-        console.log(response.User_Groups)
 
         const roluri = []
         for (let i = 0; i < response.roles.length; i++) {
+            // console.log('kkmk', response.roles[i].role)
             roluri.push(response.roles[i].role)
         }
         setRoles(roluri)
@@ -146,18 +160,18 @@ export default function HeaderContract({ setContractId }: any) {
             show()
         } else {
 
-            // let addUser: any = {
-            //     "name": name,
-            //     "email": email,
-            //     "password": password,
-            //     "status": isActive,
-            //     "picture": "poza",
-            //     "roles": {
-            //         "create":
-            //             roles1
+            let addUser: any = {
+                "name": name,
+                "email": email,
+                "password": password,
+                "status": isActive,
+                "picture": "poza",
+                "roles": {
+                    "create":
+                        roles1
 
-            //     }
-            // }
+                }
+            }
             //   console.log(addUser)
             // formdata.append('picture', picturefiles[0]);
 
@@ -184,8 +198,8 @@ export default function HeaderContract({ setContractId }: any) {
         }
 
         const rolesString = JSON.stringify(RRoles);
-        const User_Groups = JSON.stringify(Groups);
 
+        const User_Groups = JSON.stringify(Groups);
 
         var formdata = new FormData();
 
@@ -197,6 +211,8 @@ export default function HeaderContract({ setContractId }: any) {
         formdata.append('picture', "");
         formdata.append('roles', rolesString);
         formdata.append('User_Groups', User_Groups);
+
+        // formdata.append('json', rolesString)
 
         // Display the key/value pairs
         // for (var pair of formdata.entries()) {
@@ -256,7 +272,7 @@ export default function HeaderContract({ setContractId }: any) {
 
                         </div>
 
-                        <Dialog header="User" visible={visible} style={{ width: '30vw' }} onHide={() => setVisible(false)}>
+                        <Dialog header="Adauga User" visible={visible} style={{ width: '30vw' }} onHide={() => setVisible(false)}>
                             <div className='card'>
                                 <div className="grid flex justify-content-center flex-wrap">
                                     <div>
@@ -324,13 +340,13 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="active" className="ml-2">Activ</label>
                                             </div>
 
-                                            {/* <div className="field col-12  md:col-6">
+                                            <div className="field col-12  md:col-6">
                                                 <ToggleButton
                                                     onLabel="Selecteaza" offLabel="Schimba Avatar"
                                                     onIcon="pi pi-circle" offIcon="pi pi-circle-fill"
                                                     checked={changeAvatar}
                                                     onChange={(e) => setChangeAvatar(e.value)} />
-                                            </div> */}
+                                            </div>
 
                                             {changeAvatar ?
                                                 <div className="field col-12  md:col-12">
@@ -338,27 +354,24 @@ export default function HeaderContract({ setContractId }: any) {
                                                     <FileUpload
                                                         accept="image/*"
                                                         multiple
-                                                        mode="basic"
+                                                        // mode="basic"
                                                         maxFileSize={100000000}
                                                         customUpload={true}
                                                         //uploadHandler={setPicturefiles(files)}
                                                         uploadHandler={onUpload}
                                                         auto
-                                                        chooseLabel="Fotografie de profil"
+                                                        chooseLabel="Avatar"
                                                     />
                                                 </div>
                                                 : null}
 
                                         </div>
 
-                                        <div className='field col-2 md:col-12'>
-                                            <div className='grid'>
-                                                <div className='flex flex-wrap justify-content-left gap-3'>
-                                                    <Button label="Salveaza" severity="success" onClick={saveUser} />
-                                                    <Button label="Sterge" severity="danger" onClick={deleteUser} />
-                                                </div>
-                                            </div>
-                                        </div>
+
+                                        <Button className="pr-2" label="Salveaza" onClick={saveUser} />
+
+                                        <Button className="pl-2" label="Sterge" severity="danger" onClick={deleteUser} />
+
 
                                     </div>
                                 </div>

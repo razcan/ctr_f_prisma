@@ -20,7 +20,11 @@ const LoginPage = () => {
     const { userName, setUserName } = useMyContext();
     const { userId, setUserId } = useMyContext();
     const { picture, setPicture } = useMyContext();
+    const { userRoles, setUserRoles } = useMyContext();
 
+
+
+    // console.log("roles: ", userRoles)
 
     const [checked, setChecked] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
@@ -59,6 +63,21 @@ const LoginPage = () => {
         const picture = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
 
         setPicture(picture.picture)
+
+        const roles_array = [];
+        for (let i = 0; i < await picture.roles.length; i++) {
+            roles_array.push(picture.roles[i].role)
+        }
+
+        const roles_array_final = [];
+        for (let i = 0; i < roles_array.length; i++) {
+            roles_array_final.push(roles_array[i].roleName)
+
+        }
+        // console.log(roles_array_final);
+
+        await setUserRoles(roles_array_final)
+
     }
 
     const Login = async () => {
@@ -82,8 +101,6 @@ const LoginPage = () => {
             showSuccess();
             router.push('/')
 
-            //de seatat poza de profil langa login
-
             //data la care expira token
             //  console.log(rez.expire_date_token)
             // router.push('/');
@@ -97,10 +114,6 @@ const LoginPage = () => {
         }
     }
 
-    // const fetchUserById = async (Id) => {
-    //     const response = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
-    //     setAvatar(response.picture)
-    // }
 
     return (
         <MyProvider>
@@ -133,7 +146,9 @@ const LoginPage = () => {
                                     Parola
                                 </label>
                                 <Password inputId="parola" value={password}
-                                    onChange={(e) => setPassword(e.target.value)} placeholder="Parola"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    feedback={false}
+                                    placeholder="Parola"
                                     toggleMask
                                     className="w-full mb-5" inputClassName="w-full p-3 md:w-30rem"></Password>
 
