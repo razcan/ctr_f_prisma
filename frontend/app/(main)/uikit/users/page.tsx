@@ -17,12 +17,13 @@ import { text } from 'stream/consumers';
 import { Password } from 'primereact/password';
 import { MultiSelect } from 'primereact/multiselect';
 import { Toast } from 'primereact/toast';
-import axios from 'axios';
 import { FileUpload } from 'primereact/fileupload';
 import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { ToggleButton } from 'primereact/togglebutton';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import axios, { AxiosRequestConfig } from 'axios';
+
 
 
 
@@ -51,12 +52,12 @@ export default function HeaderContract({ setContractId }: any) {
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, userRoles
+        Frontend_BASE_URL, userRoles, setUserRoles
         // ,
         // setUserRoles 
     } = useMyContext();
 
-    // console.log(userRoles);
+    // console.log("din users", userRoles);
 
     const fetchAllgroups = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/groups`).then(res => res.json())
@@ -73,10 +74,39 @@ export default function HeaderContract({ setContractId }: any) {
         setAll_roles(response);
     }
 
+
     const fetchAllUsers = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
-        setAll_users(response);
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: 'http://localhost:3000/nomenclatures/users',
+                headers: {
+                    'user-role': 'Editor',
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            axios(config)
+                .then(function (response) {
+                    setAll_users(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
     }
+
+
+    // const fetchAllUsers = async () => {
+    //     const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
+    //     setAll_users(response);
+    // }
 
 
     const deleteUser = async (file: string): Promise<void> => {
