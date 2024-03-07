@@ -81,35 +81,35 @@ function Contracts() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
-    const fetchContracts_old = async () => {
-        const session: any = sessionStorage.getItem('token');
-        const jwtToken = JSON.parse(session);
+    // const fetchContracts_old = async () => {
+    //     const session: any = sessionStorage.getItem('token');
+    //     const jwtToken = JSON.parse(session);
 
-        if (jwtToken) {
-            const jwtTokenf = jwtToken.access_token;
-            const response = await fetch(`http://localhost:3000/contracts`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${jwtTokenf}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+    //     if (jwtToken) {
+    //         const jwtTokenf = jwtToken.access_token;
+    //         const response = await fetch(`http://localhost:3000/contracts`, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Authorization': `Bearer ${jwtTokenf}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
 
-            // Assuming response.json() returns the actual data you want to set
-            const data = await response.json();
+    //         // Assuming response.json() returns the actual data you want to set
+    //         const data = await response.json();
 
-            if (!response.ok) {
-                const res = `HTTP error! Status: ${response.status}`
-                if (response.status === 401) {
-                    setData([]);
-                    router.push('http://localhost:5500/auth/login')
-                }
-            }
-            if (response.ok) {
-                setData(data);
-            }
-        }
-    }
+    //         if (!response.ok) {
+    //             const res = `HTTP error! Status: ${response.status}`
+    //             if (response.status === 401) {
+    //                 setData([]);
+    //                 router.push('http://localhost:5500/auth/login')
+    //             }
+    //         }
+    //         if (response.ok) {
+    //             setData(data);
+    //         }
+    //     }
+    // }
 
     const fetchContracts = async () => {
         try {

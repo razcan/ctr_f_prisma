@@ -82,11 +82,13 @@ export default function HeaderContract({ setContractId }: any) {
 
         if (jwtToken && jwtToken.access_token) {
             const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: 'http://localhost:3000/nomenclatures/users',
+                url: `${Backend_BASE_URL}/nomenclatures/users`,
                 headers: {
-                    'user-role': 'Editor',
+                    'user-role': `${roles}`,
                     'Authorization': `Bearer ${jwtTokenf}`,
                     'Content-Type': 'application/json'
                 }
@@ -97,6 +99,11 @@ export default function HeaderContract({ setContractId }: any) {
                     setAll_users(response.data);
                 })
                 .catch(function (error) {
+                    // if (response.status === 401) {
+                    // }
+                    setAll_users([]);
+                    router.push('http://localhost:5500/auth/login')
+
                     console.log(error);
                 });
         }
