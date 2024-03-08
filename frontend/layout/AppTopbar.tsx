@@ -9,7 +9,8 @@ import { Avatar } from 'primereact/avatar';
 import { MyContext, MyProvider } from '../layout/context/myUserContext'
 import { Badge } from 'primereact/badge';
 import { Chip } from 'primereact/chip';
-
+import { Button } from 'primereact/button';
+import { AvatarGroup } from 'primereact/avatargroup';
 
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
@@ -55,12 +56,16 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
                 <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
                     {/* <button type="button" className="p-link layout-topbar-button"> */}
-                    <Chip
+                    {/* <Chip
                         className="bluegray-900"
                         label={` ${userName} `}
                         image={`http://localhost:3000/nomenclatures/download/${picture}`}
                         removable
-                    />
+                    /> */}
+                    {/* <i className="pi pi-bell p-overlay-badge" style={{ fontSize: '2rem' }}>
+                        <Badge value="2"></Badge>
+                    </i> */}
+
                     {/* </button> */}
 
                     {/* <Avatar image={`http://localhost:3000/nomenclatures/download/${picture}`}
@@ -81,12 +86,33 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                         <Badge value={`[ ${userName} ]`} severity="danger" />
                     </Avatar> */}
 
+
                     <Link href="/auth/login">
-                        <button type="button" className="p-link layout-topbar-button">
+                        <Avatar className="p-overlay-badge"
+                            image={`http://localhost:3000/nomenclatures/download/${picture}`}
+                            size="large"
+                            shape="circle"
 
+                        >
+                            <Badge value={` ${userName} `} />
+                        </Avatar>
+                    </Link>
+
+                    <Link href="/auth/login">
+                        <Avatar className="p-link p-overlay-badge" icon="pi pi-bell" size="large">
+                            <Badge value="4" />
+                        </Avatar>
+                    </Link>
+
+
+
+                    <Link href="/auth/login">
+                        {/* <button type="button" className="p-link layout-topbar-button">
                             <i className="pi pi-user"></i>
-
-                        </button>
+                        </button> */}
+                        <Avatar className="p-link p-overlay-badge" icon="pi pi-user" size="large">
+                            <Badge value="login" />
+                        </Avatar>
                     </Link>
                     {/* <Link href="/documentation">
                     <button type="button" className="p-link layout-topbar-button">
