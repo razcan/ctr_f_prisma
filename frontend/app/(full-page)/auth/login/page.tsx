@@ -61,22 +61,7 @@ const LoginPage = () => {
     const GetPicture = async (Id: any) => {
 
         const picture = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
-
         setPicture(picture.picture)
-
-        // const roles_array = [];
-        // for (let i = 0; i < await picture.roles.length; i++) {
-        //     roles_array.push(picture.roles[i].role)
-        // }
-
-        // const roles_array_final = [];
-        // for (let i = 0; i < roles_array.length; i++) {
-        //     roles_array_final.push(roles_array[i].roleName)
-
-        // }
-        // // console.log(roles_array_final);
-
-        // await setUserRoles(roles_array_final)
 
     }
 

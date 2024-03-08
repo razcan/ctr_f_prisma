@@ -84,16 +84,17 @@ export default function HeaderContract({ setContractId }: any) {
             const jwtTokenf = jwtToken.access_token;
 
             const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
                 url: `${Backend_BASE_URL}/nomenclatures/users`,
                 headers: {
                     'user-role': `${roles}`,
+                    'entity': `${entity}`,
                     'Authorization': `Bearer ${jwtTokenf}`,
                     'Content-Type': 'application/json'
                 }
             };
-
             axios(config)
                 .then(function (response) {
                     setAll_users(response.data);
