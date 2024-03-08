@@ -142,7 +142,7 @@ export default function HeaderContract({ setContractId }: any) {
         setIsActive(response.status)
         setName(response.name)
         setEmail(response.email)
-
+        setSelected_groups(response.User_Groups)
         setAvatar(response.picture)
 
         const roluri = []
