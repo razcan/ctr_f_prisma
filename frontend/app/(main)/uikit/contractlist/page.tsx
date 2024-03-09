@@ -111,19 +111,56 @@ function Contracts() {
     //     }
     // }
 
+
     const fetchContracts = async () => {
-        try {
-            const data = await fetchWithToken('contracts', { method: 'GET' });
-            setData(data);
-        } catch (error) {
-            if (error.message === 'No token found.') {
-                setData([]);
-                router.push('http://localhost:5500/auth/login');
-            } else {
-                console.error(error.message);
-            }
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/contracts`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios(config)
+                .then(function (response) {
+                    // setAll_users(response.data);
+                    setData(response.data);
+                })
+                .catch(function (error) {
+                    // if (response.status === 401) {
+                    // }
+                    setData([]);
+                    router.push('http://localhost:5500/auth/login')
+
+                    console.log(error);
+                });
         }
-    };
+    }
+
+    // const fetchContracts = async () => {
+    //     try {
+    //         const data = await fetchWithToken('contracts', { method: 'GET' });
+    //         setData(data);
+    //     } catch (error) {
+    //         if (error.message === 'No token found.') {
+    //             setData([]);
+    //             router.push('http://localhost:5500/auth/login');
+    //         } else {
+    //             console.error(error.message);
+    //         }
+    //     }
+    // };
 
 
 

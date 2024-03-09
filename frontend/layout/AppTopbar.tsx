@@ -33,9 +33,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
         topbarmenubutton: topbarmenubuttonRef.current
     }));
 
-    const boom = () => {
-        console.log("boom")
-    }
 
     return (
         <MyProvider>

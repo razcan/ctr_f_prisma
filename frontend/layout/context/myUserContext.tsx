@@ -29,7 +29,7 @@ export const MyProvider = ({ children }: any) => {
         setIsLoggedIn(false);
     };
 
-    console.log("din context: ", userRoles)
+    // console.log("din context: ", userRoles)
 
     const fetchWithToken = async (url, options = {}) => {
         const session = sessionStorage.getItem('token');

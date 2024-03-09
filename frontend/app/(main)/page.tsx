@@ -4,16 +4,21 @@ import { Chart } from 'primereact/chart';
 import React, { useContext, useEffect, createContext, useState } from 'react';
 import { LayoutContext } from '../../layout/context/layoutcontext'
 import type { ChartDataState, ChartOptionsState } from '@/types';
-// import { MyContext, MyProvider } from '../../layout/context/myUserContext'
+import axios, { AxiosRequestConfig } from 'axios';
+import { MyContext, MyProvider } from '../../layout/context/myUserContext'
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 
 
 const ChartDemo = () => {
 
-  // const useMyContext = () => useContext(MyContext);
 
-  // const { userName, setUserName } = useMyContext();
-  // const { userId, setUserId } = useMyContext();
-  // const { picture, setPicture } = useMyContext();
+  const useMyContext = () => useContext(MyContext);
+  const {
+    fetchWithToken, Backend_BASE_URL,
+    Frontend_BASE_URL } = useMyContext();
+
+  const router = useRouter()
+
 
   const [options, setOptions] = useState<ChartOptionsState>({});
   const [data, setChartData] = useState<ChartDataState>({});
@@ -64,7 +69,42 @@ const ChartDemo = () => {
 
   }
 
+  const fetchContracts = async () => {
+
+    const session = sessionStorage.getItem('token');
+    const jwtToken = JSON.parse(session);
+
+    if (jwtToken && jwtToken.access_token) {
+      const jwtTokenf = jwtToken.access_token;
+
+      const roles = jwtToken.roles;
+      const entity = jwtToken.entity;
+      const config: AxiosRequestConfig = {
+        method: 'get',
+        url: `${Backend_BASE_URL}/contracts`,
+        headers: {
+          'user-role': `${roles}`,
+          'entity': `${entity}`,
+          'Authorization': `Bearer ${jwtTokenf}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      axios(config)
+        .then(function (response) {
+          setContracts(response.data);
+        })
+        .catch(function (error) {
+          setContracts([]);
+          router.push('http://localhost:5500/auth/login')
+
+          console.log(error);
+        });
+    }
+  }
+
   const fetchContractsData = async () => {
+
+
     await fetch("http://localhost:3000/contracts")
       .then(response => {
         return response.json()
