@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -164,20 +164,6 @@ function Contracts() {
 
 
 
-    // const fetchContracts = () => {
-
-    //     fetch("http://localhost:3000/contracts")
-    //         .then(response => {
-    //             // console.log(response)
-    //             if (response.status === 401) {
-    //                 // console.log("neautorizat")
-    //                 router.push(`http://localhost:5500/auth/login`);
-    //             } else return response.json()
-    //         })
-    //         .then(contract => {
-    //             setData(contract)
-    //         })
-    // }
 
     useEffect(() => {
         fetchContracts()

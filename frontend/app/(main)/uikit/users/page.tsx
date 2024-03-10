@@ -46,7 +46,7 @@ export default function HeaderContract({ setContractId }: any) {
     const [changeAvatar, setChangeAvatar] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(0);
     const [all_groups, setAll_groups] = useState('');
-    const [selected_groups, setSelected_groups] = useState('');
+    const [selected_groups, setSelected_groups] = useState([]);
 
 
     const useMyContext = () => useContext(MyContext);
@@ -152,6 +152,29 @@ export default function HeaderContract({ setContractId }: any) {
         }
         setRoles(roluri)
 
+        //console.log("aaa", response.User_Groups[0])
+
+        interface Groups {
+            createdAt: Date,
+            description: String,
+            id: Number,
+            name: String,
+            updateadAt: Date
+        }
+
+        const grupuri: Groups[] = []
+        for (let i = 0; i < response.User_Groups.length; i++) {
+            const res = {
+                createdAt: response.User_Groups[i].createdAt,
+                description: response.User_Groups[i].description,
+                id: response.User_Groups[i].id,
+                name: response.User_Groups[i].name,
+                updateadAt: response.User_Groups[i].updateadAt
+            }
+            grupuri.push(res)
+        }
+        setSelected_groups(grupuri)
+        // console.log("bbb", grupuri)
     }
 
     useEffect(() => {
@@ -266,7 +289,7 @@ export default function HeaderContract({ setContractId }: any) {
         fetch("http://localhost:3000/nomenclatures/users", requestOptions)
             .then(response => response.text())
             .then(result => {
-                console.log(result)
+                // console.log(result)
                 fetchAllUsers()
                 setVisible(false)
 
@@ -353,7 +376,7 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="roles">Rol</label>
                                                 <MultiSelect value={roles} onChange={(e) => {
                                                     setRoles(e.value)
-                                                    console.log(e.value)
+                                                    // console.log(e.value)
                                                 }}
                                                     options={all_roles} optionLabel="roleName"
                                                     display="chip"

@@ -92,6 +92,301 @@ const ChartDemo = () => {
       axios(config)
         .then(function (response) {
           setContracts(response.data);
+          const contracts = response.data;
+
+          if (response.data.length > 0) {
+
+            interface CtrType {
+              type: string;
+              amount: number;
+            }
+
+            interface CtrStatus {
+              status: string;
+              amount: number;
+            }
+
+            interface CtrExp {
+              date: Date;
+              amount: number;
+            }
+
+            const documentStyle = getComputedStyle(document.documentElement);
+
+            const ctrExpArray: CtrExp[] = [];
+            const ctrExpResult: CtrExp[] = [];
+            contracts.forEach(ctr => {
+              if (ctr && ctr.end) {
+                const toAdd = { date: ctr.end, amount: 1 }
+                ctrExpArray.push(toAdd)
+
+                // console.log(ctrExpArray)
+                // year: ctr.end.getFullYear(), month: ctr.end.getMonth() + 1,
+                const today = new Date();
+
+                const currentMonth = today.getMonth() + 1; // Extract the month (0-11), adding 1 to get the correct month number (1-12)
+                const currentYear = today.getFullYear(); // Extract the year (e.g., 2024)
+
+                const desiredMonth = currentMonth + 6; // Add 6 months to the current month
+                let newMonth = desiredMonth % 12 - 2; // Ensure the new month is within the range 0-11
+                let newYear = currentYear + Math.floor(desiredMonth / 12); // Adjust the year if necessary
+
+                // If newMonth is 0, it means we have overflowed into the next year
+                if (newMonth === 0) {
+                  newMonth = 12; // Set newMonth to December
+                  newYear--; // Adjust the year
+                }
+                const newDate = new Date(newYear, newMonth, today.getDate());
+                const startMonth = currentMonth; // feb
+                const startYear = currentYear; // feb
+                const endMonth = desiredMonth; // August
+                const endYear = newYear; // feb
+
+                const expCtr: [] = [];
+                for (let i = 0; i <= ctrExpArray.length; i++) {
+                  if (ctrExpArray[i]) {
+                    if (
+                      new Date(ctrExpArray[i].date) >= new Date(today) &&
+                      new Date(ctrExpArray[i].date) <= new Date(newDate)) {
+                      // console.log("exp", new Date(ctrExpArray[i].date), "peste 6 luni", new Date(newDate), "azi", new Date(today))
+                      //se verifica luna cu luna si se introduce in array poz 1 - 6
+                      let add: CtrExp = { date: ctrExpArray[i].date, amount: 1 }
+                      expCtr.push(add)
+                    }
+                  }
+                }
+
+                const RezexpCtr: [] = [];
+
+                for (let j = 0; j <= 5; j++) {
+                  for (let i = 0; i <= expCtr.length; i++) {
+                    if (expCtr[i]) {
+                      const currentDate = new Date();
+
+                      let startMonth = currentDate.getMonth() + j;
+                      let startnewYear = currentDate.getFullYear();
+                      if (startMonth === 13) {
+                        startMonth = 1; // Set newMonth to January
+                        startnewYear++; // Increment the year
+                      }
+                      // Get the first day of the month
+                      const newstartDate = new Date(startnewYear, startMonth, 1);
+
+                      // Get the last day of the next month, then subtract one day to get the last day of the current month
+                      const newDate = new Date(startnewYear, startMonth + 1, 0);
+
+                      //    console.log(expCtr[i], new Date(newstartDate).toLocaleDateString(), new Date(newDate).toLocaleDateString())
+                      if (
+                        new Date(expCtr[i].date) >= new Date(newstartDate) &&
+                        new Date(expCtr[i].date) <= new Date(newDate)) {
+                        let add = { month: j, amount: 1 }
+                        RezexpCtr.push(add)
+                      }
+                      else {
+                        let add = { month: j, amount: 0 }
+                        RezexpCtr.push(add)
+                      }
+                    }
+                  }
+                }
+
+                const RezexpCtrCount: [] = [];
+                const grouped: Map<string, number> = new Map();
+                RezexpCtr.forEach(contract => {
+                  const { month, amount } = contract;
+                  if (grouped.has(month)) {
+                    grouped.set(month, grouped.get(month)! + amount);
+                  } else {
+                    grouped.set(month, amount);
+                  }
+                });
+                grouped.forEach((value, key) => {
+                  const toAdd = { month: key, amount: value }
+                  RezexpCtrCount.push(toAdd)
+                });
+
+                // console.log(RezexpCtrCount)
+
+                const final: [] = [];
+
+                for (let i = 0; i <= RezexpCtrCount.length; i++) {
+                  if (RezexpCtrCount[i]) {
+                    final.push(RezexpCtrCount[i].amount)
+                  }
+                }
+
+
+                const monthsBetween = getMonthsBetween(startMonth, endMonth);
+                setExpMonth(monthsBetween);
+
+                // console.log(final, monthsBetween)
+
+
+                const barData: ChartData = {
+                  labels: monthsBetween,
+                  datasets: [
+                    {
+                      label: 'Nr. Contracte ce urmeaza sa expire',
+                      backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+                      borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+                      data: final
+                    }
+                  ]
+                }
+
+                setbarData(barData);
+
+              }
+            })
+
+
+            const ctrStatusArray: CtrStatus[] = [];
+            const ctrStatusResult: CtrStatus[] = [];
+            contracts.forEach(ctr => {
+              const toAdd = { status: ctr.status.name, amount: 1 }
+              ctrStatusArray.push(toAdd)
+            })
+            // console.log(ctrStatusArray)
+            //
+
+            // const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
+            // const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
+            // const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
+
+
+            const groupedSum1: Map<string, number> = new Map();
+            ctrStatusArray.forEach(contract => {
+              const { status, amount } = contract;
+              if (groupedSum1.has(status)) {
+                groupedSum1.set(status, groupedSum1.get(status)! + amount);
+              } else {
+                groupedSum1.set(status, amount);
+              }
+            });
+            groupedSum1.forEach((value, key) => {
+              const toAdd = { type: key, amount: value }
+              ctrStatusResult.push(toAdd)
+              // console.log(`${key}: ${value}`);
+            });
+
+
+            const dataStatus: [] = []
+            ctrStatusResult.map(
+              contract => {
+                dataStatus.push(contract.amount)
+              }
+            );
+
+            const labelsStatus: [] = []
+            for (let i = 0; i < ctrStatusResult.length; i++) {
+              labelsStatus.push(ctrStatusResult[i].type);
+
+            }
+
+
+
+            const MyDoughnutData: ChartData = {
+              labels: labelsStatus,
+              datasets: [
+                {
+                  data: dataStatus,
+                  backgroundColor: [
+                    documentStyle.getPropertyValue('--purple-500'),
+                    documentStyle.getPropertyValue('--yellow-500'),
+                    documentStyle.getPropertyValue('--green-500'),
+                    documentStyle.getPropertyValue('--indigo-500'),
+                    documentStyle.getPropertyValue('--blue-500')
+                  ],
+                  hoverBackgroundColor: [
+                    // documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
+                    documentStyle.getPropertyValue('--purple-500'),
+                    documentStyle.getPropertyValue('--yellow-500'),
+                    documentStyle.getPropertyValue('--green-500'),
+                    documentStyle.getPropertyValue('--indigo-500'),
+                    documentStyle.getPropertyValue('--blue-500')
+                  ]
+
+                }
+              ]
+            };
+
+            setMyDoughnutData(MyDoughnutData);
+
+            //
+
+
+            const label: [] = [];
+            const data: [] = [];
+
+            const ctrTypeArray: CtrType[] = [];
+            const ctrTypeArrayResult: CtrType[] = [];
+
+            contracts.forEach(ctr => {
+              const toAdd = { type: ctr.type.name, amount: 1 }
+              ctrTypeArray.push(toAdd)
+            })
+
+            const groupedSum: Map<string, number> = new Map();
+            ctrTypeArray.forEach(contract => {
+              const { type, amount } = contract;
+              if (groupedSum.has(type)) {
+                groupedSum.set(type, groupedSum.get(type)! + amount);
+              } else {
+                groupedSum.set(type, amount);
+              }
+            });
+            groupedSum.forEach((value, key) => {
+              const toAdd = { type: key, amount: value }
+              ctrTypeArrayResult.push(toAdd)
+              // console.log(`${key}: ${value}`);
+            });
+
+
+            const data22: [] = []
+            ctrTypeArrayResult.map(
+              contract => {
+                data22.push(contract.amount)
+              }
+            );
+
+            const labels: [] = []
+            for (let i = 0; i < ctrTypeArrayResult.length; i++) {
+              labels.push(ctrTypeArrayResult[i].type);
+
+            }
+            setLabel(labels)
+
+
+
+            const pieData: ChartData = {
+              labels: labels,
+              datasets: [
+                {
+                  data: data22,
+                  backgroundColor: [
+                    documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
+                    // documentStyle.getPropertyValue('--purple-500'),
+                    // documentStyle.getPropertyValue('--yellow-500'),
+                    // documentStyle.getPropertyValue('--green-500'),
+                    // documentStyle.getPropertyValue('--indigo-500'),
+                    // documentStyle.getPropertyValue('--blue-500')
+                  ],
+                  hoverBackgroundColor: [
+                    documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
+                    // documentStyle.getPropertyValue('--purple-500'),
+                    // documentStyle.getPropertyValue('--yellow-500'),
+                    // documentStyle.getPropertyValue('--green-500'),
+                    // documentStyle.getPropertyValue('--indigo-500'),
+                    // documentStyle.getPropertyValue('--blue-500')
+                  ]
+
+                }
+              ]
+            };
+            setMyPieData(pieData)
+          }
+
+
         })
         .catch(function (error) {
           setContracts([]);
@@ -102,321 +397,321 @@ const ChartDemo = () => {
     }
   }
 
-  const fetchContractsData = async () => {
-
-
-    await fetch("http://localhost:3000/contracts")
-      .then(response => {
-        return response.json()
-      })
-      .then(contracts => {
-        setContracts(contracts)
-
-        if (contracts.length > 0) {
-          interface CtrType {
-            type: string;
-            amount: number;
-          }
-
-          interface CtrStatus {
-            status: string;
-            amount: number;
-          }
-
-          interface CtrExp {
-            date: Date;
-            amount: number;
-          }
-
-
-          const documentStyle = getComputedStyle(document.documentElement);
-
-          const ctrExpArray: CtrExp[] = [];
-          const ctrExpResult: CtrExp[] = [];
-          contracts.forEach(ctr => {
-            if (ctr && ctr.end) {
-              const toAdd = { date: ctr.end, amount: 1 }
-              ctrExpArray.push(toAdd)
-
-              // console.log(ctrExpArray)
-              // year: ctr.end.getFullYear(), month: ctr.end.getMonth() + 1,
-              const today = new Date();
-
-              const currentMonth = today.getMonth() + 1; // Extract the month (0-11), adding 1 to get the correct month number (1-12)
-              const currentYear = today.getFullYear(); // Extract the year (e.g., 2024)
-
-              const desiredMonth = currentMonth + 6; // Add 6 months to the current month
-              let newMonth = desiredMonth % 12 - 2; // Ensure the new month is within the range 0-11
-              let newYear = currentYear + Math.floor(desiredMonth / 12); // Adjust the year if necessary
-
-              // If newMonth is 0, it means we have overflowed into the next year
-              if (newMonth === 0) {
-                newMonth = 12; // Set newMonth to December
-                newYear--; // Adjust the year
-              }
-              const newDate = new Date(newYear, newMonth, today.getDate());
-              const startMonth = currentMonth; // feb
-              const startYear = currentYear; // feb
-              const endMonth = desiredMonth; // August
-              const endYear = newYear; // feb
-
-              const expCtr: [] = [];
-              for (let i = 0; i <= ctrExpArray.length; i++) {
-                if (ctrExpArray[i]) {
-                  if (
-                    new Date(ctrExpArray[i].date) >= new Date(today) &&
-                    new Date(ctrExpArray[i].date) <= new Date(newDate)) {
-                    // console.log("exp", new Date(ctrExpArray[i].date), "peste 6 luni", new Date(newDate), "azi", new Date(today))
-                    //se verifica luna cu luna si se introduce in array poz 1 - 6
-                    let add: CtrExp = { date: ctrExpArray[i].date, amount: 1 }
-                    expCtr.push(add)
-                  }
-                }
-              }
-
-              // month: ctrExpArray[i].date.getMonth() + 1, year: ctrExpArray[i].date.getFullYear() 
-
-              // console.log(expCtr)
-
-              const RezexpCtr: [] = [];
-
-              for (let j = 0; j <= 5; j++) {
-                for (let i = 0; i <= expCtr.length; i++) {
-                  if (expCtr[i]) {
-                    const currentDate = new Date();
-
-                    let startMonth = currentDate.getMonth() + j;
-                    let startnewYear = currentDate.getFullYear();
-                    if (startMonth === 13) {
-                      startMonth = 1; // Set newMonth to January
-                      startnewYear++; // Increment the year
-                    }
-                    // Get the first day of the month
-                    const newstartDate = new Date(startnewYear, startMonth, 1);
-
-                    // Get the last day of the next month, then subtract one day to get the last day of the current month
-                    const newDate = new Date(startnewYear, startMonth + 1, 0);
-
-                    //    console.log(expCtr[i], new Date(newstartDate).toLocaleDateString(), new Date(newDate).toLocaleDateString())
-                    if (
-                      new Date(expCtr[i].date) >= new Date(newstartDate) &&
-                      new Date(expCtr[i].date) <= new Date(newDate)) {
-                      let add = { month: j, amount: 1 }
-                      RezexpCtr.push(add)
-                    }
-                    else {
-                      let add = { month: j, amount: 0 }
-                      RezexpCtr.push(add)
-                    }
-                  }
-                }
-              }
-
-              const RezexpCtrCount: [] = [];
-              const grouped: Map<string, number> = new Map();
-              RezexpCtr.forEach(contract => {
-                const { month, amount } = contract;
-                if (grouped.has(month)) {
-                  grouped.set(month, grouped.get(month)! + amount);
-                } else {
-                  grouped.set(month, amount);
-                }
-              });
-              grouped.forEach((value, key) => {
-                const toAdd = { month: key, amount: value }
-                RezexpCtrCount.push(toAdd)
-              });
-
-              // console.log(RezexpCtrCount)
-
-              const final: [] = [];
-
-              for (let i = 0; i <= RezexpCtrCount.length; i++) {
-                if (RezexpCtrCount[i]) {
-                  final.push(RezexpCtrCount[i].amount)
-                }
-              }
-
-
-              const monthsBetween = getMonthsBetween(startMonth, endMonth);
-              setExpMonth(monthsBetween);
-
-              // console.log(final, monthsBetween)
-
-
-              const barData: ChartData = {
-                labels: monthsBetween,
-                datasets: [
-                  {
-                    label: 'Nr. Contracte ce urmeaza sa expire',
-                    backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-                    borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-                    data: final
-                  }
-                ]
-              }
-
-              setbarData(barData);
-
-              // console.log(monthsBetween);
-            }
-          })
-
-
-
-
-
-
-
-
-
-          const ctrStatusArray: CtrStatus[] = [];
-          const ctrStatusResult: CtrStatus[] = [];
-          contracts.forEach(ctr => {
-            const toAdd = { status: ctr.status.name, amount: 1 }
-            ctrStatusArray.push(toAdd)
-          })
-          // console.log(ctrStatusArray)
-          //
-
-          // const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
-          // const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
-          // const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
-
-
-          const groupedSum1: Map<string, number> = new Map();
-          ctrStatusArray.forEach(contract => {
-            const { status, amount } = contract;
-            if (groupedSum1.has(status)) {
-              groupedSum1.set(status, groupedSum1.get(status)! + amount);
-            } else {
-              groupedSum1.set(status, amount);
-            }
-          });
-          groupedSum1.forEach((value, key) => {
-            const toAdd = { type: key, amount: value }
-            ctrStatusResult.push(toAdd)
-            // console.log(`${key}: ${value}`);
-          });
-
-
-          const dataStatus: [] = []
-          ctrStatusResult.map(
-            contract => {
-              dataStatus.push(contract.amount)
-            }
-          );
-
-          const labelsStatus: [] = []
-          for (let i = 0; i < ctrStatusResult.length; i++) {
-            labelsStatus.push(ctrStatusResult[i].type);
-
-          }
-
-
-
-          const MyDoughnutData: ChartData = {
-            labels: labelsStatus,
-            datasets: [
-              {
-                data: dataStatus,
-                backgroundColor: [
-                  documentStyle.getPropertyValue('--purple-500'),
-                  documentStyle.getPropertyValue('--yellow-500'),
-                  documentStyle.getPropertyValue('--green-500'),
-                  documentStyle.getPropertyValue('--indigo-500'),
-                  documentStyle.getPropertyValue('--blue-500')
-                ],
-                hoverBackgroundColor: [
-                  // documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
-                  documentStyle.getPropertyValue('--purple-500'),
-                  documentStyle.getPropertyValue('--yellow-500'),
-                  documentStyle.getPropertyValue('--green-500'),
-                  documentStyle.getPropertyValue('--indigo-500'),
-                  documentStyle.getPropertyValue('--blue-500')
-                ]
-
-              }
-            ]
-          };
-
-          setMyDoughnutData(MyDoughnutData);
-
-          //
-
-
-          const label: [] = [];
-          const data: [] = [];
-
-          const ctrTypeArray: CtrType[] = [];
-          const ctrTypeArrayResult: CtrType[] = [];
-
-          contracts.forEach(ctr => {
-            const toAdd = { type: ctr.type.name, amount: 1 }
-            ctrTypeArray.push(toAdd)
-          })
-
-          const groupedSum: Map<string, number> = new Map();
-          ctrTypeArray.forEach(contract => {
-            const { type, amount } = contract;
-            if (groupedSum.has(type)) {
-              groupedSum.set(type, groupedSum.get(type)! + amount);
-            } else {
-              groupedSum.set(type, amount);
-            }
-          });
-          groupedSum.forEach((value, key) => {
-            const toAdd = { type: key, amount: value }
-            ctrTypeArrayResult.push(toAdd)
-            // console.log(`${key}: ${value}`);
-          });
-
-
-          const data22: [] = []
-          ctrTypeArrayResult.map(
-            contract => {
-              data22.push(contract.amount)
-            }
-          );
-
-          const labels: [] = []
-          for (let i = 0; i < ctrTypeArrayResult.length; i++) {
-            labels.push(ctrTypeArrayResult[i].type);
-
-          }
-          setLabel(labels)
-
-
-
-          const pieData: ChartData = {
-            labels: labels,
-            datasets: [
-              {
-                data: data22,
-                backgroundColor: [
-                  documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
-                  // documentStyle.getPropertyValue('--purple-500'),
-                  // documentStyle.getPropertyValue('--yellow-500'),
-                  // documentStyle.getPropertyValue('--green-500'),
-                  // documentStyle.getPropertyValue('--indigo-500'),
-                  // documentStyle.getPropertyValue('--blue-500')
-                ],
-                hoverBackgroundColor: [
-                  documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
-                  // documentStyle.getPropertyValue('--purple-500'),
-                  // documentStyle.getPropertyValue('--yellow-500'),
-                  // documentStyle.getPropertyValue('--green-500'),
-                  // documentStyle.getPropertyValue('--indigo-500'),
-                  // documentStyle.getPropertyValue('--blue-500')
-                ]
-
-              }
-            ]
-          };
-          setMyPieData(pieData)
-        }
-      })
-  }
+  // const fetchContractsData = async () => {
+
+
+  //   await fetch("http://localhost:3000/contracts")
+  //     .then(response => {
+  //       return response.json()
+  //     })
+  //     .then(contracts => {
+  //       setContracts(contracts)
+
+  //       if (contracts.length > 0) {
+  //         interface CtrType {
+  //           type: string;
+  //           amount: number;
+  //         }
+
+  //         interface CtrStatus {
+  //           status: string;
+  //           amount: number;
+  //         }
+
+  //         interface CtrExp {
+  //           date: Date;
+  //           amount: number;
+  //         }
+
+
+  //         const documentStyle = getComputedStyle(document.documentElement);
+
+  //         const ctrExpArray: CtrExp[] = [];
+  //         const ctrExpResult: CtrExp[] = [];
+  //         contracts.forEach(ctr => {
+  //           if (ctr && ctr.end) {
+  //             const toAdd = { date: ctr.end, amount: 1 }
+  //             ctrExpArray.push(toAdd)
+
+  //             // console.log(ctrExpArray)
+  //             // year: ctr.end.getFullYear(), month: ctr.end.getMonth() + 1,
+  //             const today = new Date();
+
+  //             const currentMonth = today.getMonth() + 1; // Extract the month (0-11), adding 1 to get the correct month number (1-12)
+  //             const currentYear = today.getFullYear(); // Extract the year (e.g., 2024)
+
+  //             const desiredMonth = currentMonth + 6; // Add 6 months to the current month
+  //             let newMonth = desiredMonth % 12 - 2; // Ensure the new month is within the range 0-11
+  //             let newYear = currentYear + Math.floor(desiredMonth / 12); // Adjust the year if necessary
+
+  //             // If newMonth is 0, it means we have overflowed into the next year
+  //             if (newMonth === 0) {
+  //               newMonth = 12; // Set newMonth to December
+  //               newYear--; // Adjust the year
+  //             }
+  //             const newDate = new Date(newYear, newMonth, today.getDate());
+  //             const startMonth = currentMonth; // feb
+  //             const startYear = currentYear; // feb
+  //             const endMonth = desiredMonth; // August
+  //             const endYear = newYear; // feb
+
+  //             const expCtr: [] = [];
+  //             for (let i = 0; i <= ctrExpArray.length; i++) {
+  //               if (ctrExpArray[i]) {
+  //                 if (
+  //                   new Date(ctrExpArray[i].date) >= new Date(today) &&
+  //                   new Date(ctrExpArray[i].date) <= new Date(newDate)) {
+  //                   // console.log("exp", new Date(ctrExpArray[i].date), "peste 6 luni", new Date(newDate), "azi", new Date(today))
+  //                   //se verifica luna cu luna si se introduce in array poz 1 - 6
+  //                   let add: CtrExp = { date: ctrExpArray[i].date, amount: 1 }
+  //                   expCtr.push(add)
+  //                 }
+  //               }
+  //             }
+
+  //             // month: ctrExpArray[i].date.getMonth() + 1, year: ctrExpArray[i].date.getFullYear() 
+
+  //             // console.log(expCtr)
+
+  //             const RezexpCtr: [] = [];
+
+  //             for (let j = 0; j <= 5; j++) {
+  //               for (let i = 0; i <= expCtr.length; i++) {
+  //                 if (expCtr[i]) {
+  //                   const currentDate = new Date();
+
+  //                   let startMonth = currentDate.getMonth() + j;
+  //                   let startnewYear = currentDate.getFullYear();
+  //                   if (startMonth === 13) {
+  //                     startMonth = 1; // Set newMonth to January
+  //                     startnewYear++; // Increment the year
+  //                   }
+  //                   // Get the first day of the month
+  //                   const newstartDate = new Date(startnewYear, startMonth, 1);
+
+  //                   // Get the last day of the next month, then subtract one day to get the last day of the current month
+  //                   const newDate = new Date(startnewYear, startMonth + 1, 0);
+
+  //                   //    console.log(expCtr[i], new Date(newstartDate).toLocaleDateString(), new Date(newDate).toLocaleDateString())
+  //                   if (
+  //                     new Date(expCtr[i].date) >= new Date(newstartDate) &&
+  //                     new Date(expCtr[i].date) <= new Date(newDate)) {
+  //                     let add = { month: j, amount: 1 }
+  //                     RezexpCtr.push(add)
+  //                   }
+  //                   else {
+  //                     let add = { month: j, amount: 0 }
+  //                     RezexpCtr.push(add)
+  //                   }
+  //                 }
+  //               }
+  //             }
+
+  //             const RezexpCtrCount: [] = [];
+  //             const grouped: Map<string, number> = new Map();
+  //             RezexpCtr.forEach(contract => {
+  //               const { month, amount } = contract;
+  //               if (grouped.has(month)) {
+  //                 grouped.set(month, grouped.get(month)! + amount);
+  //               } else {
+  //                 grouped.set(month, amount);
+  //               }
+  //             });
+  //             grouped.forEach((value, key) => {
+  //               const toAdd = { month: key, amount: value }
+  //               RezexpCtrCount.push(toAdd)
+  //             });
+
+  //             // console.log(RezexpCtrCount)
+
+  //             const final: [] = [];
+
+  //             for (let i = 0; i <= RezexpCtrCount.length; i++) {
+  //               if (RezexpCtrCount[i]) {
+  //                 final.push(RezexpCtrCount[i].amount)
+  //               }
+  //             }
+
+
+  //             const monthsBetween = getMonthsBetween(startMonth, endMonth);
+  //             setExpMonth(monthsBetween);
+
+  //             // console.log(final, monthsBetween)
+
+
+  //             const barData: ChartData = {
+  //               labels: monthsBetween,
+  //               datasets: [
+  //                 {
+  //                   label: 'Nr. Contracte ce urmeaza sa expire',
+  //                   backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+  //                   borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+  //                   data: final
+  //                 }
+  //               ]
+  //             }
+
+  //             setbarData(barData);
+
+  //             // console.log(monthsBetween);
+  //           }
+  //         })
+
+
+
+
+
+
+
+
+
+  //         const ctrStatusArray: CtrStatus[] = [];
+  //         const ctrStatusResult: CtrStatus[] = [];
+  //         contracts.forEach(ctr => {
+  //           const toAdd = { status: ctr.status.name, amount: 1 }
+  //           ctrStatusArray.push(toAdd)
+  //         })
+  //         // console.log(ctrStatusArray)
+  //         //
+
+  //         // const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
+  //         // const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
+  //         // const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
+
+
+  //         const groupedSum1: Map<string, number> = new Map();
+  //         ctrStatusArray.forEach(contract => {
+  //           const { status, amount } = contract;
+  //           if (groupedSum1.has(status)) {
+  //             groupedSum1.set(status, groupedSum1.get(status)! + amount);
+  //           } else {
+  //             groupedSum1.set(status, amount);
+  //           }
+  //         });
+  //         groupedSum1.forEach((value, key) => {
+  //           const toAdd = { type: key, amount: value }
+  //           ctrStatusResult.push(toAdd)
+  //           // console.log(`${key}: ${value}`);
+  //         });
+
+
+  //         const dataStatus: [] = []
+  //         ctrStatusResult.map(
+  //           contract => {
+  //             dataStatus.push(contract.amount)
+  //           }
+  //         );
+
+  //         const labelsStatus: [] = []
+  //         for (let i = 0; i < ctrStatusResult.length; i++) {
+  //           labelsStatus.push(ctrStatusResult[i].type);
+
+  //         }
+
+
+
+  //         const MyDoughnutData: ChartData = {
+  //           labels: labelsStatus,
+  //           datasets: [
+  //             {
+  //               data: dataStatus,
+  //               backgroundColor: [
+  //                 documentStyle.getPropertyValue('--purple-500'),
+  //                 documentStyle.getPropertyValue('--yellow-500'),
+  //                 documentStyle.getPropertyValue('--green-500'),
+  //                 documentStyle.getPropertyValue('--indigo-500'),
+  //                 documentStyle.getPropertyValue('--blue-500')
+  //               ],
+  //               hoverBackgroundColor: [
+  //                 // documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
+  //                 documentStyle.getPropertyValue('--purple-500'),
+  //                 documentStyle.getPropertyValue('--yellow-500'),
+  //                 documentStyle.getPropertyValue('--green-500'),
+  //                 documentStyle.getPropertyValue('--indigo-500'),
+  //                 documentStyle.getPropertyValue('--blue-500')
+  //               ]
+
+  //             }
+  //           ]
+  //         };
+
+  //         setMyDoughnutData(MyDoughnutData);
+
+  //         //
+
+
+  //         const label: [] = [];
+  //         const data: [] = [];
+
+  //         const ctrTypeArray: CtrType[] = [];
+  //         const ctrTypeArrayResult: CtrType[] = [];
+
+  //         contracts.forEach(ctr => {
+  //           const toAdd = { type: ctr.type.name, amount: 1 }
+  //           ctrTypeArray.push(toAdd)
+  //         })
+
+  //         const groupedSum: Map<string, number> = new Map();
+  //         ctrTypeArray.forEach(contract => {
+  //           const { type, amount } = contract;
+  //           if (groupedSum.has(type)) {
+  //             groupedSum.set(type, groupedSum.get(type)! + amount);
+  //           } else {
+  //             groupedSum.set(type, amount);
+  //           }
+  //         });
+  //         groupedSum.forEach((value, key) => {
+  //           const toAdd = { type: key, amount: value }
+  //           ctrTypeArrayResult.push(toAdd)
+  //           // console.log(`${key}: ${value}`);
+  //         });
+
+
+  //         const data22: [] = []
+  //         ctrTypeArrayResult.map(
+  //           contract => {
+  //             data22.push(contract.amount)
+  //           }
+  //         );
+
+  //         const labels: [] = []
+  //         for (let i = 0; i < ctrTypeArrayResult.length; i++) {
+  //           labels.push(ctrTypeArrayResult[i].type);
+
+  //         }
+  //         setLabel(labels)
+
+
+
+  //         const pieData: ChartData = {
+  //           labels: labels,
+  //           datasets: [
+  //             {
+  //               data: data22,
+  //               backgroundColor: [
+  //                 documentStyle.getPropertyValue('--indigo-500') || '#6366f1', documentStyle.getPropertyValue('--purple-500') || '#a855f7', documentStyle.getPropertyValue('--teal-500') || '#14b8a6'
+  //                 // documentStyle.getPropertyValue('--purple-500'),
+  //                 // documentStyle.getPropertyValue('--yellow-500'),
+  //                 // documentStyle.getPropertyValue('--green-500'),
+  //                 // documentStyle.getPropertyValue('--indigo-500'),
+  //                 // documentStyle.getPropertyValue('--blue-500')
+  //               ],
+  //               hoverBackgroundColor: [
+  //                 documentStyle.getPropertyValue('--indigo-400') || '#8183f4', documentStyle.getPropertyValue('--purple-400') || '#b975f9', documentStyle.getPropertyValue('--teal-400') || '#41c5b7'
+  //                 // documentStyle.getPropertyValue('--purple-500'),
+  //                 // documentStyle.getPropertyValue('--yellow-500'),
+  //                 // documentStyle.getPropertyValue('--green-500'),
+  //                 // documentStyle.getPropertyValue('--indigo-500'),
+  //                 // documentStyle.getPropertyValue('--blue-500')
+  //               ]
+
+  //             }
+  //           ]
+  //         };
+  //         setMyPieData(pieData)
+  //       }
+  //     })
+  // }
 
 
   const pieData: ChartData = {
@@ -429,7 +724,8 @@ const ChartDemo = () => {
   };
 
   useEffect(() => {
-    fetchContractsData()
+    // fetchContractsData()
+    fetchContracts()
 
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
