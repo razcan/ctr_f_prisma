@@ -245,7 +245,7 @@ export default function HeaderContract({ setContractId }: any) {
         formdata.append('email', email);
         formdata.append('password', password);
         formdata.append('status', isActive);
-        formdata.append('avatar', picturefiles[0]);
+        formdata.append('avatar', picturefiles?.length > 0 ? picturefiles[0] : "na");
         formdata.append('picture', "");
         formdata.append('roles', rolesString);
         formdata.append('User_Groups', User_Groups);
