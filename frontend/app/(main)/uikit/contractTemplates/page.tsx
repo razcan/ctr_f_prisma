@@ -17,6 +17,7 @@ import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 // import 'primeflex/primeflex.scss';
 import "../../../../node_modules/primeflex/primeflex.scss"
+import { Tag } from 'primereact/tag';
 
 export default function Alerts() {
 
@@ -224,7 +225,22 @@ export default function Alerts() {
             console.error('Error editing alert:', error);
         }
     }
+    const statusTemplate = (item) => {
+        return <Tag value={item.active} severity={getSeverity(item)}></Tag>;
+    };
 
+    const getSeverity = (item) => {
+        switch (item.active) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
 
     //tabel - denumire template, tip contract, activ, id -- header
     //detalii - texteditor, lista placeholdere, salveaza, 
@@ -253,7 +269,8 @@ export default function Alerts() {
                             <Column field="id" header="Id"></Column>
                             <Column field="name" header="Denumire Mode;"></Column>
                             <Column field="contractType.name" header="Tip Contract(la care se aplica)"></Column>
-                            <Column field="active" header="Activa"></Column>
+                            {/* <Column field="active" header="Activa"></Column> */}
+                            <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
                         </DataTable>
 
 

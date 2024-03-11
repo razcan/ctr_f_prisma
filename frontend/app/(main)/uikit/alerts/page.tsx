@@ -21,6 +21,7 @@ import { Editor } from 'primereact/editor';
 import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
+import { Tag } from 'primereact/tag';
 
 
 
@@ -55,7 +56,7 @@ export default function Alerts() {
     const fetchAlertsData = () => {
         fetch("http://localhost:3000/alerts")
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 return response.json()
             })
             .then(alerts => {
@@ -117,7 +118,22 @@ export default function Alerts() {
     }
 
 
+    const statusTemplate = (item) => {
+        return <Tag value={item.isActive} severity={getSeverity(item.isActive)}></Tag>;
+    };
 
+    const getSeverity = (item) => {
+        switch (item) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="grid">
@@ -138,7 +154,8 @@ export default function Alerts() {
                             <Column field="name" header="Denumire"></Column>
                             <Column field="nrofdays" header="Recurenta(zile)"></Column>
                             <Column field="subject" header="Subiect"></Column>
-                            <Column field="internal_emails" header="Activa"></Column>
+                            <Column field="internal_emails" header="Catre"></Column>
+                            <Column field="isActive" header="Activa" body={statusTemplate} style={{ width: '5vh' }} ></Column>
                         </DataTable>
                     </div>
 

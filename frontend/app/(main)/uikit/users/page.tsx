@@ -23,6 +23,7 @@ import { AvatarGroup } from 'primereact/avatargroup';
 import { ToggleButton } from 'primereact/togglebutton';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
 import axios, { AxiosRequestConfig } from 'axios';
+import { Tag } from 'primereact/tag';
 
 
 
@@ -39,13 +40,13 @@ export default function HeaderContract({ setContractId }: any) {
     const [email, setEmail] = useState('');
     const [roles, setRoles] = useState([]);
     const [repassword, setRePassword] = useState('**');
-    const [all_roles, setAll_roles] = useState('');
+    const [all_roles, setAll_roles] = useState([]);
     const [all_users, setAll_users] = useState([]);
     const [picturefiles, setPicturefiles] = useState<any>();
-    const [AvatarUser, setAvatar] = useState('avatar-1709367075603-462599146.svg')
+    const [AvatarUser, setAvatar] = useState('default.jpeg')
     const [changeAvatar, setChangeAvatar] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(0);
-    const [all_groups, setAll_groups] = useState('');
+    const [all_groups, setAll_groups] = useState([]);
     const [selected_groups, setSelected_groups] = useState([]);
 
 
@@ -127,6 +128,7 @@ export default function HeaderContract({ setContractId }: any) {
                 console.log(`User deleted successfully.`);
                 fetchAllUserRoles()
                 setVisible(false)
+                fetchAllUsers()
             } else {
                 const errorMessage = await response.text();
                 console.error(`Error deleting user: ${errorMessage}`);
@@ -143,7 +145,12 @@ export default function HeaderContract({ setContractId }: any) {
         setName(response.name)
         setEmail(response.email)
         setSelected_groups(response.User_Groups)
-        setAvatar(response.picture)
+        if (response.picture == '') {
+            setAvatar('default.jpg')
+        } else {
+            setAvatar(response.picture)
+        }
+
 
         const roluri = []
         for (let i = 0; i < response.roles.length; i++) {
@@ -204,103 +211,151 @@ export default function HeaderContract({ setContractId }: any) {
 
     const saveUser = async () => {
 
-        const roleIds: number[] = [];
-        for (let i = 0; i < roles.length; i++) {
-            roleIds.push(roles[i].id)
-        }
 
-        const roles1 = roleIds.map(id => ({
-            role: {
-                connect: {
-                    id: id
-                }
+        if (selectedUserId == 0) {
+
+            const roleIds: number[] = [];
+            for (let i = 0; i < roles.length; i++) {
+                roleIds.push(roles[i].id)
             }
-        }));
 
-        if (password !== repassword) {
-            show()
-        } else {
+            const roles1 = roleIds.map(id => ({
+                role: {
+                    connect: {
+                        id: id
+                    }
+                }
+            }));
 
-            let addUser: any = {
-                "name": name,
-                "email": email,
-                "password": password,
-                "status": isActive,
-                "picture": "poza",
-                "roles": {
+            if (password !== repassword) {
+                show()
+                //patch
+            } else {
+
+                const RRoles: any = {
                     "create":
                         roles1
-
                 }
+
+                const Groups: any = {
+                    "connect":
+                        selected_groups
+                }
+
+                const rolesString = JSON.stringify(RRoles);
+
+                const User_Groups = JSON.stringify(Groups);
+
+                var formdata = new FormData();
+
+                formdata.append('name', name);
+                formdata.append('email', email);
+                formdata.append('password', password);
+                formdata.append('status', isActive);
+                formdata.append('avatar', picturefiles?.length > 0 ? picturefiles[0] : "default.jpeg");
+                formdata.append('picture', "");
+                formdata.append('roles', rolesString);
+                formdata.append('User_Groups', User_Groups);
+
+                var requestOptions: any = {
+                    method: 'POST',
+                    body: formdata,
+                    redirect: 'follow'
+                };
+
+                fetch("http://localhost:3000/nomenclatures/users", requestOptions)
+                    .then(response => response.text())
+                    .then(result => {
+                        // console.log(result)
+                        fetchAllUsers()
+                        setVisible(false)
+
+                    }
+                    )
+                    .catch(error => {
+                        console.log('error', error)
+                    });
             }
-            //   console.log(addUser)
-            // formdata.append('picture', picturefiles[0]);
-
-            // try {
-            //     const response = await axios.post('http://localhost:3000/nomenclatures/users',
-            //         addUser
-            //     );
-            //     fetchAllUsers()
-            //     setVisible(false)
-            //     console.log('User added:', response.data);
-            // } catch (error) {
-            //     console.error('Error creating user:', error);
-            // }
         }
+        else {
 
-        const RRoles: any = {
-            "create":
-                roles1
-        }
+            const roleIds: number[] = [];
+            for (let i = 0; i < roles.length; i++) {
+                roleIds.push(roles[i].id)
+            }
 
-        const Groups: any = {
-            "connect":
-                selected_groups
-        }
+            const rells: string = roleIds
+            const roles1 = roleIds.map(id => (
+                {
+                    id: id
+                }
+            ));
 
-        const rolesString = JSON.stringify(RRoles);
+            if (password !== repassword) {
+                show()
+            } else {
 
-        const User_Groups = JSON.stringify(Groups);
+                const RRoles: any = {
+                    "set":
+                        roles1
+                }
 
-        var formdata = new FormData();
+                const Groups: any = {
+                    "connect":
+                        selected_groups
+                }
 
-        formdata.append('name', name);
-        formdata.append('email', email);
-        formdata.append('password', password);
-        formdata.append('status', isActive);
-        formdata.append('avatar', picturefiles?.length > 0 ? picturefiles[0] : "na");
-        formdata.append('picture', "");
-        formdata.append('roles', rolesString);
-        formdata.append('User_Groups', User_Groups);
+                const rolesString = JSON.stringify(RRoles);
 
-        // formdata.append('json', rolesString)
+                const User_Groups = JSON.stringify(Groups);
 
-        // Display the key/value pairs
-        // for (var pair of formdata.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+                var formdata = new FormData();
 
-        var requestOptions: any = {
-            method: 'POST',
-            body: formdata,
-            redirect: 'follow'
-        };
+                formdata.append('name', name);
+                formdata.append('email', email);
+                formdata.append('password', password);
+                formdata.append('status', isActive);
+                formdata.append('avatar', picturefiles?.length > 0 ? picturefiles[0] : "default.jpeg");
+                formdata.append('picture', "");
+                formdata.append('roles', rells);
+                formdata.append('User_Groups', User_Groups);
 
-        fetch("http://localhost:3000/nomenclatures/users", requestOptions)
-            .then(response => response.text())
-            .then(result => {
-                // console.log(result)
-                fetchAllUsers()
-                setVisible(false)
+                var requestOptions: any = {
+                    method: 'PATCH',
+                    body: formdata,
+                    redirect: 'follow'
+                };
+                fetch(`http://localhost:3000/nomenclatures/user/${selectedUserId}`, requestOptions)
+                    .then(response => response.text())
+                    .then(result => {
+                        fetchAllUsers()
+                        setVisible(false)
+                    }
+                    )
+                    .catch(error => {
+                        console.log('error', error)
+                    });
 
             }
-            )
-            .catch(error => {
-                console.log('error', error)
-            });
-
-
+        }
     }
+    const statusTemplate = (item) => {
+        return <Tag value={item.status} severity={getSeverity(item.status)}></Tag>;
+    };
+
+    const getSeverity = (item) => {
+        switch (item) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    }
+
 
     return (
         <div className="grid">
@@ -328,12 +383,25 @@ export default function HeaderContract({ setContractId }: any) {
                                 <Column field="id" header="Id"></Column>
                                 <Column field="name" header="Utilizator"></Column>
                                 <Column field="email" header="Email"></Column>
-                                <Column field="status" header="Stare"></Column>
+                                {/* <Column field="status" header="Stare"></Column> */}
+                                <Column field="status" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
                             </DataTable>
 
                         </div>
 
-                        <Dialog header="Adauga User" visible={visible} style={{ width: '30vw' }} onHide={() => setVisible(false)}>
+                        <Dialog header="Adauga User" visible={visible} style={{ width: '30vw' }} onHide={
+                            () => {
+                                setVisible(false)
+                                setSelectedUser([])
+                                setName('')
+                                setEmail('')
+                                setPassword('')
+                                setRePassword('')
+                                setRoles([])
+                                setSelected_groups([])
+                                setAvatar('default.jpeg')
+                                // setIsActive(false)
+                            }}>
                             <div className='card'>
                                 <div className="grid flex justify-content-center flex-wrap">
                                     <div>
@@ -349,7 +417,7 @@ export default function HeaderContract({ setContractId }: any) {
                                             <Toast ref={toast}></Toast>
 
 
-
+                                            {/* <div>{selectedUserId}</div> */}
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="nume">Utilizator</label>
                                                 <InputText id="nume" type="text" value={name} onChange={(e) => setName(e.target.value)} />
@@ -376,7 +444,7 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="roles">Rol</label>
                                                 <MultiSelect value={roles} onChange={(e) => {
                                                     setRoles(e.value)
-                                                    // console.log(e.value)
+                                                    console.log(e.value)
                                                 }}
                                                     options={all_roles} optionLabel="roleName"
                                                     display="chip"
@@ -401,38 +469,51 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="active" className="ml-2">Activ</label>
                                             </div>
 
-                                            <div className="field col-12  md:col-6">
+                                            {/* <div className="field col-12  md:col-6">
                                                 <ToggleButton
                                                     onLabel="Selecteaza" offLabel="Schimba Avatar"
                                                     onIcon="pi pi-circle" offIcon="pi pi-circle-fill"
                                                     checked={changeAvatar}
                                                     onChange={(e) => setChangeAvatar(e.value)} />
+                                            </div> */}
+
+                                            {/* {changeAvatar ? */}
+                                            <div className="field col-12  md:col-12">
+
+                                                <FileUpload
+                                                    accept="image/*"
+                                                    multiple
+                                                    mode="basic"
+                                                    maxFileSize={100000000}
+                                                    customUpload={true}
+                                                    //uploadHandler={setPicturefiles(files)}
+                                                    uploadHandler={onUpload}
+                                                    auto
+                                                    chooseLabel="Imagine profil"
+                                                />
                                             </div>
-
-                                            {changeAvatar ?
-                                                <div className="field col-12  md:col-12">
-
-                                                    <FileUpload
-                                                        accept="image/*"
-                                                        multiple
-                                                        // mode="basic"
-                                                        maxFileSize={100000000}
-                                                        customUpload={true}
-                                                        //uploadHandler={setPicturefiles(files)}
-                                                        uploadHandler={onUpload}
-                                                        auto
-                                                        chooseLabel="Avatar"
-                                                    />
-                                                </div>
-                                                : null}
+                                            {/* : null} */}
 
                                         </div>
 
+                                        <div className='pt-4'>
+                                            <div className='grid'>
+                                                <div className='col-3 '>
+                                                    <Button label="Salveaza" severity="success" onClick={saveUser} />
+                                                </div>
 
-                                        <Button className="pr-2" label="Salveaza" onClick={saveUser} />
+                                                <div className='col-3 '>
+                                                    <Button label="Sterge" severity="danger" onClick={deleteUser} />
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                        {/* <Button className="pr-2" label="Salveaza" onClick={saveUser} />
 
                                         <Button className="pl-2" label="Sterge" severity="danger" onClick={deleteUser} />
-
+ */}
 
                                     </div>
                                 </div>

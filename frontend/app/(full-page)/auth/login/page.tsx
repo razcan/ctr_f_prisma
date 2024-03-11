@@ -61,7 +61,13 @@ const LoginPage = () => {
     const GetPicture = async (Id: any) => {
 
         const picture = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
-        setPicture(picture.picture)
+        // setPicture(picture.picture)
+
+        if (picture.picture == 'default.jpeg') {
+            setPicture([])
+        } else {
+            setPicture(picture.picture)
+        }
 
     }
 

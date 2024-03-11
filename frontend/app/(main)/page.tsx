@@ -390,7 +390,7 @@ const ChartDemo = () => {
         })
         .catch(function (error) {
           setContracts([]);
-          router.push('http://localhost:5500/auth/login')
+          // router.push('http://localhost:5500/auth/login')
 
           console.log(error);
         });
