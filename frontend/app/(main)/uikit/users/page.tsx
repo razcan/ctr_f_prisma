@@ -305,6 +305,14 @@ export default function HeaderContract({ setContractId }: any) {
                         selected_groups
                 }
 
+                const group_array: string[] = []
+                for (let i = 0; i < selected_groups.length; i++) {
+                    if (selected_groups[i]) {
+                        group_array.push(selected_groups[i].id)
+                    }
+                }
+                console.log("array : ", group_array)
+
                 const rolesString = JSON.stringify(RRoles);
 
                 const User_Groups = JSON.stringify(Groups);
@@ -318,7 +326,7 @@ export default function HeaderContract({ setContractId }: any) {
                 formdata.append('avatar', picturefiles?.length > 0 ? picturefiles[0] : "default.jpeg");
                 formdata.append('picture', "");
                 formdata.append('roles', rells);
-                formdata.append('User_Groups', User_Groups);
+                formdata.append('User_Groups', group_array);
 
                 var requestOptions: any = {
                     method: 'PATCH',
