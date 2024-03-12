@@ -311,7 +311,7 @@ export default function HeaderContract({ setContractId }: any) {
                         group_array.push(selected_groups[i].id)
                     }
                 }
-                console.log("array : ", group_array)
+
 
                 const rolesString = JSON.stringify(RRoles);
 
@@ -452,7 +452,7 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="roles">Rol</label>
                                                 <MultiSelect value={roles} onChange={(e) => {
                                                     setRoles(e.value)
-                                                    console.log(e.value)
+
                                                 }}
                                                     options={all_roles} optionLabel="roleName"
                                                     display="chip"
@@ -463,7 +463,7 @@ export default function HeaderContract({ setContractId }: any) {
                                                 <label htmlFor="roles">Grup</label>
                                                 <MultiSelect value={selected_groups} onChange={(e) => {
                                                     setSelected_groups(e.value)
-                                                    console.log(e.value)
+
                                                 }}
                                                     options={all_groups} optionLabel="name"
                                                     display="chip"

@@ -12,7 +12,7 @@ export const MyProvider = ({ children }: any) => {
     const [userName, setUserName] = useState(0);
     const [userId, setUserId] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [picture, setPicture] = useState("avatar-1709299164782-285606945.jpg");
+    const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
     const Backend_BASE_URL = 'http://localhost:3000'; //  backend base URL
     const Frontend_BASE_URL = 'http://localhost:5500'; //  frontend base URL
