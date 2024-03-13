@@ -93,13 +93,18 @@ export default function Tasks() {
     }
 
     const fetchPersonsData = (CtrId: Number) => {
-        fetch(`http://localhost:3000/nomenclatures/persons/${CtrId}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(persons => {
-                setPersons(persons)
-            })
+        try {
+            fetch(`http://localhost:3000/nomenclatures/persons/${CtrId}`)
+                .then(response => {
+                    return response.json()
+                })
+                .then(persons => {
+                    setPersons(persons)
+                })
+        } catch {
+            console.log("nu exista persoane")
+        }
+
     }
 
     useEffect(() => {
@@ -183,7 +188,7 @@ export default function Tasks() {
             notes: notes
         }
 
-        console.log(Task)
+        //console.log(Task)
         try {
             const response = await axios.post('http://localhost:3000/contracts/task',
                 Task

@@ -38,9 +38,6 @@ export default function AddContract() {
         fetchContent()
     }, [])
 
-    console.log(additionals)
-
-
     return (
         <div className="grid">
             <div className="col-12">

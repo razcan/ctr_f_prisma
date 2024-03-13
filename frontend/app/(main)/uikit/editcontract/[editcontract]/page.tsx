@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useMemo } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -29,11 +30,34 @@ import Content from './content'
 import History from './history'
 import Alerts from './alerts';
 import Tasks from './tasks'
+import { Tag } from 'primereact/tag';
 
 
 export default function AddContract() {
 
+
     const router = useRouter();
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
+
+    const [IsAdditionalContract, setIsAdditionalContract] = useState(false);
+
+    const fetchContractData = async () => {
+        await fetch(`http://localhost:3000/contracts/details/${Id}`)
+            .then(response => {
+                return response.json()
+            })
+            .then(contractdetails => {
+                if (contractdetails.parentId > 0) {
+                    setIsAdditionalContract(true)
+                }
+            })
+    }
+
+    useEffect(() => {
+        fetchContractData()
+    }, [])
+
     const [number, setNumber] = useState();
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -54,10 +78,6 @@ export default function AddContract() {
         },
         {
             label: 'Acte Aditionale', icon: 'pi pi-chart-line'
-            // ,
-            // command: () => {
-            //     router.push('/uikit/additional');
-            // }
         },
 
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
@@ -76,7 +96,10 @@ export default function AddContract() {
                         <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
                     </div>
                     {/* <div className="p-fluid formgrid grid pt-2"> */}
-
+                    {IsAdditionalContract ?
+                        <Tag severity="warning" value="Act Aditional"></Tag>
+                        : null
+                    }
                     {activeIndex === 0 ?
 
                         <div>
