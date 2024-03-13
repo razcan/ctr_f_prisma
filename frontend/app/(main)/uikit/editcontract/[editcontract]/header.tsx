@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -24,6 +24,7 @@ import {
 } from '@tanstack/react-query'
 import { ProgressSpinner } from 'primereact/progressspinner';
 import PartnerBank from '../../lookups/partnerdetails/[partnerdetails]/bank';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 const queryClient = new QueryClient();
 
@@ -55,10 +56,15 @@ interface Contract {
     entityaddressId: number,
     partneraddressId: number,
     entitybankId: number,
-    partnerbankId: number
+    partnerbankId: number,
+    userId: number
 }
 
 export default function EditContract() {
+
+    const useMyContext = () => useContext(MyContext);
+    const { userId, setUserId } = useMyContext();
+
 
     const router = useRouter();
     const searchParams = useSearchParams()
@@ -447,7 +453,8 @@ export default function EditContract() {
             //entitybankId: ent_iban.id,
             // partnerbankId: party_iban.id,
             entitybankId: entitybankId,
-            partnerbankId: partnerbankId
+            partnerbankId: partnerbankId,
+            userId: userId
         }
         // console.log(addedContract);
 

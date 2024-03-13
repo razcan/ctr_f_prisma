@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
@@ -11,6 +11,7 @@ import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
 import axios from 'axios';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import { useEventListener } from 'primereact/hooks';
 
 
 
@@ -22,7 +23,43 @@ const LoginPage = () => {
     const { picture, setPicture } = useMyContext();
     const { userRoles, setUserRoles } = useMyContext();
 
+    const [pressed, setPressed] = useState(false);
+    const [value, setValue] = useState('');
 
+    const onKeyDown = (e) => {
+        setPressed(true);
+
+
+        if (e.code === 'Enter') {
+            Login()
+        }
+        // setValue(e.key);
+    };
+    const [bindKeyDown, unbindKeyDown] = useEventListener({
+        type: 'keydown',
+        listener: (e) => {
+            onKeyDown(e);
+        }
+    });
+
+    // const [bindKeyUp, unbindKeyUp] = useEventListener({
+    //     type: 'keyup',
+    //     listener: (e) => {
+    //         setPressed(false);
+    //     }
+    // });
+
+    useEffect(() => {
+        bindKeyDown();
+        // bindKeyUp();
+
+        return () => {
+            unbindKeyDown();
+            // unbindKeyUp();
+        };
+    }, [bindKeyDown, unbindKeyDown
+        // bindKeyUp, unbindKeyUp
+    ]);
 
     // console.log("roles: ", userRoles)
 
@@ -127,6 +164,7 @@ const LoginPage = () => {
                             </div>
 
                             <div>
+
                                 <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
                                     Utilizator
                                 </label>

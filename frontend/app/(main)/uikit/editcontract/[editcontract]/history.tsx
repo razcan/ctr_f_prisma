@@ -70,7 +70,7 @@ export default function History() {
                 <div className="card">
                     Istoric
                     <DataTable value={logs} tableStyle={{ minWidth: '50rem' }}
-                        paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                        paginator rows={10} rowsPerPageOptions={[10, 20, 30, 50, 100]} sortMode="multiple"
                         sortField="data_modificare"
                     >
                         <Column field="contract_id" header="contract_id"></Column>
@@ -89,7 +89,7 @@ export default function History() {
                         <Column field="cashflow" header="cashflow"></Column>
                         <Column field="tip_contract" header="tip_contract"></Column>
                         <Column field="centru_cost" header="centru_cost"></Column>
-
+                        <Column field="utilizator" header="utilizator"></Column>
                     </DataTable>
 
                 </div>

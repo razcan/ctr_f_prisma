@@ -26,7 +26,7 @@ import Documents from './documents';
 import { useSearchParams } from 'next/navigation'
 import { useData } from './DataContext';
 import { DataProvider } from './DataContext';
-
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 
 function addOneDay(date: Date): Date {
@@ -70,6 +70,10 @@ interface Contract {
 
 export default function HeaderContract({ setContractId }: any) {
 
+
+
+    const useMyContext = () => useContext(MyContext);
+    const { userId, setUserId } = useMyContext();
 
     const { value, updateValue } = useData();
     const router = useRouter();
@@ -286,7 +290,8 @@ export default function HeaderContract({ setContractId }: any) {
             entityaddressId: ent_address.id,
             partneraddressId: party_address?.id ?? null,
             entitybankId: ent_iban.id,
-            partnerbankId: party_iban?.id ?? null
+            partnerbankId: party_iban?.id ?? null,
+            userId: userId
         }
 
         // console.log(addedContract);
