@@ -173,11 +173,11 @@ export default function Content() {
                     {/* <Editor theme='snow' value={text} onTextChange={(e) => setText(e.htmlValue)} style={{ height: '30vw' }} />
                   
                       </div>*/}
-                    <div className='pl-4'>
+                    <div className='pb-4'>
                         <Button label="Salveaza" onClick={saveContent} />
                     </div>
 
-                    <div className='p-4'>
+                    <div>
                         <ReactQuill
                             style={{ height: '27vw' }}
                             theme="snow"

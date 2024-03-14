@@ -312,7 +312,7 @@ export default function Content() {
 
                 <div className="grid">
                     <div className="col-12">
-                        <div className="p-fluid formgrid grid p-3">
+                        <div className="p-fluid formgrid grid ">
 
                             <div className="field col-12 md:col-3">
                                 <Dropdown id="type" filter showClear value={type}
@@ -341,7 +341,7 @@ export default function Content() {
                 {/* <div className='p-4'>
                     <Editor theme='snow' value={text} onTextChange={(e) => handleProcedureContentChange(e.htmlValue)} style={{ height: '30vw' }} />
                 </div> */}
-                <div className='p-4'>
+                <div>
                     <ReactQuill
                         style={{ height: '27vw' }}
                         theme="snow"
