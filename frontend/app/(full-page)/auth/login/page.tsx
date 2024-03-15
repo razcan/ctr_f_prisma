@@ -98,6 +98,12 @@ const LoginPage = () => {
 
     }
 
+    function getInitials(name) {
+        const words = name.split(" ");
+        const initials = words.map(word => word.charAt(0).toUpperCase()).join("");
+        return initials;
+    }
+
     const Login = async () => {
 
         try {
@@ -105,7 +111,10 @@ const LoginPage = () => {
 
             setToken(response.data)
             setUserId(response.data.userid);
-            setUserName(username)
+
+            const initialsUN = getInitials(username)
+
+            setUserName(initialsUN)
             GetPicture(response.data.userid)
 
             // Remove the item from local storage

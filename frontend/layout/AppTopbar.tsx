@@ -95,7 +95,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                         </Avatar>
                     </Link>
 
-                    <Link href="/auth/login">
+                    <Link href="/uikit/usertasks">
                         <Avatar className="p-link p-overlay-badge" icon="pi pi-bell" size="large">
                             <Badge value="4" />
                         </Avatar>

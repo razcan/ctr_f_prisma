@@ -36,40 +36,27 @@ const LogoutPage = () => {
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
 
-
-    const [token, setToken] = useState([]);
     const toast = useRef<any>(null);
     const [visible, setVisible] = useState(true);
 
     const showSuccess = () => {
         toast.current.show(
-            { severity: 'success', summary: 'Success', detail: 'You are now connected', life: 1000 }
+            { severity: 'success', summary: 'Success', detail: 'You are now disconnected', life: 1000 }
         );
-
         setTimeout(() => {
-            setVisible(false)
-
-            // console.log("Delayed for 1 second.");
-        }, 1000);
-    }
-
-    const showError = () => {
-        toast.current.show(
-            { severity: 'error', summary: 'Error', detail: 'Invalid Username or Password!', life: 1000 }
-        );
-
+            // setVisible(false)
+            router.push('/auth/login');
+        }, 2000);
     }
 
     const Logout = async () => {
 
         try {
             sessionStorage.removeItem("token");
-            router.push('/auth/login');
+            showSuccess()
 
         } catch (error) {
             localStorage.removeItem("token");
-
-            showSuccess()
         }
     }
 

@@ -9,7 +9,7 @@ export const MyContext = createContext(null);
 // Step 2: Create a provider component
 export const MyProvider = ({ children }: any) => {
 
-    const [userName, setUserName] = useState(0);
+    const [userName, setUserName] = useState('{NC}');
     const [userId, setUserId] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");

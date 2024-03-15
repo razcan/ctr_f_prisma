@@ -1,34 +1,27 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { InputNumber } from 'primereact/inputnumber';
+"use client"
+
+import React, { useContext, useEffect, useState } from 'react';
+import axios, { AxiosRequestConfig } from 'axios';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { Toast } from 'primereact/toast';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import { Button } from 'primereact/button';
+import { useMemo, useRef } from 'react';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Calendar } from 'primereact/calendar';
+import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from 'primereact/dialog';
-import router from 'next/router';
-import { Editor } from 'primereact/editor';
-import axios from 'axios';
-import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import { ProgressBar } from 'primereact/progressbar';
-import { Slider } from 'primereact/slider';
 
-export default function Tasks() {
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+
+function UserTaskList() {
+
     const router = useRouter();
     const searchParams = useSearchParams()
-    const Id = parseInt(searchParams.get("Id"));
-
+    // const Id = parseInt(searchParams.get("Id"));
     const [visible, setVisible] = useState(false);
 
     const [taskName, setTaskName] = useState('');
@@ -59,9 +52,20 @@ export default function Tasks() {
     const [entityId, setEntityId] = useState([])
 
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
+
+
+    const [selectedContract, setselectedContract] = useState(null);
+    const [data, setData] = useState([]);
+    const [metaKey, setMetaKey] = useState(true);
+    const [globalFilterValue, setGlobalFilterValue] = useState('');
+
 
     const fetchTasksData = () => {
-        fetch(`http://localhost:3000/contracts/task/${Id}`)
+        fetch(`http://localhost:3000/contracts/task/${1}`)
             .then(response => {
                 return response.json()
             })
@@ -83,7 +87,7 @@ export default function Tasks() {
 
 
     const fetchEntity = () => {
-        fetch(`http://localhost:3000/contracts/basic/${Id}`)
+        fetch(`http://localhost:3000/contracts/basic/${7}`)
             .then(response => {
                 return response.json()
             })
@@ -107,11 +111,6 @@ export default function Tasks() {
 
     }
 
-    //trebuie adusi utilizatorii in loc de persoane, in functie de entitatea cu care suntem logati
-    //in ui trebuie scos solicitantul pt ca se paote determina automat din context - campul ramande disabled
-    // de modificat si in prisma legaturile cu user in loc de person
-    //de adugat o ruta si un view pentru lista taskurilor unui user cu link catre ctr
-
     useEffect(() => {
         fetchTasksData(),
             fetchEntity(),
@@ -123,6 +122,13 @@ export default function Tasks() {
     useEffect(() => {
         fetchPersonsData(entityId)
     }, [entityId])
+
+    const formatDate = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
 
 
     interface Task {
@@ -213,9 +219,7 @@ export default function Tasks() {
 
     }
 
-    const addtask = () => {
-        setVisible(true)
-    }
+
 
     const StatusDateTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.statusDate);
@@ -230,15 +234,6 @@ export default function Tasks() {
     const CreatedDateTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.createdAt);
         return <span>{formattedDate}</span>;
-    };
-
-
-
-    const formatDate = (dateString: Date) => {
-        // Implement your date formatting logic here
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('ro-Ro', options);
     };
 
 
@@ -399,7 +394,6 @@ export default function Tasks() {
                         </div>
                     </Dialog>
 
-                    <Button label="Adauga Task" onClick={addtask} />
 
                     {tasks.length > 0 ?
                         <DataTable className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
@@ -442,3 +436,6 @@ export default function Tasks() {
         </div >
     );
 }
+
+export default UserTaskList;
+
