@@ -72,7 +72,13 @@ export default function HeaderContract({ setContractId }: any) {
 
 
 
+
     const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
+
+
     const { userId, setUserId } = useMyContext();
 
     const { value, updateValue } = useData();
@@ -257,7 +263,6 @@ export default function HeaderContract({ setContractId }: any) {
             fetchStatusData()
     }, [])
 
-
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
 
@@ -291,7 +296,8 @@ export default function HeaderContract({ setContractId }: any) {
             partneraddressId: party_address?.id ?? null,
             entitybankId: ent_iban.id,
             partnerbankId: party_iban?.id ?? null,
-            userId: userId
+            userId: userId,
+            isPurchasing: isPurchasing
         }
 
         // console.log(addedContract);

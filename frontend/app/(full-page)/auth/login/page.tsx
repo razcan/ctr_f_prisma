@@ -22,6 +22,7 @@ const LoginPage = () => {
     const { userId, setUserId } = useMyContext();
     const { picture, setPicture } = useMyContext();
     const { userRoles, setUserRoles } = useMyContext();
+    const { isLoggedIn, setIsLoggedIn } = useMyContext();
 
     const [pressed, setPressed] = useState(false);
     const [value, setValue] = useState('');
@@ -42,24 +43,13 @@ const LoginPage = () => {
         }
     });
 
-    // const [bindKeyUp, unbindKeyUp] = useEventListener({
-    //     type: 'keyup',
-    //     listener: (e) => {
-    //         setPressed(false);
-    //     }
-    // });
-
     useEffect(() => {
         bindKeyDown();
-        // bindKeyUp();
 
         return () => {
             unbindKeyDown();
-            // unbindKeyUp();
         };
-    }, [bindKeyDown, unbindKeyDown
-        // bindKeyUp, unbindKeyUp
-    ]);
+    }, [bindKeyDown, unbindKeyDown]);
 
     // console.log("roles: ", userRoles)
 
@@ -125,7 +115,7 @@ const LoginPage = () => {
             // Read token from local storage
             const myStoredItem: any = sessionStorage.getItem('token');
             const rez = JSON.parse(myStoredItem);
-
+            setIsLoggedIn(true)
             showSuccess();
             router.push('/')
 

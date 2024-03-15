@@ -18,10 +18,9 @@ const AppMenu = () => {
         {
             label: 'Contracts',
             items: [
-                { label: 'Contracte', icon: 'pi pi-fw pi-id-card', to: '/uikit/contractlist' },
-                // { label: 'Adauga Contract', icon: 'pi pi-fw pi-id-card', to: '/uikit/addcontract' },
+                { label: 'Contracte furnizori', icon: 'pi pi-fw pi-id-card', to: '/uikit/suppliercontracts' },
                 // { label: 'Formular2', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
-                // { label: 'Float Label', icon: 'pi pi-fw pi-bookmark', to: '/uikit/floatlabel' },
+                { label: 'Contracte clienti', icon: 'pi pi-fw pi-bookmark', to: '/uikit/customercontracts' },
                 // { label: 'Invalid State', icon: 'pi pi-fw pi-exclamation-circle', to: '/uikit/invalidstate' },
                 // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
                 // { label: 'Table', icon: 'pi pi-fw pi-table', to: '/uikit/table' },

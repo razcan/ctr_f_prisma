@@ -25,7 +25,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { userName, setUserName } = useMyContext();
     const { userId, setUserId } = useMyContext();
     const { picture, setPicture } = useMyContext();
-
+    const { isLoggedIn, setIsLoggedIn } = useMyContext();
 
     useImperativeHandle(ref, () => ({
         menubutton: menubuttonRef.current,
@@ -102,15 +102,31 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                     </Link>
 
 
+                    {isLoggedIn ?
+                        <Link href="/auth/logout">
+                            <Avatar className="p-link p-overlay-badge" icon="pi pi-user" size="large">
+                                <Badge value="logout" />
+                            </Avatar>
+                        </Link>
+                        :
+                        <Link href="/auth/login">
+                            <Avatar className="p-link p-overlay-badge" icon="pi pi-user" size="large">
+                                <Badge value="login" />
+                            </Avatar>
+                        </Link>}
 
-                    <Link href="/auth/login">
-                        {/* <button type="button" className="p-link layout-topbar-button">
-                            <i className="pi pi-user"></i>
-                        </button> */}
+
+                    {/* <Link href="/auth/login">
                         <Avatar className="p-link p-overlay-badge" icon="pi pi-user" size="large">
-                            <Badge value="login" />
+                            {isLoggedIn ? <Badge value="logout" /> : <Badge value="login" />}
                         </Avatar>
-                    </Link>
+                    </Link> */}
+
+
+                    {/* <button type="button" className="p-link layout-topbar-button">
+                        <i className="pi pi-cog"></i>
+                        <span>Settings</span>
+                    </button> */}
                     {/* <Link href="/documentation">
                     <button type="button" className="p-link layout-topbar-button">
                         <i className="pi pi-cog"></i>

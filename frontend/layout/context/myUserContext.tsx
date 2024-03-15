@@ -14,6 +14,8 @@ export const MyProvider = ({ children }: any) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
+
+    const [isPurchasing, setIsPurchasing] = useState(true);
     const Backend_BASE_URL = 'http://localhost:3000'; //  backend base URL
     const Frontend_BASE_URL = 'http://localhost:5500'; //  frontend base URL
 
@@ -26,6 +28,7 @@ export const MyProvider = ({ children }: any) => {
 
     const logout = () => {
         // Logic for logging out
+        sessionStorage.removeItem("token");
         setIsLoggedIn(false);
     };
 
@@ -48,9 +51,12 @@ export const MyProvider = ({ children }: any) => {
                     headers,
                 });
 
+                login();
+
                 if (!response.ok) {
                     const error = await response.json();
                     router.push(`${Frontend_BASE_URL}/auth/login`)
+                    logout();
                     throw new Error(error.message || `HTTP error! Status: ${response.status}`);
                 }
 
@@ -90,6 +96,7 @@ export const MyProvider = ({ children }: any) => {
         setUserId,
         isLoggedIn,
         login,
+        setIsLoggedIn,
         logout,
         picture,
         setPicture,
@@ -97,7 +104,9 @@ export const MyProvider = ({ children }: any) => {
         Backend_BASE_URL,
         Frontend_BASE_URL,
         userRoles,
-        setUserRoles
+        setUserRoles,
+        isPurchasing,
+        setIsPurchasing
     };
 
 

@@ -45,8 +45,7 @@ function Contracts() {
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL } = useMyContext();
-
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
 
 
     const [selectedContract, setselectedContract] = useState(null);
@@ -124,7 +123,7 @@ function Contracts() {
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: `${Backend_BASE_URL}/contracts`,
+                url: `${Backend_BASE_URL}/contracts/false`,
                 headers: {
                     'user-role': `${roles}`,
                     'entity': `${entity}`,
@@ -182,10 +181,13 @@ function Contracts() {
     };
 
     const editContract = (id: any) => {
+        setIsPurchasing(false)
         router.push(`/uikit/editcontract/ctr?Id=${id}`);
+
     }
 
     const addContract = () => {
+        setIsPurchasing(false)
         router.push(`/uikit/addcontract/ctr?Id=${0}`)
     }
 
