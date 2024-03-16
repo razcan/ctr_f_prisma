@@ -267,7 +267,7 @@ export default function Alerts() {
                             }}>
                             {/* <Column hidden field="id" header="Id"></Column> */}
                             <Column field="id" header="Id"></Column>
-                            <Column field="name" header="Denumire Mode;"></Column>
+                            <Column field="name" header="Denumire Model"></Column>
                             <Column field="contractType.name" header="Tip Contract(la care se aplica)"></Column>
                             {/* <Column field="active" header="Activa"></Column> */}
                             <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>

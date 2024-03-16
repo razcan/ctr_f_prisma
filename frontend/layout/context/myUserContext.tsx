@@ -37,10 +37,14 @@ export const MyProvider = ({ children }: any) => {
     const fetchWithToken = async (url, options = {}) => {
         const session = sessionStorage.getItem('token');
         const jwtToken = JSON.parse(session);
+        const roles = jwtToken.roles;
+        const entity = jwtToken.entity;
 
         if (jwtToken && jwtToken.access_token) {
             const jwtTokenf = jwtToken.access_token;
             const headers = {
+                'user-role': `${roles}`,
+                'entity': `${entity}`,
                 'Authorization': `Bearer ${jwtTokenf}`,
                 'Content-Type': 'application/json'
             };
@@ -72,6 +76,54 @@ export const MyProvider = ({ children }: any) => {
         }
     };
 
+    const postWithToken = async (url, data = {}, options = {}) => {
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+        const roles = jwtToken.roles;
+        const entity = jwtToken.entity;
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+            const headers = {
+                'user-role': `${roles}`,
+                'entity': `${entity}`,
+                'Authorization': `Bearer ${jwtTokenf}`,
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                const response = await fetch(`${Backend_BASE_URL}/${url}`, {
+                    ...options,
+                    method: 'POST', // Changed to POST method
+                    headers,
+                    body: JSON.stringify(data) // Added data to request body
+                });
+
+                // Assuming login(), logout(), and router.push() are defined elsewhere
+                login();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+                    logout();
+                    throw new Error(error.message || `HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                if (error instanceof TypeError) {
+                    throw new Error('Network error. Please check your internet connection.');
+                }
+                throw error;
+            }
+        } else {
+            throw new Error('No token found.');
+        }
+    };
+
+
+
+
 
     // Example usage:
     // const fetchContracts = async () => {
@@ -88,6 +140,32 @@ export const MyProvider = ({ children }: any) => {
     //     }
     // };
 
+    // Example usage of fetchWithToken method
+    // const postData = async () => {
+    //     try {
+    //         // Define the URL endpoint
+    //         const url = 'your-api-endpoint';
+
+    //         // Define the data to be sent in the POST request body
+    //         const data = {
+    //             key1: 'value1',
+    //             key2: 'value2'
+    //         };
+
+    //         // Call the fetchWithToken method with the URL and data
+    //         const response = await fetchWithToken(url, data);
+
+    //         // Log the response from the server
+    //         console.log('Response from server:', response);
+    //     } catch (error) {
+    //         // Handle any errors that occur during the POST request
+    //         console.error('Error:', error.message);
+    //     }
+    // };
+
+    // // Call the postData function to initiate the POST request
+    // postData();
+
     // Create an object containing all your variables and functions
     const contextValue = {
         userName,
@@ -101,6 +179,7 @@ export const MyProvider = ({ children }: any) => {
         picture,
         setPicture,
         fetchWithToken,
+        postWithToken,
         Backend_BASE_URL,
         Frontend_BASE_URL,
         userRoles,
