@@ -11,6 +11,7 @@ export const MyProvider = ({ children }: any) => {
 
     const [userName, setUserName] = useState('{NC}');
     const [userId, setUserId] = useState(0);
+    const [nrOfTasks, setNrOfTasks] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
@@ -122,6 +123,20 @@ export const MyProvider = ({ children }: any) => {
     };
 
 
+    const GetUserTasks = async (Id: any) => {
+
+        const tasks = await fetch(`http://localhost:3000/contracts/usertask/${Id}`).then(res => res.json())
+
+        const nrOfTasks: number = tasks.length > 0 ? tasks.length : 0
+
+        console.log(tasks, nrOfTasks)
+
+        setNrOfTasks(nrOfTasks)
+
+        return nrOfTasks
+    }
+
+
 
 
 
@@ -185,7 +200,10 @@ export const MyProvider = ({ children }: any) => {
         userRoles,
         setUserRoles,
         isPurchasing,
-        setIsPurchasing
+        setIsPurchasing,
+        nrOfTasks,
+        setNrOfTasks,
+        GetUserTasks
     };
 
 

@@ -31,7 +31,7 @@ export default function Tasks() {
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, postWithToken } = useMyContext();
+        Frontend_BASE_URL, postWithToken, GetUserTasks, userId, nrOfTasks, setNrOfTasks } = useMyContext();
 
 
     const router = useRouter();
@@ -92,6 +92,8 @@ export default function Tasks() {
             })
     }
 
+
+
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
             .then(response => {
@@ -126,17 +128,14 @@ export default function Tasks() {
 
     useEffect(() => {
         fetchTasksData(),
-            // fetchEntity(),
-            // fetchPersonsData(entityId),
-
             fetchTasksStatusData(),
             fetchUsers()
     }, [])
 
 
-    // useEffect(() => {
-    //     fetchPersonsData(entityId)
-    // }, [entityId])
+    useEffect(() => {
+        GetUserTasks(userId)
+    }, [nrOfTasks])
 
 
     interface Task {
@@ -182,6 +181,7 @@ export default function Tasks() {
                 TaskR
             );
             setVisible(false)
+            GetUserTasks(userId)
             fetchTasksData()
 
             console.log('Task added:', response.data);
@@ -219,6 +219,7 @@ export default function Tasks() {
             setVisible(false)
             setTaskName('')
             setNotes('')
+            setNrOfTasks(nrOfTasks + 1)
 
             console.log('Task added:', response.data);
         } catch (error) {

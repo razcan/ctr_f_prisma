@@ -26,6 +26,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { userId, setUserId } = useMyContext();
     const { picture, setPicture } = useMyContext();
     const { isLoggedIn, setIsLoggedIn } = useMyContext();
+    const { nrOfTasks, setNrOfTasks } = useMyContext();
+
+
 
     useImperativeHandle(ref, () => ({
         menubutton: menubuttonRef.current,
@@ -97,7 +100,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
                     <Link href="/uikit/usertasks">
                         <Avatar className="p-link p-overlay-badge" icon="pi pi-bell" size="large">
-                            <Badge value="4" />
+                            <Badge value={nrOfTasks} />
                         </Avatar>
                     </Link>
 

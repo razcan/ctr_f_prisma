@@ -23,6 +23,8 @@ const LoginPage = () => {
     const { picture, setPicture } = useMyContext();
     const { userRoles, setUserRoles } = useMyContext();
     const { isLoggedIn, setIsLoggedIn } = useMyContext();
+    const { nrOfTasks, setNrOfTasks } = useMyContext();
+
 
     const [pressed, setPressed] = useState(false);
     const [value, setValue] = useState('');
@@ -98,6 +100,20 @@ const LoginPage = () => {
 
     }
 
+    const GetUserTasks = async (Id: any) => {
+
+        const tasks = await fetch(`http://localhost:3000/contracts/usertask/${Id}`).then(res => res.json())
+
+        const nrOfTasks: number = tasks.length > 0 ? tasks.length : 0
+
+        console.log(tasks, nrOfTasks)
+
+        setNrOfTasks(nrOfTasks)
+
+        return nrOfTasks
+    }
+
+
     function getInitials(name) {
         const words = name.split(" ");
         const initials = words.map(word => word.charAt(0).toUpperCase()).join("");
@@ -116,6 +132,7 @@ const LoginPage = () => {
 
             setUserName(initialsUN)
             GetPicture(response.data.userid)
+            GetUserTasks(response.data.userid)
 
             // Remove the item from local storage
             sessionStorage.removeItem("token");
