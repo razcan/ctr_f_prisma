@@ -123,13 +123,57 @@ export const MyProvider = ({ children }: any) => {
     };
 
 
+    const patchWithToken = async (url, data = {}, options = {}) => {
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+        const roles = jwtToken.roles;
+        const entity = jwtToken.entity;
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+            const headers = {
+                'user-role': `${roles}`,
+                'entity': `${entity}`,
+                'Authorization': `Bearer ${jwtTokenf}`,
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                const response = await fetch(`${Backend_BASE_URL}/${url}`, {
+                    ...options,
+                    method: 'PATCH', // Changed to POST method
+                    headers,
+                    body: JSON.stringify(data) // Added data to request body
+                });
+
+                // Assuming login(), logout(), and router.push() are defined elsewhere
+                login();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    //    router.push(`${Frontend_BASE_URL}/auth/login`)
+                    logout();
+                    throw new Error(error.message || `HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                if (error instanceof TypeError) {
+                    throw new Error('Network error. Please check your internet connection.');
+                }
+                throw error;
+            }
+        } else {
+            throw new Error('No token found.');
+        }
+    };
+
+
     const GetUserTasks = async (Id: any) => {
 
         const tasks = await fetch(`http://localhost:3000/contracts/usertask/${Id}`).then(res => res.json())
 
         const nrOfTasks: number = tasks.length > 0 ? tasks.length : 0
-
-        console.log(tasks, nrOfTasks)
 
         setNrOfTasks(nrOfTasks)
 
@@ -195,6 +239,7 @@ export const MyProvider = ({ children }: any) => {
         setPicture,
         fetchWithToken,
         postWithToken,
+        patchWithToken,
         Backend_BASE_URL,
         Frontend_BASE_URL,
         userRoles,

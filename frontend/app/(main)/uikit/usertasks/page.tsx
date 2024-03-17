@@ -60,7 +60,6 @@ export default function Tasks() {
     const [selectedtaskId, setselectedtaskId] = useState('');
 
     const [tasks, setTasks] = useState([]);
-    const [persons, setPersons] = useState([]);
     const [selectedTask, setselectedTask] = useState();
     const [allStatus, setAllStatus] = useState([])
 
@@ -70,26 +69,6 @@ export default function Tasks() {
     const getRequestor = (id: number) => {
         return users.find((obj) => obj.id === id);
     };
-
-    // const StatusTaskTemplate = (rowData: any) => {
-    //     const status = getStatusJson(rowData.status);
-    //     return <span>{status.name}</span>;
-    // };
-
-    //     const StatusDateTemplate = (rowData: any) => {
-    //         const formattedDate = formatDate(rowData.statusDate);
-    //         return <span>{formattedDate}</span>;
-    //     };
-
-    //     const DueDateTemplate = (rowData: any) => {
-    //         const formattedDate = formatDate(rowData.due);
-    //         return <span>{formattedDate}</span>;
-    //     };
-
-    //     const CreatedDateTemplate = (rowData: any) => {
-    //         const formattedDate = formatDate(rowData.createdAt);
-    //         return <span>{formattedDate}</span>;
-    //     };
 
     const getStatusJson = (id: InputNumber) => {
         return allStatus.find((obj) => obj.id === id);
@@ -135,7 +114,6 @@ export default function Tasks() {
 
     //trebuie adusi utilizatorii in loc de persoane, in functie de entitatea cu care suntem logati
     //in ui trebuie scos solicitantul pt ca se paote determina automat din context - campul ramande disabled
-    // de modificat si in prisma legaturile cu user in loc de person
     //de adugat o ruta si un view pentru lista taskurilor unui user cu link catre ctr
 
     useEffect(() => {
@@ -165,81 +143,81 @@ export default function Tasks() {
         notes: String
     }
 
-    const EditTask = async () => {
+    // const EditTask = async () => {
 
-        interface TaskId {
-            taskName: String,
-            progress: Number,
-            statusId: Number,
-            statusDate: Date,
-            requestorId: Number,
-            assignedId: Number,
-            due: Date,
-            notes: String
-        }
+    //     interface TaskId {
+    //         taskName: String,
+    //         progress: Number,
+    //         statusId: Number,
+    //         statusDate: Date,
+    //         requestorId: Number,
+    //         assignedId: Number,
+    //         due: Date,
+    //         notes: String
+    //     }
 
-        let TaskR: TaskId = {
-            taskName: selectedtaskName,
-            // contractId: contractId,
-            progress: Number.parseInt(selectedprogress, 10),
-            statusId: selectedstatus.id,
-            statusDate: selectedstatusDate,
-            requestorId: selectedrequestor,
-            assignedId: selectedassigned,
-            due: selecteddue,
-            notes: selectednotes
+    //     let TaskR: TaskId = {
+    //         taskName: selectedtaskName,
+    //         // contractId: contractId,
+    //         progress: Number.parseInt(selectedprogress, 10),
+    //         statusId: selectedstatus.id,
+    //         statusDate: selectedstatusDate,
+    //         requestorId: selectedrequestor,
+    //         assignedId: selectedassigned,
+    //         due: selecteddue,
+    //         notes: selectednotes
 
-        }
+    //     }
 
-        try {
-            const response = await axios.patch(`http://localhost:3000/contracts/task/${selectedtaskId}`,
-                TaskR
-            );
-            setVisible(false)
-            fetchTasksData()
+    //     try {
+    //         const response = await axios.patch(`http://localhost:3000/contracts/task/${selectedtaskId}`,
+    //             TaskR
+    //         );
+    //         setVisible(false)
+    //         fetchTasksData()
 
-            console.log('Task added:', response.data);
-        } catch (error) {
-            console.error('Error adding task:', error);
-        }
+    //         console.log('Task added:', response.data);
+    //     } catch (error) {
+    //         console.error('Error adding task:', error);
+    //     }
 
-    }
+    // }
 
-    const SaveTask = async () => {
+    // const SaveTask = async () => {
 
 
 
-        let Task: Task = {
-            taskName: taskName,
-            contractId: Id,
-            progress: Number.parseInt(progress, 10),
-            statusId: status.id,
-            statusDate: statusDate,
-            requestorId: requestor.id,
-            assignedId: assigned.id,
-            due: due,
-            notes: notes
-        }
+    //     let Task: Task = {
+    //         taskName: taskName,
+    //         contractId: Id,
+    //         progress: Number.parseInt(progress, 10),
+    //         statusId: status.id,
+    //         statusDate: statusDate,
+    //         requestorId: requestor.id,
+    //         assignedId: assigned.id,
+    //         due: due,
+    //         notes: notes
+    //     }
 
-        //console.log(Task)
-        try {
-            const response = await axios.post('http://localhost:3000/contracts/task',
-                Task
-            );
-            setVisible(false)
-            fetchTasksData()
-            setselectedTask(undefined)
-            setProgress(0)
-            setVisible(false)
-            setTaskName('')
-            setNotes('')
+    //     //console.log(Task)
+    //     try {
+    //         const response = await axios.post('http://localhost:3000/contracts/task',
+    //             Task
+    //         );
+    //         setVisible(false)
+    //         fetchTasksData()
+    //         setselectedTask(undefined)
+    //         setProgress(0)
+    //         setVisible(false)
+    //         setTaskName('')
+    //         setNotes('')
 
-            console.log('Task added:', response.data);
-        } catch (error) {
-            console.error('Error adding task:', error);
-        }
+    //         console.log('Task added:', response.data);
+    //     } catch (error) {
+    //         console.error('Error adding task:', error);
+    //     }
 
-    }
+    // }
 
     const addtask = () => {
         setVisible(true)
@@ -361,9 +339,9 @@ export default function Tasks() {
                                             <div className="field-checkbox col-12 md:col-12">
                                                 <InputTextarea id="notes" value={selectednotes} onChange={(e) => setselectedNotes(e.target.value)} rows={3} cols={60} />
                                             </div>
-                                            <div className="field-checkbox col-12 md:col-3">
+                                            {/* <div className="field-checkbox col-12 md:col-3">
                                                 <Button label="Salveaza" onClick={EditTask} />
-                                            </div>
+                                            </div> */}
 
                                         </div>
                                         :
@@ -436,9 +414,9 @@ export default function Tasks() {
                                                 <div className="field-checkbox col-12 md:col-12">
                                                     <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
                                                 </div>
-                                                <div className="field-checkbox col-12 md:col-3">
+                                                {/* <div className="field-checkbox col-12 md:col-3">
                                                     <Button label="Salveaza" onClick={SaveTask} />
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                     }

@@ -106,8 +106,6 @@ const LoginPage = () => {
 
         const nrOfTasks: number = tasks.length > 0 ? tasks.length : 0
 
-        console.log(tasks, nrOfTasks)
-
         setNrOfTasks(nrOfTasks)
 
         return nrOfTasks

@@ -21,6 +21,7 @@ import { Editor } from 'primereact/editor';
 import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
+import { Tag } from 'primereact/tag';
 
 export default function Alerts() {
 
@@ -40,7 +41,6 @@ export default function Alerts() {
         fetchContent()
     }, [])
 
-    console.log(alerts)
 
     const datetoBeSentTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.datetoBeSent);
@@ -59,6 +59,22 @@ export default function Alerts() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
+    const statusTemplate = (item) => {
+        return <Tag value={item.isActive} severity={getSeverity(item.isActive)}></Tag>;
+    };
+
+    const getSeverity = (item) => {
+        switch (item) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="grid">
@@ -71,9 +87,9 @@ export default function Alerts() {
                         <Column hidden field="id" header="id"></Column>
                         <Column field="alertname" sortable header="Denumire"></Column>
                         <Column field="datetoBeSent" sortable header="Data transmitere alerta" body={datetoBeSentTemplate} ></Column>
-                        <Column field="isActive" header="Activa"></Column>
                         <Column field="subject" header="Subiect"></Column>
                         <Column field="nrofdays" header="Nr. zile" body={nrofdaysTemplate}></Column>
+                        <Column field="isActive" header="Activa" body={statusTemplate} style={{ width: '5vh' }} ></Column>
                     </DataTable>
                 </div>
             </div>

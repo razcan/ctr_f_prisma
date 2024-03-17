@@ -77,7 +77,7 @@ export default function AddContract() {
             // }
         },
         {
-            label: 'Acte Aditionale', icon: 'pi pi-chart-line'
+            label: 'Acte Aditionale', icon: 'pi pi-clone'
         },
 
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
