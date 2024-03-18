@@ -9,7 +9,7 @@ import { MyContext, MyProvider } from '../../layout/context/myUserContext'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 
 
-const ChartDemo = () => {
+const Charts = () => {
 
 
   const useMyContext = () => useContext(MyContext);
@@ -1013,4 +1013,4 @@ const ChartDemo = () => {
   );
 };
 
-export default ChartDemo;
+export default Charts;

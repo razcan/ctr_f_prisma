@@ -43,7 +43,7 @@ export default function Financial() {
     const router = useRouter();
 
     const goToDetails = () => {
-        router.push('/uikit/addcontract/financialdetails');
+        router.push('/uikit/addcontract/addcontract/financialdetails');
     }
 
     return (
