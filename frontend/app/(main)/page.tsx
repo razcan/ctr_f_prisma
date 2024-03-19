@@ -412,15 +412,18 @@ const Charts = () => {
 
         setReceipts(results[0])
         setPayments(results[1])
+        const start_month = results[2]
+        const end_month = 1 + results[3]
 
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
 
+        const months = getMonthsBetween(start_month, end_month)
 
         const lineData: ChartData = {
-          labels: ['February', 'March', 'April', 'May', 'June', 'July'],
+          labels: months,
           datasets: [
             {
               label: 'Incasari',
@@ -464,59 +467,15 @@ const Charts = () => {
   }, [])
 
   useEffect(() => {
-    // fetchContractsData()
+
     fetchContracts()
-    // fetchCashFlow()
 
-
-    console.log(receipts)
 
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
 
-    // const lineData: ChartData = {
-    //   labels: ['February', 'March', 'April', 'May', 'June', 'July'],
-    //   datasets: [
-    //     {
-    //       label: 'Incasari',
-    //       data: receipts
-    //       // [
-    //       //   0,
-    //       //   2982.9,
-    //       //   0,
-    //       //   2982.9,
-    //       //   2982.9,
-    //       //   2982.9
-    //       // ]
-    //       ,
-    //       fill: false,
-    //       backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-    //       // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-    //       borderColor: documentStyle.getPropertyValue('--green-500'),
-    //       tension: 0.4
-    //     },
-    //     {
-    //       label: 'Plati',
-    //       data: [
-    //         0,
-    //         18655.7,
-    //         0,
-    //         18655.7,
-    //         18655.7,
-    //         4971.5
-    //       ],
-    //       fill: false,
-    //       backgroundColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
-    //       // borderColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
-    //       borderColor: documentStyle.getPropertyValue('--red-500'),
-    //       tension: 0.4
-    //     }
-    //   ]
-    // };
-
-    //to be filled labels and data:
     // const pieData: ChartData = {
     //   labels: ['A', 'B'],
     //   datasets: [
@@ -590,14 +549,14 @@ const Charts = () => {
       plugins: {
         legend: {
           display: true, // Show the legend on the chart
-          position: 'left',
+          position: 'bottom',
           // position: { x: 100, y: 100 }, // Set custom legend position
           labels: {
-            // font: {
-            //   size: 8, // Font size
-            //   family: 'Arial', // Font family
-            //   // style: 'italic', // Font style
-            // },
+            font: {
+              size: 12, // Font size
+              family: 'Arial', // Font family
+              // style: 'italic', // Font style
+            },
             usePointStyle: true,
             color: textColor
           }
@@ -740,23 +699,6 @@ const Charts = () => {
   return (
     <div className="grid p-fluid">
 
-      <div className="col-12 xl:col-6">
-        <div className="card flex flex-column align-items-center">
-          <h5 className="text-left w-full">Tipuri Contracte</h5>
-          <Chart
-            style={{ width: '50vh', height: '50vh' }}
-            type="pie" data={myPieData} options={options.pieOptions}></Chart>
-        </div>
-      </div>
-
-      <div className="col-12 xl:col-6">
-        <div className="card flex flex-column align-items-center">
-          <h5 className="text-left w-full">Stari Contracte</h5>
-          <Chart
-            style={{ width: '50vh', height: '50vh' }}
-            type="doughnut" data={myDoughnutData} options={options.pieOptions}></Chart>
-        </div>
-      </div>
 
       <div className="col-12 xl:col-6">
         <div className="card" >
@@ -775,6 +717,24 @@ const Charts = () => {
         </div>
       </div>
 
+
+      <div className="col-12 xl:col-6">
+        <div className="card flex flex-column align-items-center">
+          <h5 className="text-left w-full">Tipuri Contracte</h5>
+          <Chart
+            style={{ width: '50vh', height: '50vh' }}
+            type="doughnut" data={myPieData} options={options.pieOptions}></Chart>
+        </div>
+      </div>
+
+      <div className="col-12 xl:col-6">
+        <div className="card flex flex-column align-items-center">
+          <h5 className="text-left w-full">Stari Contracte</h5>
+          <Chart
+            style={{ width: '50vh', height: '50vh' }}
+            type="doughnut" data={myDoughnutData} options={options.pieOptions}></Chart>
+        </div>
+      </div>
 
     </div>
   );
