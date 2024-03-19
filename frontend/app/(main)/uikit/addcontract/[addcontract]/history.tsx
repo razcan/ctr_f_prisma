@@ -27,15 +27,15 @@ export default function History() {
     const { value, updateValue } = useData();
     console.log(value, "din history")
 
-    const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${4}`).then(res => res.json())
-        //treb modificat pe id de ctr
-        setLogs(response);
-    }
+    // const fetchContent = async () => {
+    //     const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${4}`).then(res => res.json())
+    //     //treb modificat pe id de ctr
+    //     setLogs(response);
+    // }
 
-    useEffect(() => {
-        fetchContent()
-    }, [])
+    // useEffect(() => {
+    //     fetchContent()
+    // }, [])
 
     const StartBodyTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.start_date);
