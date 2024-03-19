@@ -415,6 +415,8 @@ const Charts = () => {
         const start_month = results[2]
         const end_month = 1 + results[3]
 
+
+
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
@@ -433,7 +435,7 @@ const Charts = () => {
               backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
               // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
               borderColor: documentStyle.getPropertyValue('--green-500'),
-              tension: 0.4
+              tension: 0.6
             },
             {
               label: 'Plati',
@@ -443,7 +445,7 @@ const Charts = () => {
               backgroundColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
               // borderColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
               borderColor: documentStyle.getPropertyValue('--red-500'),
-              tension: 0.4
+              tension: 0.6
             }
           ]
         };

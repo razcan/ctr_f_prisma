@@ -264,6 +264,8 @@ export default function Tasks() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
+    //de adaugat drop down cu mai multi catre care se asigneaza
+    //de modifcat campul de text cu un quill
 
 
     return (

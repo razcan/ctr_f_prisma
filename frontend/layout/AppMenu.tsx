@@ -28,6 +28,12 @@ const AppMenu = () => {
             ]
         },
         {
+            label: 'Rapoarte',
+            items: [
+                { label: 'Raport general', icon: 'pi pi-fw pi-table', to: '/uikit/reports' },
+            ]
+        },
+        {
             label: 'Settings',
             icon: 'pi pi-fw pi-briefcase',
             items: [
@@ -43,17 +49,17 @@ const AppMenu = () => {
                 },
                 {
                     label: 'Alerte',
-                    icon: 'pi pi-fw pi-briefcase',
+                    icon: 'pi pi-fw pi-mobile',
                     to: '/uikit/alerts',
                 },
                 {
                     label: 'Grupuri Utilizatori',
-                    icon: 'pi pi-fw pi-briefcase',
+                    icon: 'pi pi-fw pi-exclamation-circle',
                     to: '/uikit/usergroups',
                 },
                 {
                     label: 'Utilizatori',
-                    icon: 'pi pi-fw pi-briefcase',
+                    icon: 'pi pi-fw pi-check-square',
                     to: '/uikit/users',
                 },
 
