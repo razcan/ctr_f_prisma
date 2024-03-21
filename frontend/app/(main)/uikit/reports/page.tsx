@@ -24,7 +24,7 @@ import { Slider } from 'primereact/slider';
 import { Tag } from 'primereact/tag';
 import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
-
+import * as XLSX from 'xlsx';
 
 interface Car {
     make: string;
@@ -185,7 +185,6 @@ function Report() {
     };
 
     useEffect(() => {
-        // test()
 
         const entity_data = selMultiselectEntity.map(partner => partner.name)
         const departments_data = selMultiselectDepartment.map(department => department.name)
@@ -194,10 +193,6 @@ function Report() {
         const category_data = selMultiselectCategory.map(category => category.name)
         const status_data = selMultiselectStatus.map(status => status.name)
         const model_data = selMultiselectModel.map(model => model.name)
-
-        // const [selMultiselectCategory, setselMultiselectCategory] = useState([]);
-        // const [selMultiselectStatus, setselMultiselectStatus] = useState([]);setselMultiselectModel
-
 
         // Apply filters whenever filter values change
         const filtered = data.filter(infos => {
@@ -217,21 +212,6 @@ function Report() {
                 );
             return match;
         }
-
-
-            // infos.department_name.toLowerCase().includes(departmentFilter.toLowerCase()) &&
-            // infos.partner_name.toLowerCase().includes(partenerFilter.toLowerCase()) &&
-
-            // (filtred_ent.length === 0 || filtred_ent.some(entity => infos.entity_name.includes(entity))) &&
-            // // infos.entity_name.toLowerCase().includes(entitateFilter.toLowerCase()) &&
-            // infos.category_name.toLowerCase().includes(categoryFilter.toLowerCase()) &&
-            // infos.tipcontract.toLowerCase().includes(TipContractFilter.toLowerCase()) &&
-            // infos.number.toLowerCase().includes(numarFilter.toLowerCase()) &&
-            // infos.status_name.toLowerCase().includes(statusFilter.toLowerCase()) &&
-            // infos.cost_center_name.toLowerCase().includes(costcenterFilter.toLowerCase()) &&
-            // infos.contract_type_name.toLowerCase().includes(ctrTypeFilter.toLowerCase()) &&
-            // infos.partner_person_name.toLowerCase().includes(resppartFilter.toLowerCase()) &&
-            // infos.entity_person_name.toLowerCase().includes(respentFilter.toLowerCase())
         );
         console.log(filtered)
 
@@ -243,11 +223,6 @@ function Report() {
         selMultiselectEntity, selMultiselectDepartment, selMultiselectPartner, selMultiselectCostcenter,
         selMultiselectCategory, selMultiselectStatus, selMultiselectModel
     ]);
-
-
-
-    //raport 1 contract general - filtre(informatii generale -acte aditionale ) - export excel 
-    //raport 2 informatii financiare - filtre(date financiare - ) - export excel 
 
     const tableStyle = {
         fontFamily: '"Arial", sans-serif', // Specify your desired font
@@ -369,21 +344,53 @@ function Report() {
     }, []);
 
 
+    const exportExcel = () => {
+        import('xlsx').then((xlsx) => {
+            const worksheet = xlsx.utils.json_to_sheet(filtreddata);
+            const workbook = { Sheets: { data: worksheet }, SheetNames: ['data'] };
+            const excelBuffer = xlsx.write(workbook, {
+                bookType: 'xlsx',
+                type: 'array'
+            });
+
+            saveAsExcelFile(excelBuffer, 'scadentar');
+        });
+    };
+
+    const saveAsExcelFile = (buffer, fileName) => {
+        import('file-saver').then((module) => {
+            if (module && module.default) {
+                let EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+                let EXCEL_EXTENSION = '.xlsx';
+                const data = new Blob([buffer], {
+                    type: EXCEL_TYPE
+                });
+
+                module.default.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
+            }
+        });
+    };
 
     return (
         <MyProvider>
             <div className="grid p-fluid input-demo">
 
                 <div className="col-3 md:col-3 lg:col-2 xl:col-3">
-                    <div className="card" >
-                        {/* <Tag severity="secondary" value="Filtre:"></Tag> */}
+                    <div className="card"
+                    // style={{ height: 'calc(100vh - 7rem)' }}
+                    >
+                        <div className="pt-2">
+                            <Tag severity="secondary" value="Filtre:"></Tag>
+                        </div>
 
-                        <div className="grid p-fluid pt-5"
-                        // style={{ height: 'calc(100vh - 13.7rem)' }}
-                        // style={{ height: "100vh" }} 
+
+                        <div className="grid p-fluid"
+                        // style={{ height: 'calc(100vh - 12rem)' }}
+                        // style={{ height: "80vh" }}
+
                         >
 
-                            <div className="field col-12  md:col-12">
+                            <div className="field col-12  md:col-12 pt-6">
                                 <MultiSelect value={selMultiselectEntity} onChange={(e) => {
                                     setSelMultiselect(e.value)
                                     // console.log(e.value)
@@ -392,13 +399,6 @@ function Report() {
                                     display="chip"
                                     placeholder="Entitate" maxSelectedLabels={5} />
                             </div>
-
-                            {/* 
-                            <span className="col-12 p-float-label">
-                                <InputText id="Partener" value={partenerFilter} onChange={(e) => 
-                                    setPartenerFilter(e.target.value)} />
-                                <label htmlFor="Partener" className='pt-2'>Partener</label>
-                            </span> */}
 
 
                             <div className="field col-12  md:col-12">
@@ -410,8 +410,6 @@ function Report() {
                                     display="chip"
                                     placeholder="Partener" maxSelectedLabels={5} />
                             </div>
-
-
 
 
                             <div className="field col-12  md:col-12">
@@ -467,19 +465,24 @@ function Report() {
                                     placeholder="Model" maxSelectedLabels={5} />
                             </div>
 
-                            <span className="col-12 p-float-label">
-                                <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
-                                <label htmlFor="Numar" className='pt-2'>Numar</label>
-                            </span>
+                            <div className="col-12 pt-2">
+                                <span className="p-float-label">
+                                    <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
+                                    <label htmlFor="Numar" className='pt-1'>Numar</label>
+                                </span>
+                            </div>
 
 
-                            <span className="col-12 p-float-label">
-                                <InputText id="Model" value={TipContractFilter} onChange={(e) => setTipContractFilter(e.target.value)} />
-                                <label htmlFor="Model" className='pt-2'>Tip Contract</label>
-                            </span>
+                            <div className="col-12 pt-4">
+                                <span className="p-float-label">
+                                    <InputText id="Model" value={TipContractFilter} onChange={(e) => setTipContractFilter(e.target.value)} />
+                                    <label htmlFor="Model">Tip Contract</label>
+                                </span>
+                            </div>
 
 
-                            <span className="col-12 p-float-label">
+
+                            {/* <span className="col-12 p-float-label">
                                 <InputText id="Resp Partener" value={resppartFilter} onChange={(e) => setRespPartFilter(e.target.value)} />
                                 <label htmlFor="Resp Partener" className='pt-2'>Resp Partener</label>
                             </span>
@@ -487,7 +490,7 @@ function Report() {
                             <span className="col-12 p-float-label">
                                 <InputText id="Resp Entitate" value={respentFilter} onChange={(e) => setRespEntFilter(e.target.value)} />
                                 <label htmlFor="Resp Entitate" className='pt-2'>Resp Entitate</label>
-                            </span>
+                            </span> */}
 
                         </div>
                     </div>
@@ -495,7 +498,15 @@ function Report() {
 
 
                 <div className="col-9 md:col-9 lg:col-10 xl:col-9">
-                    <div className="card">
+                    <div className="card"
+
+                    // style={{ height: 'calc(100vh - 7rem)' }}
+                    >
+                        {/* <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" /> */}
+
+                        <div className="col-3 md:col-3 lg:col-3 xl:col-3">
+                            <Button label="Export Excel" severity="contrast" onClick={exportExcel} />
+                        </div>
 
                         <DataTable value={filtreddata}
                             stripedRows
