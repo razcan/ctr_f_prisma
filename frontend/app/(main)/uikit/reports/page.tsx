@@ -96,6 +96,11 @@ function Report() {
 
     const [selMultiselectEntity, setSelMultiselect] = useState([]);
     const [selMultiselectDepartment, setSelMultiselectDepartment] = useState([]);
+    const [selMultiselectPartner, setselMultiselectPartner] = useState([]);
+    const [selMultiselectCostcenter, setselMultiselectCostcenter] = useState([]);
+    const [selMultiselectCategory, setselMultiselectCategory] = useState([]);
+    const [selMultiselectStatus, setselMultiselectStatus] = useState([]);
+    const [selMultiselectModel, setselMultiselectModel] = useState([]);
 
     const [filtreddata, setFilteredData] = useState<Infos[]>([]);
     const [data, setData] = useState<Infos[]>([]);
@@ -182,19 +187,34 @@ function Report() {
     useEffect(() => {
         // test()
 
-        const partners_data = selMultiselectEntity.map(partner => partner.name)
+        const entity_data = selMultiselectEntity.map(partner => partner.name)
         const departments_data = selMultiselectDepartment.map(department => department.name)
-        console.log(departments_data)
+        const partners_data = selMultiselectPartner.map(partner => partner.name)
+        const costcenters_data = selMultiselectCostcenter.map(costcenter => costcenter.name)
+        const category_data = selMultiselectCategory.map(category => category.name)
+        const status_data = selMultiselectStatus.map(status => status.name)
+        const model_data = selMultiselectModel.map(model => model.name)
+
+        // const [selMultiselectCategory, setselMultiselectCategory] = useState([]);
+        // const [selMultiselectStatus, setselMultiselectStatus] = useState([]);setselMultiselectModel
+
+
         // Apply filters whenever filter values change
         const filtered = data.filter(infos => {
             const match =
                 (
-                    (partners_data.length === 0 || partners_data.some(entity => infos.entity_name.includes(entity))) &&
-                    (departments_data.length === 0 || departments_data.some(dep => infos.department_name.includes(dep)))
-                    // infos.department_name.toLowerCase().includes(departmentFilter.toLowerCase())
+                    (entity_data.length === 0 || entity_data.some(entity => infos.entity_name.includes(entity))) &&
+                    (partners_data.length === 0 || partners_data.some(partner => infos.partner_name.includes(partner))) &&
+                    (costcenters_data.length === 0 || costcenters_data.some(costcenter => infos.cost_center_name.includes(costcenter))) &&
+                    (status_data.length === 0 || status_data.some(status => infos.status_name.includes(status))) &&
+                    (category_data.length === 0 || category_data.some(category => infos.category_name.includes(category))) &&
+                    (model_data.length === 0 || model_data.some(model => infos.contract_type_name.includes(model))) &&
+                    (departments_data.length === 0 || departments_data.some(dep => infos.department_name.includes(dep))) &&
+                    infos.number.toLowerCase().includes(numarFilter.toLowerCase()) &&
+                    infos.tipcontract.toLowerCase().includes(TipContractFilter.toLowerCase()) &&
+                    infos.partner_person_name.toLowerCase().includes(resppartFilter.toLowerCase()) &&
+                    infos.entity_person_name.toLowerCase().includes(respentFilter.toLowerCase())
                 );
-            // console.log(`Entity Name: ${infos.entity_name}, Filtered Entities: ${filtred_ent}, Match: ${match}`);
-            console.log(match)
             return match;
         }
 
@@ -220,7 +240,8 @@ function Report() {
 
     }, [data, departmentFilter, categoryFilter, entitateFilter, partenerFilter, TipContractFilter,
         numarFilter, statusFilter, costcenterFilter, ctrTypeFilter, resppartFilter, respentFilter,
-        selMultiselectEntity, selMultiselectDepartment
+        selMultiselectEntity, selMultiselectDepartment, selMultiselectPartner, selMultiselectCostcenter,
+        selMultiselectCategory, selMultiselectStatus, selMultiselectModel
     ]);
 
 
@@ -355,7 +376,7 @@ function Report() {
 
                 <div className="col-3 md:col-3 lg:col-2 xl:col-3">
                     <div className="card" >
-                        <Tag severity="secondary" value="Filtre:"></Tag>
+                        {/* <Tag severity="secondary" value="Filtre:"></Tag> */}
 
                         <div className="grid p-fluid pt-5"
                         // style={{ height: 'calc(100vh - 13.7rem)' }}
@@ -365,30 +386,38 @@ function Report() {
                             <div className="field col-12  md:col-12">
                                 <MultiSelect value={selMultiselectEntity} onChange={(e) => {
                                     setSelMultiselect(e.value)
-                                    console.log(e.value)
+                                    // console.log(e.value)
                                 }}
                                     options={entity} optionLabel="name"
                                     display="chip"
                                     placeholder="Entitate" maxSelectedLabels={5} />
                             </div>
 
-
+                            {/* 
                             <span className="col-12 p-float-label">
-                                <InputText id="Partener" value={partenerFilter} onChange={(e) => setPartenerFilter(e.target.value)} />
+                                <InputText id="Partener" value={partenerFilter} onChange={(e) => 
+                                    setPartenerFilter(e.target.value)} />
                                 <label htmlFor="Partener" className='pt-2'>Partener</label>
-                            </span>
-
-
-
-                            {/* <span className="col-12 p-float-label">
-                                <InputText id="Departament" value={departmentFilter} onChange={(e) => setDepartmentFilter(e.target.value)} />
-                                <label htmlFor="Departament" className='pt-2'>Departament</label>
                             </span> */}
+
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectPartner} onChange={(e) => {
+                                    setselMultiselectPartner(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={partner} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Partener" maxSelectedLabels={5} />
+                            </div>
+
+
+
 
                             <div className="field col-12  md:col-12">
                                 <MultiSelect value={selMultiselectDepartment} onChange={(e) => {
                                     setSelMultiselectDepartment(e.value)
-                                    console.log(e.value)
+                                    // console.log(e.value)
                                 }}
                                     options={departments} optionLabel="name"
                                     display="chip"
@@ -396,34 +425,57 @@ function Report() {
                             </div>
 
 
-                            <span className="col-12 p-float-label">
-                                <InputText id="Categorie" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} />
-                                <label htmlFor="Categorie" className='pt-2'>Categorie</label>
-                            </span>
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectCategory} onChange={(e) => {
+                                    setselMultiselectCategory(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={categories} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Categorie" maxSelectedLabels={5} />
+                            </div>
 
-                            <span className="col-12 p-float-label">
-                                <InputText id="Centru Cost" value={costcenterFilter} onChange={(e) => setCostCenterFilter(e.target.value)} />
-                                <label htmlFor="Centru Cost" className='pt-2'>Centru Cost</label>
-                            </span>
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectCostcenter} onChange={(e) => {
+                                    setselMultiselectCostcenter(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={costcenters} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Centru Cost" maxSelectedLabels={5} />
+                            </div>
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectStatus} onChange={(e) => {
+                                    setselMultiselectStatus(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={contractStatus}
+                                    optionLabel="name"
+                                    display="chip"
+                                    placeholder="Stare" maxSelectedLabels={5} />
+                            </div>
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectModel} onChange={(e) => {
+                                    setselMultiselectModel(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={contractType}
+                                    optionLabel="name"
+                                    display="chip"
+                                    placeholder="Model" maxSelectedLabels={5} />
+                            </div>
 
                             <span className="col-12 p-float-label">
                                 <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
                                 <label htmlFor="Numar" className='pt-2'>Numar</label>
                             </span>
 
-                            <span className="col-12 p-float-label">
-                                <InputText id="Stare" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
-                                <label htmlFor="Stare" className='pt-2'>Stare</label>
-                            </span>
-
-                            <span className="col-12 p-float-label">
-                                <InputText id="Tip" value={ctrTypeFilter} onChange={(e) => setCtrTypeFilter(e.target.value)} />
-                                <label htmlFor="Tip" className='pt-2'>Tip</label>
-                            </span>
 
                             <span className="col-12 p-float-label">
                                 <InputText id="Model" value={TipContractFilter} onChange={(e) => setTipContractFilter(e.target.value)} />
-                                <label htmlFor="Model" className='pt-2'>Model</label>
+                                <label htmlFor="Model" className='pt-2'>Tip Contract</label>
                             </span>
 
 
