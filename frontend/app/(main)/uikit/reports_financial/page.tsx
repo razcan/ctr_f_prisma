@@ -406,10 +406,11 @@ function Report() {
 
                         <DataTable value={filtreddata}
                             stripedRows
-                            // tableStyle={{ minWidth: '50rem' }} 
+                            tableStyle={{ minWidth: '50rem' }}
                             style={tableStyle}
-                            paginator rows={8}
-                            rowsPerPageOptions={[10, 10, 20, 50, 100]} sortMode="multiple"
+                            size='small'
+                            paginator rows={10}
+                            rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
                             selectionMode="single">
 
                             <Column field="contractid" hidden header="contractid"></Column>

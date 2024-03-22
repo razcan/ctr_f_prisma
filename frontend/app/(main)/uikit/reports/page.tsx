@@ -514,9 +514,10 @@ function Report() {
 
                         <DataTable value={filtreddata}
                             stripedRows
-                            // tableStyle={{ minWidth: '50rem' }} 
+                            tableStyle={{ minWidth: '50rem' }}
                             style={tableStyle}
-                            paginator rows={5}
+                            size='small'
+                            paginator rows={10}
                             rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
                             selectionMode="single">
 
@@ -542,8 +543,8 @@ function Report() {
                             <Column field="entity_person_name" header="NumeResponsabilEntitate" sortable></Column>
                             <Column field="entity_person_role" header="RolResponsabilEntitate" sortable></Column>
                             <Column field="entity_person_email" header="EmaiResponsabilEntitate" sortable></Column>
-                            <Column field="partner_address" header="AdresaPartener " sortable></Column>
-                            <Column field="entity_address" header="AdresaEntitate " sortable></Column>
+                            {/* <Column field="partner_address" header="AdresaPartener " sortable></Column>
+                            <Column field="entity_address" header="AdresaEntitate " sortable></Column> */}
                             <Column field="partner_bank" header="BancaPartener " sortable></Column>
                             <Column field="partner_iban" header="IBANPartener " sortable></Column>
                             <Column field="entity_bank" header="BancaEntitate " sortable></Column>
