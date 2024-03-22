@@ -82,17 +82,10 @@ function Report() {
     const [item, setItems] = useState([]);
     const [entity, setEntity] = useState([]);
     const [partner, setPartner] = useState([]);
-    const [entityPersons, setEntityPersons] = useState([]);
-    const [entityBanks, setEntityBanks] = useState([]);
-    const [entityAddress, setEntityAddress] = useState([]);
-    const [partnerPersons, setPartnerPersons] = useState([]);
-    const [partnerBanks, setPartnerBanks] = useState([]);
-    const [partnerAddress, setPartnerAddress] = useState([]);
     const [contractType, setContractType] = useState([]);
     const [contractStatus, setContractStatus] = useState([]);
     const [categories, setCategories] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [selectedEntity, setSelectedEntity] = useState([]);
 
     const [selMultiselectEntity, setSelMultiselect] = useState([]);
     const [selMultiselectDepartment, setSelMultiselectDepartment] = useState([]);
@@ -142,7 +135,7 @@ function Report() {
 
                     setData(response.data);
                     setFilteredData(response.data);
-                    console.log(response.data);
+
                 })
                 .catch(function (error) {
                     // if (response.status === 401) {
@@ -152,7 +145,6 @@ function Report() {
                 });
         }
     }
-
 
 
     const formatDate = (dateString: Date) => {
@@ -213,8 +205,6 @@ function Report() {
             return match;
         }
         );
-        console.log(filtered)
-
         setFilteredData(filtered)
 
 
@@ -371,6 +361,18 @@ function Report() {
         });
     };
 
+    const clearAllFilters = () => {
+        setSelMultiselect([])
+        setSelMultiselectDepartment([])
+        setselMultiselectPartner([])
+        setselMultiselectCostcenter([])
+        setselMultiselectCategory([])
+        setselMultiselectStatus([])
+        setselMultiselectModel([])
+        setTipContractFilter('')
+        setNumarFilter('')
+    }
+
     return (
         <MyProvider>
             <div className="grid p-fluid input-demo">
@@ -379,8 +381,10 @@ function Report() {
                     <div className="card"
                     // style={{ height: 'calc(100vh - 7rem)' }}
                     >
-                        <div className="pt-2">
-                            <Tag severity="secondary" value="Filtre:"></Tag>
+                        <div className="pt-0">
+                            {/* <Tag severity="secondary" value="Filtre:"></Tag> */}
+                            <Button type="button" icon="pi pi-delete-left" severity="danger" rounded onClick={clearAllFilters} data-pr-tooltip="XLS" />
+
                         </div>
 
 
@@ -502,11 +506,11 @@ function Report() {
 
                     // style={{ height: 'calc(100vh - 7rem)' }}
                     >
-                        {/* <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" /> */}
+                        <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
 
-                        <div className="col-3 md:col-3 lg:col-3 xl:col-3">
-                            <Button label="Export Excel" severity="contrast" onClick={exportExcel} />
-                        </div>
+                        {/* <div className="col-3 md:col-3 lg:col-3 xl:col-3">
+                            <Button label="Export Excel" severity="contrast" rounded onClick={exportExcel} />
+                        </div> */}
 
                         <DataTable value={filtreddata}
                             stripedRows

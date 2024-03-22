@@ -223,7 +223,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflow")
+        fetch("http://localhost:3000/contracts/cashflownom")
             .then(response => {
                 return response.json()
             })

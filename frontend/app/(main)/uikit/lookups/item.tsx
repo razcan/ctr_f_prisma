@@ -77,7 +77,7 @@ const Item = ({ executeFunction }: any) => {
         <div>
             {/* <ConfirmDialog /> */}
             <Toast ref={toast} />
-            <Dialog visible={visible} modal style={{ width: '24rem' }} onHide={() => setVisible(false)}>
+            <Dialog visible={visible} modal style={{ width: '50rem' }} onHide={() => setVisible(false)}>
 
                 <span className="font-bold white-space-nowrap">Doriti sa stergeti obiectul de contract ({ItemSelected.name}) ?</span>
                 <div className='pt-4'>
@@ -88,7 +88,7 @@ const Item = ({ executeFunction }: any) => {
 
                             }} />
                         </div>
-                        <div className='col-1 pl-7'>
+                        <div className='col-1 pl-4'>
                             <Button label="Nu" severity="success" onClick={() => setVisible(false)} autoFocus />
                         </div>
                     </div>

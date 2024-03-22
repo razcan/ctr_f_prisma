@@ -31,6 +31,7 @@ const AppMenu = () => {
             label: 'Rapoarte',
             items: [
                 { label: 'Raport general', icon: 'pi pi-fw pi-table', to: '/uikit/reports' },
+                { label: 'Raport financiar', icon: 'pi pi-fw pi-list', to: '/uikit/reports_financial' },
             ]
         },
         {

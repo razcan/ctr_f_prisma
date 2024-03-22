@@ -381,7 +381,7 @@ export default function EditContract() {
 
 
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflow")
+        fetch("http://localhost:3000/contracts/cashflownom")
             .then(response => {
                 return response.json()
             })
