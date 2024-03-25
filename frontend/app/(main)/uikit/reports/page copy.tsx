@@ -377,152 +377,180 @@ function Report() {
         <MyProvider>
             <div className="grid p-fluid input-demo">
 
+                <div className="col-3 md:col-3 lg:col-2 xl:col-3">
+                    <div className="card"
+                    // style={{ height: 'calc(100vh - 7rem)' }}
+                    >
+                        <div className="pt-0">
+                            {/* <Tag severity="secondary" value="Filtre:"></Tag> */}
+                            <Button type="button" icon="pi pi-delete-left" severity="danger" rounded onClick={clearAllFilters} data-pr-tooltip="XLS" />
 
-
-                <div className="col-12" >
-                    <div className="card" >
-
-                        <div className='grid'>
-                            <div className="col-2">
-
-                                <div className="field col-12  md:col-12 pt-6">
-                                    <MultiSelect style={tableStyle} value={selMultiselectEntity} onChange={(e) => {
-                                        setSelMultiselect(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={entity} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Entitate" maxSelectedLabels={5} />
-                                </div>
-
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectPartner} onChange={(e) => {
-                                        setselMultiselectPartner(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={partner} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Partener" maxSelectedLabels={5} />
-                                </div>
-
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectDepartment} onChange={(e) => {
-                                        setSelMultiselectDepartment(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={departments} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Departament" maxSelectedLabels={5} />
-                                </div>
-
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectCategory} onChange={(e) => {
-                                        setselMultiselectCategory(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={categories} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Categorie" maxSelectedLabels={5} />
-                                </div>
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectCostcenter} onChange={(e) => {
-                                        setselMultiselectCostcenter(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={costcenters} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Centru Cost" maxSelectedLabels={5} />
-                                </div>
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectStatus} onChange={(e) => {
-                                        setselMultiselectStatus(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={contractStatus}
-                                        optionLabel="name"
-                                        display="chip"
-                                        placeholder="Stare" maxSelectedLabels={5} />
-                                </div>
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectModel} onChange={(e) => {
-                                        setselMultiselectModel(e.value)
-                                        // console.log(e.value)
-                                    }}
-                                        options={contractType}
-                                        optionLabel="name"
-                                        display="chip"
-                                        placeholder="Model" maxSelectedLabels={5} />
-                                </div>
-
-                                <div className="col-12 pt-2">
-                                    <span className="p-float-label">
-                                        <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
-                                        <label style={tableStyle} htmlFor="Numar" className='pt-1'>Numar</label>
-                                    </span>
-                                </div>
-
-
-                                <div className="col-12 pt-4">
-                                    <span className="p-float-label">
-                                        <InputText id="Model" value={TipContractFilter} onChange={(e) => setTipContractFilter(e.target.value)} />
-                                        <label style={tableStyle} htmlFor="Model">Tip Contract</label>
-                                    </span>
-                                </div>
-
-                                {/* <Button icon="pi pi-times" rounded text severity="danger" aria-label="Delete" onClick={clearAllFilters} data-pr-tooltip="XLS" /> */}
-
-
-                            </div>
-                            <div className="col-10">
-                                <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
-
-                                <DataTable value={filtreddata}
-                                    stripedRows
-                                    tableStyle={{ minWidth: '50rem' }}
-                                    style={tableStyle}
-                                    size='small'
-                                    paginator rows={10}
-                                    rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
-                                    selectionMode="single">
-
-                                    <Column field="tipcontract" header="TipContract"></Column>
-                                    <Column field="number" header="Numar" sortable></Column>
-                                    <Column field="start_date" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
-                                    <Column field="end_date" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
-                                    <Column field="sign_date" header="Semnat" dataType='date' sortable body={SignBodyTemplate}  ></Column>
-                                    <Column field="completion_date" header="Inchis" dataType='date' sortable body={CompletionBodyTemplate} ></Column>
-                                    <Column field="remarks" header="Descriere" dataType='date' sortable></Column>
-                                    <Column field="automatic_renewal" header="ReinnoireAutomata" dataType='date' sortable></Column>
-                                    <Column field="entity_name" header="Entitate" sortable></Column>
-                                    <Column field="partner_name" header="Partener" sortable></Column>
-                                    <Column field="status_name" header="Stare" sortable></Column>
-                                    <Column field="cashflow_name" header="CashFlow" sortable></Column>
-                                    <Column field="category_name" header="Categorie" sortable></Column>
-                                    <Column field="department_name" header="Departament" sortable></Column>
-                                    <Column field="cost_center_name" header="CentruCost" sortable></Column>
-                                    <Column field="contract_type_name" header="Model" sortable></Column>
-                                    <Column field="partner_person_name" header="NumeResponsabilPartener" sortable></Column>
-                                    <Column field="partner_person_role" header="RolResponsabilPartener" sortable></Column>
-                                    <Column field="partner_person_email" header="EmailResponsabilPartener " sortable></Column>
-                                    <Column field="entity_person_name" header="NumeResponsabilEntitate" sortable></Column>
-                                    <Column field="entity_person_role" header="RolResponsabilEntitate" sortable></Column>
-                                    <Column field="entity_person_email" header="EmaiResponsabilEntitate" sortable></Column>
-                                    {/* <Column field="partner_address" header="AdresaPartener " sortable></Column>
-                            <Column field="entity_address" header="AdresaEntitate " sortable></Column> */}
-                                    <Column field="partner_bank" header="BancaPartener " sortable></Column>
-                                    <Column field="partner_iban" header="IBANPartener " sortable></Column>
-                                    <Column field="entity_bank" header="BancaEntitate " sortable></Column>
-                                    <Column field="entity_iban" header="IBANEntitate " sortable></Column>
-
-                                </DataTable>
-                            </div>
                         </div>
+
+
+                        <div className="grid p-fluid"
+                        // style={{ height: 'calc(100vh - 12rem)' }}
+                        // style={{ height: "80vh" }}
+
+                        >
+
+                            <div className="field col-12  md:col-12 pt-6">
+                                <MultiSelect value={selMultiselectEntity} onChange={(e) => {
+                                    setSelMultiselect(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={entity} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Entitate" maxSelectedLabels={5} />
+                            </div>
+
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectPartner} onChange={(e) => {
+                                    setselMultiselectPartner(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={partner} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Partener" maxSelectedLabels={5} />
+                            </div>
+
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectDepartment} onChange={(e) => {
+                                    setSelMultiselectDepartment(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={departments} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Departament" maxSelectedLabels={5} />
+                            </div>
+
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectCategory} onChange={(e) => {
+                                    setselMultiselectCategory(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={categories} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Categorie" maxSelectedLabels={5} />
+                            </div>
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectCostcenter} onChange={(e) => {
+                                    setselMultiselectCostcenter(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={costcenters} optionLabel="name"
+                                    display="chip"
+                                    placeholder="Centru Cost" maxSelectedLabels={5} />
+                            </div>
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectStatus} onChange={(e) => {
+                                    setselMultiselectStatus(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={contractStatus}
+                                    optionLabel="name"
+                                    display="chip"
+                                    placeholder="Stare" maxSelectedLabels={5} />
+                            </div>
+
+                            <div className="field col-12  md:col-12">
+                                <MultiSelect value={selMultiselectModel} onChange={(e) => {
+                                    setselMultiselectModel(e.value)
+                                    // console.log(e.value)
+                                }}
+                                    options={contractType}
+                                    optionLabel="name"
+                                    display="chip"
+                                    placeholder="Model" maxSelectedLabels={5} />
+                            </div>
+
+                            <div className="col-12 pt-2">
+                                <span className="p-float-label">
+                                    <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
+                                    <label htmlFor="Numar" className='pt-1'>Numar</label>
+                                </span>
+                            </div>
+
+
+                            <div className="col-12 pt-4">
+                                <span className="p-float-label">
+                                    <InputText id="Model" value={TipContractFilter} onChange={(e) => setTipContractFilter(e.target.value)} />
+                                    <label htmlFor="Model">Tip Contract</label>
+                                </span>
+                            </div>
+
+
+
+                            {/* <span className="col-12 p-float-label">
+                                <InputText id="Resp Partener" value={resppartFilter} onChange={(e) => setRespPartFilter(e.target.value)} />
+                                <label htmlFor="Resp Partener" className='pt-2'>Resp Partener</label>
+                            </span>
+
+                            <span className="col-12 p-float-label">
+                                <InputText id="Resp Entitate" value={respentFilter} onChange={(e) => setRespEntFilter(e.target.value)} />
+                                <label htmlFor="Resp Entitate" className='pt-2'>Resp Entitate</label>
+                            </span> */}
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div className="col-9 md:col-9 lg:col-10 xl:col-9">
+                    <div className="card"
+
+                    // style={{ height: 'calc(100vh - 7rem)' }}
+                    >
+                        <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
+
+                        {/* <div className="col-3 md:col-3 lg:col-3 xl:col-3">
+                            <Button label="Export Excel" severity="contrast" rounded onClick={exportExcel} />
+                        </div> */}
+
+                        <DataTable value={filtreddata}
+                            stripedRows
+                            tableStyle={{ minWidth: '50rem' }}
+                            style={tableStyle}
+                            size='small'
+                            paginator rows={10}
+                            rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
+                            selectionMode="single">
+
+                            <Column field="tipcontract" header="TipContract"></Column>
+                            <Column field="number" header="Numar" sortable></Column>
+                            <Column field="start_date" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
+                            <Column field="end_date" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
+                            <Column field="sign_date" header="Semnat" dataType='date' sortable body={SignBodyTemplate}  ></Column>
+                            <Column field="completion_date" header="Inchis" dataType='date' sortable body={CompletionBodyTemplate} ></Column>
+                            <Column field="remarks" header="Descriere" dataType='date' sortable></Column>
+                            <Column field="automatic_renewal" header="ReinnoireAutomata" dataType='date' sortable></Column>
+                            <Column field="entity_name" header="Entitate" sortable></Column>
+                            <Column field="partner_name" header="Partener" sortable></Column>
+                            <Column field="status_name" header="Stare" sortable></Column>
+                            <Column field="cashflow_name" header="CashFlow" sortable></Column>
+                            <Column field="category_name" header="Categorie" sortable></Column>
+                            <Column field="department_name" header="Departament" sortable></Column>
+                            <Column field="cost_center_name" header="CentruCost" sortable></Column>
+                            <Column field="contract_type_name" header="Model" sortable></Column>
+                            <Column field="partner_person_name" header="NumeResponsabilPartener" sortable></Column>
+                            <Column field="partner_person_role" header="RolResponsabilPartener" sortable></Column>
+                            <Column field="partner_person_email" header="EmailResponsabilPartener " sortable></Column>
+                            <Column field="entity_person_name" header="NumeResponsabilEntitate" sortable></Column>
+                            <Column field="entity_person_role" header="RolResponsabilEntitate" sortable></Column>
+                            <Column field="entity_person_email" header="EmaiResponsabilEntitate" sortable></Column>
+                            {/* <Column field="partner_address" header="AdresaPartener " sortable></Column>
+                            <Column field="entity_address" header="AdresaEntitate " sortable></Column> */}
+                            <Column field="partner_bank" header="BancaPartener " sortable></Column>
+                            <Column field="partner_iban" header="IBANPartener " sortable></Column>
+                            <Column field="entity_bank" header="BancaEntitate " sortable></Column>
+                            <Column field="entity_iban" header="IBANEntitate " sortable></Column>
+
+                        </DataTable>
                     </div>
                 </div>
             </div>

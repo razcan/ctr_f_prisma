@@ -329,105 +329,107 @@ function Report() {
 
     return (
         <MyProvider>
-            <div className="grid p-fluid input-demo">
-                <div className="col-12" >
-                    <div className="card" >
 
-                        <div className='grid'>
-                            <div className="col-2">
+            <div className="grid p-fluid">
+                <div className="col-12">
 
-
-                                <div className="field col-12  md:col-12  pt-6">
-                                    <MultiSelect style={tableStyle} value={selMultiselectEntity} onChange={(e) => {
-                                        setSelMultiselect(e.value)
-                                    }}
-                                        options={entity} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Entitate" maxSelectedLabels={5} />
-                                </div>
+                    <div className="card">
 
 
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectPartner} onChange={(e) => {
-                                        setselMultiselectPartner(e.value)
-                                    }}
-                                        options={partner} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Partener" maxSelectedLabels={5} />
-                                </div>
-
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectItem} onChange={(e) => {
-                                        setselMultiselectItem(e.value)
-                                    }}
-                                        options={item} optionLabel="name"
-                                        display="chip"
-                                        placeholder="Articol" maxSelectedLabels={5} />
-                                </div>
+                        <div className="field col-12  md:col-12">
+                            <MultiSelect value={selMultiselectEntity} onChange={(e) => {
+                                setSelMultiselect(e.value)
+                            }}
+                                options={entity} optionLabel="name"
+                                display="chip"
+                                placeholder="Entitate" maxSelectedLabels={5} />
+                        </div>
 
 
-                                <div className="field col-12  md:col-12">
-                                    <MultiSelect style={tableStyle} value={selMultiselectCurrency} onChange={(e) => {
-                                        setselMultiselectCurrency(e.value)
-                                    }}
-                                        options={currency} optionLabel="code"
-                                        display="chip"
-                                        placeholder="Valuta" maxSelectedLabels={5} />
-                                </div>
+                        <div className="field col-12  md:col-12">
+                            <MultiSelect value={selMultiselectPartner} onChange={(e) => {
+                                setselMultiselectPartner(e.value)
+                            }}
+                                options={partner} optionLabel="name"
+                                display="chip"
+                                placeholder="Partener" maxSelectedLabels={5} />
+                        </div>
+
+                        <div className="field col-12  md:col-12">
+                            <MultiSelect value={selMultiselectItem} onChange={(e) => {
+                                setselMultiselectItem(e.value)
+                            }}
+                                options={item} optionLabel="name"
+                                display="chip"
+                                placeholder="Articol" maxSelectedLabels={5} />
+                        </div>
 
 
-                                <div className="field col-12  md:col-12">
-                                    <span className="p-float-label">
-                                        <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
-                                        <label style={tableStyle} htmlFor="Numar" className='pt-1'>Numar Ctr.</label>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="col-10">
-
-                                <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
-
-                                <DataTable value={filtreddata}
-                                    stripedRows
-                                    tableStyle={{ minWidth: '50rem' }}
-                                    style={tableStyle}
-                                    size='small'
-                                    paginator rows={8}
-                                    rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
-                                    selectionMode="single">
-
-                                    <Column field="contractid" hidden header="contractid"></Column>
-                                    <Column field="tiptranzactie" header="TipTranzactie" sortable></Column>
-                                    <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
-                                    <Column field="final" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
-                                    <Column field="data" header="Data" dataType='date' sortable body={DateBodyTemplate}  ></Column>
-                                    <Column field="partener" header="Partener" dataType='date' sortable></Column>
-                                    <Column field="entitate" header="Entitate" dataType='date' sortable></Column>
-                                    <Column field="numarcontract" header="NrContract" sortable></Column>
-                                    <Column field="descrierecontract" header="ScurtaDescriere" sortable></Column>
-                                    <Column field="cashflow" header="Cashflow" sortable></Column>
-                                    <Column field="procentplusbnr" header="procentplusbnr" sortable></Column>
-                                    <Column field="procentpenalitate" header="Procentpenalitate" sortable></Column>
-                                    <Column field="nrzilescadente" header="Nrzilescadente" sortable></Column>
-                                    <Column field="articol" header="Articol" sortable></Column>
-                                    <Column field="cantitate" header="Cantitate" sortable></Column>
-                                    <Column field="pretunitarinvaluta" header="Pretunitarinvaluta" sortable></Column>
-                                    <Column field="valoareinvaluta" header="Valoareinvaluta" sortable></Column>
-                                    <Column field="valuta" header="Valuta " sortable></Column>
-                                    <Column field="cursvalutar" header="Cursvalutar" sortable></Column>
-                                    <Column field="valoareron" header="Valoareron" sortable></Column>
-                                    <Column field="platitincasat" header="Platitincasat" sortable></Column>
-                                    <Column field="facturat" header="Facturat " sortable></Column>
+                        <div className="field col-12  md:col-12">
+                            <MultiSelect value={selMultiselectCurrency} onChange={(e) => {
+                                setselMultiselectCurrency(e.value)
+                            }}
+                                options={currency} optionLabel="code"
+                                display="chip"
+                                placeholder="Valuta" maxSelectedLabels={5} />
+                        </div>
 
 
-                                </DataTable>
+                        <div className="field col-12  md:col-12">
+                            <span className="p-float-label">
+                                <InputText id="Numar" value={numarFilter} onChange={(e) => setNumarFilter(e.target.value)} />
+                                <label htmlFor="Numar" className='pt-1'>Numar Ctr.</label>
+                            </span>
+                        </div>
 
-                            </div>
+                    </div>
+
+
+
+
+                    <div className="col-12">
+                        <div className="card">
+                            <Button type="button" icon="pi pi-file-excel" severity="Secondary" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
+
+                            <DataTable value={filtreddata}
+                                stripedRows
+                                tableStyle={{ minWidth: '50rem' }}
+                                style={tableStyle}
+                                size='small'
+                                paginator rows={8}
+                                rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
+                                selectionMode="single">
+
+                                <Column field="contractid" hidden header="contractid"></Column>
+                                <Column field="tiptranzactie" header="TipTranzactie" sortable></Column>
+                                <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
+                                <Column field="final" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
+                                <Column field="data" header="Data" dataType='date' sortable body={DateBodyTemplate}  ></Column>
+                                <Column field="partener" header="Partener" dataType='date' sortable></Column>
+                                <Column field="entitate" header="Entitate" dataType='date' sortable></Column>
+                                <Column field="numarcontract" header="NrContract" sortable></Column>
+                                <Column field="descrierecontract" header="ScurtaDescriere" sortable></Column>
+                                <Column field="cashflow" header="Cashflow" sortable></Column>
+                                <Column field="procentplusbnr" header="procentplusbnr" sortable></Column>
+                                <Column field="procentpenalitate" header="Procentpenalitate" sortable></Column>
+                                <Column field="nrzilescadente" header="Nrzilescadente" sortable></Column>
+                                <Column field="articol" header="Articol" sortable></Column>
+                                <Column field="cantitate" header="Cantitate" sortable></Column>
+                                <Column field="pretunitarinvaluta" header="Pretunitarinvaluta" sortable></Column>
+                                <Column field="valoareinvaluta" header="Valoareinvaluta" sortable></Column>
+                                <Column field="valuta" header="Valuta " sortable></Column>
+                                <Column field="cursvalutar" header="Cursvalutar" sortable></Column>
+                                <Column field="valoareron" header="Valoareron" sortable></Column>
+                                <Column field="platitincasat" header="Platitincasat" sortable></Column>
+                                <Column field="facturat" header="Facturat " sortable></Column>
+
+
+                            </DataTable>
                         </div>
                     </div>
                 </div>
             </div>
+
         </MyProvider>
     );
 }
