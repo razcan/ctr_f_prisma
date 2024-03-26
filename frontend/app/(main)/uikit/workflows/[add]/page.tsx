@@ -53,6 +53,19 @@ export default function Tasks() {
     const [approveInParalel, setApproveInParalel] = useState(true);
     const [selUsers, setSelUsers] = useState([]);
     const [selectedProcessType, setSelectedProcessType] = useState('');
+    const [selectedtaskName, setselectedTaskName] = useState('');
+    const [selectednotes, setselectedNotes] = useState('');
+    const [selectedstatus, setselectedStatus] = useState([]);
+    const [selectedstatusDate, setselectedStatusDate] = useState(new Date());
+    const [allStatus, setAllStatus] = useState([])
+    const [selecteddue, setselectedDue] = useState(new Date());
+    const [text, setText] = useState([]);
+    const [sendNotifications, setSendNotifications] = useState(false);
+    const [reminderNotifications, setReminderNotifications] = useState(false);
+
+    const handleProcedureContentChange = (content: any) => {
+        setText(content);
+    };
 
     const posibleFilters = [
         { name: 'Centru Cost' },
@@ -73,6 +86,16 @@ export default function Tasks() {
         { name: 'Foarte Importantă' },
         { name: 'Normală' }
     ];
+
+    const fetchTasksStatusData = () => {
+        fetch("http://localhost:3000/nomenclatures/taskStatus")
+            .then(response => {
+                return response.json()
+            })
+            .then(allStatus => {
+                setAllStatus(allStatus)
+            })
+    }
 
     const fetchCategoriesData = () => {
         fetch("http://localhost:3000/contracts/category")
@@ -119,8 +142,45 @@ export default function Tasks() {
         fetchDepartmentsData()
         fetchCostCenter()
         fetchCashFlow()
+        fetchTasksStatusData()
 
     }, [])
+
+
+    const modules = {
+        toolbar: {
+            container: [
+                [{ font: [] }, { 'size': [] }, { 'header': [1, 2, 3, 4, 5, 6] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
+                [
+                    { list: 'ordered' },
+                    { list: 'bullet' },
+                    { indent: '-1' },
+                    { indent: '+1' },
+                ],
+                [{ 'direction': 'rtl' }, { 'align': [] }],
+                ['link', 'image', 'clean'],
+            ],
+        },
+        clipboard: {
+            matchVisual: true,
+        },
+    }
+
+    const formats = [
+        'font', 'size',
+        'bold', 'italic', 'underline', 'strike',
+        'color', 'background',
+        'script',
+        'header', 'blockquote', 'code-block',
+        'indent', 'list',
+        'direction', 'align',
+        'link', 'image', 'video', 'formula',
+    ];
+
 
 
     const getSourceName = (name) => {
@@ -398,7 +458,69 @@ export default function Tasks() {
 
             <div className="col-12">
                 <Card title="Actiune">
-                    <Button label="Adauga flux aprobare" />
+                    <div className="grid">
+
+                        <span className="p-float-label field col-12">
+                            <InputText id="taskName" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                            <label htmlFor="taskName">Titlu</label>
+                        </span>
+
+                        <div className="field col-12 pb-6">
+                            <label className="ml-2">Descriere Task</label>
+                            <br></br>
+                            <ReactQuill
+                                style={{ height: '10vw' }}
+                                theme="snow"
+                                modules={modules}
+                                formats={formats}
+                                value={text}
+                                onChange={handleProcedureContentChange}
+                            />
+                        </div>
+                        {/* <br></br> */}
+                        {/* <Divider /> */}
+
+                        <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">De rezolvat</label>
+                        </span>
+
+
+                        <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">Prioritate</label>
+                        </span>
+
+                        <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">Status</label>
+                        </span>
+
+                        <div className="flex align-items-center col-12">
+                            <Checkbox inputId="notifications"
+                                onChange={e => setSendNotifications(e.checked)}
+                                checked={sendNotifications} />
+                            <label htmlFor="ingredient1" className="ml-2">Trimite notificari</label>
+                        </div>
+
+                        <div className="flex align-items-center col-12 pb-6">
+                            <Checkbox inputId="reminders"
+                                onChange={e => setReminderNotifications(e.checked)}
+                                checked={reminderNotifications} />
+                            <label htmlFor="ingredient1" className="ml-2">Trimite reminder</label>
+                        </div>
+
+                        <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">Reminder</label>
+                        </span>
+
+
+
+
+
+                    </div>
+
                 </Card>
             </div>
 

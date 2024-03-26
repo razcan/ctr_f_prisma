@@ -133,8 +133,7 @@ export default function Tasks() {
         setArrLength(arrLength - 1)
     };
 
-    console.log(conditions)
-    console.log(arrLength)
+
     const getSourceOptions = (sourceName) => {
         switch (sourceName) {
             case 'categories':
