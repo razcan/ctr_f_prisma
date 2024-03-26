@@ -49,6 +49,11 @@ const AppMenu = () => {
                     to: '/uikit/contractTemplates'
                 },
                 {
+                    label: 'Fluxuri de aprobare',
+                    icon: 'pi pi-fw pi-calendar',
+                    to: '/uikit/workflows'
+                },
+                {
                     label: 'Alerte',
                     icon: 'pi pi-fw pi-mobile',
                     to: '/uikit/alerts',

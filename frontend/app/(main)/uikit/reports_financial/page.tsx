@@ -337,7 +337,7 @@ function Report() {
                             <div className="col-2">
 
 
-                                <div className="field col-12  md:col-12  pt-6">
+                                <div className="field col-12  md:col-12  pt-7">
                                     <MultiSelect style={tableStyle} value={selMultiselectEntity} onChange={(e) => {
                                         setSelMultiselect(e.value)
                                     }}
@@ -393,8 +393,8 @@ function Report() {
                                     tableStyle={{ minWidth: '50rem' }}
                                     style={tableStyle}
                                     size='small'
-                                    paginator rows={8}
-                                    rowsPerPageOptions={[5, 10, 20, 50, 100]} sortMode="multiple"
+                                    paginator rows={10}
+                                    rowsPerPageOptions={[20, 50, 100]} sortMode="multiple"
                                     selectionMode="single">
 
                                     <Column field="contractid" hidden header="contractid"></Column>
