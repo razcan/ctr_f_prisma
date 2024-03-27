@@ -29,6 +29,7 @@ import { RadioButton } from "primereact/radiobutton";
 import { PickList } from 'primereact/picklist';
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
+import { Messages } from 'primereact/messages';
 
 export default function Tasks() {
 
@@ -60,8 +61,10 @@ export default function Tasks() {
     const [allStatus, setAllStatus] = useState([])
     const [selecteddue, setselectedDue] = useState(new Date());
     const [text, setText] = useState([]);
-    const [sendNotifications, setSendNotifications] = useState(false);
-    const [reminderNotifications, setReminderNotifications] = useState(false);
+    const [sendNotifications, setSendNotifications] = useState(true);
+    const [reminderNotifications, setReminderNotifications] = useState(true);
+    const msgs = useRef(null);
+
 
     const handleProcedureContentChange = (content: any) => {
         setText(content);
@@ -74,6 +77,19 @@ export default function Tasks() {
         { name: 'Cashflow' }
     ];
 
+    const toBeResolved = [
+        { name: 'La o zi dupa start flux' },
+        { name: 'La 2 zile dupa start flux' },
+        { name: 'La 3 zile dupa start flux' },
+        { name: 'La 4 zile dupa start flux' },
+        { name: 'La 5 zile dupa start flux' },
+    ];
+
+    const reminders = [
+        { name: 'La data limita' },
+        { name: '1 zi inainte de data limita' },
+        { name: '2 zile inainte de data limita' }
+    ];
 
 
     const process_type = [
@@ -82,9 +98,9 @@ export default function Tasks() {
     ];
 
     const priorities = [
-        { name: 'Importanță Maximă' },
+        { name: 'Normală' },
         { name: 'Foarte Importantă' },
-        { name: 'Normală' }
+        { name: 'Importanță Maximă' }
     ];
 
     const fetchTasksStatusData = () => {
@@ -304,20 +320,6 @@ export default function Tasks() {
     }, [])
 
 
-    const StatusDateTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.statusDate);
-        return <span>{formattedDate}</span>;
-    };
-
-    const DueDateTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.due);
-        return <span>{formattedDate}</span>;
-    };
-
-    const CreatedDateTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.createdAt);
-        return <span>{formattedDate}</span>;
-    };
 
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
@@ -326,11 +328,46 @@ export default function Tasks() {
         return date.toLocaleDateString('ro-Ro', options);
     };
 
+    const addMessages = () => {
+        msgs.current.show([
+            { severity: 'info', summary: 'Info:', detail: 'O sa se trimita email catre toti', sticky: true, closable: true }
+        ]);
+    };
+
     return (
         <div className="grid">
 
             <div className="col-12">
-                <Card title="Seteaza conditii">
+                <Card title="Date generale">
+
+                    <div className="grid">
+                        <span className="p-float-label field col-3">
+                            <InputText id="taskName" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                            <label htmlFor="taskName">Denumire</label>
+                        </span>
+
+                        <span className="p-float-label field col-5">
+                            <InputText id="taskName" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                            <label htmlFor="taskName">Descriere</label>
+                        </span>
+
+                        <div className="flex align-items-center col-4">
+                            <Checkbox inputId="notifications"
+                                onChange={e => setSendNotifications(e.checked)}
+                                checked={sendNotifications} />
+                            <label htmlFor="ingredient1" className="ml-2">Activ</label>
+                        </div>
+                    </div>
+
+
+                    {/* update pe campul stare contract , email , etc */}
+
+                </Card>
+            </div>
+
+
+            <div className="col-12">
+                <Card title="Reguli alocare">
                     {conditions.length === 0 ?
                         <Button label="Adauga" icon="pi pi-plus" onClick={addConditions} />
                         : null
@@ -358,7 +395,7 @@ export default function Tasks() {
 
                                 </div>
                                 <div className="col-3 pt-4 pl-8 pr-4">
-                                    este egla cu
+                                    este egal cu
                                 </div>
                                 <div className="col-3">
                                     <Dropdown id="value"
@@ -388,6 +425,9 @@ export default function Tasks() {
             </div>
 
             <div className="col-12">
+
+
+
                 <Card title="Asignat">
 
 
@@ -424,7 +464,7 @@ export default function Tasks() {
                             <Dropdown value={selectedProcessType}
                                 onChange={(e) => {
                                     setSelectedProcessType(e.value)
-                                    console.log(selectedProcessType)
+                                    // console.log(selectedProcessType)
                                 }
                                 }
                                 options={process_type} optionLabel="name"
@@ -449,15 +489,46 @@ export default function Tasks() {
                 </Card>
             </div>
 
+            {/* update pe campul stare contract , email , etc */}
+            {/* <div className="col-12">
+                <Card title="Actiuni dupa aprobare">
+                   
+
+                </Card>
+            </div> */}
+
+
             <div className="col-12">
-                <Card title="Rejectat">
-                    <Button label="Adauga flux aprobare" />
+                <Card title="Actiuni dupa respingere">
+
+                    <div className="flex align-items-center col-12">
+                        <Checkbox inputId="notifications"
+                            onChange={e => setSendNotifications(e.checked)}
+                            checked={sendNotifications} />
+                        <label htmlFor="ingredient1" className="ml-2">Trimite notificari catre aprobatori</label>
+                    </div>
+
+                    <div className="flex align-items-center col-12 pb-6">
+                        <Checkbox inputId="reminders"
+                            onChange={e => setReminderNotifications(e.checked)}
+                            checked={reminderNotifications} />
+                        <label htmlFor="ingredient1" className="ml-2">Trimite notificari catre responsabil contract</label>
+                    </div>
+
+                    <Button type="button" onClick={addMessages} label="Info" className="mr-2" />
+                    <Messages ref={msgs} />
+
+                    {/* bifa - se trimite mail catre toti asignati sau doar unul 
+                    se schimba statusul taskului in rejected
+                    doar cei care au dreptul pot sa modifice status task in ???
+                    motiv rejectare
+                    */}
                 </Card>
             </div>
 
 
             <div className="col-12">
-                <Card title="Actiune">
+                <Card title="Task">
                     <div className="grid">
 
                         <span className="p-float-label field col-12">
@@ -481,13 +552,13 @@ export default function Tasks() {
                         {/* <Divider /> */}
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={toBeResolved} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">De rezolvat</label>
                         </span>
 
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={priorities} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">Prioritate</label>
                         </span>
 
@@ -510,16 +581,23 @@ export default function Tasks() {
                             <label htmlFor="ingredient1" className="ml-2">Trimite reminder</label>
                         </div>
 
-                        <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
-                            <label htmlFor="dd-city">Reminder</label>
-                        </span>
+                        {reminderNotifications ?
+                            <span className="p-float-label field col-3">
+                                <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={reminders} optionLabel="name" className="w-full" />
+                                <label htmlFor="dd-city">Reminder</label>
+                            </span>
+                            : null}
 
+                        <Divider />
 
-
+                        <div className="field col-1 md:col-2 ">
+                            <Button label="Salveaza" />
+                        </div>
 
 
                     </div>
+
+
 
                 </Card>
             </div>
