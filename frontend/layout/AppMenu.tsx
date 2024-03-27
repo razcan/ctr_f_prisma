@@ -44,6 +44,11 @@ const AppMenu = () => {
                     to: '/uikit/lookups'
                 },
                 {
+                    label: 'Informatii Dinamice',
+                    icon: 'pi pi-fw pi-pencil',
+                    to: '/uikit/dynamicInfo'
+                },
+                {
                     label: 'Modele Contracte',
                     icon: 'pi pi-fw pi-times-circle',
                     to: '/uikit/contractTemplates'
