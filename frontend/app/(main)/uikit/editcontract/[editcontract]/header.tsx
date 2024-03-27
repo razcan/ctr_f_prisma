@@ -25,6 +25,7 @@ import {
 import { ProgressSpinner } from 'primereact/progressspinner';
 import PartnerBank from '../../lookups/partnerdetails/[partnerdetails]/bank';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import { InputNumber } from 'primereact/inputnumber';
 
 const queryClient = new QueryClient();
 
@@ -143,6 +144,8 @@ export default function EditContract() {
     const [party_id, setParty_id] = useState('');
     const [partnerbankId, setPartnerbankId] = useState('');
     const [partneraddressId, setPartneraddressId] = useState('');
+    const [dynamicFields, setDynamicFields] = useState([]);
+
 
     const [Checked, setChecked] = useState();
 
@@ -411,6 +414,19 @@ export default function EditContract() {
             })
     }
 
+    const fetchDynamicFields = () => {
+        fetch("http://localhost:3000/nomenclatures/dynamicfield")
+            .then(response => {
+                return response.json()
+            })
+            .then(dynfields => {
+                setDynamicFields(dynfields)
+            })
+    }
+
+
+
+
 
     useEffect(() => {
         fetchContractData(),
@@ -422,7 +438,8 @@ export default function EditContract() {
             fetchPartners(),
             fetchEntity(),
             fetchTypeData(),
-            fetchStatusData()
+            fetchStatusData(),
+            fetchDynamicFields()
 
     }, [])
 
@@ -641,6 +658,73 @@ export default function EditContract() {
                                         </div>
                                     </div>
                                 </div>
+                            </AccordionTab>
+                            <AccordionTab header="Informatii Dinamice">
+                                <div className="grid">
+                                    <div className="col-12">
+                                        <div className="p-fluid formgrid grid pt-2">
+
+                                            <div>
+                                                {dynamicFields.map(field => {
+                                                    switch (field.fieldname) {
+                                                        case 'dffString1':
+                                                            return (
+
+                                                                <div className="field col-12  md:col-12">
+                                                                    <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                                    <InputText
+                                                                        key={field.fieldname}
+                                                                        value={field.fieldorder}
+                                                                        onChange={(e) => {
+                                                                            // Handle input change and update value in the state or send it to backend
+                                                                        }}
+                                                                        type="text" />
+                                                                </div>
+
+
+                                                            );
+                                                        case 'dffDate1':
+                                                            return (
+                                                                <Calendar
+                                                                    key={field.fieldname}
+                                                                    value={field.fieldorder}
+                                                                    showIcon dateFormat="dd/mm/yy"
+                                                                    onChange={(e) => {
+                                                                        // Handle input change and update value in the state or send it to backend
+                                                                    }}
+                                                                />
+                                                            );
+                                                        case 'dffInt1':
+                                                            return (
+                                                                <InputNumber
+                                                                    key={field.fieldname}
+                                                                    value={field.fieldorder}
+                                                                    onChange={(e) => {
+                                                                        // Handle input change and update value in the state or send it to backend
+                                                                    }}
+                                                                />
+                                                            );
+                                                        default:
+                                                            return null;
+                                                    }
+                                                })}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* dffInt1    Int?
+                                dffInt2    Int?
+                                dffInt3    Int?
+                                dffInt4    Int?
+                                dffString1 String?
+                                dffString2 String?
+                                dffString3 String?
+                                dffString4 String?
+                                dffDate1   DateTime?
+                                dffDate2   DateTime? */}
+
                             </AccordionTab>
                         </Accordion>
                         <div className="field col-12  md:col-3">
