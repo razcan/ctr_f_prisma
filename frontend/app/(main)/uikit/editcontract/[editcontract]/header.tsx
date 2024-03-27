@@ -146,6 +146,48 @@ export default function EditContract() {
     const [partneraddressId, setPartneraddressId] = useState('');
     const [dynamicFields, setDynamicFields] = useState([]);
 
+    const [dffInt1, setdffInt1] = useState('');
+    const [dffInt2, setdffInt2] = useState('');
+    const [dffInt3, setdffInt3] = useState('');
+    const [dffInt4, setdffInt4] = useState('');
+
+
+    const getSourceOptions = (sourceName) => {
+        switch (sourceName) {
+            case 'dffInt1':
+                return dffInt1;
+            case 'dffInt2':
+                return dffInt2;
+            case 'dffInt3':
+                return dffInt3;
+            case 'dffInt4':
+                return dffInt4;
+            default:
+                return [];
+        }
+    };
+
+
+    // Store functions in an object
+    const functionMap: { [key: string]: (value: string) => void } = {
+        setdffInt1,
+        setdffInt2,
+        setdffInt3,
+        setdffInt4
+        // Add more functions as needed
+    };
+
+    // dffInt1    Int ?
+    //     dffInt2    Int ?
+    //         dffInt3    Int ?
+    //             dffInt4    Int ?
+    //                 dffString1 String ?
+    //                     dffString2 String ?
+    //                         dffString3 String ?
+    //                             dffString4 String ?
+    //                                 dffDate1   DateTime ?
+    //                                     dffDate2   DateTime
+
 
     const [Checked, setChecked] = useState();
 
@@ -664,51 +706,71 @@ export default function EditContract() {
                                     <div className="col-12">
                                         <div className="p-fluid formgrid grid pt-2">
 
-                                            <div>
-                                                {dynamicFields.map(field => {
-                                                    switch (field.fieldname) {
-                                                        case 'dffString1':
-                                                            return (
+                                            {dynamicFields.map(field => {
+                                                switch (field.fieldtype) {
+                                                    case 'String':
+                                                        return (
 
-                                                                <div className="field col-12  md:col-12">
-                                                                    <label htmlFor="party_bank">{field.fieldlabel}</label>
-                                                                    <InputText
-                                                                        key={field.fieldname}
-                                                                        value={field.fieldorder}
-                                                                        onChange={(e) => {
-                                                                            // Handle input change and update value in the state or send it to backend
-                                                                        }}
-                                                                        type="text" />
-                                                                </div>
+                                                            <div className="field col-12 md:col-3">
+                                                                <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                                <InputText
+                                                                    key={field.fieldname}
+                                                                    value={field.fieldorder}
+                                                                    onChange={(e) => {
+                                                                        // Handle input change and update value in the state or send it to backend
+                                                                    }}
+                                                                    type="text" />
+                                                            </div>
 
+                                                        );
+                                                    case 'Date':
+                                                        return (
 
-                                                            );
-                                                        case 'dffDate1':
-                                                            return (
+                                                            <div className="field col-12 md:col-3">
+                                                                <label className="font-bold block mb-2">
+                                                                    {field.fieldlabel}
+                                                                </label>
                                                                 <Calendar
                                                                     key={field.fieldname}
                                                                     value={field.fieldorder}
-                                                                    showIcon dateFormat="dd/mm/yy"
                                                                     onChange={(e) => {
                                                                         // Handle input change and update value in the state or send it to backend
                                                                     }}
-                                                                />
-                                                            );
-                                                        case 'dffInt1':
-                                                            return (
-                                                                <InputNumber
+                                                                    showIcon dateFormat="dd/mm/yy" />
+                                                            </div>
+
+
+                                                        );
+                                                    case 'Int':
+                                                        return (
+                                                            <div className="field col-12 md:col-3">
+                                                                <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                                <InputText
+                                                                    keyfilter="int"
                                                                     key={field.fieldname}
-                                                                    value={field.fieldorder}
+                                                                    value={getSourceOptions(field.fieldname)}
+
+
                                                                     onChange={(e) => {
-                                                                        // Handle input change and update value in the state or send it to backend
+                                                                        const functionName = "set" + field.fieldname;
+
+                                                                        // Check if the function exists in the function map
+                                                                        if (functionName in functionMap) {
+                                                                            // Call the function dynamically
+                                                                            functionMap[functionName](e.target.value);
+
+                                                                        } else {
+                                                                            console.error(`Function '${functionName}' does not exist.`);
+                                                                        }
                                                                     }}
-                                                                />
-                                                            );
-                                                        default:
-                                                            return null;
-                                                    }
-                                                })}
-                                            </div>
+
+                                                                    type="text" />
+                                                            </div>
+                                                        );
+                                                    default:
+                                                        return null;
+                                                }
+                                            })}
 
                                         </div>
                                     </div>

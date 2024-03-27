@@ -36,16 +36,16 @@ export default function Alerts() {
 
 
     const allFields = [
-        { name: 'dffInt1' },
-        { name: 'dffInt2' },
-        { name: 'dffInt3' },
-        { name: 'dffInt4' },
-        { name: 'dffString1' },
-        { name: 'dffString2' },
-        { name: 'dffString3' },
-        { name: 'dffString4' },
-        { name: 'dffDate1' },
-        { name: 'dffDate2' }
+        { name: 'dffInt1', type: 'Int' },
+        { name: 'dffInt2', type: 'Int' },
+        { name: 'dffInt3', type: 'Int' },
+        { name: 'dffInt4', type: 'Int' },
+        { name: 'dffString1', type: 'String' },
+        { name: 'dffString2', type: 'String' },
+        { name: 'dffString3', type: 'String' },
+        { name: 'dffString4', type: 'String' },
+        { name: 'dffDate1', type: 'Date' },
+        { name: 'dffDate2', type: 'Date' }
     ];
 
 
@@ -91,13 +91,15 @@ export default function Alerts() {
         interface Fields {
             fieldlabel: String,
             fieldorder: String,
-            fieldname: String
+            fieldname: String,
+            fieldtype: String
         }
 
         let ToAdd: Fields = {
             fieldlabel: name,
             fieldorder: order.name,
-            fieldname: selectedField.name
+            fieldname: selectedField.name,
+            fieldtype: selectedField.type
         }
 
         console.log(ToAdd);
@@ -137,13 +139,13 @@ export default function Alerts() {
                                             <InputText id="nume" type="text" value={name} onChange={(e) => setName(e.target.value)} />
                                         </div>
 
-                                        <div className="field col-12 md:col-12">
+                                        {/* <div className="field col-12 md:col-12">
                                             <label htmlFor="type">Tip date</label>
                                             <Dropdown id="type" filter showClear
                                                 value={type} onChange={(e) => setType(e.value)}
                                                 options={allTypes} optionLabel="name"
                                                 placeholder="Select One"></Dropdown>
-                                        </div>
+                                        </div> */}
 
                                         <div className="field col-12 md:col-12">
                                             <label htmlFor="type">Denumire Camp Tehnic</label>
