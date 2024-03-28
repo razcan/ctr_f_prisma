@@ -193,9 +193,9 @@ export default function EditContract() {
             case 'dffString4':
                 return dffString4;
             case 'dffDate1':
-                return setdffDate1;
+                return dffDate1;
             case 'dffDate2':
-                return setdffDate2;
+                return dffDate2;
 
             default:
                 return [];
@@ -221,6 +221,37 @@ export default function EditContract() {
 
     const [Checked, setChecked] = useState();
 
+
+
+    const fetchContractDynamicInfo = async () => {
+        await fetch(`http://localhost:3000/contracts/dynamicfields/${Id}`)
+            .then(response => {
+                return response.json()
+            })
+            .then(contractDynamicInfo => {
+                if (contractDynamicInfo.length > 0) {
+                    setdffInt1(contractDynamicInfo[0].dffInt1)
+                    setdffInt2(contractDynamicInfo[0].dffInt2)
+                    setdffInt3(contractDynamicInfo[0].dffInt3)
+                    setdffInt4(contractDynamicInfo[0].dffInt4)
+
+                    setdffString1(contractDynamicInfo[0].dffString1)
+                    setdffString2(contractDynamicInfo[0].dffString2)
+                    setdffString3(contractDynamicInfo[0].dffString3)
+                    setdffString4(contractDynamicInfo[0].dffString4)
+
+                    const formated_dffDate1 = new Date(contractDynamicInfo[0].dffDate1);
+                    const formated_dffDate2 = new Date(contractDynamicInfo[0].dffDate2);
+
+                    console.log(formated_dffDate2)
+
+                    setdffDate1(formated_dffDate1)
+                    setdffDate2(formated_dffDate2)
+                }
+            })
+    }
+
+    console.log("dffDate1", dffDate1, "dffDate2", dffDate2, "end", end)
 
     const fetchContractData = async () => {
         await fetch(`http://localhost:3000/contracts/details/${Id}`)
@@ -504,7 +535,8 @@ export default function EditContract() {
             fetchEntity(),
             fetchTypeData(),
             fetchStatusData(),
-            fetchDynamicFields()
+            fetchDynamicFields(),
+            fetchContractDynamicInfo()
 
     }, [])
 
@@ -553,7 +585,7 @@ export default function EditContract() {
             dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
             dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
         }
-        console.log(addDynamicInfo)
+
         const toSend = []
         toSend.push(addedContract)
         toSend.push(addDynamicInfo)

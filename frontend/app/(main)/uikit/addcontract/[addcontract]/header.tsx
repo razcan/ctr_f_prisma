@@ -67,6 +67,20 @@ interface Contract {
     partnerbankId: number
 }
 
+interface DynamicInfo {
+    contractId: number,
+    dffInt1?: number,
+    dffInt2?: number,
+    dffInt3?: number,
+    dffInt4?: number,
+    dffString1?: string,
+    dffString2?: string,
+    dffString3?: string,
+    dffString4?: string,
+    dffDate1?: Date,
+    dffDate2?: Date
+}
+
 
 export default function HeaderContract({ setContractId }: any) {
 
@@ -148,6 +162,63 @@ export default function HeaderContract({ setContractId }: any) {
     const Id = searchParams.get("Id");
     // console.log("Id: ", Id)
     const [paramId, setParamId] = useState(0);
+    const [dynamicFields, setDynamicFields] = useState([]);
+
+    const [dffInt1, setdffInt1] = useState('');
+    const [dffInt2, setdffInt2] = useState('');
+    const [dffInt3, setdffInt3] = useState('');
+    const [dffInt4, setdffInt4] = useState('');
+
+    const [dffString1, setdffString1] = useState('');
+    const [dffString2, setdffString2] = useState('');
+    const [dffString3, setdffString3] = useState('');
+    const [dffString4, setdffString4] = useState('');
+
+    const [dffDate1, setdffDate1] = useState('');
+    const [dffDate2, setdffDate2] = useState('');
+
+
+    const getSourceOptions = (sourceName) => {
+        switch (sourceName) {
+            case 'dffInt1':
+                return dffInt1;
+            case 'dffInt2':
+                return dffInt2;
+            case 'dffInt3':
+                return dffInt3;
+            case 'dffInt4':
+                return dffInt4;
+            case 'dffString1':
+                return dffString1;
+            case 'dffString2':
+                return dffString2;
+            case 'dffString3':
+                return dffString3;
+            case 'dffString4':
+                return dffString4;
+            case 'dffDate1':
+                return setdffDate1;
+            case 'dffDate2':
+                return setdffDate2;
+
+            default:
+                return [];
+        }
+    };
+
+    // Store functions in an object
+    const functionMap: { [key: string]: (value: string) => void } = {
+        setdffInt1,
+        setdffInt2,
+        setdffInt3,
+        setdffInt4,
+        setdffString1,
+        setdffString2,
+        setdffString3,
+        setdffString4,
+        setdffDate1,
+        setdffDate2
+    };
 
 
     const fetchTypeData = () => {
@@ -251,6 +322,16 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
 
+    const fetchDynamicFields = () => {
+        fetch("http://localhost:3000/nomenclatures/dynamicfield")
+            .then(response => {
+                return response.json()
+            })
+            .then(dynfields => {
+                setDynamicFields(dynfields)
+            })
+    }
+
     useEffect(() => {
         fetchCategoriesData(),
             fetchDepartmentsData(),
@@ -260,16 +341,12 @@ export default function HeaderContract({ setContractId }: any) {
             fetchPartners(),
             fetchEntity(),
             fetchTypeData(),
-            fetchStatusData()
+            fetchStatusData(),
+            fetchDynamicFields()
     }, [])
 
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
-
-
-        // if (party_address !== null && party_address !== undefined) {
-        //     setParty_Address())
-        // }
 
         let addedContract: Contract = {
             number: number,
@@ -300,12 +377,29 @@ export default function HeaderContract({ setContractId }: any) {
             isPurchasing: isPurchasing
         }
 
-        // console.log(addedContract);
+        let addDynamicInfo: DynamicInfo = {
+            contractId: 0,
+            dffInt1: parseInt(dffInt1),
+            dffInt2: parseInt(dffInt2),
+            dffInt3: parseInt(dffInt3),
+            dffInt4: parseInt(dffInt4),
+            dffString1: dffString1,
+            dffString2: dffString2,
+            dffString3: dffString3,
+            dffString4: dffString4,
+            dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
+            dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
+        }
+
+        const toSend = []
+        toSend.push(addedContract)
+        toSend.push(addDynamicInfo)
 
 
         try {
             const response = await axios.post('http://localhost:3000/contracts',
-                addedContract
+                // addedContract
+                toSend
             );
 
             setParamId(response.data.id)
@@ -508,6 +602,86 @@ export default function HeaderContract({ setContractId }: any) {
                                                 optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </AccordionTab>
+                        <AccordionTab header="Informatii Dinamice">
+                            <div className="grid">
+                                <div className="col-12">
+                                    <div className="p-fluid formgrid grid pt-2">
+
+                                        {dynamicFields.map(field => {
+                                            switch (field.fieldtype) {
+                                                case 'String':
+                                                    return (
+
+                                                        <div className="field col-12 md:col-3">
+                                                            <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                            <InputText
+                                                                key={field.fieldname}
+                                                                value={getSourceOptions(field.fieldname)}
+                                                                onChange={(e) => {
+                                                                    const functionName = "set" + field.fieldname;
+                                                                    if (functionName in functionMap) {
+                                                                        functionMap[functionName](e.target.value);
+                                                                    } else {
+                                                                        console.error(`Function '${functionName}' does not exist.`);
+                                                                    }
+                                                                }}
+                                                                type="text" />
+                                                        </div>
+
+                                                    );
+                                                case 'Date':
+                                                    return (
+
+                                                        <div className="field col-12 md:col-3">
+                                                            <label className="font-bold block mb-2">
+                                                                {field.fieldlabel}
+                                                            </label>
+                                                            <Calendar
+                                                                key={field.fieldname}
+                                                                value={getSourceOptions(field.fieldname)}
+                                                                onChange={(e) => {
+                                                                    const functionName = "set" + field.fieldname;
+                                                                    if (functionName in functionMap) {
+                                                                        functionMap[functionName](e.value);
+                                                                    } else {
+                                                                        console.error(`Function '${functionName}' does not exist.`);
+                                                                    }
+                                                                }}
+                                                                showIcon dateFormat="dd/mm/yy" />
+                                                        </div>
+
+                                                    );
+                                                case 'Int':
+                                                    return (
+                                                        <div className="field col-12 md:col-3">
+                                                            <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                            <InputText
+                                                                keyfilter="int"
+                                                                key={field.fieldname}
+                                                                value={getSourceOptions(field.fieldname)}
+
+                                                                onChange={(e) => {
+                                                                    const functionName = "set" + field.fieldname;
+                                                                    if (functionName in functionMap) {
+                                                                        functionMap[functionName](e.target.value);
+                                                                    } else {
+                                                                        console.error(`Function '${functionName}' does not exist.`);
+                                                                    }
+                                                                }}
+
+                                                                type="text" />
+                                                        </div>
+                                                    );
+                                                default:
+                                                    return null;
+                                            }
+                                        })}
+
                                     </div>
                                 </div>
                             </div>
