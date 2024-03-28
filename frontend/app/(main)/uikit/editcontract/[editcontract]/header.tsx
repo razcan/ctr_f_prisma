@@ -243,15 +243,11 @@ export default function EditContract() {
                     const formated_dffDate1 = new Date(contractDynamicInfo[0].dffDate1);
                     const formated_dffDate2 = new Date(contractDynamicInfo[0].dffDate2);
 
-                    console.log(formated_dffDate2)
-
                     setdffDate1(formated_dffDate1)
                     setdffDate2(formated_dffDate2)
                 }
             })
     }
-
-    console.log("dffDate1", dffDate1, "dffDate2", dffDate2, "end", end)
 
     const fetchContractData = async () => {
         await fetch(`http://localhost:3000/contracts/details/${Id}`)
@@ -571,6 +567,26 @@ export default function EditContract() {
             userId: userId
         }
         // console.log(addedContract);
+
+
+        const referenceDate = new Date('1970-01-02T02:00:00+02:00');
+
+
+        const formated_dffDate1 = new Date(dffDate1);
+        const formated_dffDate2 = new Date(dffDate2);
+
+
+        if (formated_dffDate1 < referenceDate) {
+            setdffDate1('')
+        }
+        else setdffDate1(formated_dffDate1)
+
+        if (formated_dffDate2 < referenceDate) {
+            setdffDate2('')
+        }
+        else setdffDate1(formated_dffDate2)
+
+
 
         let addDynamicInfo: DynamicInfo = {
             contractId: parseInt(Id),

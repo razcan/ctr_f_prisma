@@ -298,7 +298,7 @@ function Report() {
                 type: 'array'
             });
 
-            saveAsExcelFile(excelBuffer, 'scadentar');
+            saveAsExcelFile(excelBuffer, 'raport');
         });
     };
 
