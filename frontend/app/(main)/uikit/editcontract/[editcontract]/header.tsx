@@ -61,6 +61,20 @@ interface Contract {
     userId: number
 }
 
+interface DynamicInfo {
+    contractId: number,
+    dffInt1?: number,
+    dffInt2?: number,
+    dffInt3?: number,
+    dffInt4?: number,
+    dffString1?: string,
+    dffString2?: string,
+    dffString3?: string,
+    dffString4?: string,
+    dffDate1?: Date,
+    dffDate2?: Date
+}
+
 export default function EditContract() {
 
     const useMyContext = () => useContext(MyContext);
@@ -397,7 +411,6 @@ export default function EditContract() {
 
     }
 
-
     const fetchCategoriesData = () => {
         fetch("http://localhost:3000/contracts/category")
             .then(response => {
@@ -429,7 +442,6 @@ export default function EditContract() {
             })
     }
 
-
     const fetchItemsData = () => {
         fetch("http://localhost:3000/contracts/item")
             .then(response => {
@@ -439,7 +451,6 @@ export default function EditContract() {
                 setItems(item)
             })
     }
-
 
     const fetchCashFlow = () => {
         fetch("http://localhost:3000/contracts/cashflownom")
@@ -481,10 +492,6 @@ export default function EditContract() {
                 setDynamicFields(dynfields)
             })
     }
-
-
-
-
 
     useEffect(() => {
         fetchContractData(),
@@ -533,9 +540,28 @@ export default function EditContract() {
         }
         // console.log(addedContract);
 
+        let addDynamicInfo: DynamicInfo = {
+            contractId: parseInt(Id),
+            dffInt1: parseInt(dffInt1),
+            dffInt2: parseInt(dffInt2),
+            dffInt3: parseInt(dffInt3),
+            dffInt4: parseInt(dffInt4),
+            dffString1: dffString1,
+            dffString2: dffString2,
+            dffString3: dffString3,
+            dffString4: dffString4,
+            dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
+            dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
+        }
+        console.log(addDynamicInfo)
+        const toSend = []
+        toSend.push(addedContract)
+        toSend.push(addDynamicInfo)
+
         try {
             const response = await axios.patch(`http://localhost:3000/contracts/${Id}`,
-                addedContract
+                // addedContract
+                toSend
             );
 
             console.log('Contract edited:', response.data);
@@ -795,17 +821,6 @@ export default function EditContract() {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* dffInt1    Int?
-                                dffInt2    Int?
-                                dffInt3    Int?
-                                dffInt4    Int?
-                                dffString1 String?
-                                dffString2 String?
-                                dffString3 String?
-                                dffString4 String?
-                                dffDate1   DateTime?
-                                dffDate2   DateTime? */}
 
                             </AccordionTab>
                         </Accordion>

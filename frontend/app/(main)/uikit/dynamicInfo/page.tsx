@@ -145,6 +145,7 @@ export default function Alerts() {
                 ToAdd
             );
             console.log('Field edited:', response.data);
+            setVisible(false)
         } catch (error) {
             console.error('Error editing field:', error);
         }
