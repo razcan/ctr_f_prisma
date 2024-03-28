@@ -151,6 +151,14 @@ export default function EditContract() {
     const [dffInt3, setdffInt3] = useState('');
     const [dffInt4, setdffInt4] = useState('');
 
+    const [dffString1, setdffString1] = useState('');
+    const [dffString2, setdffString2] = useState('');
+    const [dffString3, setdffString3] = useState('');
+    const [dffString4, setdffString4] = useState('');
+
+    const [dffDate1, setdffDate1] = useState('');
+    const [dffDate2, setdffDate2] = useState('');
+
 
     const getSourceOptions = (sourceName) => {
         switch (sourceName) {
@@ -162,6 +170,19 @@ export default function EditContract() {
                 return dffInt3;
             case 'dffInt4':
                 return dffInt4;
+            case 'dffString1':
+                return dffString1;
+            case 'dffString2':
+                return dffString2;
+            case 'dffString3':
+                return dffString3;
+            case 'dffString4':
+                return dffString4;
+            case 'dffDate1':
+                return setdffDate1;
+            case 'dffDate2':
+                return setdffDate2;
+
             default:
                 return [];
         }
@@ -173,20 +194,15 @@ export default function EditContract() {
         setdffInt1,
         setdffInt2,
         setdffInt3,
-        setdffInt4
-        // Add more functions as needed
+        setdffInt4,
+        setdffString1,
+        setdffString2,
+        setdffString3,
+        setdffString4,
+        setdffDate1,
+        setdffDate2
     };
 
-    // dffInt1    Int ?
-    //     dffInt2    Int ?
-    //         dffInt3    Int ?
-    //             dffInt4    Int ?
-    //                 dffString1 String ?
-    //                     dffString2 String ?
-    //                         dffString3 String ?
-    //                             dffString4 String ?
-    //                                 dffDate1   DateTime ?
-    //                                     dffDate2   DateTime
 
 
     const [Checked, setChecked] = useState();
@@ -715,9 +731,14 @@ export default function EditContract() {
                                                                 <label htmlFor="party_bank">{field.fieldlabel}</label>
                                                                 <InputText
                                                                     key={field.fieldname}
-                                                                    value={field.fieldorder}
+                                                                    value={getSourceOptions(field.fieldname)}
                                                                     onChange={(e) => {
-                                                                        // Handle input change and update value in the state or send it to backend
+                                                                        const functionName = "set" + field.fieldname;
+                                                                        if (functionName in functionMap) {
+                                                                            functionMap[functionName](e.target.value);
+                                                                        } else {
+                                                                            console.error(`Function '${functionName}' does not exist.`);
+                                                                        }
                                                                     }}
                                                                     type="text" />
                                                             </div>
@@ -732,13 +753,17 @@ export default function EditContract() {
                                                                 </label>
                                                                 <Calendar
                                                                     key={field.fieldname}
-                                                                    value={field.fieldorder}
+                                                                    value={getSourceOptions(field.fieldname)}
                                                                     onChange={(e) => {
-                                                                        // Handle input change and update value in the state or send it to backend
+                                                                        const functionName = "set" + field.fieldname;
+                                                                        if (functionName in functionMap) {
+                                                                            functionMap[functionName](e.value);
+                                                                        } else {
+                                                                            console.error(`Function '${functionName}' does not exist.`);
+                                                                        }
                                                                     }}
                                                                     showIcon dateFormat="dd/mm/yy" />
                                                             </div>
-
 
                                                         );
                                                     case 'Int':
@@ -750,15 +775,10 @@ export default function EditContract() {
                                                                     key={field.fieldname}
                                                                     value={getSourceOptions(field.fieldname)}
 
-
                                                                     onChange={(e) => {
                                                                         const functionName = "set" + field.fieldname;
-
-                                                                        // Check if the function exists in the function map
                                                                         if (functionName in functionMap) {
-                                                                            // Call the function dynamically
                                                                             functionMap[functionName](e.target.value);
-
                                                                         } else {
                                                                             console.error(`Function '${functionName}' does not exist.`);
                                                                         }
