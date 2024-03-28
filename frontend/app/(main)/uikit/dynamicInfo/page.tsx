@@ -27,13 +27,15 @@ import { Slider } from 'primereact/slider';
 export default function Alerts() {
 
     const [fields, setFields] = useState([]);
+
+    const [AvailableOrderList, setAvailableOrderList] = useState([]);
+    const [AvailableFieldList, setAvailableFieldList] = useState([]);
     const [selectedField, setSelectedField] = useState('');
     const [visible, setVisible] = useState(false);
     const [name, setName] = useState('');
     const [order, setOrder] = useState('');
-    const [type, setType] = useState('');
-    const [isActive, setIsActive] = useState(true);
-
+    const existingorder: any[] = [];
+    const existingfields: any[] = [];
 
     const allFields = [
         { name: 'dffInt1', type: 'Int' },
@@ -49,11 +51,11 @@ export default function Alerts() {
     ];
 
 
-    const allTypes = [
-        { name: 'Numar' },
-        { name: 'Text' },
-        { name: 'Data' }
-    ];
+    // const allTypes = [
+    //     { name: 'Numar' },
+    //     { name: 'Text' },
+    //     { name: 'Data' }
+    // ];
 
     const orderList = [
         { name: 1 },
@@ -69,8 +71,40 @@ export default function Alerts() {
     ];
 
 
+    const addDynamicField = async () => {
 
-    const addContracttemplate = async () => {
+        fields.map(field => {
+            existingorder.push(field.fieldorder)
+        })
+
+        const availableOrderList: ((prevState: never[]) => never[]) | number[] = []
+        orderList.map(av => {
+            const x = existingorder.includes(av.name)
+            if (!x) {
+                const add = { name: av.name }
+                availableOrderList.push(add);
+            }
+            setAvailableOrderList(availableOrderList)
+        }
+        )
+
+        fields.map(field => {
+            existingfields.push(field.fieldname)
+        })
+
+
+        const availableFieldsList: ((prevState: never[]) => never[]) | number[] = []
+
+        allFields.map(av => {
+            const x = existingfields.includes(av.name)
+            if (!x) {
+                const add = { name: av.name, type: av.type }
+                availableFieldsList.push(add);
+            }
+            setAvailableFieldList(availableFieldsList)
+
+        }
+        )
         setVisible(true)
     }
 
@@ -83,6 +117,8 @@ export default function Alerts() {
 
     useEffect(() => {
         fetchDynamicFields()
+
+
     }, [])
 
     const saveInfo = async () => {
@@ -102,7 +138,7 @@ export default function Alerts() {
             fieldtype: selectedField.type
         }
 
-        console.log(ToAdd);
+
 
         try {
             const response = await axios.post(`http://localhost:3000/nomenclatures/dynamicfield`,
@@ -120,7 +156,7 @@ export default function Alerts() {
             <div className="col-12">
                 <div className='card'>
 
-                    <Button label="Adauga" onClick={addContracttemplate} />
+                    <Button label="Adauga" onClick={addDynamicField} />
 
                     <DataTable value={fields} tableStyle={{ minWidth: '50rem' }}>
                         <Column field="fieldname" header="Denumire Tehnica Camp"></Column>
@@ -151,7 +187,7 @@ export default function Alerts() {
                                             <label htmlFor="type">Denumire Camp Tehnic</label>
                                             <Dropdown id="type" filter showClear
                                                 value={selectedField} onChange={(e) => setSelectedField(e.value)}
-                                                options={allFields} optionLabel="name"
+                                                options={AvailableFieldList} optionLabel="name"
                                                 placeholder="Select One"></Dropdown>
                                         </div>
 
@@ -159,7 +195,7 @@ export default function Alerts() {
                                             <label htmlFor="type">Ordine</label>
                                             <Dropdown id="type" filter showClear
                                                 value={order} onChange={(e) => setOrder(e.value)}
-                                                options={orderList} optionLabel="name"
+                                                options={AvailableOrderList} optionLabel="name"
                                                 placeholder="Select One"></Dropdown>
                                         </div>
 
