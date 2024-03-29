@@ -570,11 +570,8 @@ export default function EditContract() {
 
 
         const referenceDate = new Date('1970-01-02T02:00:00+02:00');
-
-
         const formated_dffDate1 = new Date(dffDate1);
         const formated_dffDate2 = new Date(dffDate2);
-
 
         if (formated_dffDate1 < referenceDate) {
             setdffDate1('')
