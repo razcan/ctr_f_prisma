@@ -336,30 +336,36 @@ export default function Tasks() {
 
     return (
         <div className="grid">
-
             <div className="col-12">
                 <Card title="Date generale">
 
                     <div className="grid">
-                        <span className="p-float-label field col-3">
-                            <InputText id="taskName" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
-                            <label htmlFor="taskName">Denumire</label>
-                        </span>
 
-                        <span className="p-float-label field col-5">
-                            <InputText id="taskName" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                        {/* <div className="flex flex-wrap column-gap-1 row-gap-2"> */}
+                        <div className="field col-4">
+                            <span className="p-float-label">
+                                <InputText id="taskName" value={selectedtaskName}
+                                    onChange={(e) => setselectedTaskName(e.target.value)}
+                                    className="w-full" />
+                                <label htmlFor="taskName">Denumire</label>
+                            </span>
+                        </div>
+
+                        <span className="p-float-label field col-4">
+                            <InputText id="taskName" value={selectedtaskName}
+                                onChange={(e) => setselectedTaskName(e.target.value)}
+                                className="w-full" />
                             <label htmlFor="taskName">Descriere</label>
                         </span>
 
-                        <div className="flex align-items-center col-4">
+                        <div className="flex align-items-center col-2">
                             <Checkbox inputId="notifications"
                                 onChange={e => setSendNotifications(e.checked)}
                                 checked={sendNotifications} />
                             <label htmlFor="ingredient1" className="ml-2">Activ</label>
                         </div>
+                        {/* </div> */}
                     </div>
-
-
                     {/* update pe campul stare contract , email , etc */}
 
                 </Card>
@@ -436,8 +442,10 @@ export default function Tasks() {
                         <MultiSelect value={selUsers} onChange={(e) => {
                             setSelUsers(e.value)
                             setSource(e.value)
+
                             // console.log(e.value)
                         }}
+                            className="w-full"
                             options={users} optionLabel="name"
                             display="chip"
                             placeholder="Utilizator" maxSelectedLabels={5} />
@@ -459,7 +467,7 @@ export default function Tasks() {
                     <Divider />
 
                     {approveInParalel ?
-                        <div>
+                        <div className="field col-3">
                             <label htmlFor="anyone">Tip aprobare:</label>
                             <Dropdown value={selectedProcessType}
                                 onChange={(e) => {
@@ -468,7 +476,10 @@ export default function Tasks() {
                                 }
                                 }
                                 options={process_type} optionLabel="name"
-                                placeholder="Tip aprobare" className="w-full md:w-14rem" />
+                                placeholder="Tip aprobare"
+                                className="w-full"
+                            // className="w-full md:w-14rem" 
+                            />
                         </div>
                         : null}
                     <Divider />
@@ -531,8 +542,10 @@ export default function Tasks() {
                 <Card title="Task">
                     <div className="grid">
 
-                        <span className="p-float-label field col-12">
-                            <InputText id="taskName" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                        <span className="p-float-label field col-3">
+                            <InputText id="taskName" value={selectedtaskName}
+                                onChange={(e) => setselectedTaskName(e.target.value)}
+                                className="w-full" />
                             <label htmlFor="taskName">Titlu</label>
                         </span>
 
