@@ -72,10 +72,10 @@ export default function Tasks() {
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
     const [selectedtaskName, setselectedTaskName] = useState('');
-    const [selectedDueDate, setSelectedDueDate] = useState('');
-    const [selectedPriority, setSelectedPriority] = useState('');
-    const [selectedReminder, setSelectedReminder] = useState('');
-    const [text, setText] = useState([]);
+    const [selectedDueDate, setSelectedDueDate] = useState(new Date());
+    const [selectedPriority, setSelectedPriority] = useState(1);
+    const [selectedReminder, setSelectedReminder] = useState(1);
+    const [text, setText] = useState('');
 
 
     const handleProcedureContentChange = (content: any) => {
@@ -104,8 +104,8 @@ export default function Tasks() {
     ];
 
     const approve_type = [
-        { name: 'Paralel' },
-        { name: 'Secvential' }
+        { name: 'Paralel', value: false },
+        { name: 'Secvential', value: true }
     ];
 
     const priorities = [
@@ -368,8 +368,34 @@ export default function Tasks() {
         })
         const wff: any[] = [];
 
+        interface wfts {
+            workflowId: number,
+            approvedByAll: Boolean,
+            approvalTypeInParallel: Boolean,
+            taskName: string,
+            taskDueDateId: number,
+            taskNotes: string,
+            taskSendNotifications: Boolean,
+            taskSendReminders: Boolean,
+            taskReminderId: number,
+            taskPriorityId: number
+        }
+        const wftsf: wfts = {
+            workflowId: 0,
+            approvedByAll: approveAll,
+            approvalTypeInParallel: approveInParalel,
+            taskName: selectedtaskName,
+            taskDueDateId: 0, //selectedDueDate.name,
+            taskNotes: text,
+            taskSendNotifications: sendNotifications,
+            taskSendReminders: reminderNotifications,
+            taskReminderId: selectedReminder.name,
+            taskPriorityId: selectedPriority.name
+        }
+
         wff.push(wfg)
         wff.push(rules)
+        console.log(wftsf)
 
         const response = await axios.post(`http://localhost:3000/contracts/workflow`,
             wff
@@ -505,7 +531,7 @@ export default function Tasks() {
                         </div>
                         <Divider />
 
-                        {approveInParalel ?
+                        {approveAll ?
                             <div className="field col-4">
                                 <label htmlFor="anyone">Tip aprobare:</label>
                                 <Dropdown value={approveInParalel}
@@ -523,7 +549,7 @@ export default function Tasks() {
                             : null}
                         <Divider />
 
-                        {approveInParalel.name == 'Secvential' ?
+                        {approveInParalel == true ?
                             <div className="field col-6">
                                 <div>Ordinea in care trebuie aprobat</div>
                                 <br></br>
