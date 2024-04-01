@@ -51,19 +51,32 @@ export default function Tasks() {
     const [selectedDepartment, setSelectedDepartment] = useState([]);
     const [selectedCashflow, setSelectedCashflow] = useState([]);
     const [selectedCostCenter, setSelectedCostCenter] = useState([]);
-    const [approveInParalel, setApproveInParalel] = useState(true);
+
     const [selUsers, setSelUsers] = useState([]);
     const [selectedProcessType, setSelectedProcessType] = useState('');
-    const [selectedtaskName, setselectedTaskName] = useState('');
     const [selectednotes, setselectedNotes] = useState('');
     const [selectedstatus, setselectedStatus] = useState([]);
     const [selectedstatusDate, setselectedStatusDate] = useState(new Date());
     const [allStatus, setAllStatus] = useState([])
     const [selecteddue, setselectedDue] = useState(new Date());
     const [text, setText] = useState([]);
+
+    const msgs = useRef(null);
+
+
+    const [wfname, setwfname] = useState('');
+    const [wfdescription, setwfdescription] = useState('');
+    const [isActive, setIsActive] = useState(true);
+    const [approveInParalel, setApproveInParalel] = useState(true);
+    const [approveAll, setApproveAll] = useState(true);
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
-    const msgs = useRef(null);
+    const [selectedtaskName, setselectedTaskName] = useState('');
+    const [selectedDueDate, setSelectedDueDate] = useState('');
+    const [selectedPriority, setSelectedPriority] = useState('');
+    const [selectedReminder, setSelectedReminder] = useState('');
+
+
 
 
     const handleProcedureContentChange = (content: any) => {
@@ -91,8 +104,7 @@ export default function Tasks() {
         { name: '2 zile inainte de data limita' }
     ];
 
-
-    const process_type = [
+    const approve_type = [
         { name: 'Paralel' },
         { name: 'Secvential' }
     ];
@@ -197,8 +209,6 @@ export default function Tasks() {
         'link', 'image', 'video', 'formula',
     ];
 
-
-
     const getSourceName = (name) => {
         if (name == 'Departament') {
             return { name: 'departments' }
@@ -296,8 +306,6 @@ export default function Tasks() {
     };
 
 
-
-
     const fetchUsers = async () => {
         try {
             const data = await fetchWithToken('nomenclatures/susers', { method: 'GET' });
@@ -312,21 +320,10 @@ export default function Tasks() {
         }
     };
 
-
-    //trebuie adusi utilizatorii in loc de persoane, in functie de entitatea cu care suntem logati
-
     useEffect(() => {
         fetchUsers()
     }, [])
 
-
-
-    const formatDate = (dateString: Date) => {
-        // Implement your date formatting logic here
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('ro-Ro', options);
-    };
 
     const addMessages = () => {
         msgs.current.show([
@@ -334,34 +331,40 @@ export default function Tasks() {
         ]);
     };
 
+    const saveWF = () => {
+        console.log("wfname", wfname, wfdescription, isActive, conditions, selUsers,
+            approveInParalel, approveAll, target, sendNotifications, reminderNotifications,
+            selectedtaskName, selectedDueDate, selectedPriority, selectedReminder)
+    }
+
     return (
         <div className="grid">
             <div className="col-12">
-                <Card title="Date generale">
+                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Date generale">
 
                     <div className="grid">
 
                         {/* <div className="flex flex-wrap column-gap-1 row-gap-2"> */}
                         <div className="field col-4">
                             <span className="p-float-label">
-                                <InputText id="taskName" value={selectedtaskName}
-                                    onChange={(e) => setselectedTaskName(e.target.value)}
+                                <InputText id="taskName" value={wfname}
+                                    onChange={(e) => setwfname(e.target.value)}
                                     className="w-full" />
                                 <label htmlFor="taskName">Denumire</label>
                             </span>
                         </div>
 
                         <span className="p-float-label field col-4">
-                            <InputText id="taskName" value={selectedtaskName}
-                                onChange={(e) => setselectedTaskName(e.target.value)}
+                            <InputText id="taskName" value={wfdescription}
+                                onChange={(e) => setwfdescription(e.target.value)}
                                 className="w-full" />
                             <label htmlFor="taskName">Descriere</label>
                         </span>
 
                         <div className="flex align-items-center col-2">
                             <Checkbox inputId="notifications"
-                                onChange={e => setSendNotifications(e.checked)}
-                                checked={sendNotifications} />
+                                onChange={e => setIsActive(e.checked)}
+                                checked={isActive} />
                             <label htmlFor="ingredient1" className="ml-2">Activ</label>
                         </div>
                         {/* </div> */}
@@ -371,9 +374,8 @@ export default function Tasks() {
                 </Card>
             </div>
 
-
             <div className="col-12">
-                <Card title="Reguli alocare">
+                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Reguli alocare">
                     {conditions.length === 0 ?
                         <Button label="Adauga" icon="pi pi-plus" onClick={addConditions} />
                         : null
@@ -431,72 +433,69 @@ export default function Tasks() {
             </div>
 
             <div className="col-12">
+                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Asignat">
+                    <div className="grid">
 
+                        <div className="field col-12 md:col-4">
+                            <label htmlFor="">Asignat catre</label>
+                            <MultiSelect value={selUsers} onChange={(e) => {
+                                setSelUsers(e.value)
+                                setSource(e.value)
 
-
-                <Card title="Asignat">
-
-
-                    <div className="field col-12 md:col-3">
-                        <label htmlFor="">Asignat catre</label>
-                        <MultiSelect value={selUsers} onChange={(e) => {
-                            setSelUsers(e.value)
-                            setSource(e.value)
-
-                            // console.log(e.value)
-                        }}
-                            className="w-full"
-                            options={users} optionLabel="name"
-                            display="chip"
-                            placeholder="Utilizator" maxSelectedLabels={5} />
-                    </div>
-                    <Divider />
-                    <div className="flex flex-wrap gap-3">
-
-                        <div>Trebuie aprobat de:</div>
-                        <div className="flex align-items-center">
-                            <RadioButton inputId="anyone" name="anyone" value={false} onChange={(e) => setApproveInParalel(e.value)} checked={approveInParalel === false} />
-                            <label htmlFor="anyone" className="ml-2">Oricine</label>
-                        </div>
-
-                        <div className="flex align-items-center">
-                            <RadioButton inputId="everyone" name="everyone" value={true} onChange={(e) => setApproveInParalel(e.value)} checked={approveInParalel === true} />
-                            <label htmlFor="everyone" className="ml-2">Toti</label>
-                        </div>
-                    </div>
-                    <Divider />
-
-                    {approveInParalel ?
-                        <div className="field col-3">
-                            <label htmlFor="anyone">Tip aprobare:</label>
-                            <Dropdown value={selectedProcessType}
-                                onChange={(e) => {
-                                    setSelectedProcessType(e.value)
-                                    // console.log(selectedProcessType)
-                                }
-                                }
-                                options={process_type} optionLabel="name"
-                                placeholder="Tip aprobare"
+                                // console.log(e.value)
+                            }}
                                 className="w-full"
-                            // className="w-full md:w-14rem" 
-                            />
+                                options={users} optionLabel="name"
+                                display="chip"
+                                placeholder="Utilizator" maxSelectedLabels={5} />
                         </div>
-                        : null}
-                    <Divider />
+                        <Divider />
+                        <div className="flex flex-wrap gap-3">
 
-                    {selectedProcessType.name == 'Secvential' ?
-                        <div className="field col-6">
-                            <div>Ordinea in care trebuie aprobat</div>
-                            <br></br>
-                            <PickList dataKey="id" source={source} target={target}
-                                onChange={onChange} itemTemplate={itemTemplate}
-                                // breakpoint="1280px"
-                                sourceHeader="Disponibil" targetHeader="Ordinea"
-                                sourceStyle={{ height: '10%' }}
-                                targetStyle={{ height: '10%' }} />
+                            <div>Trebuie aprobat de:</div>
+                            <div className="flex align-items-center">
+                                <RadioButton inputId="anyone" name="anyone" value={false} onChange={(e) => setApproveAll(e.value)} checked={approveAll === false} />
+                                <label htmlFor="anyone" className="ml-2">Oricine</label>
+                            </div>
+
+                            <div className="flex align-items-center">
+                                <RadioButton inputId="everyone" name="everyone" value={true} onChange={(e) => setApproveAll(e.value)} checked={approveAll === true} />
+                                <label htmlFor="everyone" className="ml-2">Toti</label>
+                            </div>
                         </div>
-                        : null}
+                        <Divider />
 
+                        {approveInParalel ?
+                            <div className="field col-4">
+                                <label htmlFor="anyone">Tip aprobare:</label>
+                                <Dropdown value={approveInParalel}
+                                    onChange={(e) => {
+                                        setApproveInParalel(e.value)
+                                        // console.log(selectedProcessType)
+                                    }
+                                    }
+                                    options={approve_type} optionLabel="name"
+                                    placeholder="Tip aprobare"
+                                    className="w-full"
+                                // className="w-full md:w-14rem" 
+                                />
+                            </div>
+                            : null}
+                        <Divider />
+
+                        {approveInParalel.name == 'Secvential' ?
+                            <div className="field col-6">
+                                <div>Ordinea in care trebuie aprobat</div>
+                                <br></br>
+                                <PickList dataKey="id" source={source} target={target}
+                                    onChange={onChange} itemTemplate={itemTemplate}
+                                    // breakpoint="1280px"
+                                    sourceHeader="Disponibil" targetHeader="Ordinea"
+                                    sourceStyle={{ height: '10%' }}
+                                    targetStyle={{ height: '10%' }} />
+                            </div>
+                            : null}
+                    </div>
                 </Card>
             </div>
 
@@ -510,7 +509,7 @@ export default function Tasks() {
 
 
             <div className="col-12">
-                <Card title="Actiuni dupa respingere">
+                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Actiuni dupa respingere">
 
                     <div className="flex align-items-center col-12">
                         <Checkbox inputId="notifications"
@@ -539,7 +538,7 @@ export default function Tasks() {
 
 
             <div className="col-12">
-                <Card title="Task">
+                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Task">
                     <div className="grid">
 
                         <span className="p-float-label field col-3">
@@ -548,6 +547,22 @@ export default function Tasks() {
                                 className="w-full" />
                             <label htmlFor="taskName">Titlu</label>
                         </span>
+
+                        <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedDueDate} onChange={(e) => setSelectedDueDate(e.value)} options={toBeResolved} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">De rezolvat</label>
+                        </span>
+
+
+                        <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedPriority} onChange={(e) => setSelectedPriority(e.value)} options={priorities} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">Prioritate</label>
+                        </span>
+
+                        {/* <span className="p-float-label field col-3">
+                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
+                            <label htmlFor="dd-city">Status</label>
+                        </span> */}
 
                         <div className="field col-12 pb-6">
                             <label className="ml-2">Descriere Task</label>
@@ -564,21 +579,7 @@ export default function Tasks() {
                         {/* <br></br> */}
                         {/* <Divider /> */}
 
-                        <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={toBeResolved} optionLabel="name" className="w-full" />
-                            <label htmlFor="dd-city">De rezolvat</label>
-                        </span>
 
-
-                        <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={priorities} optionLabel="name" className="w-full" />
-                            <label htmlFor="dd-city">Prioritate</label>
-                        </span>
-
-                        <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
-                            <label htmlFor="dd-city">Status</label>
-                        </span>
 
                         <div className="flex align-items-center col-12">
                             <Checkbox inputId="notifications"
@@ -596,7 +597,7 @@ export default function Tasks() {
 
                         {reminderNotifications ?
                             <span className="p-float-label field col-3">
-                                <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={reminders} optionLabel="name" className="w-full" />
+                                <Dropdown inputId="dd-city" value={selectedReminder} onChange={(e) => setSelectedReminder(e.value)} options={reminders} optionLabel="name" className="w-full" />
                                 <label htmlFor="dd-city">Reminder</label>
                             </span>
                             : null}
@@ -604,13 +605,10 @@ export default function Tasks() {
                         <Divider />
 
                         <div className="field col-1 md:col-2 ">
-                            <Button label="Salveaza" />
+                            <Button label="Salveaza" onClick={saveWF} />
                         </div>
 
-
                     </div>
-
-
 
                 </Card>
             </div>

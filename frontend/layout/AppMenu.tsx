@@ -74,11 +74,12 @@ const AppMenu = () => {
                     to: '/uikit/users',
                 },
 
-                // {
-                //     label: 'Utilizatori',
-                //     icon: 'pi pi-fw pi-sign-in',
-                //     to: '/auth/login'
-                // },
+                {
+                    label: 'Landing page',
+                    icon: 'pi pi-fw pi-sign-in',
+                    to: '/uikit/landing'
+                    // frontend/ app / (full - page) / landing
+                },
             ]
         }
         // {
