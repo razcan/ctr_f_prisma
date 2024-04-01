@@ -59,7 +59,7 @@ export default function Tasks() {
     const [selectedstatusDate, setselectedStatusDate] = useState(new Date());
     const [allStatus, setAllStatus] = useState([])
     const [selecteddue, setselectedDue] = useState(new Date());
-    const [text, setText] = useState([]);
+
 
     const msgs = useRef(null);
 
@@ -75,8 +75,7 @@ export default function Tasks() {
     const [selectedDueDate, setSelectedDueDate] = useState('');
     const [selectedPriority, setSelectedPriority] = useState('');
     const [selectedReminder, setSelectedReminder] = useState('');
-
-
+    const [text, setText] = useState([]);
 
 
     const handleProcedureContentChange = (content: any) => {
@@ -331,10 +330,51 @@ export default function Tasks() {
         ]);
     };
 
-    const saveWF = () => {
-        console.log("wfname", wfname, wfdescription, isActive, conditions, selUsers,
-            approveInParalel, approveAll, target, sendNotifications, reminderNotifications,
-            selectedtaskName, selectedDueDate, selectedPriority, selectedReminder)
+    const saveWF = async () => {
+        // console.log(wfname, wfdescription, isActive, conditions, selUsers,
+        //     approveInParalel, approveAll, target, sendNotifications, reminderNotifications,
+        //     selectedtaskName, selectedDueDate, selectedPriority, selectedReminder, text)
+
+        console.log(conditions)
+
+        interface wf {
+            "wfName": String,
+            "wfDescription": String,
+            "status": Boolean
+        }
+
+        const wfg: wf = {
+            wfName: wfname,
+            wfDescription: wfdescription,
+            status: isActive
+        }
+
+        interface wfr {
+            "workflowId": number,
+            "ruleFilterName": string,
+            "ruleFilterSource": string,
+            "ruleFilterValue": number
+        }
+
+        const rules: wfr[] = []
+        conditions.map(condition => {
+            const add = {
+                workflowId: 0,
+                ruleFilterName: condition.filter.name,
+                ruleFilterSource: condition.source.name,
+                ruleFilterValue: parseInt(condition.filterValue.id)
+            }
+            rules.push(add)
+        })
+        const wff: any[] = [];
+
+        wff.push(wfg)
+        wff.push(rules)
+
+        const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+            wff
+        );
+        console.log(response)
     }
 
     return (
