@@ -386,7 +386,8 @@ export default function Tasks() {
             "workflowId": number,
             "ruleFilterName": string,
             "ruleFilterSource": string,
-            "ruleFilterValue": number
+            "ruleFilterValue": number,
+            "ruleFilterValueName": string
         }
 
         const rules: wfr[] = []
@@ -395,7 +396,8 @@ export default function Tasks() {
                 workflowId: 0,
                 ruleFilterName: condition.filter.name,
                 ruleFilterSource: condition.source.name,
-                ruleFilterValue: parseInt(condition.filterValue.id)
+                ruleFilterValue: parseInt(condition.filterValue.id),
+                ruleFilterValueName: condition.filterValue.name
             }
             rules.push(add)
         })

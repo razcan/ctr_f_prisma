@@ -138,7 +138,6 @@ export default function Tasks() {
             })
     }
 
-    console.log("target", target);
 
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
@@ -157,7 +156,7 @@ export default function Tasks() {
             })
             .then(priority => {
                 setPriority(priority)
-                console.log(priority)
+                // console.log(priority)
             })
     }
 
@@ -180,7 +179,7 @@ export default function Tasks() {
             })
             .then(duedates => {
                 setDuedates(duedates)
-                console.log(duedates)
+                // console.log(duedates)
             })
     }
 
@@ -322,7 +321,7 @@ export default function Tasks() {
                 source: { name: '' }
             }]
         )
-
+        console.log(conditions)
         setArrLength(conditions.length)
     }
 
@@ -402,7 +401,7 @@ export default function Tasks() {
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
 
-        console.log(fields);
+        // console.log(fields);
 
         if (!fields[0].wfname) {
             errors.push("Trebuie sa setati un nume de flux");
@@ -451,7 +450,8 @@ export default function Tasks() {
             "workflowId": number,
             "ruleFilterName": string,
             "ruleFilterSource": string,
-            "ruleFilterValue": number
+            "ruleFilterValue": number,
+            "ruleFilterValueName": string
         }
 
         const rules: wfr[] = []
@@ -460,7 +460,8 @@ export default function Tasks() {
                 workflowId: 0,
                 ruleFilterName: condition.filter.name,
                 ruleFilterSource: condition.source.name,
-                ruleFilterValue: parseInt(condition.filterValue.id)
+                ruleFilterValue: parseInt(condition.filterValue.id),
+                ruleFilterValueName: parseInt(condition.filterValue.name)
             }
             rules.push(add)
         })
@@ -626,8 +627,6 @@ export default function Tasks() {
                                 value={selUsers} onChange={(e) => {
                                     setSelUsers(e.value)
                                     setSource(e.value)
-
-                                    console.log(e.value)
                                 }}
                                 className="w-full"
                                 options={users} optionLabel="name"
@@ -745,8 +744,7 @@ export default function Tasks() {
                             <Dropdown inputId="dd-city" value={selectedDueDate}
                                 onChange={(e) => {
                                     setSelectedDueDate(e.value)
-                                    console.log(e)
-                                    console.log(duedates)
+
                                 }
                                 }
                                 options={duedates} optionLabel="name" className="w-full" />
@@ -758,7 +756,7 @@ export default function Tasks() {
                             <Dropdown inputId="dd-city" value={selectedPriority}
                                 onChange={(e) => {
                                     setSelectedPriority(e.value)
-                                    console.log(e.value)
+
                                 }}
                                 options={priority} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">Prioritate</label>
