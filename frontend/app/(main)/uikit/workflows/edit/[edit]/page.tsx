@@ -97,16 +97,24 @@ export default function Tasks() {
     }
 
 
+
     const fetchWFbyId = async () => {
         fetch(`http://localhost:3000/contracts/workflow/${Id}`)
             .then(response => {
                 return response.json()
             })
             .then(async wfData => {
-                setWfData(wfData)
-                setwfname(wfData.wfName)
-                setwfdescription(wfData.wfDescription)
-                setIsActive(wfData.status)
+                setWfData(wfData);
+                setwfname(wfData.wfName);
+                setwfdescription(wfData.wfDescription);
+                setIsActive(wfData.status);
+                setApproveInParalel(wfData.WorkFlowTaskSettings[0].approvalTypeInParallel);
+                setApproveAll(wfData.WorkFlowTaskSettings[0].approvedByAll);
+                setselectedTaskName(wfData.WorkFlowTaskSettings[0].taskName);
+                setText(wfData.WorkFlowTaskSettings[0].taskNotes);
+                setSendNotifications(wfData.WorkFlowTaskSettings[0].taskSendNotifications);
+                setReminderNotifications(wfData.WorkFlowTaskSettings[0].taskSendReminders);
+
                 // setConditions(
                 //     [...conditions, wfData.WorkFlowRules])
                 console.log(wfData);
@@ -121,11 +129,12 @@ export default function Tasks() {
                             // console.log(result);
                         })();
                     }
-                )
+                );
                 setSelUsers(user_res);
                 setTarget(user_res);
                 setRefreshKey(refreshKey + 1);
-                console.log(refreshKey)
+                // console.log(refreshKey)
+                // console.log("approveByAll", approveAll)
             })
     }
 
@@ -148,8 +157,10 @@ export default function Tasks() {
             })
             .then(priority => {
                 setPriority(priority)
+                console.log(priority)
             })
     }
+
 
 
     const fetchReminders = () => {
@@ -169,6 +180,7 @@ export default function Tasks() {
             })
             .then(duedates => {
                 setDuedates(duedates)
+                console.log(duedates)
             })
     }
 
@@ -222,13 +234,31 @@ export default function Tasks() {
         fetchReminders()
         fetchDueDates()
         fetchWFbyId()
+        fetchUsers()
     }, [])
+
+    const getPriorityJson = () => {
+        const res = priority.find((obj) => obj.id === wfData.WorkFlowTaskSettings[0].taskPriorityId);
+        setSelectedPriority(res);
+    };
+
+    const getReminderJson = () => {
+        const res = reminders.find((obj) => obj.id === wfData.WorkFlowTaskSettings[0].taskReminderId);
+        setSelectedReminder(res);
+    };
+
+    const getDueDateJson = () => {
+        const res = duedates.find((obj) => obj.id === wfData.WorkFlowTaskSettings[0].taskDueDateId);
+        setSelectedDueDate(res);
+    };
 
     useEffect(() => {
         // fetchWFbyId()
         setRefreshKey(refreshKey + 1);
+        getPriorityJson();
+        getReminderJson();
+        getDueDateJson();
     }, [wfData])
-
 
     const modules = {
         toolbar: {
@@ -363,10 +393,6 @@ export default function Tasks() {
             }
         }
     };
-
-    useEffect(() => {
-        fetchUsers()
-    }, [])
 
     interface ValidationResult {
         isValid: boolean;
@@ -612,13 +638,19 @@ export default function Tasks() {
                         <div className="flex flex-wrap gap-3">
 
                             <div>Trebuie aprobat de:</div>
-                            <div className="flex align-items-center">
-                                <RadioButton inputId="anyone" name="anyone" value={false} onChange={(e) => setApproveAll(e.value)} checked={approveAll === false} />
+                            <div
+                                // key={refreshKey}
+                                className="flex align-items-center">
+                                <RadioButton inputId="anyone" name="anyone" value={approveAll}
+                                    onChange={(e) => setApproveAll(e.value)} checked={approveAll === false} />
                                 <label htmlFor="anyone" className="ml-2">Oricine</label>
                             </div>
 
-                            <div className="flex align-items-center">
-                                <RadioButton inputId="everyone" name="everyone" value={true} onChange={(e) => setApproveAll(e.value)} checked={approveAll === true} />
+                            <div
+
+                                className="flex align-items-center">
+                                <RadioButton inputId="everyone" name="everyone" value={approveAll}
+                                    onChange={(e) => setApproveAll(e.value)} checked={approveAll === true} />
                                 <label htmlFor="everyone" className="ml-2">Toti</label>
                             </div>
                         </div>
@@ -710,13 +742,25 @@ export default function Tasks() {
                         </span>
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedDueDate} onChange={(e) => setSelectedDueDate(e.value)} options={duedates} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedDueDate}
+                                onChange={(e) => {
+                                    setSelectedDueDate(e.value)
+                                    console.log(e)
+                                    console.log(duedates)
+                                }
+                                }
+                                options={duedates} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">De rezolvat</label>
                         </span>
 
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedPriority} onChange={(e) => setSelectedPriority(e.value)} options={priority} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedPriority}
+                                onChange={(e) => {
+                                    setSelectedPriority(e.value)
+                                    console.log(e.value)
+                                }}
+                                options={priority} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">Prioritate</label>
                         </span>
 
@@ -729,6 +773,7 @@ export default function Tasks() {
                             <label className="ml-2">Descriere Task</label>
                             <br></br>
                             <ReactQuill
+                                key={refreshKey}
                                 style={{ height: '10vw' }}
                                 theme="snow"
                                 modules={modules}

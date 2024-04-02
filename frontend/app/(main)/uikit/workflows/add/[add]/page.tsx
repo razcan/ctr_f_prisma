@@ -418,11 +418,11 @@ export default function Tasks() {
             approvedByAll: approveAll,
             approvalTypeInParallel: approveInParalel,
             taskName: selectedtaskName,
-            taskDueDateId: selectedDueDate ? selectedDueDate : 1,
+            taskDueDateId: selectedDueDate ? selectedDueDate.id : 1,
             taskNotes: text,
             taskSendNotifications: sendNotifications,
             taskSendReminders: reminderNotifications,
-            taskReminderId: selectedReminder,
+            taskReminderId: selectedReminder.id,
             taskPriorityId: selectedPriority ? selectedPriority.id : 1
         }
 
@@ -449,11 +449,12 @@ export default function Tasks() {
             console.log(validationResult.errors);
         } else {
             console.log("Validation passed.");
-            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
-                wff
-            );
+
         }
 
+        const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+            wff
+        );
 
 
 
@@ -671,13 +672,17 @@ export default function Tasks() {
                         </span>
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedDueDate} onChange={(e) => setSelectedDueDate(e.value)} options={duedates} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedDueDate}
+                                onChange={(e) => setSelectedDueDate(e.value)}
+                                options={duedates} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">De rezolvat</label>
                         </span>
 
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedPriority} onChange={(e) => setSelectedPriority(e.value)} options={priority} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedPriority}
+                                onChange={(e) => setSelectedPriority(e.value)}
+                                options={priority} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">Prioritate</label>
                         </span>
 
