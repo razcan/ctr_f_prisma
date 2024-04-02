@@ -23,6 +23,7 @@ import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import { ProgressBar } from 'primereact/progressbar';
 import { Slider } from 'primereact/slider';
+import { Tag } from 'primereact/tag';
 
 
 export default function Tasks() {
@@ -36,53 +37,77 @@ export default function Tasks() {
 
     const router = useRouter();
     const searchParams = useSearchParams()
-    const Id = parseInt(searchParams.get("Id"));
-
-    const [visible, setVisible] = useState(false);
-
-    const [taskName, setTaskName] = useState('');
-    const [progress, setProgress] = useState(0);
-    const [status, setStatus] = useState([]);
-    const [statusDate, setStatusDate] = useState(new Date());
-    const [requestor, setRequestor] = useState(0);
-    const [assigned, setAssigned] = useState(0);
-    const [due, setDue] = useState(new Date());
-    const [notes, setNotes] = useState('');
-    const [taskId, setTaskId] = useState('');
-
-    const [selectedtaskName, setselectedTaskName] = useState('');
-    const [selectedprogress, setselectedProgress] = useState(0);
-    const [selectedstatus, setselectedStatus] = useState([]);
-    const [selectedstatusDate, setselectedStatusDate] = useState(new Date());
-    const [selectedrequestor, setselectedRequestor] = useState();
-    const [selectedassigned, setselectedAssigned] = useState();
-    const [selecteddue, setselectedDue] = useState(new Date());
-    const [selectednotes, setselectedNotes] = useState('');
-    const [selectedtaskId, setselectedtaskId] = useState('');
-
-    const [tasks, setTasks] = useState([]);
-    const [persons, setPersons] = useState([]);
-    const [selectedTask, setselectedTask] = useState();
-    const [allStatus, setAllStatus] = useState([])
-
-    const [users, setUsers] = useState([]);
-
+    const [wflist, setWflist] = useState([]);
+    const [selectedWF, setSelectedWF] = useState([]);
+    const [selectedTemplate, setSelectedTemplate] = useState([]);
 
     const addFlow = () => {
-        router.push(`/uikit/workflows/add`)
+        router.push(`/uikit/workflows/add/add`)
     }
 
+    const editFlow = (selectedWF: number) => {
+        router.push(`/uikit/workflows/edit/edit/?Id=${selectedWF}`)
+    }
 
+    const fetchwflist = () => {
+        fetch("http://localhost:3000/contracts/wflist")
+            .then(response => {
+                return response.json()
+            })
+            .then(wflist => {
+                setWflist(wflist)
+            })
+    }
+
+    useEffect(() => {
+        fetchwflist()
+
+    }, [])
+
+    const statusTemplate = (item) => {
+        return <Tag value={item.status} severity={getSeverity(item)}></Tag>;
+    };
+
+    const getSeverity = (item) => {
+        switch (item.status) {
+            case true:
+                return 'success';
+
+            case false:
+                return 'danger';
+
+            default:
+                return null;
+        }
+    };
 
 
     return (
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
+                    <div className="card">
+                        <Button label="Adauga flux aprobare" onClick={addFlow} />
 
+                        {wflist.length > 0 ?
+                            <DataTable className='pt-2'
+                                value={wflist}
+                                tableStyle={{ minWidth: '50rem' }}
+                                selectionMode="single"
+                                onSelectionChange={(e) => {
+                                    editFlow(e.value.id)
+                                }}
+                            >
+                                {/* <Column hidden field="id" header="Id"></Column> */}
+                                <Column hidden field="id" header="Id"></Column>
+                                <Column field="wfName" header="Denumire"></Column>
+                                <Column field="wfDescription" header="Descriere"></Column>
+                                <Column field="status" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
 
-                    <Button label="Adauga flux aprobare" onClick={addFlow} />
+                            </DataTable>
+                            : null}
 
+                    </div>
                 </div>
             </div>
         </div >

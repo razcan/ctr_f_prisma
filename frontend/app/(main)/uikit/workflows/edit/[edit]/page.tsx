@@ -7,23 +7,12 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { TabMenu } from 'primereact/tabmenu';
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { InputNumber } from 'primereact/inputnumber';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
-import { Toast } from 'primereact/toast';
-import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { ProgressBar } from 'primereact/progressbar';
-import { Slider } from 'primereact/slider';
-import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import { MyContext, MyProvider } from '../../../../../../layout/context/myUserContext'
 import { MultiSelect } from 'primereact/multiselect';
 import { RadioButton } from "primereact/radiobutton";
 import { PickList } from 'primereact/picklist';
@@ -47,19 +36,8 @@ export default function Tasks() {
     const [departments, setDepartments] = useState([]);
     const [cashflows, setCashflow] = useState([]);
     const [costcenters, setCostCenter] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState([]);
-    const [selectedDepartment, setSelectedDepartment] = useState([]);
-    const [selectedCashflow, setSelectedCashflow] = useState([]);
-    const [selectedCostCenter, setSelectedCostCenter] = useState([]);
-
     const [selUsers, setSelUsers] = useState([]);
-    const [selectedProcessType, setSelectedProcessType] = useState('');
-    const [selectednotes, setselectedNotes] = useState('');
-    const [selectedstatus, setselectedStatus] = useState([]);
-    const [selectedstatusDate, setselectedStatusDate] = useState(new Date());
     const [allStatus, setAllStatus] = useState([])
-    const [selecteddue, setselectedDue] = useState(new Date());
-
 
     const msgs = useRef(null);
 
@@ -72,15 +50,33 @@ export default function Tasks() {
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
     const [selectedtaskName, setselectedTaskName] = useState('');
-    const [selectedDueDate, setSelectedDueDate] = useState(new Date());
-    const [selectedPriority, setSelectedPriority] = useState(1);
-    const [selectedReminder, setSelectedReminder] = useState(1);
+    const [selectedDueDate, setSelectedDueDate] = useState([]);
+    const [selectedPriority, setSelectedPriority] = useState([]);
+    const [selectedReminder, setSelectedReminder] = useState([]);
     const [text, setText] = useState('');
+    const [priority, setPriority] = useState([]);
+    const [reminders, setReminders] = useState([]);
+    const [duedates, setDuedates] = useState([]);
+    const [wfData, setWfData] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const [source, setSource] = useState([]);
+    const [target, setTarget] = useState([]);
+
+
+    const onChange = (event) => {
+        setSource(event.source);
+        setTarget(event.target);
+    };
 
 
     const handleProcedureContentChange = (content: any) => {
         setText(content);
     };
+
+
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
 
     const posibleFilters = [
         { name: 'Centru Cost' },
@@ -89,30 +85,51 @@ export default function Tasks() {
         { name: 'Cashflow' }
     ];
 
-    const toBeResolved = [
-        { name: 'La o zi dupa start flux' },
-        { name: 'La 2 zile dupa start flux' },
-        { name: 'La 3 zile dupa start flux' },
-        { name: 'La 4 zile dupa start flux' },
-        { name: 'La 5 zile dupa start flux' },
-    ];
-
-    const reminders = [
-        { name: 'La data limita' },
-        { name: '1 zi inainte de data limita' },
-        { name: '2 zile inainte de data limita' }
-    ];
-
     const approve_type = [
         { name: 'Paralel', value: false },
         { name: 'Secvential', value: true }
     ];
 
-    const priorities = [
-        { name: 'Normală' },
-        { name: 'Foarte Importantă' },
-        { name: 'Importanță Maximă' }
-    ];
+    async function fetchData(url: string): Promise<any> {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    }
+
+
+    const fetchWFbyId = async () => {
+        fetch(`http://localhost:3000/contracts/workflow/${Id}`)
+            .then(response => {
+                return response.json()
+            })
+            .then(async wfData => {
+                setWfData(wfData)
+                setwfname(wfData.wfName)
+                setwfdescription(wfData.wfDescription)
+                setIsActive(wfData.status)
+                // setConditions(
+                //     [...conditions, wfData.WorkFlowRules])
+                console.log(wfData);
+
+                const user_res = [];
+                await wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers.map(
+                    (users) => {
+                        (async () => {
+                            const apiUrl = `http://localhost:3000/nomenclatures/susers/${users.userId}`;
+                            const result = await fetchData(apiUrl);
+                            user_res.push(result)
+                            // console.log(result);
+                        })();
+                    }
+                )
+                setSelUsers(user_res);
+                setTarget(user_res);
+                setRefreshKey(refreshKey + 1);
+                console.log(refreshKey)
+            })
+    }
+
+    console.log("target", target);
 
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
@@ -121,6 +138,37 @@ export default function Tasks() {
             })
             .then(allStatus => {
                 setAllStatus(allStatus)
+            })
+    }
+
+    const fetchPriority = () => {
+        fetch("http://localhost:3000/contracts/priority")
+            .then(response => {
+                return response.json()
+            })
+            .then(priority => {
+                setPriority(priority)
+            })
+    }
+
+
+    const fetchReminders = () => {
+        fetch("http://localhost:3000/contracts/reminders")
+            .then(response => {
+                return response.json()
+            })
+            .then(reminders => {
+                setReminders(reminders)
+            })
+    }
+
+    const fetchDueDates = () => {
+        fetch("http://localhost:3000/contracts/duedates")
+            .then(response => {
+                return response.json()
+            })
+            .then(duedates => {
+                setDuedates(duedates)
             })
     }
 
@@ -170,8 +218,16 @@ export default function Tasks() {
         fetchCostCenter()
         fetchCashFlow()
         fetchTasksStatusData()
-
+        fetchPriority()
+        fetchReminders()
+        fetchDueDates()
+        fetchWFbyId()
     }, [])
+
+    useEffect(() => {
+        // fetchWFbyId()
+        setRefreshKey(refreshKey + 1);
+    }, [wfData])
 
 
     const modules = {
@@ -283,17 +339,6 @@ export default function Tasks() {
         }
     };
 
-
-
-    const [source, setSource] = useState([]);
-    const [target, setTarget] = useState([]);
-
-
-    const onChange = (event) => {
-        setSource(event.source);
-        setTarget(event.target);
-    };
-
     const itemTemplate = (item) => {
         return (
             <div className="flex flex-wrap p-2 align-items-center gap-3">
@@ -323,6 +368,32 @@ export default function Tasks() {
         fetchUsers()
     }, [])
 
+    interface ValidationResult {
+        isValid: boolean;
+        errors: string[];
+    }
+
+    function validateForm(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+
+        console.log(fields);
+
+        if (!fields[0].wfname) {
+            errors.push("Trebuie sa setati un nume de flux");
+        }
+
+        if (fields[1].length == 0) {
+            errors.push("Trebuie sa setati minim o regula de alocare automata");
+        }
+
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
 
     const addMessages = () => {
         msgs.current.show([
@@ -330,12 +401,13 @@ export default function Tasks() {
         ]);
     };
 
+    //pe procedura de salvare trebuie puse conditiile de validare si returnare mesaje eroare
     const saveWF = async () => {
         // console.log(wfname, wfdescription, isActive, conditions, selUsers,
         //     approveInParalel, approveAll, target, sendNotifications, reminderNotifications,
         //     selectedtaskName, selectedDueDate, selectedPriority, selectedReminder, text)
 
-        console.log(conditions)
+
 
         interface wf {
             "wfName": String,
@@ -373,34 +445,53 @@ export default function Tasks() {
             approvedByAll: Boolean,
             approvalTypeInParallel: Boolean,
             taskName: string,
-            taskDueDateId: number,
+            taskDueDateId: number | never[],
             taskNotes: string,
             taskSendNotifications: Boolean,
             taskSendReminders: Boolean,
-            taskReminderId: number,
-            taskPriorityId: number
+            taskReminderId: number | never[],
+            taskPriorityId: number | never[]
         }
         const wftsf: wfts = {
             workflowId: 0,
             approvedByAll: approveAll,
             approvalTypeInParallel: approveInParalel,
             taskName: selectedtaskName,
-            taskDueDateId: 0, //selectedDueDate.name,
+            taskDueDateId: selectedDueDate ? selectedDueDate : 1,
             taskNotes: text,
             taskSendNotifications: sendNotifications,
             taskSendReminders: reminderNotifications,
-            taskReminderId: selectedReminder.name,
-            taskPriorityId: selectedPriority.name
+            taskReminderId: selectedReminder,
+            taskPriorityId: selectedPriority ? selectedPriority.id : 1
+        }
+
+        interface wftstu {
+            workflowTaskSettingsId: number,
+            target: number[],
+        }
+
+        const wftstuf: wftstu = {
+            workflowTaskSettingsId: 0,
+            target: target
         }
 
         wff.push(wfg)
         wff.push(rules)
-        console.log(wftsf)
+        wff.push(wftsf)
+        wff.push(wftstuf)
 
-        const response = await axios.post(`http://localhost:3000/contracts/workflow`,
-            wff
-        );
-        console.log(response)
+
+        const validationResult = validateForm(wff);
+
+        if (!validationResult.isValid) {
+            console.log("Validation failed. Errors:");
+            console.log(validationResult.errors);
+        } else {
+            console.log("Validation passed.");
+            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+                wff
+            );
+        }
     }
 
     return (
@@ -504,12 +595,14 @@ export default function Tasks() {
 
                         <div className="field col-12 md:col-4">
                             <label htmlFor="">Asignat catre</label>
-                            <MultiSelect value={selUsers} onChange={(e) => {
-                                setSelUsers(e.value)
-                                setSource(e.value)
+                            <MultiSelect
+                                key={refreshKey}
+                                value={selUsers} onChange={(e) => {
+                                    setSelUsers(e.value)
+                                    setSource(e.value)
 
-                                // console.log(e.value)
-                            }}
+                                    console.log(e.value)
+                                }}
                                 className="w-full"
                                 options={users} optionLabel="name"
                                 display="chip"
@@ -550,7 +643,9 @@ export default function Tasks() {
                         <Divider />
 
                         {approveInParalel == true ?
-                            <div className="field col-6">
+                            <div
+                                key={refreshKey}
+                                className="field col-6">
                                 <div>Ordinea in care trebuie aprobat</div>
                                 <br></br>
                                 <PickList dataKey="id" source={source} target={target}
@@ -615,13 +710,13 @@ export default function Tasks() {
                         </span>
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedDueDate} onChange={(e) => setSelectedDueDate(e.value)} options={toBeResolved} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedDueDate} onChange={(e) => setSelectedDueDate(e.value)} options={duedates} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">De rezolvat</label>
                         </span>
 
 
                         <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedPriority} onChange={(e) => setSelectedPriority(e.value)} options={priorities} optionLabel="name" className="w-full" />
+                            <Dropdown inputId="dd-city" value={selectedPriority} onChange={(e) => setSelectedPriority(e.value)} options={priority} optionLabel="name" className="w-full" />
                             <label htmlFor="dd-city">Prioritate</label>
                         </span>
 
