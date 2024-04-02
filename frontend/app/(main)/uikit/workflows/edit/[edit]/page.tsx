@@ -133,6 +133,57 @@ export default function Tasks() {
                 setSelUsers(user_res);
                 setTarget(user_res);
                 setRefreshKey(refreshKey + 1);
+
+                // console.log('Rules', wfData.WorkFlowRules)
+
+                interface rule {
+                    "filter": {
+                        "name": string
+                    },
+                    "filterValue": {
+                        "id": number,
+                        "name": string
+                    },
+                    "source": {
+                        "name": string
+                    }
+                }
+
+                const rules_res = [];
+                await wfData.WorkFlowRules.map(
+                    (rules) => {
+                        const toAdd: rule = {
+                            "filter": {
+                                "name": rules.ruleFilterName
+                            },
+                            "filterValue": {
+                                "id": rules.ruleFilterValue,
+                                "name": rules.ruleFilterValueName
+                            },
+                            "source": {
+                                "name": rules.ruleFilterSource
+                            }
+                        }
+                        rules_res.push(toAdd)
+                    }
+                );
+                setConditions(rules_res);
+                // console.log(rules_res)
+
+                // {
+                //     "filter": {
+                //         "name": "Centru Cost"
+                //     },
+                //     "filterValue": {
+                //         "id": 2,
+                //             "name": "Achizitii carti de specialitate"
+                //     },
+                //     "source": {
+                //         "name": "costcenters"
+                //     }
+                // }
+
+
                 // console.log(refreshKey)
                 // console.log("approveByAll", approveAll)
             })
@@ -321,7 +372,7 @@ export default function Tasks() {
                 source: { name: '' }
             }]
         )
-        console.log(conditions)
+
         setArrLength(conditions.length)
     }
 
@@ -558,8 +609,9 @@ export default function Tasks() {
                 </Card>
             </div>
 
-            <div className="col-12">
-                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Reguli alocare">
+            <div className="col-12" key={refreshKey}>
+                <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary 
+                transition-duration-300 transition-all' title="Reguli alocare">
                     {conditions.length === 0 ?
                         <Button label="Adauga" icon="pi pi-plus" onClick={addConditions} />
                         : null
