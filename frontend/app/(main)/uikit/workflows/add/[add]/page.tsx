@@ -69,6 +69,9 @@ export default function Tasks() {
     const [reminders, setReminders] = useState([]);
     const [duedates, setDuedates] = useState([]);
 
+    // const url = `http://localhost:3001/customer/uuid?uuid=${header.uuid}`
+
+
 
     const handleProcedureContentChange = (content: any) => {
         setText(content);
