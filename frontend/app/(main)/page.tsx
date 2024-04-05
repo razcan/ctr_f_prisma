@@ -428,24 +428,24 @@ const Charts = () => {
           labels: months,
           datasets: [
             {
-              label: 'Incasari',
-              data: results[1]
-              ,
-              fill: false,
-              backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-              // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-              borderColor: documentStyle.getPropertyValue('--green-500'),
-              tension: 0.6
-            },
-            {
               label: 'Plati',
-              data: results[0]
+              data: results[1]
               ,
               fill: false,
               backgroundColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
               // borderColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
               borderColor: documentStyle.getPropertyValue('--red-500'),
-              tension: 0.6
+              tension: 0.9
+            },
+            {
+              label: 'Incasari',
+              data: results[0]
+              ,
+              fill: false,
+              backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+              // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+              borderColor: documentStyle.getPropertyValue('--green-500'),
+              tension: 0.9
             }
           ]
         };

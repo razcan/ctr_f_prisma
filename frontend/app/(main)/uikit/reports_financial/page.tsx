@@ -399,8 +399,8 @@ function Report() {
 
                                     <Column field="contractid" hidden header="contractid"></Column>
                                     <Column field="tiptranzactie" header="TipTranzactie" sortable></Column>
-                                    <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
-                                    <Column field="final" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
+                                    {/* <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
+                                    <Column field="final" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column> */}
                                     <Column field="data" header="Data" dataType='date' sortable body={DateBodyTemplate}  ></Column>
                                     <Column field="partener" header="Partener" dataType='date' sortable></Column>
                                     <Column field="entitate" header="Entitate" dataType='date' sortable></Column>
