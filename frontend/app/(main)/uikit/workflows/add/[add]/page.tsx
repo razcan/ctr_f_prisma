@@ -33,6 +33,7 @@ import { Messages } from 'primereact/messages';
 
 export default function Tasks() {
 
+    const toast = useRef(null);
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
@@ -70,9 +71,6 @@ export default function Tasks() {
     const [priority, setPriority] = useState([]);
     const [reminders, setReminders] = useState([]);
     const [duedates, setDuedates] = useState([]);
-
-    // const url = `http://localhost:3001/customer/uuid?uuid=${header.uuid}`
-
 
 
     const handleProcedureContentChange = (content: any) => {
@@ -342,16 +340,41 @@ export default function Tasks() {
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
 
-        console.log(fields);
 
-        if (!fields[0].wfname) {
-            errors.push("Trebuie sa setati un nume de flux");
+        if (!fields[0].wfName || fields[0].wfName.trim() === '') {
+            errors.push("Trebuie sa setati un nume de flux!");
         }
 
         if (fields[1].length == 0) {
-            errors.push("Trebuie sa setati minim o regula de alocare automata");
+            errors.push("Trebuie sa setati minim o regula de alocare automata!");
         }
 
+        if (fields[3].target.length == 0) {
+            errors.push("Trebuie sa setati minim un utilizator!");
+        }
+
+        console.log(fields[2])
+        if (!fields[2].taskDueDateId) {
+            errors.push("Trebuie sa setati data pana la care trebuie rezolvat task-ul!");
+        }
+
+        if (!fields[2].taskReminderId) {
+            errors.push("Trebuie sa setati data la care trebuie trimis un reminder!");
+        }
+
+        if (!fields[2].taskPriorityId) {
+            errors.push("Trebuie sa setati prioritatea task-ului!");
+        }
+
+        if (!fields[2].taskName) {
+            errors.push("Trebuie sa setati denumirea task-ului!");
+        }
+
+        if (!fields[2].taskNotes) {
+            errors.push("Trebuie sa setati continutul task-ului!");
+        }
+
+        // console.log(errors)
 
         const isValid = errors.length === 0;
 
@@ -367,13 +390,17 @@ export default function Tasks() {
         ]);
     };
 
-    //pe procedura de salvare trebuie puse conditiile de validare si returnare mesaje eroare
-    const saveWF = async () => {
-        // console.log(wfname, wfdescription, isActive, conditions, selUsers,
-        //     approveInParalel, approveAll, target, sendNotifications, reminderNotifications,
-        //     selectedtaskName, selectedDueDate, selectedPriority, selectedReminder, text)
 
-        console.log(conditions)
+    const showWarn = (detail) => {
+        toast.current.show({
+            severity: 'warn', summary: 'Atentie',
+            detail: detail, life: 3000
+        });
+    }
+
+
+
+    const saveWF = async () => {
 
         interface wf {
             "wfName": String,
@@ -453,16 +480,17 @@ export default function Tasks() {
         const validationResult = validateForm(wff);
 
         if (!validationResult.isValid) {
-            console.log("Validation failed. Errors:");
-            console.log(validationResult.errors);
+            // console.log("Validation failed. Errors:");
+            // console.log(validationResult.errors);
+            showWarn(validationResult.errors)
         } else {
             console.log("Validation passed.");
-
+            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+                wff
+            );
         }
 
-        const response = await axios.post(`http://localhost:3000/contracts/workflow`,
-            wff
-        );
+
 
 
 
@@ -472,7 +500,7 @@ export default function Tasks() {
         <div className="grid">
             <div className="col-12">
                 <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Date generale">
-
+                    <Toast ref={toast} />
                     <div className="grid">
 
                         {/* <div className="flex flex-wrap column-gap-1 row-gap-2"> */}

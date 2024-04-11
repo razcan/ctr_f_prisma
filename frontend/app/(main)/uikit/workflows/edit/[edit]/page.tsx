@@ -19,9 +19,10 @@ import { PickList } from 'primereact/picklist';
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { Messages } from 'primereact/messages';
+import { Toast } from 'primereact/toast';
 
 export default function Tasks() {
-
+    const toast = useRef(null);
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
@@ -451,16 +452,41 @@ export default function Tasks() {
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
 
-        // console.log(fields);
 
-        if (!fields[0].wfname) {
-            errors.push("Trebuie sa setati un nume de flux");
+        if (!fields[0].wfName || fields[0].wfName.trim() === '') {
+            errors.push("Trebuie sa setati un nume de flux!");
         }
 
         if (fields[1].length == 0) {
-            errors.push("Trebuie sa setati minim o regula de alocare automata");
+            errors.push("Trebuie sa setati minim o regula de alocare automata!");
         }
 
+        if (fields[3].target.length == 0) {
+            errors.push("Trebuie sa setati minim un utilizator!");
+        }
+
+        console.log(fields[2])
+        if (!fields[2].taskDueDateId) {
+            errors.push("Trebuie sa setati data pana la care trebuie rezolvat task-ul!");
+        }
+
+        if (!fields[2].taskReminderId) {
+            errors.push("Trebuie sa setati data la care trebuie trimis un reminder!");
+        }
+
+        if (!fields[2].taskPriorityId) {
+            errors.push("Trebuie sa setati prioritatea task-ului!");
+        }
+
+        if (!fields[2].taskName) {
+            errors.push("Trebuie sa setati denumirea task-ului!");
+        }
+
+        if (!fields[2].taskNotes) {
+            errors.push("Trebuie sa setati continutul task-ului!");
+        }
+
+        // console.log(errors)
 
         const isValid = errors.length === 0;
 
@@ -469,6 +495,14 @@ export default function Tasks() {
             errors
         };
     }
+
+    const showWarn = (detail) => {
+        toast.current.show({
+            severity: 'warn', summary: 'Atentie',
+            detail: detail, life: 3000
+        });
+    }
+
 
     const addMessages = () => {
         msgs.current.show([
@@ -564,24 +598,22 @@ export default function Tasks() {
 
         const validationResult = validateForm(wff);
 
-        const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
-            wff
-        );
-
         if (!validationResult.isValid) {
-            console.log("Validation failed. Errors:");
-            console.log(validationResult.errors);
+            showWarn(validationResult.errors)
         } else {
             console.log("Validation passed.");
-
+            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+                wff
+            );
         }
+
     }
 
     return (
         <div className="grid">
             <div className="col-12">
                 <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Date generale">
-
+                    <Toast ref={toast} />
                     <div className="grid">
 
                         {/* <div className="flex flex-wrap column-gap-1 row-gap-2"> */}
