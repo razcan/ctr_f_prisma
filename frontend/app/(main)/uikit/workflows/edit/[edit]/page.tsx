@@ -45,7 +45,7 @@ export default function Tasks() {
     const [wfname, setwfname] = useState('');
     const [wfdescription, setwfdescription] = useState('');
     const [isActive, setIsActive] = useState(true);
-    const [approveInParalel, setApproveInParalel] = useState(true);
+    const [approveInParalel, setApproveInParalel] = useState();
     const [approveAll, setApproveAll] = useState(true);
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
@@ -86,8 +86,8 @@ export default function Tasks() {
     ];
 
     const approve_type = [
-        { name: 'Paralel', value: false },
-        { name: 'Secvential', value: true }
+        { name: 'Paralel', value: true },
+        { name: 'Secvential', value: false }
     ];
 
     async function fetchData(url: string): Promise<any> {
@@ -117,7 +117,6 @@ export default function Tasks() {
 
                 // setConditions(
                 //     [...conditions, wfData.WorkFlowRules])
-                console.log(wfData);
 
                 const user_res = [];
                 await wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers.map(
@@ -507,15 +506,17 @@ export default function Tasks() {
 
         const rules: wfr[] = []
         conditions.map(condition => {
+
             const add = {
-                workflowId: 0,
+                workflowId: Id,
                 ruleFilterName: condition.filter.name,
                 ruleFilterSource: condition.source.name,
                 ruleFilterValue: parseInt(condition.filterValue.id),
-                ruleFilterValueName: parseInt(condition.filterValue.name)
+                ruleFilterValueName: condition.filterValue.name
             }
             rules.push(add)
         })
+
         const wff: any[] = [];
 
         interface wfts {
@@ -543,6 +544,8 @@ export default function Tasks() {
             taskPriorityId: selectedPriority ? selectedPriority.id : 1
         }
 
+
+
         interface wftstu {
             workflowTaskSettingsId: number,
             target: number[],
@@ -561,14 +564,16 @@ export default function Tasks() {
 
         const validationResult = validateForm(wff);
 
+        const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
+            wff
+        );
+
         if (!validationResult.isValid) {
             console.log("Validation failed. Errors:");
             console.log(validationResult.errors);
         } else {
             console.log("Validation passed.");
-            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
-                wff
-            );
+
         }
     }
 
@@ -713,7 +718,7 @@ export default function Tasks() {
                                 <Dropdown value={approveInParalel}
                                     onChange={(e) => {
                                         setApproveInParalel(e.value)
-                                        // console.log(selectedProcessType)
+
                                     }
                                     }
                                     options={approve_type} optionLabel="name"
@@ -725,7 +730,7 @@ export default function Tasks() {
                             : null}
                         <Divider />
 
-                        {approveInParalel == true ?
+                        {approveInParalel == false ?
                             <div
                                 key={refreshKey}
                                 className="field col-6">

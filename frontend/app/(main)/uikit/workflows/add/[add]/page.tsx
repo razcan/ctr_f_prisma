@@ -49,6 +49,8 @@ export default function Tasks() {
     const [costcenters, setCostCenter] = useState([]);
     const [selUsers, setSelUsers] = useState([]);
     const [allStatus, setAllStatus] = useState([])
+    const [final_users, setfinal_users] = useState([])
+
 
     const msgs = useRef(null);
 
@@ -85,8 +87,8 @@ export default function Tasks() {
     ];
 
     const approve_type = [
-        { name: 'Paralel', value: false },
-        { name: 'Secvential', value: true }
+        { name: 'Paralel', value: true },
+        { name: 'Secvential', value: false }
     ];
 
     const fetchTasksStatusData = () => {
@@ -436,9 +438,10 @@ export default function Tasks() {
             target: number[],
         }
 
+
         const wftstuf: wftstu = {
             workflowTaskSettingsId: 0,
-            target: target
+            target: target.length > 0 ? target : selUsers
         }
 
         wff.push(wfg)
@@ -599,7 +602,7 @@ export default function Tasks() {
                                 <Dropdown value={approveInParalel}
                                     onChange={(e) => {
                                         setApproveInParalel(e.value)
-                                        // console.log(selectedProcessType)
+                                        console.log(e.value)
                                     }
                                     }
                                     options={approve_type} optionLabel="name"
@@ -611,7 +614,7 @@ export default function Tasks() {
                             : null}
                         <Divider />
 
-                        {approveInParalel == true ?
+                        {approveInParalel == false ?
                             <div className="field col-6">
                                 <div>Ordinea in care trebuie aprobat</div>
                                 <br></br>
