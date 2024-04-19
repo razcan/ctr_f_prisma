@@ -14,7 +14,7 @@ import router from 'next/router';
 export default function AddContract() {
 
     const [selection, setSelection] = useState();
-    const [additionals, setAdditionals] = useState();
+    const [additionals, setAdditionals] = useState<any>([]);
     const router = useRouter();
     const [selectedContract, setselectedContract] = useState(null);
     const searchParams = useSearchParams()
@@ -47,21 +47,24 @@ export default function AddContract() {
                         <Button label="Adauga act aditional" onClick={gotoAddAddtionalAct} />
                     </div>
 
-                    <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}
-                        stripedRows paginator rows={10}
-                        rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
-                        selectionMode="single"
-                        selection={selectedContract} onSelectionChange={(e) => {
-                            editContract(e.value.id)
-                        }}
-                    >
-                        <Column field="id" header="Id"></Column>
-                        <Column field="number" header="Numar"></Column>
-                        <Column field="status.name" header="Stare"></Column>
-                        <Column field="start" header="Data Start"></Column>
-                        <Column field="end" header="Data Final"></Column>
-                        <Column field="remarks" header="Detalii Contract"></Column>
-                    </DataTable>
+                    {
+                        additionals.length > 0 ?
+                            <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}
+                                stripedRows paginator rows={10}
+                                rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                                selectionMode="single"
+                                selection={selectedContract} onSelectionChange={(e) => {
+                                    editContract(e.value.id)
+                                }}
+                            >
+                                <Column field="id" header="Id"></Column>
+                                <Column field="number" header="Numar"></Column>
+                                <Column field="status.name" header="Stare"></Column>
+                                <Column field="start" header="Data Start"></Column>
+                                <Column field="end" header="Data Final"></Column>
+                                <Column field="remarks" header="Detalii Contract"></Column>
+                            </DataTable>
+                            : null}
 
                 </div>
 

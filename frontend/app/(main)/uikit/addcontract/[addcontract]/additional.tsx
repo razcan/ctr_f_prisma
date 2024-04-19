@@ -14,7 +14,8 @@ import router from 'next/router';
 export default function AddContract() {
 
     const [selection, setSelection] = useState();
-    const [additionals, setAdditionals] = useState();
+    // const [additionals, setAdditionals] = useState();
+    const [additionals, setAdditionals] = useState<any>([]);
 
     const gotoAddAddtionalAct = () => {
         router.push('/uikit/addcontract/addcontract/addadditionals');
@@ -29,14 +30,17 @@ export default function AddContract() {
                         <Button label="Adauga act aditional" onClick={gotoAddAddtionalAct} />
                     </div>
 
-                    <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}>
-                        <Column field="code" header="Numar"></Column>
-                        <Column field="name" header="Data"></Column>
-                        <Column field="category" header="Data Start"></Column>
-                        <Column field="quantity" header="Data Final"></Column>
-                        <Column field="quantity" header="Data Semnare"></Column>
-                    </DataTable>
+                    {
+                        additionals.length > 0 ?
 
+                            <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}>
+                                <Column field="code" header="Numar"></Column>
+                                <Column field="name" header="Data"></Column>
+                                <Column field="category" header="Data Start"></Column>
+                                <Column field="quantity" header="Data Final"></Column>
+                                <Column field="quantity" header="Data Semnare"></Column>
+                            </DataTable>
+                            : null}
                 </div>
 
             </div>
