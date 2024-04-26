@@ -12,11 +12,11 @@ const AppMenu = () => {
 
     const model: AppMenuItem[] = [
         {
-            label: 'Home',
-            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+            label: 'Acasa',
+            items: [{ label: 'Panou de bord', icon: 'pi pi-fw pi-home', to: '/' }]
         },
         {
-            label: 'Contracts',
+            label: 'Contracte',
             items: [
                 { label: 'Contracte furnizori', icon: 'pi pi-fw pi-id-card', to: '/uikit/suppliercontracts' },
                 // { label: 'Formular2', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
@@ -35,7 +35,7 @@ const AppMenu = () => {
             ]
         },
         {
-            label: 'Settings',
+            label: 'Administrare',
             icon: 'pi pi-fw pi-briefcase',
             items: [
                 {
@@ -74,12 +74,12 @@ const AppMenu = () => {
                     to: '/uikit/users',
                 },
 
-                {
-                    label: 'Landing page',
-                    icon: 'pi pi-fw pi-sign-in',
-                    to: '/uikit/landing'
-                    // frontend/ app / (full - page) / landing
-                },
+                // {
+                //     label: 'Landing page',
+                //     icon: 'pi pi-fw pi-sign-in',
+                //     to: '/uikit/landing'
+                //     // frontend/ app / (full - page) / landing
+                // },
             ]
         }
         // {

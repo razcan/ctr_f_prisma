@@ -90,10 +90,10 @@ export default function EditContract() {
     const [number, setNumber] = useState('');
     const [type, setType] = useState('');
     const [contractType, setContractType] = useState([]);
-    const [start, setStartDate] = useState('');
-    const [end, setEndDate] = useState('');
-    const [sign, setSignDate] = useState('');
-    const [completion, setCompletionDate] = useState('');
+    const [start, setStartDate] = useState();
+    const [end, setEndDate] = useState();
+    const [sign, setSignDate] = useState();
+    const [completion, setCompletionDate] = useState();
     const [remarks, setRemarks] = useState('');
     const [status, setStatus] = useState('');
     const [categories, setCategories] = useState([]);
@@ -249,6 +249,12 @@ export default function EditContract() {
             })
     }
 
+    function subtractDays(date: Date, days: number): Date {
+        const result = new Date(date);
+        result.setDate(result.getDate() - days);
+        return result;
+    }
+
     const fetchContractData = async () => {
         await fetch(`http://localhost:3000/contracts/details/${Id}`)
             .then(response => {
@@ -267,15 +273,15 @@ export default function EditContract() {
                 }
 
 
-                const referenceDate = new Date('1970-01-02T02:00:00+02:00');
+                const referenceDate = new Date('2024-01-01T00:00:00+00:00');
 
                 setEntitybankId(contractdetails.EntityBank.id)
                 setEntityaddressId(contractdetails.EntityAddress.id)
 
-                const formated_start_date = new Date(contractdetails.start);
-                const formated_end_date = new Date(contractdetails.end);
-                const formated_completion_date = new Date(contractdetails.completion);
-                const formated_sign_date = new Date(contractdetails.sign);
+                const formated_start_date = new Date(subtractDays(contractdetails.start, 1));
+                const formated_end_date = new Date(subtractDays(contractdetails.end, 1));
+                const formated_completion_date = new Date(subtractDays(contractdetails.completion, 1));
+                const formated_sign_date = new Date(subtractDays(contractdetails.sign, 1));
 
                 setStartDate(formated_start_date)
 
@@ -569,7 +575,7 @@ export default function EditContract() {
         // console.log(addedContract);
 
 
-        const referenceDate = new Date('1970-01-02T02:00:00+02:00');
+        const referenceDate = new Date('2024-01-01T00:00:00+00:00');
         const formated_dffDate1 = new Date(dffDate1);
         const formated_dffDate2 = new Date(dffDate2);
 

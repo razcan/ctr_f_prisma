@@ -40,7 +40,6 @@ export default function Financial() {
                 setItem(item)
             })
     }
-
     useEffect(() => {
         fetchTypeData()
     }, [])

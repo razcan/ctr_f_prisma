@@ -20,6 +20,7 @@ import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { Messages } from 'primereact/messages';
 import { Toast } from 'primereact/toast';
+import { Tag } from 'primereact/tag';
 
 export default function Tasks() {
     const toast = useRef(null);
@@ -42,6 +43,7 @@ export default function Tasks() {
 
     const msgs = useRef(null);
 
+    const [selectedTaskUsers, setSelectedTaskUsers] = useState([]);
 
     const [wfname, setwfname] = useState('');
     const [wfdescription, setwfdescription] = useState('');
@@ -60,6 +62,7 @@ export default function Tasks() {
     const [duedates, setDuedates] = useState([]);
     const [wfData, setWfData] = useState([]);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [final_users, setfinal_users] = useState([])
 
     const [source, setSource] = useState([]);
     const [target, setTarget] = useState([]);
@@ -120,18 +123,59 @@ export default function Tasks() {
                 //     [...conditions, wfData.WorkFlowRules])
 
                 const user_res = [];
-                await wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers.map(
-                    (users) => {
-                        (async () => {
-                            const apiUrl = `http://localhost:3000/nomenclatures/susers/${users.userId}`;
-                            const result = await fetchData(apiUrl);
-                            user_res.push(result)
-                            // console.log(result);
-                        })();
+
+                const raspuns = wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers;
+                console.log(raspuns, raspuns.length, "raspuns")
+
+                let myArray: { Index: number, UserId: string, StepName: number }[] = [
+                ];
+
+                for (let i = 0; i < raspuns.length; i++) {
+
+                    console.log(raspuns[i].userId, "useri")
+                    const apiUrl = `http://localhost:3000/nomenclatures/susers/${raspuns[i].userId}`;
+                    const result = fetchData(apiUrl);
+
+                    myArray[i] = {
+                        Index: raspuns[i].approvalOrderNumber,
+                        UserId: await result,
+                        StepName: raspuns[i].approvalStepName
                     }
-                );
-                setSelUsers(user_res);
-                setTarget(user_res);
+
+                }
+
+
+                setSelectedTaskUsers(...selectedTaskUsers, myArray)
+
+                // await wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers.map(
+                //     (users, index) => {
+                //         (async () => {
+                //             const apiUrl = `http://localhost:3000/nomenclatures/susers/${users.userId}`;
+                //             const result = await fetchData(apiUrl);
+                //             // user_res.push(result)
+                //             let myArray: { Index: number, UserId: string, StepName: number }[] = [
+                //             ];
+
+
+                //             myArray[index] = {
+                //                 Index: users.approvalOrderNumber,
+                //                 UserId: result,
+                //                 StepName: users.approvalStepName
+                //             }
+
+                //             setSelectedTaskUsers(...selectedTaskUsers, myArray)
+
+                //             user_res.push(myArray)
+                //             console.log(myArray, "totul");
+
+                //         })();
+                //         console.log(user_res, "test")
+                //     }
+                // );
+
+
+                //       setSelUsers(user_res);
+                // setTarget(user_res);
                 setRefreshKey(refreshKey + 1);
 
                 // console.log('Rules', wfData.WorkFlowRules)
@@ -168,27 +212,11 @@ export default function Tasks() {
                     }
                 );
                 setConditions(rules_res);
-                // console.log(rules_res)
-
-                // {
-                //     "filter": {
-                //         "name": "Centru Cost"
-                //     },
-                //     "filterValue": {
-                //         "id": 2,
-                //             "name": "Achizitii carti de specialitate"
-                //     },
-                //     "source": {
-                //         "name": "costcenters"
-                //     }
-                // }
-
-
-                // console.log(refreshKey)
-                // console.log("approveByAll", approveAll)
             })
     }
 
+    // console.log(selUsers, 'ici')
+    // console.log(selectedTaskUsers, "test asdsfsd")
 
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
@@ -362,6 +390,41 @@ export default function Tasks() {
 
     }
 
+    const addFlowUsers = () => {
+        setSelectedTaskUsers(
+            [...selectedTaskUsers, {
+                Index: null,
+                UserId: { id: 0, name: '', email: '', status: true },
+                StepName: null
+            }]
+        )
+    }
+
+    const handleDropDownStepUsers = async (index, value) => {
+        setSelUsers(value);
+        // console.log(index, value);
+
+        const to_add = [...final_users, {
+            Index: index,
+            UserId: { id: value.id, name: value.name, email: value.email, status: true }
+        }];
+
+        selectedTaskUsers[index].Index = index
+        selectedTaskUsers[index].UserId = { id: value.id, name: value.name, email: value.email, status: true }
+        setfinal_users(to_add);
+        // console.log(final_users);
+    };
+
+    const handleStepUsers = async (index, value) => {
+        selectedTaskUsers[index].StepName = value
+    }
+
+    const removeUser = (index) => {
+        const newFormData = selectedTaskUsers.filter((_, i) => i !== index);
+        setSelectedTaskUsers(newFormData);
+        setUserArrLength(arrUserLength - 1)
+    };
+
 
     const addConditions = () => {
         setConditions(
@@ -465,7 +528,7 @@ export default function Tasks() {
             errors.push("Trebuie sa setati minim un utilizator!");
         }
 
-        console.log(fields[2])
+        // console.log(fields[2])
         if (!fields[2].taskDueDateId) {
             errors.push("Trebuie sa setati data pana la care trebuie rezolvat task-ul!");
         }
@@ -609,6 +672,9 @@ export default function Tasks() {
 
     }
 
+    // console.log(selectedTaskUsers.length, "marime ")
+    // console.log(selectedTaskUsers, "valoare ")
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -707,6 +773,66 @@ export default function Tasks() {
 
             <div className="col-12">
                 <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Asignat">
+
+                    {selectedTaskUsers.length === 0 ?
+                        <Button label="Adauga" icon="pi pi-plus" onClick={addFlowUsers} />
+                        : null
+                    }
+
+
+                    {selectedTaskUsers.map((field, index) => {
+                        console.log(field, "field")
+                        return (
+                            // console.log(field)
+                            <div className="grid" >
+
+                                <div className="field col-1 md:col-1 p-2">
+
+                                    <Tag style={{ fontSize: 16 }} value={index + 1}></Tag>
+                                </div>
+
+                                <div className="field col-12 md:col-3 p-2" key={index} >
+
+                                    <Dropdown id="user"
+                                        value={field.UserId}
+                                        onChange={(e) => {
+                                            handleDropDownStepUsers(index, e.value);
+                                        }}
+                                        className="w-full"
+                                        options={users}
+                                        optionLabel="name"
+                                        placeholder="Utilizator" />
+                                </div>
+
+                                <div className="flex flex-column field col-12 md:col-4 p-2">
+                                    <InputText
+
+                                        value={field.StepName}
+                                        onChange={(e) => handleStepUsers(index, e.target.value)}
+                                        placeholder="Denumire Pas Flux"
+                                        id="stepName"
+                                    />
+                                </div>
+
+                                <div className=" field col-12 md:col-2">
+                                    <Button icon="pi pi-plus" rounded text severity="success"
+                                        onClick={addFlowUsers} aria-label="Adauga" />
+                                    <Button icon="pi pi-minus" rounded text severity="danger"
+                                        onClick={() => removeUser(index)} aria-label="Sterge" />
+                                </div>
+
+                                <Divider />
+                            </div>
+
+
+                        )
+                    }
+                    )
+                    }
+
+                </Card>
+
+                {/* <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Asignat">
                     <div className="grid">
 
                         <div className="field col-12 md:col-4">
@@ -777,7 +903,7 @@ export default function Tasks() {
                             </div>
                             : null}
                     </div>
-                </Card>
+                </Card> */}
             </div>
 
             {/* update pe campul stare contract , email , etc */}

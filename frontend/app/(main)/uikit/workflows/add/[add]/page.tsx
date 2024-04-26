@@ -30,6 +30,7 @@ import { PickList } from 'primereact/picklist';
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { Messages } from 'primereact/messages';
+import { Tag } from 'primereact/tag';
 
 export default function Tasks() {
 
@@ -42,7 +43,7 @@ export default function Tasks() {
 
     const [users, setUsers] = useState([]);
     const router = useRouter();
-    const [conditions, setConditions] = useState([]);
+
     const [arrLength, setArrLength] = useState(0);
     const [categories, setCategories] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -51,15 +52,13 @@ export default function Tasks() {
     const [selUsers, setSelUsers] = useState([]);
     const [allStatus, setAllStatus] = useState([])
     const [final_users, setfinal_users] = useState([])
-
+    const [arrUserLength, setUserArrLength] = useState(0);
 
     const msgs = useRef(null);
-
-
     const [wfname, setwfname] = useState('');
     const [wfdescription, setwfdescription] = useState('');
     const [isActive, setIsActive] = useState(true);
-    const [approveInParalel, setApproveInParalel] = useState(true);
+    const [approveInParalel, setApproveInParalel] = useState(false);
     const [approveAll, setApproveAll] = useState(true);
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
@@ -71,6 +70,12 @@ export default function Tasks() {
     const [priority, setPriority] = useState([]);
     const [reminders, setReminders] = useState([]);
     const [duedates, setDuedates] = useState([]);
+    const [stepName, setStepName] = useState([]);
+
+
+    const [conditions, setConditions] = useState([]);
+    const [selectedTaskUsers, setSelectedTaskUsers] = useState([]);
+
 
 
     const handleProcedureContentChange = (content: any) => {
@@ -182,6 +187,11 @@ export default function Tasks() {
 
     }, [])
 
+    useEffect(() => {
+
+    }, [final_users])
+
+
 
     const modules = {
         toolbar: {
@@ -249,6 +259,40 @@ export default function Tasks() {
         setArrLength(conditions.length)
     }
 
+    const addFlowUsers = () => {
+        setSelectedTaskUsers(
+            [...selectedTaskUsers, {
+                Index: null,
+                UserId: { id: 0, name: '', email: '', status: true },
+                StepName: null
+            }]
+        )
+    }
+
+    const handleDropDownStepUsers = async (index, value) => {
+        setSelUsers(value);
+        // console.log(index, value);
+
+        const to_add = [...final_users, {
+            Index: index,
+            UserId: { id: value.id, name: value.name, email: value.email, status: true }
+        }];
+
+        selectedTaskUsers[index].Index = index
+        selectedTaskUsers[index].UserId = { id: value.id, name: value.name, email: value.email, status: true }
+        setfinal_users(to_add);
+        // console.log(final_users);
+    };
+
+    const handleStepUsers = async (index, value) => {
+
+        // const to_add = [...stepName, {
+        //     StepName: value
+        // }];
+        selectedTaskUsers[index].StepName = value
+
+        // setStepName(to_add);
+    }
 
     const handleDropdown1Change = (index, value) => {
         const newFormData = [...conditions];
@@ -276,6 +320,12 @@ export default function Tasks() {
         setArrLength(arrLength - 1)
     };
 
+    const removeUser = (index) => {
+        const newFormData = selectedTaskUsers.filter((_, i) => i !== index);
+        setSelectedTaskUsers(newFormData);
+        setUserArrLength(arrUserLength - 1)
+    };
+
 
     const getSourceOptions = (sourceName) => {
         switch (sourceName) {
@@ -292,6 +342,7 @@ export default function Tasks() {
         }
     };
 
+    //status wf - requested, approved, finalized
 
 
     const [source, setSource] = useState([]);
@@ -468,7 +519,8 @@ export default function Tasks() {
 
         const wftstuf: wftstu = {
             workflowTaskSettingsId: 0,
-            target: target.length > 0 ? target : selUsers
+            target: target.length > 0 ? target : selectedTaskUsers
+            // selUsers
         }
 
         wff.push(wfg)
@@ -489,11 +541,6 @@ export default function Tasks() {
                 wff
             );
         }
-
-
-
-
-
     }
 
     return (
@@ -551,7 +598,8 @@ export default function Tasks() {
                                     <Dropdown
                                         value={field.filter}
                                         onChange={(e) => {
-                                            handleDropdown1Change(index, e.value)
+
+                                            handleDropdown1Change(index, e.value);
                                         }}
                                         options={posibleFilters}
                                         optionLabel="name"
@@ -593,70 +641,65 @@ export default function Tasks() {
 
             <div className="col-12">
                 <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Asignat">
-                    <div className="grid">
 
-                        <div className="field col-12 md:col-4">
-                            <label htmlFor="">Asignat catre</label>
-                            <MultiSelect value={selUsers} onChange={(e) => {
-                                setSelUsers(e.value)
-                                setSource(e.value)
+                    {selectedTaskUsers.length === 0 ?
+                        <Button label="Adauga" icon="pi pi-plus" onClick={addFlowUsers} />
+                        : null
+                    }
 
-                                // console.log(e.value)
-                            }}
-                                className="w-full"
-                                options={users} optionLabel="name"
-                                display="chip"
-                                placeholder="Utilizator" maxSelectedLabels={5} />
-                        </div>
-                        <Divider />
-                        <div className="flex flex-wrap gap-3">
 
-                            <div>Trebuie aprobat de:</div>
-                            <div className="flex align-items-center">
-                                <RadioButton inputId="anyone" name="anyone" value={false} onChange={(e) => setApproveAll(e.value)} checked={approveAll === false} />
-                                <label htmlFor="anyone" className="ml-2">Oricine</label>
+                    {selectedTaskUsers.map((field, index) => {
+                        // console.log(field.UserId)
+                        return (
+                            // console.log(field)
+                            <div className="grid" >
+
+                                <div className="field col-1 md:col-1 p-2">
+
+                                    <Tag style={{ fontSize: 16 }} value={index + 1}></Tag>
+                                </div>
+
+                                <div className="field col-12 md:col-3 p-2" key={index} >
+
+                                    <Dropdown id="user"
+                                        value={field.UserId}
+                                        onChange={(e) => {
+                                            handleDropDownStepUsers(index, e.value);
+                                        }}
+                                        className="w-full"
+                                        options={users}
+                                        optionLabel="name"
+                                        placeholder="Utilizator" />
+                                </div>
+
+                                <div className="flex flex-column field col-12 md:col-4 p-2">
+                                    <InputText
+
+                                        value={field.StepName}
+                                        onChange={(e) => handleStepUsers(index, e.target.value)}
+                                        placeholder="Denumire Pas Flux"
+                                        id="stepName"
+                                    />
+                                </div>
+
+                                <div className=" field col-12 md:col-2">
+                                    <Button icon="pi pi-plus" rounded text severity="success"
+                                        onClick={addFlowUsers} aria-label="Adauga" />
+                                    <Button icon="pi pi-minus" rounded text severity="danger"
+                                        onClick={() => removeUser(index)} aria-label="Sterge" />
+                                </div>
+
+                                <Divider />
                             </div>
 
-                            <div className="flex align-items-center">
-                                <RadioButton inputId="everyone" name="everyone" value={true} onChange={(e) => setApproveAll(e.value)} checked={approveAll === true} />
-                                <label htmlFor="everyone" className="ml-2">Toti</label>
-                            </div>
-                        </div>
-                        <Divider />
 
-                        {approveAll ?
-                            <div className="field col-4">
-                                <label htmlFor="anyone">Tip aprobare:</label>
-                                <Dropdown value={approveInParalel}
-                                    onChange={(e) => {
-                                        setApproveInParalel(e.value)
-                                        console.log(e.value)
-                                    }
-                                    }
-                                    options={approve_type} optionLabel="name"
-                                    placeholder="Tip aprobare"
-                                    className="w-full"
-                                // className="w-full md:w-14rem" 
-                                />
-                            </div>
-                            : null}
-                        <Divider />
+                        )
+                    }
+                    )
+                    }
 
-                        {approveInParalel == false ?
-                            <div className="field col-6">
-                                <div>Ordinea in care trebuie aprobat</div>
-                                <br></br>
-                                <PickList dataKey="id" source={source} target={target}
-                                    onChange={onChange} itemTemplate={itemTemplate}
-                                    // breakpoint="1280px"
-                                    sourceHeader="Disponibil" targetHeader="Ordinea"
-                                    sourceStyle={{ height: '10%' }}
-                                    targetStyle={{ height: '10%' }} />
-                            </div>
-                            : null}
-                    </div>
                 </Card>
-            </div>
+            </div >
 
             {/* update pe campul stare contract , email , etc */}
             {/* <div className="col-12">
@@ -781,3 +824,64 @@ export default function Tasks() {
 
     );
 }
+
+
+{/* <div className="field col-12 md:col-4">
+                            <label htmlFor="">Asignat catre</label>
+                            <MultiSelect value={selUsers} onChange={(e) => {
+                                setSelUsers(e.value)
+                                setSource(e.value)
+
+                                // console.log(e.value)
+                            }}
+                                className="w-full"
+                                options={users} optionLabel="name"
+                                display="chip"
+                                placeholder="Utilizator" maxSelectedLabels={5} />
+                        </div>
+                        <Divider />
+                        <div className="flex flex-wrap gap-3">
+
+                            <div>Trebuie aprobat de:</div>
+                            <div className="flex align-items-center">
+                                <RadioButton inputId="anyone" name="anyone" value={false} onChange={(e) => setApproveAll(e.value)} checked={approveAll === false} />
+                                <label htmlFor="anyone" className="ml-2">Oricine</label>
+                            </div>
+
+                            <div className="flex align-items-center">
+                                <RadioButton inputId="everyone" name="everyone" value={true} onChange={(e) => setApproveAll(e.value)} checked={approveAll === true} />
+                                <label htmlFor="everyone" className="ml-2">Toti</label>
+                            </div>
+                        </div>
+                        <Divider />
+
+                        {approveAll ?
+                            <div className="field col-4">
+                                <label htmlFor="anyone">Tip aprobare:</label>
+                                <Dropdown value={approveInParalel}
+                                    onChange={(e) => {
+                                        setApproveInParalel(e.value)
+                                        console.log(e.value)
+                                    }
+                                    }
+                                    options={approve_type} optionLabel="name"
+                                    placeholder="Tip aprobare"
+                                    className="w-full"
+                                // className="w-full md:w-14rem"
+                                />
+                            </div>
+                            : null}
+                        <Divider />
+
+                        {approveInParalel == false ?
+                            <div className="field col-6">
+                                <div>Ordinea in care trebuie aprobat</div>
+                                <br></br>
+                                <PickList dataKey="id" source={source} target={target}
+                                    onChange={onChange} itemTemplate={itemTemplate}
+                                    // breakpoint="1280px"
+                                    sourceHeader="Disponibil" targetHeader="Ordinea"
+                                    sourceStyle={{ height: '10%' }}
+                                    targetStyle={{ height: '10%' }} />
+                            </div>
+                            : null} */}
