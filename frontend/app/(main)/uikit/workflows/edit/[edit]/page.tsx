@@ -629,10 +629,13 @@ export default function Tasks() {
             // console.log("Validation NOT passed!");
             showWarn(validationResult.errors)
         } else {
-            // console.log("Validation passed.");
-            const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
-                wff
-            );
+            if (!Id) {
+                // console.log("Validation passed.");
+                const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
+                    wff
+                );
+            }
+
         }
 
         // if (!Id) {
