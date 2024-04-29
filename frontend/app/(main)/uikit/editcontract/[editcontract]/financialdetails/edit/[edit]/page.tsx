@@ -170,7 +170,7 @@ export default function Financial() {
                 }
 
                 // console.log(contractItem)
-                console.log(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
+                // console.log(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
             })
     }
 

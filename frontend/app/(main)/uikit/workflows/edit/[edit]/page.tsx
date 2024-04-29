@@ -62,7 +62,7 @@ export default function Tasks() {
 
     const [source, setSource] = useState([]);
     const [target, setTarget] = useState([]);
-
+    const toastTopRight = useRef<Toast>(null);
 
     const onChange = (event) => {
         setSource(event.source);
@@ -450,15 +450,6 @@ export default function Tasks() {
         }
     };
 
-    const itemTemplate = (item) => {
-        return (
-            <div className="flex flex-wrap p-2 align-items-center gap-3">
-                <div className="flex-1 flex flex-column gap-2">
-                    <span className="font-bold">{item.name}</span>
-                </div>
-            </div>
-        );
-    };
 
 
     const fetchUsers = async () => {
@@ -527,29 +518,13 @@ export default function Tasks() {
         };
     }
 
-    const showWarn = (detail) => {
-        toast.current.show({
-            severity: 'warn', summary: 'Atentie',
-            detail: detail, life: 3000
-        });
-    }
 
-    const showSuccess = () => {
-        toast.current.show(
-            { severity: 'success', summary: 'Success', detail: 'Salvat cu succes!', life: 1000 }
-        );
-
-        // setTimeout(() => {
-        //     // console.log("Delayed for 1 second.");
-        // }, 1000);
-    }
-
-
-    const addMessages = () => {
-        msgs.current.show([
-            { severity: 'info', summary: 'Info:', detail: 'O sa se trimita email catre toti', sticky: true, closable: true }
-        ]);
+    const showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
     };
+
+    // showMessage(e, toastTopRight, 'warn')
+
 
     //pe procedura de salvare trebuie puse conditiile de validare si returnare mesaje eroare
     const saveWF = async () => {
@@ -637,42 +612,44 @@ export default function Tasks() {
 
         if (!validationResult.isValid) {
             // console.log("Validation NOT passed!");
-            showWarn(validationResult.errors)
+            showMessage('error', 'Eroare', validationResult.errors)
         } else {
-            if (!Id) {
-                showSuccess();
+            if (Id) {
+
                 // console.log("Validation passed.");
                 const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
                     wff
                 );
-            }
 
+                if (response.status == 200) {
+                    showMessage('success', 'Salvat cu succes!', 'Ok');
+                }
+                else {
+                    showMessage('error', 'Eroare', response.statusText)
+                }
+
+            }
         }
 
-        // if (!Id) {
-        //     const response = await axios.post(`http://localhost:3000/contracts/workflow`,
-        //         wff
-        //     );
-        // }
-        // else {
-        //     console.log(wff, "pt validare")
 
-        //     const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
-        //         wff
-        //     );
-        // }
+
 
 
     }
 
-    // console.log(selectedTaskUsers.length, "marime ")
-    // console.log(selectedTaskUsers, "valoare ")
+    // const showMessage = (severity, summary, detail) => {
+    //     toast.current.show({ severity: 'info', summary: 'Info', detail: 'Message Content' });
+    // };
+
 
     return (
         <div className="grid">
             <div className="col-12">
                 <Card className='border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all' title="Date generale">
-                    <Toast ref={toast} />
+
+                    <Toast ref={toast} position="top-right" />
+
+
                     <div className="grid">
 
                         {/* <div className="flex flex-wrap column-gap-1 row-gap-2"> */}
@@ -925,7 +902,7 @@ export default function Tasks() {
                         <label htmlFor="ingredient1" className="ml-2">Trimite notificari catre responsabil contract</label>
                     </div>
 
-                    <Button type="button" onClick={addMessages} label="Info" className="mr-2" />
+                    {/* <Button type="button" onClick={addMessages} label="Info" className="mr-2" /> */}
                     <Messages ref={msgs} />
 
                     {/* bifa - se trimite mail catre toti asignati sau doar unul 
@@ -1018,10 +995,11 @@ export default function Tasks() {
 
                         <div className="field col-1 md:col-2 ">
                             <Button label="Salveaza" onClick={saveWF} />
+                            {/* <Button label="Top Right" className="p-button-warning" onClick={(e) => showMessage('warn', 'test', 'detail')} /> */}
+
                         </div>
 
                     </div>
-
                 </Card>
             </div>
 
