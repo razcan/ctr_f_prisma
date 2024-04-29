@@ -30,6 +30,7 @@ import Content from './content'
 import History from './history'
 import Alerts from './alerts';
 import Tasks from './tasks'
+import WorkFlow from './workflow'
 import { Tag } from 'primereact/tag';
 
 
@@ -82,7 +83,7 @@ export default function AddContract() {
 
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
-        // { label: 'Flux aprobare', icon: 'pi pi-list' },
+        { label: 'Flux aprobare', icon: 'pi pi-list' },
         { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' },
         { label: 'Istoric', icon: 'pi pi-fw pi-table' },
         { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
@@ -154,7 +155,7 @@ export default function AddContract() {
 
                         <div>
                             <div className='pt-4'>
-                                <Tasks />
+                                <WorkFlow />
                             </div>
                         </div>
 
@@ -164,13 +165,23 @@ export default function AddContract() {
 
                         <div>
                             <div className='pt-4'>
-                                <History />
+                                <Tasks />
                             </div>
                         </div>
 
                         : null
                     }
                     {activeIndex === 7 ?
+
+                        <div>
+                            <div className='pt-4'>
+                                <History />
+                            </div>
+                        </div>
+
+                        : null
+                    }
+                    {activeIndex === 8 ?
 
                         <div>
                             <div className='pt-4'>

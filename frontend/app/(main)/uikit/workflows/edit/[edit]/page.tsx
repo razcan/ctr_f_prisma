@@ -109,20 +109,6 @@ export default function Tasks() {
                 setSendNotifications(wfData.WorkFlowTaskSettings[0].taskSendNotifications);
                 setReminderNotifications(wfData.WorkFlowTaskSettings[0].taskSendReminders);
 
-                //de adaugat incarcare date in variabila de validare 
-
-                // const wff: any[] = [];
-
-
-                // wff.push(wfData)
-                // wff.push(rules)
-                // wff.push(wftsf)
-                // wff.push(wftstuf)
-
-                // const validationResult = validateForm(wff);
-
-                // setConditions(
-                //     [...conditions, wfData.WorkFlowRules])
 
                 const user_res = [];
 
@@ -522,9 +508,6 @@ export default function Tasks() {
     const showMessage = (severity, summary, detail) => {
         toast.current.show({ severity: severity, summary: summary, detail: detail });
     };
-
-    // showMessage(e, toastTopRight, 'warn')
-
 
     //pe procedura de salvare trebuie puse conditiile de validare si returnare mesaje eroare
     const saveWF = async () => {
