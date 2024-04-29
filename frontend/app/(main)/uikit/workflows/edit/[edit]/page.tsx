@@ -534,6 +534,16 @@ export default function Tasks() {
         });
     }
 
+    const showSuccess = () => {
+        toast.current.show(
+            { severity: 'success', summary: 'Success', detail: 'Salvat cu succes!', life: 1000 }
+        );
+
+        // setTimeout(() => {
+        //     // console.log("Delayed for 1 second.");
+        // }, 1000);
+    }
+
 
     const addMessages = () => {
         msgs.current.show([
@@ -630,6 +640,7 @@ export default function Tasks() {
             showWarn(validationResult.errors)
         } else {
             if (!Id) {
+                showSuccess();
                 // console.log("Validation passed.");
                 const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
                     wff
