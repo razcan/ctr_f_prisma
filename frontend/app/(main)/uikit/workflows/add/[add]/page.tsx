@@ -5,28 +5,12 @@ import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { InputNumber } from 'primereact/inputnumber';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
-import { Dialog } from 'primereact/dialog';
-import router from 'next/router';
-import { Editor } from 'primereact/editor';
 import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { ProgressBar } from 'primereact/progressbar';
-import { Slider } from 'primereact/slider';
 import { MyContext, MyProvider } from '../../../../../../layout/context/myUserContext'
-import { MultiSelect } from 'primereact/multiselect';
-import { RadioButton } from "primereact/radiobutton";
-import { PickList } from 'primereact/picklist';
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { Messages } from 'primereact/messages';
@@ -57,9 +41,9 @@ export default function Tasks() {
     const msgs = useRef(null);
     const [wfname, setwfname] = useState('');
     const [wfdescription, setwfdescription] = useState('');
-    const [isActive, setIsActive] = useState(true);
-    const [approveInParalel, setApproveInParalel] = useState(false);
-    const [approveAll, setApproveAll] = useState(true);
+    const [isActive, setIsActive] = useState(false);
+    // const [approveInParalel, setApproveInParalel] = useState(false);
+    // const [approveAll, setApproveAll] = useState(true);
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
     const [selectedtaskName, setselectedTaskName] = useState('');
@@ -87,11 +71,6 @@ export default function Tasks() {
         { name: 'Departament' },
         { name: 'Categorie' },
         { name: 'Cashflow' }
-    ];
-
-    const approve_type = [
-        { name: 'Paralel', value: true },
-        { name: 'Secvential', value: false }
     ];
 
     const fetchTasksStatusData = () => {
@@ -488,8 +467,6 @@ export default function Tasks() {
 
         interface wfts {
             workflowId: number,
-            approvedByAll: Boolean,
-            approvalTypeInParallel: Boolean,
             taskName: string,
             taskDueDateId: number | never[],
             taskNotes: string,
@@ -500,8 +477,6 @@ export default function Tasks() {
         }
         const wftsf: wfts = {
             workflowId: 0,
-            approvedByAll: approveAll,
-            approvalTypeInParallel: approveInParalel,
             taskName: selectedtaskName,
             taskDueDateId: selectedDueDate ? selectedDueDate.id : 1,
             taskNotes: text,
@@ -765,10 +740,7 @@ export default function Tasks() {
                             <label htmlFor="dd-city">Prioritate</label>
                         </span>
 
-                        {/* <span className="p-float-label field col-3">
-                            <Dropdown inputId="dd-city" value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" className="w-full" />
-                            <label htmlFor="dd-city">Status</label>
-                        </span> */}
+
 
                         <div className="field col-12 pb-6">
                             <label className="ml-2">Descriere Task</label>
@@ -782,9 +754,6 @@ export default function Tasks() {
                                 onChange={handleProcedureContentChange}
                             />
                         </div>
-                        {/* <br></br> */}
-                        {/* <Divider /> */}
-
 
 
                         <div className="flex align-items-center col-12">
@@ -825,63 +794,3 @@ export default function Tasks() {
     );
 }
 
-
-{/* <div className="field col-12 md:col-4">
-                            <label htmlFor="">Asignat catre</label>
-                            <MultiSelect value={selUsers} onChange={(e) => {
-                                setSelUsers(e.value)
-                                setSource(e.value)
-
-                                // console.log(e.value)
-                            }}
-                                className="w-full"
-                                options={users} optionLabel="name"
-                                display="chip"
-                                placeholder="Utilizator" maxSelectedLabels={5} />
-                        </div>
-                        <Divider />
-                        <div className="flex flex-wrap gap-3">
-
-                            <div>Trebuie aprobat de:</div>
-                            <div className="flex align-items-center">
-                                <RadioButton inputId="anyone" name="anyone" value={false} onChange={(e) => setApproveAll(e.value)} checked={approveAll === false} />
-                                <label htmlFor="anyone" className="ml-2">Oricine</label>
-                            </div>
-
-                            <div className="flex align-items-center">
-                                <RadioButton inputId="everyone" name="everyone" value={true} onChange={(e) => setApproveAll(e.value)} checked={approveAll === true} />
-                                <label htmlFor="everyone" className="ml-2">Toti</label>
-                            </div>
-                        </div>
-                        <Divider />
-
-                        {approveAll ?
-                            <div className="field col-4">
-                                <label htmlFor="anyone">Tip aprobare:</label>
-                                <Dropdown value={approveInParalel}
-                                    onChange={(e) => {
-                                        setApproveInParalel(e.value)
-                                        console.log(e.value)
-                                    }
-                                    }
-                                    options={approve_type} optionLabel="name"
-                                    placeholder="Tip aprobare"
-                                    className="w-full"
-                                // className="w-full md:w-14rem"
-                                />
-                            </div>
-                            : null}
-                        <Divider />
-
-                        {approveInParalel == false ?
-                            <div className="field col-6">
-                                <div>Ordinea in care trebuie aprobat</div>
-                                <br></br>
-                                <PickList dataKey="id" source={source} target={target}
-                                    onChange={onChange} itemTemplate={itemTemplate}
-                                    // breakpoint="1280px"
-                                    sourceHeader="Disponibil" targetHeader="Ordinea"
-                                    sourceStyle={{ height: '10%' }}
-                                    targetStyle={{ height: '10%' }} />
-                            </div>
-                            : null} */}

@@ -17,12 +17,6 @@ import {
 import { InputText } from 'primereact/inputtext';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
-import { InputTextarea } from 'primereact/inputtextarea';
-import { Calendar } from 'primereact/calendar';
-import { InputNumber } from 'primereact/inputnumber';
-import { Slider } from 'primereact/slider';
-import { Tag } from 'primereact/tag';
-import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
 import * as XLSX from 'xlsx';
 
@@ -120,7 +114,7 @@ function Report() {
             };
             axios(config)
                 .then(function (response) {
-                    console.log(response.data)
+                    // console.log(response.data)
                     setData(response.data);
                     setFilteredData(response.data);
 

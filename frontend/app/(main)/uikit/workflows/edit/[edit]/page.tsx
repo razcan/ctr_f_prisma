@@ -13,9 +13,6 @@ import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import { MyContext, MyProvider } from '../../../../../../layout/context/myUserContext'
-import { MultiSelect } from 'primereact/multiselect';
-import { RadioButton } from "primereact/radiobutton";
-import { PickList } from 'primereact/picklist';
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { Messages } from 'primereact/messages';
@@ -48,8 +45,6 @@ export default function Tasks() {
     const [wfname, setwfname] = useState('');
     const [wfdescription, setwfdescription] = useState('');
     const [isActive, setIsActive] = useState(true);
-    const [approveInParalel, setApproveInParalel] = useState();
-    const [approveAll, setApproveAll] = useState(true);
     const [sendNotifications, setSendNotifications] = useState(true);
     const [reminderNotifications, setReminderNotifications] = useState(true);
     const [selectedtaskName, setselectedTaskName] = useState('');
@@ -63,6 +58,7 @@ export default function Tasks() {
     const [wfData, setWfData] = useState([]);
     const [refreshKey, setRefreshKey] = useState(0);
     const [final_users, setfinal_users] = useState([])
+    const [arrUserLength, setUserArrLength] = useState(0);
 
     const [source, setSource] = useState([]);
     const [target, setTarget] = useState([]);
@@ -89,10 +85,6 @@ export default function Tasks() {
         { name: 'Cashflow' }
     ];
 
-    const approve_type = [
-        { name: 'Paralel', value: true },
-        { name: 'Secvential', value: false }
-    ];
 
     async function fetchData(url: string): Promise<any> {
         const response = await fetch(url);
@@ -112,12 +104,22 @@ export default function Tasks() {
                 setwfname(wfData.wfName);
                 setwfdescription(wfData.wfDescription);
                 setIsActive(wfData.status);
-                setApproveInParalel(wfData.WorkFlowTaskSettings[0].approvalTypeInParallel);
-                setApproveAll(wfData.WorkFlowTaskSettings[0].approvedByAll);
                 setselectedTaskName(wfData.WorkFlowTaskSettings[0].taskName);
                 setText(wfData.WorkFlowTaskSettings[0].taskNotes);
                 setSendNotifications(wfData.WorkFlowTaskSettings[0].taskSendNotifications);
                 setReminderNotifications(wfData.WorkFlowTaskSettings[0].taskSendReminders);
+
+                //de adaugat incarcare date in variabila de validare 
+
+                // const wff: any[] = [];
+
+
+                // wff.push(wfData)
+                // wff.push(rules)
+                // wff.push(wftsf)
+                // wff.push(wftstuf)
+
+                // const validationResult = validateForm(wff);
 
                 // setConditions(
                 //     [...conditions, wfData.WorkFlowRules])
@@ -125,14 +127,14 @@ export default function Tasks() {
                 const user_res = [];
 
                 const raspuns = wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers;
-                console.log(raspuns, raspuns.length, "raspuns")
+                // console.log(raspuns, raspuns.length, "raspuns")
 
                 let myArray: { Index: number, UserId: string, StepName: number }[] = [
                 ];
 
                 for (let i = 0; i < raspuns.length; i++) {
 
-                    console.log(raspuns[i].userId, "useri")
+                    // (raspuns[i].userId, "useri")
                     const apiUrl = `http://localhost:3000/nomenclatures/susers/${raspuns[i].userId}`;
                     const result = fetchData(apiUrl);
 
@@ -147,38 +149,7 @@ export default function Tasks() {
 
                 setSelectedTaskUsers(...selectedTaskUsers, myArray)
 
-                // await wfData.WorkFlowTaskSettings[0].WorkFlowTaskSettingsUsers.map(
-                //     (users, index) => {
-                //         (async () => {
-                //             const apiUrl = `http://localhost:3000/nomenclatures/susers/${users.userId}`;
-                //             const result = await fetchData(apiUrl);
-                //             // user_res.push(result)
-                //             let myArray: { Index: number, UserId: string, StepName: number }[] = [
-                //             ];
-
-
-                //             myArray[index] = {
-                //                 Index: users.approvalOrderNumber,
-                //                 UserId: result,
-                //                 StepName: users.approvalStepName
-                //             }
-
-                //             setSelectedTaskUsers(...selectedTaskUsers, myArray)
-
-                //             user_res.push(myArray)
-                //             console.log(myArray, "totul");
-
-                //         })();
-                //         console.log(user_res, "test")
-                //     }
-                // );
-
-
-                //       setSelUsers(user_res);
-                // setTarget(user_res);
                 setRefreshKey(refreshKey + 1);
-
-                // console.log('Rules', wfData.WorkFlowRules)
 
                 interface rule {
                     "filter": {
@@ -214,9 +185,6 @@ export default function Tasks() {
                 setConditions(rules_res);
             })
     }
-
-    // console.log(selUsers, 'ici')
-    // console.log(selectedTaskUsers, "test asdsfsd")
 
     const fetchTasksStatusData = () => {
         fetch("http://localhost:3000/nomenclatures/taskStatus")
@@ -618,8 +586,6 @@ export default function Tasks() {
 
         interface wfts {
             workflowId: number,
-            approvedByAll: Boolean,
-            approvalTypeInParallel: Boolean,
             taskName: string,
             taskDueDateId: number | never[],
             taskNotes: string,
@@ -630,17 +596,14 @@ export default function Tasks() {
         }
         const wftsf: wfts = {
             workflowId: 0,
-            approvedByAll: approveAll,
-            approvalTypeInParallel: approveInParalel,
             taskName: selectedtaskName,
-            taskDueDateId: selectedDueDate ? selectedDueDate : 1,
+            taskDueDateId: selectedDueDate ? selectedDueDate.id : 1,
             taskNotes: text,
             taskSendNotifications: sendNotifications,
             taskSendReminders: reminderNotifications,
-            taskReminderId: selectedReminder,
+            taskReminderId: selectedReminder ? selectedReminder.id : 1,
             taskPriorityId: selectedPriority ? selectedPriority.id : 1
         }
-
 
 
         interface wftstu {
@@ -650,7 +613,7 @@ export default function Tasks() {
 
         const wftstuf: wftstu = {
             workflowTaskSettingsId: 0,
-            target: target
+            target: selectedTaskUsers
         }
 
         wff.push(wfg)
@@ -659,16 +622,32 @@ export default function Tasks() {
         wff.push(wftstuf)
 
 
+
         const validationResult = validateForm(wff);
 
         if (!validationResult.isValid) {
+            // console.log("Validation NOT passed!");
             showWarn(validationResult.errors)
         } else {
-            console.log("Validation passed.");
-            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+            // console.log("Validation passed.");
+            const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
                 wff
             );
         }
+
+        // if (!Id) {
+        //     const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+        //         wff
+        //     );
+        // }
+        // else {
+        //     console.log(wff, "pt validare")
+
+        //     const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
+        //         wff
+        //     );
+        // }
+
 
     }
 
@@ -781,7 +760,7 @@ export default function Tasks() {
 
 
                     {selectedTaskUsers.map((field, index) => {
-                        console.log(field, "field")
+                        // console.log(field, "field")
                         return (
                             // console.log(field)
                             <div className="grid" >
