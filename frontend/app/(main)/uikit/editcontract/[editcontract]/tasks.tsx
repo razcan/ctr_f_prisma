@@ -360,9 +360,16 @@ export default function Tasks() {
                                                 <label className="ml-2">Descriere Task</label>
                                             </div>
 
-                                            <div className="field-checkbox col-12 md:col-12">
+                                            {/* <div className="field-checkbox col-12 md:col-12">
                                                 <InputTextarea id="notes" value={selectednotes} onChange={(e) => setselectedNotes(e.target.value)} rows={3} cols={60} />
+                                            </div> */}
+
+                                            <div className="field col-12  md:col-12">
+                                                <Editor value={selectednotes}
+                                                    onChange={(e) => setselectedNotes(e.htmlValue)}
+                                                    style={{ height: '320px' }} />
                                             </div>
+
                                             <div className="field-checkbox col-12 md:col-3">
                                                 <Button label="Salveaza" onClick={EditTask} />
                                             </div>
@@ -432,9 +439,19 @@ export default function Tasks() {
                                                         <label className="ml-2">Descriere Task</label>
                                                     </div>
 
-                                                    <div className="field-checkbox col-12 md:col-12">
-                                                        <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
+                                                    {/* <div className="field-checkbox col-12 md:col-12">
+                                                        <InputTextarea id="notes" value={notes} 
+                                                        onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
+                                                    </div> */}
+
+                                                    <div className="field col-12  md:col-12">
+
+
+                                                        <Editor value={notes}
+                                                            onTextChange={(e) => setNotes(e.htmlValue)}
+                                                            style={{ height: '320px' }} />
                                                     </div>
+
                                                     <div className="field-checkbox col-12 md:col-3">
                                                         <Button label="Salveaza" onClick={SaveTask} />
                                                     </div>
@@ -492,7 +509,7 @@ export default function Tasks() {
                             <Column field="requestor.name" header="Solicitant" ></Column>
                             <Column field="assigned.name" header="Responsabil"></Column>
                             <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
-                            <Column field="notes" header="Detalii"></Column>
+                            <Column field="taskName" header="Denumire"></Column>
                             <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
 
                         </DataTable>

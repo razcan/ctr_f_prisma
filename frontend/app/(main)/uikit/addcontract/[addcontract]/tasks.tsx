@@ -285,9 +285,7 @@ export default function Tasks() {
                                     {selectedTask ?
                                         <div className="p-fluid formgrid grid pt-2">
 
-                                            <div className="field col-12  md:col-12">
-                                                <ProgressBar value={selectedprogress}></ProgressBar>
-                                            </div>
+
 
                                             <div className="field col-12  md:col-6">
                                                 <label htmlFor="taskName">Nume Task</label>
@@ -299,10 +297,7 @@ export default function Tasks() {
 
                                             </div>
 
-                                            {/* <div className="field col-12 md:col-3">
-                                                <label htmlFor="status">Stare</label>
-                                                <Dropdown id="status" filter showClear value={selectedstatus} onChange={(e) => setselectedStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
-                                            </div> */}
+
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="status">Stare</label>
@@ -316,13 +311,6 @@ export default function Tasks() {
                                                 <Calendar id="due" value={new Date(selecteddue)} onChange={(e) => setselectedDue(e.value)} showIcon dateFormat="dd/mm/yy" />
                                             </div>
 
-
-                                            <div className="field col-12 md:col-3">
-                                                <label className="font-bold block mb-2">
-                                                    Progres la Data
-                                                </label>
-                                                <Calendar id="statusDate" value={new Date(selectedstatusDate)} onChange={(e) => setselectedStatusDate(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                            </div>
 
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="progress">Progres Actual(%)</label>
@@ -367,9 +355,7 @@ export default function Tasks() {
                                         <div>
                                             {requestor ?
                                                 <div className="p-fluid formgrid grid pt-2">
-                                                    <div className="field col-12  md:col-12">
-                                                        <ProgressBar value={progress}></ProgressBar>
-                                                    </div>
+
 
                                                     <div className="field col-12  md:col-6">
                                                         <label htmlFor="taskName">Nume Task</label>
@@ -388,20 +374,6 @@ export default function Tasks() {
                                                         </label>
                                                         <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
                                                     </div>
-
-
-                                                    <div className="field col-12 md:col-3">
-                                                        <label className="font-bold block mb-2">
-                                                            Progres la Data
-                                                        </label>
-                                                        <Calendar id="statusDate" value={statusDate} onChange={(e) => setStatusDate(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                                    </div>
-
-                                                    <div className="field col-12  md:col-3">
-                                                        <label htmlFor="progress">Progres Actual(%)</label>
-                                                        <InputText id="progress" type="int" value={progress} onChange={(e) => setProgress(e.target.value)} />
-                                                    </div>
-
 
 
                                                     <div className="field col-12 md:col-3">
