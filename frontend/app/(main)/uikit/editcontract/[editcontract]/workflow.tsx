@@ -34,7 +34,6 @@ export default function Content() {
 
     const fetchContent = async () => {
         const response = await fetch(`http://localhost:3000/contracts/getWFHistory/${Id}`).then(res => res.json())
-        console.log(response)
         setWFHistory(response);
     }
 

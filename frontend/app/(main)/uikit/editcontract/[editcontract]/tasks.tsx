@@ -85,7 +85,6 @@ export default function Tasks() {
             .then(tasks => {
                 setTasks(tasks)
                 setselectedRequestor(tasks.requestorId)
-                console.log(tasks)
             })
     }
 
@@ -287,6 +286,7 @@ export default function Tasks() {
             <div className="col-12">
                 <div className='card'>
 
+
                     <Dialog header="Task" visible={visible} style={{ width: '60vw' }} onHide={() => {
                         setselectedTask(undefined)
                         setVisible(false)
@@ -337,9 +337,7 @@ export default function Tasks() {
                                                 <label htmlFor="requestor">Solicitant</label>
                                                 <Dropdown id="requestor" filter showClear
                                                     value={getRequestor(selectedrequestor)}
-
                                                     disabled
-
                                                     onChange={(e) => {
                                                         setRequestor(e.value)
                                                     }} options={users} optionLabel="name"
@@ -360,9 +358,7 @@ export default function Tasks() {
                                                 <label className="ml-2">Descriere Task</label>
                                             </div>
 
-                                            {/* <div className="field-checkbox col-12 md:col-12">
-                                                <InputTextarea id="notes" value={selectednotes} onChange={(e) => setselectedNotes(e.target.value)} rows={3} cols={60} />
-                                            </div> */}
+
 
                                             <div className="field col-12  md:col-12">
                                                 <Editor value={selectednotes}
@@ -439,13 +435,9 @@ export default function Tasks() {
                                                         <label className="ml-2">Descriere Task</label>
                                                     </div>
 
-                                                    {/* <div className="field-checkbox col-12 md:col-12">
-                                                        <InputTextarea id="notes" value={notes} 
-                                                        onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
-                                                    </div> */}
+
 
                                                     <div className="field col-12  md:col-12">
-
 
                                                         <Editor value={notes}
                                                             onTextChange={(e) => setNotes(e.htmlValue)}
@@ -457,13 +449,8 @@ export default function Tasks() {
                                                     </div>
                                                 </div>
                                                 : null}
-
                                         </div>
-
-
                                     }
-
-
                                 </div>
                             </div>
                         </div>
@@ -471,49 +458,44 @@ export default function Tasks() {
 
                     <Button label="Adauga Task" onClick={addtask} />
 
-                    {tasks.length > 0 ?
-                        <DataTable
-                            dataKey={tasks.id}
-                            className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
-                            selectionMode="single"
-                            //selection={selectedTask} 
+                    <DataTable
+                        dataKey={tasks.id}
+                        className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
-                            onSelectionChange={(e) => {
-                                setselectedRequestor(e.value.requestorId),
-                                    setselectedAssigned(e.value.assignedId),
-                                    setselectedTask(e.value),
-                                    setselectedTaskName(e.value.taskName),
-                                    setselectedDue(e.value.due),
-                                    setselectedNotes(e.value.notes),
-                                    setselectedtaskId(e.value.id),
-                                    setSelectedRejectedReason(e.value.rejected_reason),
+                        selectionMode="single"
+                        //selection={selectedTask} 
 
+                        onSelectionChange={(e) => {
+                            setselectedRequestor(e.value.requestorId),
+                                setselectedAssigned(e.value.assignedId),
+                                setselectedTask(e.value),
+                                setselectedTaskName(e.value.taskName),
+                                setselectedDue(e.value.due),
+                                setselectedNotes(e.value.notes),
+                                setselectedtaskId(e.value.id),
+                                setSelectedRejectedReason(e.value.rejected_reason),
+                                setSelectedPriority(e.value.taskPriorityId),
+                                setselectedStatus(e.value.statusId),
+                                setVisible(true)
 
-                                    setSelectedPriority(e.value.taskPriorityId),
-                                    setselectedStatus(e.value.statusId),
+                        }}
+                        stripedRows
+                        sortMode="multiple"
+                        sortField="data"
+                        sortOrder={1}
+                    >
+                        <Column hidden field="id" header="id"></Column>
+                        <Column hidden field="rejected_reason" header="rejected_reason"></Column>
+                        <Column field="status.name" header="Stare"></Column>
+                        <Column field="requestor.name" header="Solicitant" ></Column>
+                        <Column field="assigned.name" header="Responsabil"></Column>
+                        <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
+                        <Column field="taskName" header="Denumire"></Column>
+                        <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
 
-                                    setVisible(true),
+                    </DataTable>
 
-                                    console.log(e.value)
-
-                            }}
-                            stripedRows
-                            sortMode="multiple"
-                            sortField="data"
-                            sortOrder={1}
-                        >
-                            <Column hidden field="id" header="id"></Column>
-                            <Column hidden field="rejected_reason" header="rejected_reason"></Column>
-                            <Column field="status.name" header="Stare"></Column>
-                            <Column field="requestor.name" header="Solicitant" ></Column>
-                            <Column field="assigned.name" header="Responsabil"></Column>
-                            <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
-                            <Column field="taskName" header="Denumire"></Column>
-                            <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
-
-                        </DataTable>
-                        : null}
 
                 </div>
             </div>
