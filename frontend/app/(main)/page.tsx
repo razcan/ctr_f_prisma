@@ -11,13 +11,23 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 
 const Charts = () => {
 
-
   const useMyContext = () => useContext(MyContext);
   const {
     fetchWithToken, Backend_BASE_URL,
-    Frontend_BASE_URL } = useMyContext();
+    Frontend_BASE_URL, isLoggedIn, login, userId } = useMyContext();
 
   const router = useRouter()
+
+
+
+  useEffect(() => {
+
+    if (!userId) {
+      router.push(`${Frontend_BASE_URL}/auth/login`)
+    }
+
+  }, [])
+
 
 
   const [options, setOptions] = useState<ChartOptionsState>({});
@@ -467,6 +477,8 @@ const Charts = () => {
   useEffect(() => {
     fetchCashFlow()
   }, [])
+
+
 
   useEffect(() => {
 

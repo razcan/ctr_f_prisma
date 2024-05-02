@@ -74,7 +74,20 @@ function Report() {
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const router = useRouter()
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
 
 
     const [cashflows, setCashflow] = useState([]);

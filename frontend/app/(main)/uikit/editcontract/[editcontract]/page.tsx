@@ -2,7 +2,7 @@
 
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -32,12 +32,31 @@ import Alerts from './alerts';
 import Tasks from './tasks'
 import WorkFlow from './workflow'
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 
 export default function AddContract() {
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
-    const router = useRouter();
+    const router = useRouter()
+
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
+
+
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
 

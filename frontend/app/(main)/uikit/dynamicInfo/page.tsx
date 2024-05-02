@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
+
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -22,9 +23,10 @@ import axios from 'axios';
 import "react-quill/dist/quill.snow.css";
 import { Tag } from 'primereact/tag';
 import { Slider } from 'primereact/slider';
-
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
 
 export default function Alerts() {
+
 
     const [fields, setFields] = useState([]);
 
@@ -36,6 +38,60 @@ export default function Alerts() {
     const [order, setOrder] = useState('');
     const existingorder: any[] = [];
     const existingfields: any[] = [];
+    const [isAdmin, setIsAdmin] = useState(0);
+    const toast = useRef<any>(null);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const router = useRouter()
+
+    const checkUserRole = () => {
+        const session = sessionStorage.getItem('token');
+
+        if (!session) {
+            router.push('/');
+            return false;
+        }
+
+        try {
+            const jwtToken = JSON.parse(session);
+            const roles = jwtToken.roles;
+            if (!roles || !Array.isArray(roles)) {
+                router.push('/');
+                return false;
+            }
+            return roles.includes('Administrator');
+        } catch (error) {
+            router.push('/');
+            console.error('Error parsing token:', error);
+            return false;
+        }
+    }
+
+
+    const showError = () => {
+        router.push(`${Frontend_BASE_URL}/auth/access`);
+    }
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        } else {
+            const ck = checkUserRole();
+            if (!ck) {
+                showError();
+            }
+        }
+
+    }, [])
+
 
     const allFields = [
         { name: 'dffInt1', type: 'Int' },
@@ -156,7 +212,7 @@ export default function Alerts() {
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
-
+                    <Toast ref={toast} />
                     <Button label="Adauga" onClick={addDynamicField} />
 
                     <DataTable value={fields} tableStyle={{ minWidth: '50rem' }}>
