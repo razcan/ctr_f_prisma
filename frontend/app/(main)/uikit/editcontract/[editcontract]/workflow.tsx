@@ -35,6 +35,7 @@ export default function Content() {
     const fetchContent = async () => {
         const response = await fetch(`http://localhost:3000/contracts/getWFHistory/${Id}`).then(res => res.json())
         setWFHistory(response);
+        console.log(response)
     }
 
     useEffect(() => {
@@ -58,6 +59,28 @@ export default function Content() {
         return <span>{formattedDate}</span>;
     };
 
+    const LastChangeTemplate = (rowData: any) => {
+        const formattedDate = formatDateHour(rowData.createdAt);
+        return <span>{formattedDate}</span>;
+    };
+
+
+    const formatDateHour = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false // 24-hour format
+        };
+
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
 
     return (
         <div className="grid">
@@ -76,7 +99,7 @@ export default function Content() {
                         <Column field="duedates" sortable header="De rezolvat pana la" body={duedates} ></Column>
                         <Column field="user" header="Utilizator curent"></Column>
                         <Column field="status" header="Stare"></Column>
-
+                        <Column field="createdAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
 
                     </DataTable>

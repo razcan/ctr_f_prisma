@@ -83,6 +83,7 @@ export default function Tasks() {
                 return response.json()
             })
             .then(tasks => {
+                console.log(tasks, "tasks")
                 setTasks(tasks)
                 setselectedRequestor(tasks.requestorId)
             })
@@ -268,12 +269,31 @@ export default function Tasks() {
         return <span>{formattedDate}</span>;
     };
 
-
+    const LastChangeTemplate = (rowData: any) => {
+        const formattedDate = formatDateHour(rowData.updateadAt);
+        return <span>{formattedDate}</span>;
+    };
 
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
         const date = new Date(dateString);
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
+    const formatDateHour = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false // 24-hour format
+        };
+
         return date.toLocaleDateString('ro-Ro', options);
     };
 
@@ -487,12 +507,13 @@ export default function Tasks() {
                     >
                         <Column hidden field="id" header="id"></Column>
                         <Column hidden field="rejected_reason" header="rejected_reason"></Column>
-                        <Column field="status.name" header="Stare"></Column>
                         <Column field="requestor.name" header="Solicitant" ></Column>
                         <Column field="assigned.name" header="Responsabil"></Column>
                         <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
                         <Column field="taskName" header="Denumire"></Column>
                         <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
+                        <Column field="status.name" header="Stare"></Column>
+                        <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
                     </DataTable>
 
