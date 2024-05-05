@@ -73,6 +73,11 @@ const AppMenu = () => {
                     icon: 'pi pi-fw pi-check-square',
                     to: '/uikit/users',
                 },
+                {
+                    label: 'Cursuri Valutare',
+                    icon: 'pi pi-fw pi-calendar',
+                    to: '/uikit/exchagerates',
+                },
 
                 // {
                 //     label: 'Landing page',
