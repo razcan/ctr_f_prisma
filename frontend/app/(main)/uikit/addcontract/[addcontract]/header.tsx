@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { permanentRedirect } from 'next/navigation'
 import { revalidateTag } from 'next/cache'
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -27,6 +27,7 @@ import { useSearchParams } from 'next/navigation'
 import { useData } from './DataContext';
 import { DataProvider } from './DataContext';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import { Toast } from 'primereact/toast';
 
 
 function addOneDay(date: Date): Date {
@@ -86,7 +87,7 @@ export default function HeaderContract({ setContractId }: any) {
 
 
 
-
+    const toast = useRef(null);
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
@@ -234,7 +235,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
 
-    console.log(locations)
+
     const fetchTypeData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttype")
             .then(response => {
@@ -359,15 +360,71 @@ export default function HeaderContract({ setContractId }: any) {
             fetchDynamicFields(),
             fetchLocationData()
     }, [])
+    interface ValidationResult {
+        isValid: boolean;
+        errors: string[];
+    }
+
+    function validateForm(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+
+        // console.log(fields, "fields")
+
+        if (!fields.start) {
+            errors.push("Trebuie sa setati o data de start a contractului!");
+        }
+
+        if (!fields.end) {
+            errors.push("Trebuie sa setati o data de final a contractului!");
+        }
+
+        if (!fields.statusId) {
+            errors.push("Trebuie sa setati o stare a contractului!");
+        }
+
+        if (!fields.categoryId) {
+            errors.push("Trebuie sa setati o categorie!");
+        }
+
+        if (!fields.departmentId) {
+            errors.push("Trebuie sa setati un departament!");
+        }
+
+        if (!fields.costcenterId) {
+            errors.push("Trebuie sa setati un centru de cost/profit!");
+        }
+
+        if (!fields.cashflowId) {
+            errors.push("Trebuie sa setati o linie de CashFlow!");
+        }
+
+
+        if (!fields.locationId) {
+            errors.push("Trebuie sa setati o locatie!");
+        }
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
+
+
+    const showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
+    };
+
 
     const saveContract = async () => {
         // console.log(number, partner, start, end, completion, sign, type, remarks, status)
 
         let addedContract: Contract = {
             number: number,
-            typeId: type.id,
+            typeId: type ? type.id : null,
             // partner: partner,
-            statusId: status.id,
+            statusId: status ? status.id : null,
             start: (start ? addOneDay(start) : null),
             end: (end ? addOneDay(end) : null),
             sign: (sign ? addOneDay(sign) : null),
@@ -392,47 +449,62 @@ export default function HeaderContract({ setContractId }: any) {
             isPurchasing: isPurchasing
         }
 
-        let addDynamicInfo: DynamicInfo = {
-            contractId: 0,
-            dffInt1: parseInt(dffInt1),
-            dffInt2: parseInt(dffInt2),
-            dffInt3: parseInt(dffInt3),
-            dffInt4: parseInt(dffInt4),
-            dffString1: dffString1,
-            dffString2: dffString2,
-            dffString3: dffString3,
-            dffString4: dffString4,
-            dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
-            dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
+        const validationResult = validateForm(addedContract);
+
+        if (!validationResult.isValid) {
+            showMessage('error', 'Eroare', validationResult.errors)
+        }
+        else {
+            let addDynamicInfo: DynamicInfo = {
+                contractId: 0,
+                dffInt1: parseInt(dffInt1),
+                dffInt2: parseInt(dffInt2),
+                dffInt3: parseInt(dffInt3),
+                dffInt4: parseInt(dffInt4),
+                dffString1: dffString1,
+                dffString2: dffString2,
+                dffString3: dffString3,
+                dffString4: dffString4,
+                dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
+                dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
+            }
+
+            const toSend = []
+            toSend.push(addedContract)
+            toSend.push(addDynamicInfo)
+
+
+            try {
+                const response = await axios.post('http://localhost:3000/contracts',
+                    toSend
+                );
+
+                setParamId(response.data.id)
+                setContractId(response.data.id)
+                updateValue(response.data.id)
+
+
+                if (response.status == 200 || response.status == 201) {
+                    showMessage('success', 'Salvat cu succes!', 'Ok');
+                    router.push(`/uikit/addcontract/ctr?Id=${response.data.id}`)
+                }
+                else {
+                    showMessage('error', 'Eroare', response.statusText)
+                }
+
+                console.log('Contract added:', response.data);
+            } catch (error) {
+                console.error('Error creating contract:', error);
+            }
         }
 
-        const toSend = []
-        toSend.push(addedContract)
-        toSend.push(addDynamicInfo)
 
-
-        try {
-            const response = await axios.post('http://localhost:3000/contracts',
-                // addedContract
-                toSend
-            );
-
-            setParamId(response.data.id)
-            setContractId(response.data.id)
-            updateValue(response.data.id)
-
-            router.push(`/uikit/addcontract/ctr?Id=${response.data.id}`)
-
-
-            console.log('Contract added:', response.data);
-        } catch (error) {
-            console.error('Error creating contract:', error);
-        }
 
     }
 
     return (
         <div className="grid">
+            <Toast ref={toast} position="top-right" />
             <div className="col-12">
                 {/* <div className="card"> */}
                 <div className="p-fluid formgrid grid pt-2">

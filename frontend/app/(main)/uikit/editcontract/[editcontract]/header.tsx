@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -26,6 +26,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import PartnerBank from '../../lookups/partnerdetails/[partnerdetails]/bank';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 import { InputNumber } from 'primereact/inputnumber';
+import { Toast } from 'primereact/toast';
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ interface DynamicInfo {
 
 export default function EditContract() {
 
+    const toast = useRef(null);
     const useMyContext = () => useContext(MyContext);
     const { userId, setUserId } = useMyContext();
 
@@ -542,6 +544,64 @@ export default function EditContract() {
 
     }, [])
 
+
+    interface ValidationResult {
+        isValid: boolean;
+        errors: string[];
+    }
+
+    function validateForm(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+
+        // console.log(fields, "fields")
+
+        if (!fields.start) {
+            errors.push("Trebuie sa setati o data de start a contractului!");
+        }
+
+        if (!fields.end) {
+            errors.push("Trebuie sa setati o data de final a contractului!");
+        }
+
+        if (!fields.statusId) {
+            errors.push("Trebuie sa setati o stare a contractului!");
+        }
+
+        if (!fields.categoryId) {
+            errors.push("Trebuie sa setati o categorie!");
+        }
+
+        if (!fields.departmentId) {
+            errors.push("Trebuie sa setati un departament!");
+        }
+
+        if (!fields.costcenterId) {
+            errors.push("Trebuie sa setati un centru de cost/profit!");
+        }
+
+        if (!fields.cashflowId) {
+            errors.push("Trebuie sa setati o linie de CashFlow!");
+        }
+
+
+        if (!fields.locationId) {
+            errors.push("Trebuie sa setati o locatie!");
+        }
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
+
+
+    const showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
+    };
+
+
     const saveContract = async () => {
         let addedContract: Contract = {
             number: number,
@@ -575,54 +635,70 @@ export default function EditContract() {
         // console.log(addedContract);
 
 
-        const referenceDate = new Date('2024-01-01T00:00:00+00:00');
-        const formated_dffDate1 = new Date(dffDate1);
-        const formated_dffDate2 = new Date(dffDate2);
+        const validationResult = validateForm(addedContract);
 
-        if (formated_dffDate1 < referenceDate) {
-            setdffDate1('')
+        if (!validationResult.isValid) {
+            showMessage('error', 'Eroare', validationResult.errors)
         }
-        else setdffDate1(formated_dffDate1)
+        else {
+            const referenceDate = new Date('2024-01-01T00:00:00+00:00');
+            const formated_dffDate1 = new Date(dffDate1);
+            const formated_dffDate2 = new Date(dffDate2);
 
-        if (formated_dffDate2 < referenceDate) {
-            setdffDate2('')
+            if (formated_dffDate1 < referenceDate) {
+                setdffDate1('')
+            }
+            else setdffDate1(formated_dffDate1)
+
+            if (formated_dffDate2 < referenceDate) {
+                setdffDate2('')
+            }
+            else setdffDate1(formated_dffDate2)
+
+
+
+            let addDynamicInfo: DynamicInfo = {
+                contractId: parseInt(Id),
+                dffInt1: parseInt(dffInt1),
+                dffInt2: parseInt(dffInt2),
+                dffInt3: parseInt(dffInt3),
+                dffInt4: parseInt(dffInt4),
+                dffString1: dffString1,
+                dffString2: dffString2,
+                dffString3: dffString3,
+                dffString4: dffString4,
+                dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
+                dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
+            }
+
+            const toSend = []
+            toSend.push(addedContract)
+            toSend.push(addDynamicInfo)
+
+            try {
+                const response = await axios.patch(`http://localhost:3000/contracts/${Id}`,
+                    toSend
+                );
+
+                if (response.status == 200) {
+                    showMessage('success', 'Salvat cu succes!', 'Ok');
+                }
+                else {
+                    showMessage('error', 'Eroare', response.statusText)
+                }
+
+                // console.log('Contract edited:', response.data);
+            } catch (error) {
+                console.error('Error edited contract:', error);
+            }
         }
-        else setdffDate1(formated_dffDate2)
 
 
-
-        let addDynamicInfo: DynamicInfo = {
-            contractId: parseInt(Id),
-            dffInt1: parseInt(dffInt1),
-            dffInt2: parseInt(dffInt2),
-            dffInt3: parseInt(dffInt3),
-            dffInt4: parseInt(dffInt4),
-            dffString1: dffString1,
-            dffString2: dffString2,
-            dffString3: dffString3,
-            dffString4: dffString4,
-            dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
-            dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
-        }
-
-        const toSend = []
-        toSend.push(addedContract)
-        toSend.push(addDynamicInfo)
-
-        try {
-            const response = await axios.patch(`http://localhost:3000/contracts/${Id}`,
-                // addedContract
-                toSend
-            );
-
-            console.log('Contract edited:', response.data);
-        } catch (error) {
-            console.error('Error edited contract:', error);
-        }
     }
 
     return (
         <div className="grid">
+            <Toast ref={toast} position="top-right" />
             {contractDetails ?
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">

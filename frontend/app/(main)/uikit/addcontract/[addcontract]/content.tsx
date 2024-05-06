@@ -21,8 +21,8 @@ import { Editor } from 'primereact/editor';
 import axios from 'axios';
 // import Quill from 'quill';
 // import ReactQuill from "react-quill";
-import ReactQuill, { Quill } from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill, { Quill } from 'react-quill';
+// import "react-quill/dist/quill.snow.css";
 
 export default function Content() {
 
@@ -342,14 +342,17 @@ export default function Content() {
                     <Editor theme='snow' value={text} onTextChange={(e) => handleProcedureContentChange(e.htmlValue)} style={{ height: '30vw' }} />
                 </div> */}
                 <div>
-                    <ReactQuill
+                    {/* <ReactQuill
                         style={{ height: '27vw' }}
                         theme="snow"
                         modules={modules}
                         formats={formats}
                         value={text}
                         onChange={handleProcedureContentChange}
-                    />
+                    /> */}
+                    <Editor value={text}
+                        onTextChange={(e) => setText(e.htmlValue)}
+                        style={{ height: '30vw' }} />
                 </div>
                 {/* <button onClick={getContent}>Get Content</button> */}
             </div>

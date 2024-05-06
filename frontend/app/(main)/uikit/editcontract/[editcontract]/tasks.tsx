@@ -83,7 +83,7 @@ export default function Tasks() {
                 return response.json()
             })
             .then(tasks => {
-                console.log(tasks, "tasks")
+
                 setTasks(tasks)
                 setselectedRequestor(tasks.requestorId)
             })

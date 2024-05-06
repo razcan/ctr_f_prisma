@@ -19,8 +19,8 @@ import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
-import ReactQuill, { Quill } from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill, { Quill } from 'react-quill';
+// import "react-quill/dist/quill.snow.css";
 import { ProgressBar } from 'primereact/progressbar';
 import { Slider } from 'primereact/slider';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
