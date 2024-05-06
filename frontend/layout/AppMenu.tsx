@@ -30,8 +30,8 @@ const AppMenu = () => {
         {
             label: 'Rapoarte',
             items: [
-                { label: 'Raport general', icon: 'pi pi-fw pi-table', to: '/uikit/reports' },
-                { label: 'Raport financiar', icon: 'pi pi-fw pi-list', to: '/uikit/reports_financial' },
+                { label: 'Raport general', icon: 'pi pi-fw pi-chart-line', to: '/uikit/reports' },
+                { label: 'Raport financiar', icon: 'pi pi-fw pi-chart-bar', to: '/uikit/reports_financial' },
             ]
         },
         {
@@ -50,7 +50,7 @@ const AppMenu = () => {
                 },
                 {
                     label: 'Modele Contracte',
-                    icon: 'pi pi-fw pi-times-circle',
+                    icon: 'pi pi-fw pi-book',
                     to: '/uikit/contractTemplates'
                 },
                 {
@@ -65,7 +65,7 @@ const AppMenu = () => {
                 },
                 {
                     label: 'Grupuri Utilizatori',
-                    icon: 'pi pi-fw pi-exclamation-circle',
+                    icon: 'pi pi-fw pi-clone',
                     to: '/uikit/usergroups',
                 },
                 {
@@ -75,7 +75,7 @@ const AppMenu = () => {
                 },
                 {
                     label: 'Cursuri Valutare',
-                    icon: 'pi pi-fw pi-calendar',
+                    icon: 'pi pi-fw pi-dollar',
                     to: '/uikit/exchagerates',
                 },
 

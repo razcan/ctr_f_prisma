@@ -84,10 +84,10 @@ const LookupsPage = () => {
         { label: 'Departamente', icon: 'pi pi-list' },
         { label: 'CashFlow', icon: 'pi pi-inbox' },
         { label: 'Obiecte de contract', icon: 'pi pi-fw  pi-exclamation-circle' },
-        { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-exclamation-circle' },
+        { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-clone' },
         { label: 'Categorii', icon: 'pi pi-chart-line' },
         { label: 'Tip Contracte', icon: 'pi pi-fw pi-table' },
-        { label: 'Locatii', icon: 'pi pi-fw pi-table' },
+        { label: 'Locatii', icon: 'pi pi-fw pi-box' },
 
     ];
 

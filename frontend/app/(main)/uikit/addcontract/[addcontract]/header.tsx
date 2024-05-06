@@ -492,7 +492,7 @@ export default function HeaderContract({ setContractId }: any) {
                     showMessage('error', 'Eroare', response.statusText)
                 }
 
-                console.log('Contract added:', response.data);
+                // console.log('Contract added:', response.data);
             } catch (error) {
                 console.error('Error creating contract:', error);
             }
