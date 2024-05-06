@@ -28,7 +28,7 @@ import { FilterMatchMode, FilterOperator } from 'primereact/api';
 
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
-
+import { Calendar } from 'primereact/calendar';
 
 export default function ExchangeRates() {
 
@@ -36,10 +36,22 @@ export default function ExchangeRates() {
     const router = useRouter();
     const [all_exchangeRates, setAll_exchangeRates] = useState([]);
     const [globalFilterValue, setGlobalFilterValue] = useState('');
+    const [isActive, setIsActive] = useState(true);
+    const [visible, setVisible] = useState(false);
+    const [start, setStartDate] = useState(new Date());
+    const [end, setEndDate] = useState(new Date());
+    const [currency, setCurrency] = useState([]);
+    const [allCurrency, setAllCurrency] = useState([]);
+    const [filteredCurrency, setFilteredCurrency] = useState([]);
+
     const [filters, setFilters] = useState({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
 
+    const fetchAllCurrencies = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
+        setAllCurrency(response);
+    }
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -58,22 +70,23 @@ export default function ExchangeRates() {
         return `${year}-${month}-${day}`;
     }
 
+    function getFormatDate(date): string {
+        const today = new Date(date);
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because January is 0
+        const day = today.getDate().toString().padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+
     const onGlobalFilterChange = (e) => {
         const value = e.target.value;
         let _filters = { ...filters };
-
         _filters['global'].value = value;
-
-        setFilters(_filters);
         setGlobalFilterValue(value);
     };
 
-    const initFilters = () => {
-        setFilters({
-            global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-        });
-        setGlobalFilterValue('');
-    };
 
 
     const renderHeader = () => {
@@ -87,11 +100,39 @@ export default function ExchangeRates() {
         );
     };
 
-    useEffect(() => {
-        initFilters();
-    }, []);
+    interface ValidationResult {
+        isValid: boolean;
+        errors: string[];
+    }
 
+    function validateForm(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+        console.log(fields)
 
+        if (fields[0] && fields[0] == "NaN-NaN-NaN") {
+            errors.push("Trebuie sa setati o valoare pentru campul Data Start!");
+        }
+        if (fields[1] && fields[1] == "NaN-NaN-NaN") {
+            errors.push("Trebuie sa setati o valoare pentru campul Data Final!");
+        }
+        if (!fields[2] || fields[2].trim() === '') {
+            errors.push("Trebuie sa setati o valuta!");
+        }
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
+
+    const showWarn = (detail) => {
+        toast.current.show({
+            severity: 'warn', summary: 'Atentie',
+            detail: detail, life: 3000
+        });
+    }
 
     const fetchAllExchngeRAtes = async () => {
 
@@ -107,7 +148,9 @@ export default function ExchangeRates() {
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: `${Backend_BASE_URL}/nomenclatures/exchangerates/${currentDate}`,
+                url: `${Backend_BASE_URL}/nomenclatures/exchangerates`
+                // /${currentDate}`
+                ,
                 headers: {
                     'user-role': `${roles}`,
                     'entity': `${entity}`,
@@ -130,11 +173,66 @@ export default function ExchangeRates() {
         }
     }
 
+    const fetchAllFilteredExchngeRates = async (startdate, enddate, currencycode) => {
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
 
+        const wff: never[] | Record<string, any> = [];
+        wff.push(startdate)
+        wff.push(enddate)
+        wff.push(currencycode)
+
+        const validationResult = validateForm(wff);
+
+        console.log(validationResult)
+
+        if (!validationResult.isValid) {
+            showWarn(validationResult.errors)
+        }
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/nomenclatures/exchangeratesbet/${startdate}/${enddate}/${currencycode}`
+                ,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios(config)
+                .then(function (response) {
+                    setFilteredCurrency(response.data);
+                })
+                .catch(function (error) {
+                    // if (response.status === 401) {
+                    // }
+                    setFilteredCurrency([]);
+                    router.push('http://localhost:5500/auth/login')
+
+                    console.log(error);
+                });
+        }
+    }
+
+    const getCurrencyFiltered = async () => {
+        const rezult = fetchAllFilteredExchngeRates(getFormatDate(start), getFormatDate(end), currency.code);
+    }
 
     useEffect(() => {
-        fetchAllExchngeRAtes()
+        fetchAllExchngeRAtes(),
+            fetchAllCurrencies()
     }, [])
+
+    const showHistoryRates = async () => {
+        setVisible(true)
+    }
 
     const header = renderHeader();
 
@@ -144,26 +242,88 @@ export default function ExchangeRates() {
                 <div className="card">
 
 
+                    <Button label="Istoric" onClick={showHistoryRates} />
+
+                    <Dialog header="Istoric curs valutar" maximizable
+                        visible={visible} onHide={
+                            () => {
+                                setVisible(false)
+                                setFilteredCurrency([])
+                                setStartDate(new Date());
+                                setEndDate(new Date());
+                                setCurrency([]);
+                            }
+                        }>
+                        <div className='card'>
+                            <div className="grid">
+                                <Toast ref={toast} />
+                                <div className="p-fluid formgrid grid pt-2">
+
+                                    <div className="field col-12 md:col-3">
+                                        <label className="font-bold block mb-2">
+                                            Data Start
+                                        </label>
+                                        <Calendar id="start" value={start} onChange={(e) => setStartDate(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                    </div>
+                                    <div className="field col-12 md:col-3">
+                                        <label className="font-bold block mb-2">
+                                            Data Final
+                                        </label>
+                                        <Calendar id="end" value={end} onChange={(e) => setEndDate(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                    </div>
+                                    <div className="field col-12 md:col-3">
+                                        <label htmlFor="currency">Valuta</label>
+                                        <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12 md:col-3 pt-4">
+                                        <Button label="Afiseaza" onClick={getCurrencyFiltered} />
+                                    </div>
+
+                                    <div className="field col-12 md:col-12">
+                                        {filteredCurrency.length > 1 ?
+                                            <DataTable value={filteredCurrency}
+                                                filterDisplay="row"
+                                                filters={filters}
+                                                globalFilterFields={['name']}
+                                                stripedRows tableStyle={{ minWidth: '50rem' }}
+                                                sortMode="multiple"
+                                                // showGridlines
+                                                paginator rows={10} rowsPerPageOptions={[10, 20, 50, 100]}
+                                                selectionMode="single"
+                                            >
+                                                <Column sortable field="date" header="Data"></Column>
+                                                <Column sortable field="name" header="Cod"></Column>
+                                                <Column sortable field="amount" header="Curs"></Column>
+                                                <Column sortable field="multiplier" header="Multiplicator"></Column>
+                                            </DataTable>
+                                            : null}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </Dialog>
+
                     <div className="p-fluid formgrid grid p-3">
-
-
-
                         <div className="field col-12">
-                            <DataTable value={all_exchangeRates}
-                                filterDisplay="row"
-                                // showGridlines
-                                globalFilterFields={['name']} header={header}
-                                paginator rows={10} rowsPerPageOptions={[10, 20, 50, 100]}
-                                tableStyle={{ minWidth: '50rem' }}
-                                selectionMode="single"
-                            >
-                                <Column sortable field="date" header="Data"></Column>
-                                <Column sortable field="name" header="Cod"></Column>
-                                <Column sortable field="amount" header="Curs"></Column>
-
-                                <Column sortable field="multiplier" header="Multiplicator"></Column>
-                            </DataTable>
-
+                            {all_exchangeRates.length > 1 ?
+                                <DataTable value={all_exchangeRates}
+                                    filterDisplay="row"
+                                    filters={filters}
+                                    globalFilterFields={['name']} header={header}
+                                    stripedRows tableStyle={{ minWidth: '50rem' }}
+                                    sortMode="multiple"
+                                    // showGridlines
+                                    paginator rows={10} rowsPerPageOptions={[10, 20, 50, 100]}
+                                    selectionMode="single"
+                                >
+                                    <Column sortable field="date" header="Data"></Column>
+                                    <Column sortable field="name" header="Cod"></Column>
+                                    <Column sortable field="amount" header="Curs"></Column>
+                                    <Column sortable field="multiplier" header="Multiplicator"></Column>
+                                </DataTable>
+                                : null}
                         </div>
 
 
