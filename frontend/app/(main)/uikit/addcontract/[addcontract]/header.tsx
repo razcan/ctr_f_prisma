@@ -112,6 +112,9 @@ export default function HeaderContract({ setContractId }: any) {
     const [departments, setDepartments] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
 
+    const [locations, setLocations] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState([]);
+
     const [cashflows, setCashflow] = useState([]);
     const [selectedCashflow, setSelectedCashflow] = useState([]);
 
@@ -221,6 +224,17 @@ export default function HeaderContract({ setContractId }: any) {
     };
 
 
+    const fetchLocationData = () => {
+        fetch("http://localhost:3000/nomenclatures/location")
+            .then(response => {
+                return response.json()
+            })
+            .then(location => {
+                setLocations(location)
+            })
+    }
+
+    console.log(locations)
     const fetchTypeData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttype")
             .then(response => {
@@ -342,7 +356,8 @@ export default function HeaderContract({ setContractId }: any) {
             fetchEntity(),
             fetchTypeData(),
             fetchStatusData(),
-            fetchDynamicFields()
+            fetchDynamicFields(),
+            fetchLocationData()
     }, [])
 
     const saveContract = async () => {
@@ -361,7 +376,7 @@ export default function HeaderContract({ setContractId }: any) {
             categoryId: selectedCategory.id,
             departmentId: selectedDepartment.id,
             cashflowId: selectedCashflow.id,
-            itemId: selectedItem.id,
+            locationId: selectedLocation.id,
             costcenterId: selectedCostCenter.id,
             automaticRenewal: automaticRenewalValue,
             // contract: selectedItem,
@@ -738,8 +753,8 @@ export default function HeaderContract({ setContractId }: any) {
                         <Dropdown id="department" filter showClear value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field  col-12 md:col-3">
-                        <label htmlFor="item">Obiect de contract</label>
-                        <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <label htmlFor="location">Locatie</label>
+                        <Dropdown id="location" filter showClear value={selectedLocation} onChange={(e) => setSelectedLocation(e.value)} options={locations} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
 
                     <div className="field col-12 md:col-3">

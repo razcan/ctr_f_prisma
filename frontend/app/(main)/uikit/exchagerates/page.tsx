@@ -93,8 +93,8 @@ export default function ExchangeRates() {
         return (
             <div className="flex justify-content-end">
                 <IconField iconPosition="left">
-                    <InputIcon className="pi pi-search" />
-                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                    {/* <InputIcon className="pi pi-search" /> */}
+                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Valuta" />
                 </IconField>
             </div>
         );
@@ -148,8 +148,7 @@ export default function ExchangeRates() {
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: `${Backend_BASE_URL}/nomenclatures/exchangerates`
-                // /${currentDate}`
+                url: `${Backend_BASE_URL}/nomenclatures/exchangerates/${currentDate}`
                 ,
                 headers: {
                     'user-role': `${roles}`,
@@ -293,7 +292,7 @@ export default function ExchangeRates() {
                                                 selectionMode="single"
                                             >
                                                 <Column sortable field="date" header="Data"></Column>
-                                                <Column sortable field="name" header="Cod"></Column>
+                                                <Column sortable field="name" header="Valuta"></Column>
                                                 <Column sortable field="amount" header="Curs"></Column>
                                                 <Column sortable field="multiplier" header="Multiplicator"></Column>
                                             </DataTable>
@@ -319,7 +318,7 @@ export default function ExchangeRates() {
                                     selectionMode="single"
                                 >
                                     <Column sortable field="date" header="Data"></Column>
-                                    <Column sortable field="name" header="Cod"></Column>
+                                    <Column sortable field="name" header="Valuta"></Column>
                                     <Column sortable field="amount" header="Curs"></Column>
                                     <Column sortable field="multiplier" header="Multiplicator"></Column>
                                 </DataTable>

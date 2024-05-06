@@ -179,15 +179,19 @@ const LoginPage = () => {
 
                             <div>
 
-                                <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
-                                    Utilizator
-                                </label>
-                                <InputText id="email1" type="text" placeholder="Utilizator" className="w-full md:w-30rem mb-5"
-                                    style={{ padding: '1rem' }} onChange={(e) => setUserNameLocal(e.target.value)} />
+                                <div className="pl-3">
+                                    <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
+                                        Utilizator
+                                    </label>
+                                    <InputText id="email1" type="text"
+                                        placeholder="Utilizator" className="w-full md:w-30rem mb-5"
+                                        style={{ padding: '1rem' }} onChange={(e) => setUserNameLocal(e.target.value)} />
 
-                                <label htmlFor="parola" className="block text-900 font-medium text-xl mb-2">
-                                    Parola
-                                </label>
+                                    <label htmlFor="parola" className="block text-900 font-medium text-xl mb-2">
+                                        Parola
+                                    </label>
+                                </div>
+
                                 <Password inputId="parola" value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     feedback={false}

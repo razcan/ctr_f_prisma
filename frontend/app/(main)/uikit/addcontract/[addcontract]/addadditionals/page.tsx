@@ -78,8 +78,10 @@ export default function HeaderContract({ setContractId }: any) {
     const [selectedCashflow, setSelectedCashflow] = useState([]);
     const [costcenters, setCostCenter] = useState([]);
     const [selectedCostCenter, setSelectedCostCenter] = useState([]);
-    const [item, setItems] = useState([]);
-    const [selectedItem, setSelectedItem] = useState([]);
+
+    const [locations, setLocations] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState([]);
+
     const [entity, setEntity] = useState([]);
     const [partner, setPartner] = useState([]);
     const [selectedEntity, setSelectedEntity] = useState([]);
@@ -111,6 +113,15 @@ export default function HeaderContract({ setContractId }: any) {
     const Id = searchParams.get("Id");
     const [paramId, setParamId] = useState(0);
 
+    const fetchLocationData = () => {
+        fetch("http://localhost:3000/nomenclatures/location")
+            .then(response => {
+                return response.json()
+            })
+            .then(location => {
+                setLocations(location)
+            })
+    }
 
     const fetchTypeData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttype")
@@ -222,7 +233,8 @@ export default function HeaderContract({ setContractId }: any) {
             fetchPartners(),
             fetchEntity(),
             fetchTypeData(),
-            fetchStatusData()
+            fetchStatusData(),
+            fetchLocationData()
     }, [])
 
 
@@ -241,7 +253,7 @@ export default function HeaderContract({ setContractId }: any) {
             categoryId: selectedCategory.id,
             departmentId: selectedDepartment.id,
             cashflowId: selectedCashflow.id,
-            itemId: selectedItem.id,
+            locationId: selectedLocation.id,
             costcenterId: selectedCostCenter.id,
             automaticRenewal: automaticRenewalValue,
             // contract: selectedItem,
@@ -262,7 +274,7 @@ export default function HeaderContract({ setContractId }: any) {
 
             setParamId(response.data.id)
             setContractId(response.data.id)
-            updateValue(response.data.id)
+            // updateValue(response.data.id)
 
             router.push(`/uikit/addcontract/ctr?Id=${response.data.id}`)
 
@@ -516,8 +528,8 @@ export default function HeaderContract({ setContractId }: any) {
                         <Dropdown id="department" filter showClear value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field  col-12 md:col-3">
-                        <label htmlFor="item">Obiect de contract</label>
-                        <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <label htmlFor="location">Locatie</label>
+                        <Dropdown id="location" filter showClear value={selectedLocation} onChange={(e) => setSelectedLocation(e.value)} options={locations} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
 
                     <div className="field col-12 md:col-3">

@@ -44,7 +44,7 @@ interface Contract {
     categoryId?: number,
     departmentId?: number,
     cashflowId?: number,
-    itemId?: number,
+    locationId?: number,
     costcenterId?: number,
     automaticRenewal: boolean,
     partnersId: number,
@@ -103,8 +103,9 @@ export default function EditContract({ setAddContractId }: any) {
     const [costcenters, setCostCenter] = useState([]);
     const [selectedCostCenter, setSelectedCostCenter] = useState([]);
 
-    const [item, setItems] = useState([]);
-    const [selectedItem, setSelectedItem] = useState([]);
+    const [locations, setLocations] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState([]);
+
 
     const [entity, setEntity] = useState([]);
     const [partner, setPartner] = useState([]);
@@ -297,7 +298,7 @@ export default function EditContract({ setAddContractId }: any) {
                 setStatus(contractdetails.status)
                 setSelectedCategory(contractdetails.Category)
                 setSelectedDepartment(contractdetails.departament)
-                setSelectedItem(contractdetails.item)
+                setSelectedLocation(contractdetails.location)
                 setSelectedCostCenter(contractdetails.costcenter)
                 setSelectedCashflow(contractdetails.cashflow)
 
@@ -411,6 +412,15 @@ export default function EditContract({ setAddContractId }: any) {
         return partnerAddress.find((obj) => obj.id === id);
     };
 
+    const fetchLocationData = () => {
+        fetch("http://localhost:3000/nomenclatures/location")
+            .then(response => {
+                return response.json()
+            })
+            .then(location => {
+                setLocations(location)
+            })
+    }
 
     const fetchTypeData = () => {
         fetch("http://localhost:3000/nomenclatures/contracttype")
@@ -467,17 +477,6 @@ export default function EditContract({ setAddContractId }: any) {
     }
 
 
-    const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item")
-            .then(response => {
-                return response.json()
-            })
-            .then(item => {
-                setItems(item)
-            })
-    }
-
-
     const fetchCashFlow = () => {
         fetch("http://localhost:3000/contracts/cashflow")
             .then(response => {
@@ -524,7 +523,6 @@ export default function EditContract({ setAddContractId }: any) {
         fetchContractData(),
             fetchCategoriesData(),
             fetchDepartmentsData(),
-            fetchItemsData(),
             fetchCostCenter(),
             fetchCashFlow(),
             fetchPartners(),
@@ -532,7 +530,8 @@ export default function EditContract({ setAddContractId }: any) {
             fetchTypeData(),
             fetchStatusData(),
             fetchDynamicFields(),
-            fetchContractDynamicInfo()
+            fetchContractDynamicInfo(),
+            fetchLocationData()
 
     }, [])
 
@@ -550,7 +549,7 @@ export default function EditContract({ setAddContractId }: any) {
             categoryId: (selectedCategory ? selectedCategory.id : null),
             departmentId: (selectedDepartment ? selectedDepartment.id : null),
             cashflowId: (selectedCashflow ? selectedCashflow.id : null),
-            itemId: (selectedItem ? selectedItem.id : null),
+            locationId: (selectedLocation ? selectedLocation.id : null),
             costcenterId: (selectedCostCenter ? selectedCostCenter.id : null),
             automaticRenewal: automaticRenewalValue,
             // contract: selectedItem,
@@ -906,9 +905,9 @@ export default function EditContract({ setAddContractId }: any) {
                             <label htmlFor="department">Departament</label>
                             <Dropdown id="department" showClear filter value={selectedDepartment} onChange={(e) => setSelectedDepartment(e.value)} options={departments} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
-                        <div className="field col-12 md:col-3">
-                            <label htmlFor="item">Obiect de contract</label>
-                            <Dropdown id="item" showClear filter value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <div className="field  col-12 md:col-3">
+                            <label htmlFor="location">Locatie</label>
+                            <Dropdown id="location" filter showClear value={selectedLocation} onChange={(e) => setSelectedLocation(e.value)} options={locations} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12 md:col-3">
