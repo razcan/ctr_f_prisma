@@ -195,10 +195,14 @@ const Partner = () => {
 
 
                         <div className="field-checkbox col-12 md:col-1">
-                            <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
+                            {/* <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
                                 checked={isVatPayer}
-                            // checked={person_legalrepresent === "false" ? false : true}
-                            ></Checkbox>
+                            ></Checkbox> */}
+
+                            <input style={{ width: '30px', height: '30px' }} type="checkbox" checked={isVatPayer} onChange={e => setIsVatPayer(e.checked)} />
+                            {/* <input type="checkbox" defaultChecked={true} />
+                            <input type="checkbox" checked={isVatPayer} defaultChecked={true} />  */}
+
                             <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
                         </div>
 

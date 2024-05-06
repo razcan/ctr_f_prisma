@@ -183,7 +183,6 @@ export default function ExchangeRates() {
 
         const validationResult = validateForm(wff);
 
-        console.log(validationResult)
 
         if (!validationResult.isValid) {
             showWarn(validationResult.errors)
@@ -240,8 +239,10 @@ export default function ExchangeRates() {
             <div className="col-12">
                 <div className="card">
 
+                    <div className="pl-3" >
+                        <Button label="Istoric" onClick={showHistoryRates} />
+                    </div>
 
-                    <Button label="Istoric" onClick={showHistoryRates} />
 
                     <Dialog header="Istoric curs valutar" maximizable
                         visible={visible} onHide={
