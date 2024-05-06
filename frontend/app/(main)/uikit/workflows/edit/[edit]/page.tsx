@@ -10,8 +10,8 @@ import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import router from 'next/router';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
-import ReactQuill, { Quill } from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill, { Quill } from 'react-quill';
+// import "react-quill/dist/quill.snow.css";
 import { MyContext, MyProvider } from '../../../../../../layout/context/myUserContext'
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
@@ -938,7 +938,7 @@ export default function Tasks() {
                         <div className="field col-12 pb-6">
                             <label className="ml-2">Descriere Task</label>
                             <br></br>
-                            <ReactQuill
+                            {/* <ReactQuill
                                 key={refreshKey}
                                 style={{ height: '10vw' }}
                                 theme="snow"
@@ -946,7 +946,13 @@ export default function Tasks() {
                                 formats={formats}
                                 value={text}
                                 onChange={handleProcedureContentChange}
-                            />
+                            /> */}
+
+                            <Editor value={text}
+                                key={refreshKey}
+                                style={{ height: '10vw' }}
+                                onTextChange={(e) => setText(e.htmlValue)}
+                                />
                         </div>
                         {/* <br></br> */}
                         {/* <Divider /> */}

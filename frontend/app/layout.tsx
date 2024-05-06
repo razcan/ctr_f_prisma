@@ -1,6 +1,6 @@
 
 import { LayoutProvider } from '../layout/context/layoutcontext';
-import React, { createContext, useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { UserContext, UserContextProvider } from '../layout/context/appcontext'
 import { MyContext, MyProvider } from '../layout/context/myUserContext'
 
@@ -40,7 +40,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link id="theme-css" href={`/themes/lara-dark-indigo/theme.css`} rel="stylesheet"></link>
+        {/* <link id="theme-css" href={`/themes/lara-dark-indigo/theme.css`} rel="stylesheet"></link> */}
+        <link id="theme-css" href={`/themes/bootstrap4-dark-blue/theme.css`} rel="stylesheet"></link>
         {/* <link id="theme-css" href={`/themes/lara-light-indigo/theme.css`} rel="stylesheet"></link> */}
       </head>
       <body>

@@ -2,6 +2,8 @@ http://localhost:5555/
 https://www.berkmansolutions.com/support/docs/contracts/recurring-contract-requirements/
 
 
+lara dark indigo
+/Users/razvanmustata/Projects/contracts/frontend/app/layout.tsx
 
 pentru fiecare inregistrare de mai sus trebuie facut un tabel cu id - denumire entitate
 trebuie facut un meniu de settings->lookups

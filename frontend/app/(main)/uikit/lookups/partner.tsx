@@ -20,6 +20,9 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
 import { useRouter } from 'next/navigation'
 import { Toolbar } from 'primereact/toolbar';
+import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
+import { SelectButton } from 'primereact/selectbutton';
+
 
 const Partner = ({ executeFunction }: any) => {
 
@@ -27,6 +30,7 @@ const Partner = ({ executeFunction }: any) => {
     const router = useRouter()
     const [selectedPartner, setSelectedPartner] = useState('');
     const [partners, setPartners] = useState(false);
+    const [checked, setChecked] = useState(false);
 
     const fetchPartnersData = () => {
         fetch("http://localhost:3000/nomenclatures/allparties")
@@ -65,6 +69,7 @@ const Partner = ({ executeFunction }: any) => {
     const addPartner = () => {
         router.push(`/uikit/lookups/addpartner`)
     }
+
 
     return (
 

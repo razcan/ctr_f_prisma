@@ -21,12 +21,12 @@ import { Editor } from 'primereact/editor';
 import axios from 'axios';
 // import Quill from 'quill';
 // import ReactQuill from "react-quill";
-import ReactQuill, { Quill } from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill, { Quill } from 'react-quill';
+// import "react-quill/dist/quill.snow.css";
 
 export default function Content() {
 
-    const [text, setText] = useState([]);
+    // const [text, setText] = useState([]);
 
     const router = useRouter();
     const searchParams = useSearchParams()
@@ -34,6 +34,8 @@ export default function Content() {
     const [templates, setTemplates] = useState([]);
     const [type, setType] = useState();
     const [actualContract, setActualContract] = useState();
+    const [text, setText] = useState('<div></div>');
+
 
     // var Font = Quill.import('formats/font');
     // // We do not add Aref Ruqaa since it is the default
@@ -93,39 +95,39 @@ export default function Content() {
     //     ]
     // };
 
-    const modules = {
-        toolbar: {
-            container: [
-                [{ font: [] }, { 'size': [] }, { 'header': [1, 2, 3, 4, 5, 6] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'script': 'sub' }, { 'script': 'super' }],
-                [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
-                [
-                    { list: 'ordered' },
-                    { list: 'bullet' },
-                    { indent: '-1' },
-                    { indent: '+1' },
-                ],
-                [{ 'direction': 'rtl' }, { 'align': [] }],
-                ['link', 'image', 'clean'],
-            ],
-        },
-        clipboard: {
-            matchVisual: true,
-        },
-    }
+    // const modules = {
+    //     toolbar: {
+    //         container: [
+    //             [{ font: [] }, { 'size': [] }, { 'header': [1, 2, 3, 4, 5, 6] }],
+    //             ['bold', 'italic', 'underline', 'strike'],
+    //             [{ 'color': [] }, { 'background': [] }],
+    //             [{ 'script': 'sub' }, { 'script': 'super' }],
+    //             [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
+    //             [
+    //                 { list: 'ordered' },
+    //                 { list: 'bullet' },
+    //                 { indent: '-1' },
+    //                 { indent: '+1' },
+    //             ],
+    //             [{ 'direction': 'rtl' }, { 'align': [] }],
+    //             ['link', 'image', 'clean'],
+    //         ],
+    //     },
+    //     clipboard: {
+    //         matchVisual: true,
+    //     },
+    // }
 
-    const formats = [
-        'font', 'size',
-        'bold', 'italic', 'underline', 'strike',
-        'color', 'background',
-        'script',
-        'header', 'blockquote', 'code-block',
-        'indent', 'list',
-        'direction', 'align',
-        'link', 'image', 'video', 'formula',
-    ];
+    // const formats = [
+    //     'font', 'size',
+    //     'bold', 'italic', 'underline', 'strike',
+    //     'color', 'background',
+    //     'script',
+    //     'header', 'blockquote', 'code-block',
+    //     'indent', 'list',
+    //     'direction', 'align',
+    //     'link', 'image', 'video', 'formula',
+    // ];
 
 
     const handleProcedureContentChange = (content: any) => {
@@ -342,14 +344,18 @@ export default function Content() {
                     <Editor theme='snow' value={text} onTextChange={(e) => handleProcedureContentChange(e.htmlValue)} style={{ height: '30vw' }} />
                 </div> */}
                 <div>
-                    <ReactQuill
+                    {/* <ReactQuill
                         style={{ height: '27vw' }}
                         theme="snow"
                         modules={modules}
                         formats={formats}
                         value={text}
                         onChange={handleProcedureContentChange}
-                    />
+                    /> */}
+                    <Editor value={text}
+                        onTextChange={(e) => setText(e.htmlValue)}
+                        style={{ height: '30vw' }} />
+
                 </div>
                 {/* <button onClick={getContent}>Get Content</button> */}
             </div>

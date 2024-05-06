@@ -47,7 +47,7 @@ const Partner = () => {
     const [personIndex, setPersonIndex] = useState<number>(0);
     const [addressIndex, setAddressIndex] = useState<number>(0);
     const [bankIndex, setBankIndex] = useState<number>(0);
-
+    const [isVatPayer, setIsVatPayer] = useState(false);
 
 
     const [persons, setPersons] = useState('');
@@ -88,6 +88,7 @@ const Partner = () => {
             setType(getType(res.type));
             setEmail(res.email);
             setRemarks(res.remarks);
+            setIsVatPayer(res.isVatPayer)
         })
         )
     }
@@ -143,7 +144,6 @@ const Partner = () => {
     }
 
 
-
     return (
         <div className="grid">
             <div className="col-12">
@@ -192,6 +192,16 @@ const Partner = () => {
                             <label htmlFor="remarks">Note</label>
                             <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={1} cols={30} />
                         </div>
+
+
+                        <div className="field-checkbox col-12 md:col-1">
+                            <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
+                                checked={isVatPayer}
+                            // checked={person_legalrepresent === "false" ? false : true}
+                            ></Checkbox>
+                            <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
+                        </div>
+
                     </div>
                 </div>
                 <div className="card">

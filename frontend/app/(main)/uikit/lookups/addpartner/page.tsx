@@ -54,6 +54,8 @@ const Partner = () => {
     const [bankChild, setBankChild] = useState([]);
     const [bankIndex, setBankIndex] = useState<number>(0);
     const [dbPartnerId, setdbPartnerId] = useState<number>(-1);
+    const [isVatPayer, setIsVatPayer] = useState(false);
+
 
     interface DropdownItem {
         name: string;
@@ -87,7 +89,8 @@ const Partner = () => {
         remarks?: string,
         Persons?: any,
         Address?: any,
-        Banks?: any
+        Banks?: any,
+        isVatPayer?: any
     }
 
     const sendPartnerData = async () => {
@@ -119,7 +122,8 @@ const Partner = () => {
                 {
                     data: bankChild
                 }
-            }
+            },
+            isVatPayer: isVatPayer
         }
 
         try {
@@ -203,6 +207,13 @@ const Partner = () => {
                         <div className="field col-12  md:col-6">
                             <label htmlFor="remarks">Note</label>
                             <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={1} cols={30} />
+                        </div>
+                        <div className="field-checkbox col-12 md:col-1">
+                            <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
+                                checked={isVatPayer}
+                            // checked={person_legalrepresent === "false" ? false : true}
+                            ></Checkbox>
+                            <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
                         </div>
                     </div>
                 </div>
