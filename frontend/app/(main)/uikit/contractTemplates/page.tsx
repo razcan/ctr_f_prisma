@@ -304,6 +304,7 @@ export default function Alerts() {
                                         <div className="field-checkbox col-12 md:col-12">
                                             <label className="ml-2">Lista Placeholdere ce pot fi folosite in template Contract</label>
                                         </div>
+
                                         <div className="field-checkbox col-12 md:col-12">
 
                                             <DataTable value={placeholders} tableStyle={{ minWidth: '10vh' }}

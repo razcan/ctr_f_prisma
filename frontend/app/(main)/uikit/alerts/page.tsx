@@ -41,6 +41,120 @@ export default function Alerts() {
     const [selectedAlert, setSelectedAlert] = useState([]);
 
 
+    const placeholders = [
+        {
+            name: 'ContractNumber',
+        },
+        {
+            name: 'SignDate',
+        },
+        {
+            name: 'StartDate',
+        },
+        {
+            name: 'FinalDate',
+        },
+        {
+            name: 'PartnerName',
+        },
+        {
+            name: 'EntityName',
+        },
+        {
+            name: 'ShortDescription',
+        },
+        {
+            name: 'PartnerAddress',
+        },
+        {
+            name: 'PartnerStreet',
+        },
+        {
+            name: 'PartnerCity',
+        },
+        {
+            name: 'PartnerCounty',
+        },
+        {
+            name: 'PartnerCountry',
+        },
+        {
+            name: 'PartnerBank',
+        },
+        {
+            name: 'PartnerBranch',
+        },
+        {
+            name: 'PartnerIban',
+        },
+        {
+            name: 'PartnerCurrency',
+        },
+        {
+            name: 'PartnerPerson',
+        },
+        {
+            name: 'PartnerEmail',
+        },
+        {
+            name: 'PartnerPhone',
+        },
+        {
+            name: 'PartnerRole',
+        },
+        {
+            name: 'EntityAddress',
+        },
+        {
+            name: 'EntityStreet',
+        },
+        {
+            name: 'EntityCity',
+        },
+        {
+            name: 'EntityCounty',
+        },
+        {
+            name: 'EntityCountry',
+        },
+        {
+            name: 'EntityBranch',
+        },
+        {
+            name: 'EntityIban',
+        },
+        {
+            name: 'EntityCurrency',
+        },
+        {
+            name: 'EntityPerson',
+        },
+        {
+            name: 'EntityEmail',
+        },
+        {
+            name: 'EntityPhone',
+        },
+        {
+            name: 'EntityRole',
+        },
+        {
+            name: 'Type',
+        },
+        {
+            name: 'PartnerComercialReg',
+        },
+        {
+            name: 'PartnerFiscalCode',
+        },
+        {
+            name: 'EntityFiscalCode',
+        },
+        {
+            name: 'EntityComercialReg',
+        },
+    ]
+
     // const alerts = [
     //     { Denumire: "Expirare Contract", Recurenta: "30 de zile inainte de data finalizare", Subiect: "Va expira contractul", Activa: "True" },
     //     { Denumire: "Contract inchis inainte de termen", Recurenta: "In data inchiderii", Subiect: "A fost inchis contractul", Activa: "True" },
@@ -161,7 +275,7 @@ export default function Alerts() {
 
                     {/* <Button label="Show" icon="pi pi-external-link" onClick={() => setVisible(true)} /> */}
 
-                    <Dialog header="Configurare Alerta" visible={visible} style={{ width: '60vw' }} onHide={() => setVisible(false)}>
+                    <Dialog header="Configurare Alerta" visible={visible} style={{ width: '80vw', height: '80vw' }} onHide={() => setVisible(false)}>
                         <div className='card'>
                             <div className="grid">
                                 <div className="col-12">
@@ -197,36 +311,52 @@ export default function Alerts() {
                                             {/* ca si la name va veni din db "Data Final Contract"  si nu poate fi modificata*/}
                                         </div>
 
-                                        <div className="field-checkbox col-12 md:col-12">
+                                        <div className="field col-12 md:col-5"></div>
+
+                                        <div className="field-checkbox col-12 md:col-4">
                                             <Checkbox id="active" onChange={e => setIsActive(e.checked)}
                                                 checked={isActive}
                                             ></Checkbox>
                                             <label htmlFor="active" className="ml-2">Activa</label>
                                         </div>
 
-                                        <div className="field-checkbox col-12 md:col-3">
+                                        <div className="field-checkbox col-12 md:col-4">
                                             <Checkbox id="activeforpartner" onChange={e => setIsActivePartner(e.checked)}
                                                 checked={isActivePartner}
                                             ></Checkbox>
                                             <label htmlFor="active" className="ml-2">Trimite la adresa Partener</label>
                                         </div>
 
-                                        <div className="field-checkbox col-12 md:col-3">
+                                        <div className="field-checkbox col-12 md:col-4">
                                             <Checkbox id="activeforperson" onChange={e => setIsActivePerson(e.checked)}
                                                 checked={isActivePerson}
                                             ></Checkbox>
                                             <label htmlFor="active" className="ml-2">Trimite la adrese persoane de contact Partener</label>
                                         </div>
 
-                                        <div className="field-checkbox col-12 md:col-6">
+                                        {/* <div className="field-checkbox col-12 md:col-6">
                                             <InputTextarea value={"@@NumarContract, @@DataContract,@@DataFinal, @@Partener, @@Entitate, @@ScurtaDescriere"} rows={3} cols={60} />
                                             <label className="ml-2">Lista Placeholdere ce pot fi folosite in Continut Alerta</label>
+                                        </div> */}
+
+                                        {/* <div className="field-checkbox col-12 md:col-3">
+                                            <label className="ml-2">Lista Placeholdere ce pot fi folosite in template Contract</label>
+                                        </div> */}
+
+                                        <div className="field-checkbox col-12 md:col-3">
+
+                                            <DataTable value={placeholders}
+                                                // tableStyle={{ minWidth: '18vw' }}
+                                                scrollable scrollHeight="40vh"
+                                            >
+                                                <Column field="name" header="Placeholdere"></Column>
+                                            </DataTable>
                                         </div>
 
-                                        <div className="field col-12 md:col-12">
+                                        <div className="field col-12 md:col-9">
                                             <label htmlFor="cashflow">Continut alerta:</label>
                                             <Editor value={text} onTextChange={(e) => setText(e.htmlValue)}
-                                                className='max-w-screen' style={{ height: '160px' }}
+                                                className='max-w-screen' style={{ height: '18vw' }}
                                             />
                                         </div>
 
