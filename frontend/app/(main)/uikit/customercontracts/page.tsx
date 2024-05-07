@@ -189,7 +189,7 @@ function Contracts() {
         return <span>{formattedDate}</span>;
     };
     const EndBodyTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.start);
+        const formattedDate = formatDate(rowData.end);
         return <span>{formattedDate}</span>;
     };
 

@@ -5,18 +5,11 @@ https://www.berkmansolutions.com/support/docs/contracts/recurring-contract-requi
 lara dark indigo
 /Users/razvanmustata/Projects/contracts/frontend/app/layout.tsx
 
-pentru fiecare inregistrare de mai sus trebuie facut un tabel cu id - denumire entitate
-trebuie facut un meniu de settings->lookups
+frt
+npm run dev
+bck
+npm start dev
 
-
-header ctr - 
-adrese/persoane de contact/prelungire automata, valoare,note/tip document(ctr/act aditional/)tags
-parteneri - nume,tip,note,adresa,contacte,iban,
-campuri in lista de contracte : tip ctr, short descriere, tags,prelugire automata, start, data finalizare, ultima modificare, 
-campurile custom sunt doar de tip text(se introduce denumire camp  si ordine)
-alertele sun setate la nivel de ctr - se vor loga alertele trimise si cele ce urmeaza a fi trimise / sunt de tipul trimite nda / obligatoriu/nu / moment - cu zile inainte de req data/expiration departamente
-
-header ctr - 
 
 
 

@@ -17,6 +17,8 @@ import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { InputNumber } from 'primereact/inputnumber';
 import { Tag } from 'primereact/tag';
 import axios from 'axios';
+import { Toast } from 'primereact/toast';
+import { RadioButton } from 'primereact/radiobutton';
 
 export default function Financial() {
 
@@ -25,7 +27,7 @@ export default function Financial() {
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const [contractValue, setContractValue] = useState();
-    const [totalContractValue, setTotalContractValue] = useState(1000);
+    const [price, setPrice] = useState(1000);
     const [currency, setCurrency] = useState([]);
     const [allCurrency, setAllCurrency] = useState([]);
     const [currencyPercent, setCurrencyPercent] = useState(1);
@@ -39,10 +41,29 @@ export default function Financial() {
     const [billingDay, setBillingDay] = useState(1);
     const [billingDueDays, setBillingDueDays] = useState(10);
     const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
+    const [advancePercent, setAdvancePercent] = useState(0);
+
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
     const [guaranteeLetterValue, setGuaranteeLetterValue] = useState(0);
     const [guaranteeLetterDate, setGuaranteeLetterDate] = useState('');
     const [guaranteeLetterCurrency, setGuaranteeLetterCurrency] = useState([]);
+    const [guaranteeLetterInfo, setGuaranteeLetterInfo] = useState('');
+    const [guaranteeLetterBank, setGuaranteeLetterBank] = useState([]);
+    const [guaranteeSelectedBank, setGuaranteeSelectedBank] = useState<any>([]);
+    const [guaranteeSelectedCurrency, setGuaranteeSelectedCurrency] = useState<any>([]);
+
+
+    const [goodexecutionLetter, setGoodexecutionLetter] = useState(false);
+    const [goodexecutionValue, setGoodexecutionValue] = useState(0);
+    const [goodexecutionDate, setGoodexecutionDate] = useState('');
+    const [goodexecutionCurrency, setGoodexecutionCurrency] = useState([]);
+    const [goodexecutionInfo, setGoodexecutionInfo] = useState('');
+    const [goodexecutionBank, setGoodexecutionBank] = useState([]);
+    const [goodexecutionSelectedBank, setGoodexecutionSelectedBank] = useState<any>([]);
+    const [goodexecutionSelectedCurrency, setGoodexecutionSelectedCurrency] = useState<any>([]);
+
+    const [allBanks, setAllBanks] = useState<any>([]);
+
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
     const [scadentar, setScadentar] = useState([]);
@@ -54,15 +75,15 @@ export default function Financial() {
     const [startContractDate, setStartContractDate] = useState('');
     const [endContractDate, setEndContractDate] = useState('');
 
-
+    const toast = useRef(null);
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-    console.log(Id)
+
 
     interface financialDetail {
         itemid?: number,
-        totalContractValue?: number,
+        price?: number,
         currencyid?: number,
         currencyValue?: boolean,
         currencyPercent?: number,
@@ -80,6 +101,7 @@ export default function Financial() {
         guaranteeLetterValue?: Boolean,
         contractItemId?: number,
         active?: boolean,
+        advancePercent?: number
         // contractfinancialItemId: number
 
     }
@@ -90,12 +112,13 @@ export default function Financial() {
         date: Date,
         measuringUnitid?: number,
         billingQtty: number,
-        totalContractValue: number,
+        price: number,
         billingValue: number,
         isInvoiced: boolean,
         isPayed: boolean,
         active?: boolean,
         contractfinancialItemId?: number
+
     }
 
 
@@ -103,11 +126,11 @@ export default function Financial() {
     // const [data, setData] = useState(null);
 
     const cols = [
-        { field: 'item.name', header: 'Articol' },
+        { field: 'articol', header: 'Articol' },
         { field: 'date', header: 'Data' },
         { field: 'measuringUnit.name', header: 'UM' },
         { field: 'billingQtty', header: 'Cantitate' },
-        { field: 'totalContractValue', header: 'Pret' },
+        { field: 'price', header: 'Pret' },
         { field: 'billingValue', header: 'Valoare' },
         { field: 'currency.code', header: 'Moneda' },
         { field: 'isInvoiced', header: 'Facturat' },
@@ -125,7 +148,6 @@ export default function Financial() {
     const fetchContractData = () => {
         fetch(`http://localhost:3000/contracts/onlycontract/${Id}`).then(response => { return response.json() })
             .then(contract => {
-                console.log(contract)
                 setContract(contract)
                 setStartContractDate(contract.start)
                 setEndContractDate(contract.end)
@@ -135,6 +157,11 @@ export default function Financial() {
     const fetchItemsData = () => {
         fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
             .then(item => { setItems(item) })
+    }
+
+    const fetchAllBanks = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        setAllBanks(response);
     }
 
     const fetchAllCurrencies = async () => {
@@ -164,7 +191,8 @@ export default function Financial() {
             fetchAllCurrencies(),
             fetchAllBillingFrequency(),
             fetchAllPaymentType(),
-            fetchAllMeasuringUnit()
+            fetchAllMeasuringUnit(),
+            fetchAllBanks()
     }, [])
 
     useEffect(() => {
@@ -266,7 +294,7 @@ export default function Financial() {
 
                 const array: {
                     id: Number
-                    itemid: Number, 'item.name': string, date: string,
+                    itemid: Number, 'articol': string, date: string,
                     'measuringUnit.name': string,
                     measuringunitid: Number, cantitate: Number, pret: Number,
                     valoare: Number, billingValue: Number, 'currency.code': string,
@@ -285,12 +313,12 @@ export default function Financial() {
 
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, 'item.name': selectedItem.name,
+                        itemid: selectedItem.id, 'articol': selectedItem.name,
                         date: formattedDate, 'measuringUnit.name': measuringUnit.name,
                         measuringunitid: measuringUnit.id,
-                        billingQtty: billingQtty, pret: totalContractValue,
-                        totalContractValue: (billingQtty * totalContractValue),
-                        billingValue: totalContractValue,
+                        billingQtty: billingQtty, pret: price,
+                        totalContractValue: (billingQtty * price),
+                        billingValue: price,
                         'currency.code': currency.code,
                         currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
@@ -383,11 +411,108 @@ export default function Financial() {
 
     }
 
+    interface ValidationResult {
+        isValid: boolean;
+        errors: string[];
+    }
+
+    function validateForm(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+
+        // console.log(fields, "fields")
+
+        if (!fields.itemid) {
+            errors.push("Trebuie sa setati un articol!");
+        }
+
+        if (!fields.currencyid) {
+            errors.push("Trebuie sa setati o valuta!");
+        }
+
+        if (!fields.price) {
+            errors.push("Trebuie sa introduceti un pret!");
+        }
+
+        if (!fields.billingDay) {
+            errors.push("Trebuie sa setati ziua de facturare!");
+        }
+
+        if (!fields.billingQtty) {
+            errors.push("Trebuie sa setati cantitatea facturata!");
+        }
+
+        if (!fields.measuringUnitid) {
+            errors.push("Trebuie sa selectati unitatea de masura!");
+        }
+
+        if (!fields.paymentTypeid) {
+            errors.push("Trebuie sa selectati tipul platii!");
+        }
+
+
+        if (!fields.billingFrequencyid) {
+            errors.push("Trebuie sa selectati intervalul de facturare!");
+        }
+
+        if (!fields.billingPenaltyPercent) {
+            errors.push("Trebuie sa setati procentul de penalizare!");
+        }
+
+        if (!fields.billingDueDays) {
+            errors.push("Trebuie sa selectati numarul de zile scadenta!");
+        }
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
+
+
+    const showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
+    };
+
+
     const saveData = async () => {
 
-        let addedfinancialDetail: financialDetail = {
+        // let addedfinancialDetail = {
+        //     itemid: selectedItem ? parseInt(selectedItem.id) : null,
+        //     price: parseFloat(price),
+        //     currencyid: 2,
+        //     currencyValue: parseFloat(currencyValue),
+        //     currencyPercent: parseFloat(currencyPercent),
+        //     billingDay: parseInt(billingDay),
+        //     billingQtty: parseFloat(billingQtty),
+        //     billingFrequencyid: billingFrequency ? billingFrequency.id : null,
+        //     measuringUnitid: measuringUnit.id,
+        //     paymentTypeid: paymentType ? paymentType.id : null,
+        //     billingPenaltyPercent: parseInt(billingPenaltyPercent),
+        //     billingDueDays: parseInt(billingDueDays),
+        //     remarks: remarks,
+        //     guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
+        //     guaranteeLetterCurrencyid: guaranteeSelectedCurrency ? guaranteeSelectedCurrency.id : null,
+        //     guaranteeLetterDate: guaranteeLetterDate ? guaranteeLetterDate : null,
+        //     guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
+        //     guaranteeLetterInfo: guaranteeLetterInfo,
+        //     guaranteeLetterBank: guaranteeSelectedBank ? parseInt(guaranteeSelectedBank.id) : null,
+        //     contractItemId: 0,
+        //     active: active,
+        //     goodexecutionLetter: goodexecutionLetter,
+        //     goodexecutionLetterCurrencyId: goodexecutionSelectedCurrency ? goodexecutionSelectedCurrency.id : null,
+        //     goodexecutionLetterDate: goodexecutionDate,
+        //     goodexecutionLetterValue: goodexecutionValue,
+        //     goodexecutionLetterInfo: goodexecutionInfo,
+        //     goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
+        //     advancePercent: advancePercent
+
+        // }
+
+        let addedfinancialDetail = {
             itemid: parseInt(selectedItem.id),
-            totalContractValue: parseFloat(totalContractValue),
+            price: parseFloat(price),
             currencyid: parseInt(currency.id),
             currencyValue: parseFloat(currencyValue),
             currencyPercent: parseFloat(currencyPercent),
@@ -400,95 +525,81 @@ export default function Financial() {
             billingDueDays: parseInt(billingDueDays),
             remarks: remarks,
             guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
-            guaranteeLetterCurrencyid: guaranteeLetterCurrency ? guaranteeLetterCurrency.id : null,
+            guaranteeLetterCurrencyid: guaranteeSelectedCurrency ? guaranteeSelectedCurrency.id : null,
             guaranteeLetterDate: guaranteeLetterDate ? guaranteeLetterDate : null,
             guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
+            guaranteeLetterInfo: guaranteeLetterInfo,
+            guaranteeLetterBankId: guaranteeSelectedBank ? parseInt(guaranteeSelectedBank.id) : null,
             contractItemId: 0,
             active: active,
+            goodexecutionLetter: goodexecutionLetter,
+            goodexecutionLetterCurrencyId: goodexecutionSelectedCurrency ? goodexecutionSelectedCurrency.id : null,
+            goodexecutionLetterDate: goodexecutionDate ? goodexecutionDate : null,
+            goodexecutionLetterValue: goodexecutionValue ? parseFloat(goodexecutionValue) : null,
+            goodexecutionLetterInfo: goodexecutionInfo,
+            goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
+            advancePercent: parseFloat(advancePercent)
             // contractfinancialItemId: 0
         }
 
-        console.log(scadentar)
+        console.log(addedfinancialDetail)
 
-        const ResultSchedule: financialDetailSchedule[] = []
-        scadentar.forEach(
-            scadenta => {
-                const add: financialDetailSchedule = {
-                    itemid: scadenta.itemid,
-                    currencyid: scadenta.currencyid,
-                    date: new Date(scadenta.date),
-                    measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: parseFloat(scadenta.billingQtty),
-                    totalContractValue: scadenta.totalContractValue,
-                    billingValue: parseFloat(scadenta.billingValue),
-                    isInvoiced: scadenta.isInvoiced,
-                    isPayed: scadenta.isPayed,
-                    active: active,
-                    contractfinancialItemId: 0
+        const validationResult = validateForm(addedfinancialDetail);
 
+        if (!validationResult.isValid) {
+            showMessage('error', 'Eroare', validationResult.errors)
+        } else {
+
+            const ResultSchedule: financialDetailSchedule[] = []
+            scadentar.forEach(
+                scadenta => {
+                    const add = {
+                        itemid: scadenta.itemid,
+                        currencyid: scadenta.currencyid,
+                        date: new Date(scadenta.date),
+                        measuringUnitid: scadenta.measuringunitid,
+                        billingQtty: parseFloat(scadenta.billingQtty),
+                        totalContractValue: scadenta.totalContractValue,
+                        billingValue: parseFloat(scadenta.billingValue),
+                        isInvoiced: scadenta.isInvoiced,
+                        isPayed: scadenta.isPayed,
+                        active: active,
+                        contractfinancialItemId: 0
+
+                    }
+                    ResultSchedule.push(add)
                 }
-                ResultSchedule.push(add)
+            )
+            interface financialContractItem {
+                contractId?: number,
+                itemid: number,
+                currencyid?: number,
+                currencyValue?: number,
+                billingFrequencyid: number,
+                active?: boolean
             }
-        )
+            const financialContractItem = {
+                contractId: parseInt(Id),
+                itemid: selectedItem.id,
+                currencyid: currency.id,
+                currencyValue: 0,
+                // parseFloat(totalContractValue),
+                billingFrequencyid: billingFrequency.id,
+                active: active,
+            }
+            try {
+                const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
+                    [financialContractItem, addedfinancialDetail, ResultSchedule]
+                );
+                console.log('Contract details added:', responseitem.data
+                );
+            } catch (error) {
+                console.error('Error creating contract details:', error);
+            }
 
-        interface financialContractItem {
-            contractId?: number,
-            itemid: number,
-            currencyid?: number,
-            currencyValue?: number,
-            billingFrequencyid: number,
-            active?: boolean
+            showMessage('success', 'Salvat cu succes!', 'Ok');
         }
-
-
-        const financialContractItem = {
-            contractId: parseInt(Id),
-            itemid: selectedItem.id,
-            currencyid: currency.id,
-            currencyValue: parseFloat(totalContractValue),
-            billingFrequencyid: billingFrequency.id,
-            active: active,
-
-        }
-
-        try {
-
-            console.log(financialContractItem, ResultSchedule)
-            const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
-                [financialContractItem, addedfinancialDetail, ResultSchedule]
-            );
-
-            // const response = await axios.post('http://localhost:3000/contracts/financialDetail',
-            //     addedfinancialDetail
-            // );
-
-            // const responsesch = await axios.post('http://localhost:3000/contracts/financialDetailSchedule',
-            //     ResultSchedule
-            // );
-
-
-
-
-            console.log('Contract details added:', responseitem.data
-                // , response.data, responsesch.data
-            );
-        } catch (error) {
-            console.error('Error creating contract details:', error);
-        }
-
     }
-
-    // const saveData = () => {
-    //     console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
-    //         paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
-
-    //     console.log("scadentar", scadentar)
-    //     //treb adaugate id-urile si ascune la afisare - fol doar la export
-    // }
-
-    //in cazul saptm - zi facturare reprez ziua din sapt de la 1 - 7
-    //se sparge in func de start end la nr de intervale si se copiaza valoarile in tabel.
-
 
     const statusInvoiceTemplate = (product) => {
         return <Tag value={product.isInvoiced} severity={getSeverity(product)}></Tag>;
@@ -541,74 +652,80 @@ export default function Financial() {
 
     return (
         <div className='card'>
+            <Toast ref={toast} position="top-right" />
             <div className="grid">
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
 
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="item">Obiect de contract</label>
                             <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12  md:col-3">
-                            <label htmlFor="totalContractValue">Pret</label>
-                            <InputText id="totalContractValue" type="text" value={totalContractValue} onChange={(e) => setTotalContractValue(e.target.value)} />
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="price">Pret</label>
+                            <InputText id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="currency">Valuta</label>
                             <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Curs referinta</label>
                             <InputText id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
                         </div>
 
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
                             <InputText id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
                         </div>
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="billingDay">Zi facturare</label>
                             <InputText id="billingDay" type="text" value={billingDay} onChange={(e) => setBillingDay(e.target.value)} />
                         </div>
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="billingQtty">Cantitate facturata</label>
                             <InputText id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="measuringUnit">Unitate de masura</label>
                             <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="paymentType">Tip plata</label>
                             <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="billingFrequency">Interval facturare</label>
                             <Dropdown id="billingFrequency" filter showClear value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
                             <InputText id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
                         </div>
 
-                        <div className="field col-12 md:col-3">
-                            <label htmlFor="billingDueDays">Zile scadente</label>
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="currencyValue">Procent Avans(%)</label>
+                            <InputText id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="billingDueDays">Zile scadenta</label>
                             <InputText id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
                         </div>
 
-                        <div className="field-checkbox col-12 md:col-12">
+                        <div className="field-checkbox col-12 md:col-2">
                             <Checkbox id="ent_legal_person" checked={active} onChange={e => setActive(e.checked)}></Checkbox>
                             <label htmlFor="ent_legal_person" className="ml-2">Activ</label>
                         </div>
@@ -616,7 +733,7 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-12">
                             <label htmlFor="guaranteeLetterOtherInfo">Note</label>
-                            <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
+                            <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={3} cols={30} />
                         </div>
 
                         <div className="field col-12 md:col-12 pt-4">
@@ -624,31 +741,99 @@ export default function Financial() {
                             <label htmlFor="default" className="ml-2">Exista scrisoare garantie?</label>
                         </div>
 
-                        {/* <Checkbox onChange={e => setChecked(e.checked)} checked={checked}></Checkbox> */}
 
                         {guaranteeLetter ?
                             <div className="col-12 md:col-12">
                                 <div className="p-fluid formgrid grid pt-2">
-                                    <div className="field col-12 md:col-3">
+
+
+
+                                    <div className="field col-12  md:col-3">
+                                        <label htmlFor="type">Banca</label>
+                                        <Dropdown id="type"
+                                            showClear
+                                            value={guaranteeSelectedBank}
+                                            onChange={(e) => setGuaranteeSelectedBank(e.value)}
+                                            options={allBanks}
+                                            optionLabel="name" placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12 md:col-2">
                                         <label className="font-bold block mb-2">
-                                            Data SGB
+                                            Valuta
+                                        </label>
+                                        <Dropdown showClear id="guaranteeLetterCurrency" filter value={guaranteeSelectedCurrency} onChange={(e) => setGuaranteeSelectedCurrency(e.target.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12 md:col-2">
+                                        <label className="font-bold block mb-2">
+                                            Data
                                         </label>
                                         <Calendar id="start" value={guaranteeLetterDate} onChange={(e) => setGuaranteeLetterDate(e.value)} showIcon dateFormat="dd/mm/yy" />
                                     </div>
 
-                                    <div className="field col-12 md:col-3">
+                                    <div className="field col-12 md:col-2">
                                         <label className="font-bold block mb-2">
-                                            Valoare SGB
+                                            Valoare
                                         </label>
                                         <InputText id="guaranteeLetterValue" value={guaranteeLetterValue} onChange={(e) => setGuaranteeLetterValue(e.target.value)} />
                                     </div>
 
-                                    <div className="field col-12 md:col-3">
-                                        <label className="font-bold block mb-2">
-                                            Valuta SGB
-                                        </label>
-                                        <Dropdown id="guaranteeLetterCurrency" filter value={guaranteeLetterCurrency} onChange={(e) => setGuaranteeLetterCurrency(e.target.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                                    <div className="field col-12  md:col-3">
+                                        <label htmlFor="goodexecutionInfo">Alte Info</label>
+                                        <InputText id="goodexecutionInfo" type="text" value={guaranteeLetterInfo} onChange={(e) => setGuaranteeLetterInfo(e.target.value)} />
                                     </div>
+
+                                </div>
+                            </div> : null}
+
+                        <div className="field col-12 md:col-12 pt-4">
+                            <ToggleButton onLabel="Da" offLabel="Nu" checked={goodexecutionLetter} onChange={(e) => setGoodexecutionLetter(e.value)} className="w-8rem" />
+                            <label htmlFor="default" className="ml-2">Exista scrisoare de buna executie?</label>
+                        </div>
+
+                        {goodexecutionLetter ?
+                            <div className="col-12 md:col-12">
+                                <div className="p-fluid formgrid grid pt-2">
+
+
+
+                                    <div className="field col-12  md:col-3">
+                                        <label htmlFor="type">Banca</label>
+                                        <Dropdown id="type"
+                                            showClear
+                                            value={goodexecutionSelectedBank}
+                                            onChange={(e) => setGoodexecutionSelectedBank(e.value)}
+                                            options={allBanks}
+                                            optionLabel="name" placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12 md:col-2">
+                                        <label className="font-bold block mb-2">
+                                            Valuta
+                                        </label>
+                                        <Dropdown showClear id="goodexecutionCurrency" filter value={goodexecutionSelectedCurrency} onChange={(e) => setGoodexecutionSelectedCurrency(e.target.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12 md:col-2">
+                                        <label className="font-bold block mb-2">
+                                            Data
+                                        </label>
+                                        <Calendar id="start" value={goodexecutionDate} onChange={(e) => setGoodexecutionDate(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                    </div>
+
+                                    <div className="field col-12 md:col-2">
+                                        <label className="font-bold block mb-2">
+                                            Valoare
+                                        </label>
+                                        <InputText id="guaranteeLetterValue" value={goodexecutionValue} onChange={(e) => setGoodexecutionValue(e.target.value)} />
+                                    </div>
+
+                                    <div className="field col-12  md:col-3">
+                                        <label htmlFor="goodexecutionInfo">Alte Info</label>
+                                        <InputText id="goodexecutionInfo" type="text" value={goodexecutionInfo} onChange={(e) => setGoodexecutionInfo(e.target.value)} />
+                                    </div>
+
                                 </div>
                             </div> : null}
 
@@ -668,7 +853,7 @@ export default function Financial() {
                                 dataKey="data"
                                 sortOrder={1} //cres
                             >
-                                <Column field="item.name" header="item"></Column>
+                                <Column field="articol" header="item"></Column>
                                 <Column field="date" header="data" sortable body={StartBodyTemplate}></Column>
                                 <Column field="measuringUnit.name" header="um"></Column>
                                 <Column field="billingQtty" header="cantitate"></Column>
