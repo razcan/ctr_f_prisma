@@ -19,9 +19,11 @@ import { Tag } from 'primereact/tag';
 import axios from 'axios';
 import { Toast } from 'primereact/toast';
 import { RadioButton } from 'primereact/radiobutton';
+import { Dialog } from 'primereact/dialog';
 
 export default function Financial() {
 
+    const [visible, setVisible] = useState(false);
     const [financialVisible, setfinancialVisible] = useState(false);
     const [indexTable, setIndextable] = useState(0)
     const [item, setItems] = useState([]);
@@ -74,6 +76,12 @@ export default function Financial() {
     const [contract, setContract] = useState([]);
     const [startContractDate, setStartContractDate] = useState('');
     const [endContractDate, setEndContractDate] = useState('');
+
+    const [selectedSchLineDate, setSelectedSchLineDate] = useState('');
+    const [selectedSchLineQtty, setSelectedSchLineQtty] = useState(0);
+    const [selectedSchLinePrice, setSelectedSchLinePrice] = useState(0);
+    const [selectedSchLineValue, setSelectedSchLineValue] = useState(0);
+    const [selectedSchLine, setSelectedSchLine] = useState([]);
 
     const toast = useRef(null);
     const router = useRouter();
@@ -355,6 +363,39 @@ export default function Financial() {
         </div>
     );
 
+    const deleteSchLine = (id: number) => {
+        const result = scadentar.filter(item => item.id !== id);
+        setScadentar(result);
+        setVisible(false)
+    }
+
+    const calculateMultiplication = () => {
+        const multiplicationResult = selectedSchLinePrice * selectedSchLineQtty;
+        setSelectedSchLineValue(multiplicationResult);
+    };
+
+    useEffect(() => {
+        calculateMultiplication();
+    }, [selectedSchLinePrice, selectedSchLineQtty]);
+
+
+
+    const saveSchLine = (line: any) => {
+        console.log("line", line)
+        //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
+        //stearsa linia existenta, si salvata noua linie
+        line.billingQtty = selectedSchLineQtty;
+        line.pret = selectedSchLineValue;
+        line.billingValue = selectedSchLineValue / selectedSchLineQtty;
+        line.date = selectedSchLineDate;
+        line.totalContractValue = selectedSchLineValue;
+
+        console.log(selectedSchLineQtty, selectedSchLinePrice, selectedSchLineValue, selectedSchLineDate)
+        // const result = scadentar.filter(item => item.id !== id);
+        // setScadentar(result);
+        setVisible(false)
+    }
+
     const onCellSelect = (event) => {
 
         if (event.cellIndex == 9) {
@@ -368,6 +409,19 @@ export default function Financial() {
 
             scadentar[schIndex].isPayed = !event.rowData.isPayed;
         }
+
+        if (event.cellIndex == 11) {
+            let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
+            setSelectedSchLine(event.rowData);
+            setSelectedSchLineDate(event.rowData.date);
+            setSelectedSchLineQtty(event.rowData.billingQtty);
+            setSelectedSchLinePrice(event.rowData.pret);
+            const amount = (event.rowData.billingQtty * event.rowData.pret)
+            setSelectedSchLineValue(amount);
+
+            setVisible(true)
+        }
+
 
         setIndextable(indexTable + 1)
 
@@ -477,38 +531,6 @@ export default function Financial() {
 
 
     const saveData = async () => {
-
-        // let addedfinancialDetail = {
-        //     itemid: selectedItem ? parseInt(selectedItem.id) : null,
-        //     price: parseFloat(price),
-        //     currencyid: 2,
-        //     currencyValue: parseFloat(currencyValue),
-        //     currencyPercent: parseFloat(currencyPercent),
-        //     billingDay: parseInt(billingDay),
-        //     billingQtty: parseFloat(billingQtty),
-        //     billingFrequencyid: billingFrequency ? billingFrequency.id : null,
-        //     measuringUnitid: measuringUnit.id,
-        //     paymentTypeid: paymentType ? paymentType.id : null,
-        //     billingPenaltyPercent: parseInt(billingPenaltyPercent),
-        //     billingDueDays: parseInt(billingDueDays),
-        //     remarks: remarks,
-        //     guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
-        //     guaranteeLetterCurrencyid: guaranteeSelectedCurrency ? guaranteeSelectedCurrency.id : null,
-        //     guaranteeLetterDate: guaranteeLetterDate ? guaranteeLetterDate : null,
-        //     guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
-        //     guaranteeLetterInfo: guaranteeLetterInfo,
-        //     guaranteeLetterBank: guaranteeSelectedBank ? parseInt(guaranteeSelectedBank.id) : null,
-        //     contractItemId: 0,
-        //     active: active,
-        //     goodexecutionLetter: goodexecutionLetter,
-        //     goodexecutionLetterCurrencyId: goodexecutionSelectedCurrency ? goodexecutionSelectedCurrency.id : null,
-        //     goodexecutionLetterDate: goodexecutionDate,
-        //     goodexecutionLetterValue: goodexecutionValue,
-        //     goodexecutionLetterInfo: goodexecutionInfo,
-        //     goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
-        //     advancePercent: advancePercent
-
-        // }
 
         let addedfinancialDetail = {
             itemid: parseInt(selectedItem.id),
@@ -636,6 +658,9 @@ export default function Financial() {
         }
     };
 
+    const editSchTemplate = (product) => {
+        return <Tag value="Edit"></Tag>;
+    }
 
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
@@ -837,6 +862,70 @@ export default function Financial() {
                                 </div>
                             </div> : null}
 
+                        <Dialog header="Editare linie scadentar" visible={visible}
+                            style={{ width: '60vw' }} onHide={() => setVisible(false)}>
+                            <div className="col-12 md:col-12">
+                                <div className="p-fluid formgrid grid pt-2">
+
+
+                                    <div className="field col-12  md:col-3">
+                                        <label htmlFor="selectedItem">Articol</label>
+                                        <InputText disabled id="selectedItem" type="text" value={selectedSchLine.articol} />
+                                    </div>
+
+
+                                    <div className="field col-12  md:col-2">
+                                        <label className="font-bold block mb-2">
+                                            Data
+                                        </label>
+                                        {/* <Calendar id="start" value={new Date(selectedSchLine.date)} onChange={(e) => setGoodexecutionDate(e.value)} showIcon dateFormat="dd/mm/yy" /> */}
+                                        <Calendar id="start" value={new Date(selectedSchLineDate)} onChange={(e) => setSelectedSchLineDate(e.value)} showIcon dateFormat="dd/mm/yy" />
+
+                                    </div>
+
+                                    <div className="field col-12  md:col-2">
+                                        <label htmlFor="goodexecutionInfo">Cantitate</label>
+                                        <InputText id="goodexecutionInfo" type="text" value={selectedSchLineQtty} onChange={(e) => setSelectedSchLineQtty(e.target.value)} />
+                                        {/* <InputText id="goodexecutionInfo" type="text" value={selectedSchLine.billingQtty} onChange={(e) => setGoodexecutionInfo(e.target.value)} /> */}
+                                    </div>
+
+                                    <div className="field col-12  md:col-2">
+                                        <label htmlFor="goodexecutionInfo">Pret</label>
+                                        <InputText id="goodexecutionInfo" type="text" value={selectedSchLinePrice} onChange={(e) => setSelectedSchLinePrice(e.target.value)} />
+                                    </div>
+
+                                    <div className="field col-12  md:col-2">
+                                        <label htmlFor="goodexecutionInfo">Valoare</label>
+                                        <InputText disabled id="goodexecutionInfo" type="text" value={selectedSchLineValue} onChange={(e) => setSelectedSchLineValue(e.target.value)} />
+                                        {/* <InputText id="goodexecutionInfo" type="text" value={selectedSchLine.billingValue} onChange={(e) => setGoodexecutionInfo(e.target.value)} /> */}
+                                    </div>
+
+                                </div>
+
+                                <div className='pt-1'>
+                                    <div className='grid'>
+
+                                        <div className='col-1 pl-2'>
+                                            <Button label="Salveaza" severity="success"
+                                                onClick={() => saveSchLine(selectedSchLine)}
+                                            />
+                                        </div>
+
+                                        <div className='col-1 pl-3'>
+                                            <Button label="Sterge" severity="danger"
+
+                                                onClick={() => deleteSchLine(selectedSchLine.id)}
+                                            />
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </Dialog>
+
 
                         <div className="field col-12 md:col-12 pt-4">
 
@@ -865,7 +954,7 @@ export default function Financial() {
                                 <Column hidden field="isPayed" header="isPayed"></Column>
                                 <Column header="facturat" body={statusInvoiceTemplate}></Column>
                                 <Column header="platit" body={statusPayedTemplate}></Column>
-
+                                <Column header="editeaza" body={editSchTemplate}></Column>
 
                             </DataTable>
 
