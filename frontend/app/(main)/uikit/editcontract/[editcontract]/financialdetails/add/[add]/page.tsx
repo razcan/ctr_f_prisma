@@ -389,10 +389,6 @@ export default function Financial() {
         line.billingValue = selectedSchLineValue / selectedSchLineQtty;
         line.date = selectedSchLineDate;
         line.totalContractValue = selectedSchLineValue;
-
-        console.log(selectedSchLineQtty, selectedSchLinePrice, selectedSchLineValue, selectedSchLineDate)
-        // const result = scadentar.filter(item => item.id !== id);
-        // setScadentar(result);
         setVisible(false)
     }
 
