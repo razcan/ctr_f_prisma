@@ -107,7 +107,6 @@ export default function ExchangeRates() {
 
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
-        console.log(fields)
 
         if (fields[0] && fields[0] == "NaN-NaN-NaN") {
             errors.push("Trebuie sa setati o valoare pentru campul Data Start!");

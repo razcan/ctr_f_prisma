@@ -34,7 +34,7 @@ export default function Content() {
     const [templates, setTemplates] = useState([]);
     const [type, setType] = useState();
     const [actualContract, setActualContract] = useState();
-    const [text, setText] = useState('<div></div>');
+    const [text, setText] = useState('');
 
 
     // var Font = Quill.import('formats/font');

@@ -29,10 +29,10 @@ export default function Financial() {
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const [contractValue, setContractValue] = useState();
-    const [price, setPrice] = useState(1000);
+    const [price, setPrice] = useState(0);
     const [currency, setCurrency] = useState([]);
     const [allCurrency, setAllCurrency] = useState([]);
-    const [currencyPercent, setCurrencyPercent] = useState(1);
+    const [currencyPercent, setCurrencyPercent] = useState(0);
     const [currencyValue, setCurrencyValue] = useState([]);
     const [paymentType, setPaymentType] = useState([]);
     const [allPaymentType, setAllPaymentType] = useState([]);
@@ -42,7 +42,7 @@ export default function Financial() {
     const [billingQtty, setBillingQtty] = useState(1);
     const [billingDay, setBillingDay] = useState(1);
     const [billingDueDays, setBillingDueDays] = useState(10);
-    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
+    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(0);
     const [advancePercent, setAdvancePercent] = useState(0);
 
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
@@ -82,6 +82,7 @@ export default function Financial() {
     const [selectedSchLinePrice, setSelectedSchLinePrice] = useState(0);
     const [selectedSchLineValue, setSelectedSchLineValue] = useState(0);
     const [selectedSchLine, setSelectedSchLine] = useState([]);
+    const [isPurchasing, setIsPurchasing] = useState('');
 
     const toast = useRef(null);
     const router = useRouter();
@@ -159,6 +160,7 @@ export default function Financial() {
                 setContract(contract)
                 setStartContractDate(contract.start)
                 setEndContractDate(contract.end)
+                setIsPurchasing(contract.isPurchasing)
             })
     }
 
@@ -290,9 +292,13 @@ export default function Financial() {
         var startDate: any = startContractDate;
         var endDate: any = endContractDate;
 
-        console.log(startDate, endDate)
 
-        // month sch
+        // trimestru - 3 luni -id 4 
+        // semestru - 6 luni id 5
+        // month sch - id 3
+        // anual - id 6
+
+        //lunar
         if (billingFrequency) {
             if (billingFrequency.id == 3) {
                 var year = new Date(endDate).getFullYear() - new Date(startDate).getFullYear();
@@ -302,7 +308,7 @@ export default function Financial() {
 
                 const array: {
                     id: Number
-                    itemid: Number, 'articol': string, date: string,
+                    itemid: Number, 'Articol': string, Date: string,
                     'measuringUnit.name': string,
                     measuringunitid: Number, cantitate: Number, pret: Number,
                     valoare: Number, billingValue: Number, 'currency.code': string,
@@ -311,6 +317,93 @@ export default function Financial() {
 
 
                 for (let i = 0; i < result; i++) {
+                    const oneMonthAhead = new Date(startDate);
+                    oneMonthAhead.setMonth(new Date(startDate).getMonth() + i);
+
+                    const year = oneMonthAhead.getFullYear();
+                    const month = String(oneMonthAhead.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                    const day = String(billingDay).padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${day}`;
+
+                    array.push({
+                        id: i,
+                        itemid: selectedItem.id, 'Articol': selectedItem.name,
+                        date: formattedDate, 'measuringUnit.name': measuringUnit.name,
+                        measuringunitid: measuringUnit.id,
+                        billingQtty: billingQtty, pret: price,
+                        totalContractValue: (billingQtty * price),
+                        billingValue: price,
+                        'currency.code': currency.code,
+                        currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
+                    })
+
+                    setScadentar(array)
+                }
+            }
+        }
+        //trimestrial
+        if (billingFrequency) {
+            if (billingFrequency.id == 4) {
+                var year = new Date(endDate).getFullYear() - new Date(startDate).getFullYear();
+                var enddate_month = new Date(endDate).getMonth()
+                var startdate_month = new Date(startDate).getMonth()
+                var result = 1 + (year * 12) + (enddate_month - startdate_month)
+
+                const array: {
+                    id: Number
+                    itemid: Number, 'Articol': string, Date: string,
+                    'measuringUnit.name': string,
+                    measuringunitid: Number, cantitate: Number, pret: Number,
+                    valoare: Number, billingValue: Number, 'currency.code': string,
+                    currencyid: Number, isPayed: Number, isInvoiced: Number
+                }[] = [];
+
+
+                for (let i = 0; i < result; i += 3) {
+                    const oneMonthAhead = new Date(startDate);
+                    oneMonthAhead.setMonth(new Date(startDate).getMonth() + i);
+
+                    const year = oneMonthAhead.getFullYear();
+                    const month = String(oneMonthAhead.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                    const day = String(billingDay).padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${day}`;
+
+                    array.push({
+                        id: i,
+                        itemid: selectedItem.id, 'Articol': selectedItem.name,
+                        date: formattedDate, 'measuringUnit.name': measuringUnit.name,
+                        measuringunitid: measuringUnit.id,
+                        billingQtty: billingQtty, pret: price,
+                        totalContractValue: (billingQtty * price),
+                        billingValue: price,
+                        'currency.code': currency.code,
+                        currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
+                    })
+
+                    setScadentar(array)
+                }
+            }
+        }
+
+        //semestrial
+        if (billingFrequency) {
+            if (billingFrequency.id == 5) {
+                var year = new Date(endDate).getFullYear() - new Date(startDate).getFullYear();
+                var enddate_month = new Date(endDate).getMonth()
+                var startdate_month = new Date(startDate).getMonth()
+                var result = 1 + (year * 12) + (enddate_month - startdate_month)
+
+                const array: {
+                    id: Number
+                    itemid: Number, 'Articol': string, Date: string,
+                    'measuringUnit.name': string,
+                    measuringunitid: Number, cantitate: Number, pret: Number,
+                    valoare: Number, billingValue: Number, 'currency.code': string,
+                    currencyid: Number, isPayed: Number, isInvoiced: Number
+                }[] = [];
+
+
+                for (let i = 0; i < result; i += 6) {
                     const oneMonthAhead = new Date(startDate);
                     oneMonthAhead.setMonth(new Date(startDate).getMonth() + i);
 
@@ -335,6 +428,52 @@ export default function Financial() {
                 }
             }
         }
+
+        //anual
+        if (billingFrequency) {
+            if (billingFrequency.id == 6) {
+
+                var year = new Date(endDate).getFullYear() - new Date(startDate).getFullYear();
+                var enddate_month = new Date(endDate).getMonth()
+                var startdate_month = new Date(startDate).getMonth()
+                var result = 1 + (year * 12) + (enddate_month - startdate_month)
+                const nrOfYears = Math.floor(result / 12);
+
+                const array: {
+                    id: Number
+                    itemid: Number, 'Articol': string, Date: string,
+                    'measuringUnit.name': string,
+                    measuringunitid: Number, cantitate: Number, pret: Number,
+                    valoare: Number, billingValue: Number, 'currency.code': string,
+                    currencyid: Number, isPayed: Number, isInvoiced: Number
+                }[] = [];
+
+                for (let i = 0; i < nrOfYears; i++) {
+
+                    const oneYearhAhead = new Date(startDate);
+                    const year = oneYearhAhead.getFullYear() + i;
+                    const month = String(oneYearhAhead.getMonth()).padStart(2, '0'); // Months are zero-based
+                    const day = String(billingDay).padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${day}`;
+
+                    array.push({
+                        id: i,
+                        itemid: selectedItem.id, 'Articol': selectedItem.name,
+                        date: formattedDate, 'measuringUnit.name': measuringUnit.name,
+                        measuringunitid: measuringUnit.id,
+                        billingQtty: billingQtty, pret: price,
+                        totalContractValue: (billingQtty * price),
+                        billingValue: price,
+                        'currency.code': currency.code,
+                        currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
+                    })
+
+                    setScadentar(array)
+
+                }
+            }
+        }
+
     }
 
     const deleteDataScadentar = () => {
@@ -449,7 +588,7 @@ export default function Financial() {
                 ResultSchedule.push(add)
             }
         )
-        console.log(ResultSchedule)
+        // console.log(ResultSchedule)
         try {
             const responseitem = await axios.delete(`http://localhost:3000/contracts/financialDetailSchedule/${Id}`
             );
@@ -560,7 +699,7 @@ export default function Financial() {
             // contractfinancialItemId: 0
         }
 
-        console.log(addedfinancialDetail)
+        // console.log(addedfinancialDetail)
 
         const validationResult = validateForm(addedfinancialDetail);
 
@@ -684,9 +823,20 @@ export default function Financial() {
                             <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="measuringUnit">Unitate de masura</label>
+                            <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="billingQtty">Cantitate facturata</label>
+                            <InputText keyfilter="int" id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
+                        </div>
+
                         <div className="field col-12  md:col-2">
                             <label htmlFor="price">Pret</label>
-                            <InputText id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+                            <InputText keyfilter="int" id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
                         </div>
 
                         <div className="field col-12 md:col-2">
@@ -694,36 +844,14 @@ export default function Financial() {
                             <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="currencyValue">Curs referinta</label>
-                            <InputText id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
-                        </div>
-
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
-                            <InputText id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="paymentType">Tip plata</label>
+                            <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="billingDay">Zi facturare</label>
-                            <InputText id="billingDay" type="text" value={billingDay} onChange={(e) => setBillingDay(e.target.value)} />
-                        </div>
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="billingQtty">Cantitate facturata</label>
-                            <InputText id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="measuringUnit">Unitate de masura</label>
-                            <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
-                        </div>
-
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="paymentType">Tip plata</label>
-                            <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <InputText keyfilter="int" id="billingDay" type="text" value={billingDay} onChange={(e) => setBillingDay(e.target.value)} />
                         </div>
 
                         <div className="field col-12 md:col-2">
@@ -731,19 +859,30 @@ export default function Financial() {
                             <Dropdown id="billingFrequency" filter showClear value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
-                            <InputText id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
-                        </div>
-
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Procent Avans(%)</label>
-                            <InputText id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
+                            <InputText keyfilter="int" id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
                         </div>
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="billingDueDays">Zile scadenta</label>
-                            <InputText id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
+                            <InputText keyfilter="int" id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
+                            <InputText keyfilter="int" id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
+                        </div>
+
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="currencyValue">Curs referinta</label>
+                            <InputText keyfilter="int" id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
+                            <InputText keyfilter="int" id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
                         </div>
 
                         <div className="field-checkbox col-12 md:col-2">
@@ -938,19 +1077,19 @@ export default function Financial() {
                                 dataKey="data"
                                 sortOrder={1} //cres
                             >
-                                <Column field="articol" header="item"></Column>
-                                <Column field="date" header="data" sortable body={StartBodyTemplate}></Column>
-                                <Column field="measuringUnit.name" header="um"></Column>
-                                <Column field="billingQtty" header="cantitate"></Column>
-                                <Column field="billingValue" header="pret"></Column>
-                                <Column field="totalContractValue" header="valoare"></Column>
-                                <Column field="currency.code" header="moneda"></Column>
+                                <Column field="Articol" header="Articol"></Column>
+                                <Column field="Date" header="Data" sortable body={StartBodyTemplate}></Column>
+                                <Column field="measuringUnit.name" header="UM"></Column>
+                                <Column field="billingQtty" header="Cantitate"></Column>
+                                <Column field="billingValue" header="Pret"></Column>
+                                <Column field="totalContractValue" header="Valoare"></Column>
+                                <Column field="currency.code" header="Moneda"></Column>
 
                                 <Column hidden field="isInvoiced" header="isInvoiced"></Column>
                                 <Column hidden field="isPayed" header="isPayed"></Column>
-                                <Column header="facturat" body={statusInvoiceTemplate}></Column>
-                                <Column header="platit" body={statusPayedTemplate}></Column>
-                                <Column header="editeaza" body={editSchTemplate}></Column>
+                                <Column header="Facturat" body={statusInvoiceTemplate}></Column>
+                                <Column header={isPurchasing ? "Platit" : "Incasat"} body={statusPayedTemplate}></Column>
+                                <Column header="Editeaza" body={editSchTemplate}></Column>
 
                             </DataTable>
 

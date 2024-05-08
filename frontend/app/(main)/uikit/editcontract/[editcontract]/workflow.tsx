@@ -35,7 +35,7 @@ export default function Content() {
     const fetchContent = async () => {
         const response = await fetch(`http://localhost:3000/contracts/getWFHistory/${Id}`).then(res => res.json())
         setWFHistory(response);
-        console.log(response)
+        // console.log(response)
     }
 
     useEffect(() => {
