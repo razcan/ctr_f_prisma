@@ -553,7 +553,6 @@ export default function EditContract() {
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
 
-        console.log(fields, "fields")
 
         if (!fields.start) {
             errors.push("Trebuie sa setati o data de start a contractului!");

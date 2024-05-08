@@ -906,8 +906,6 @@ export default function Financial() {
                             <div className="col-12 md:col-12">
                                 <div className="p-fluid formgrid grid pt-2">
 
-
-
                                     <div className="field col-12  md:col-3">
                                         <label htmlFor="type">Banca</label>
                                         <Dropdown id="type"
