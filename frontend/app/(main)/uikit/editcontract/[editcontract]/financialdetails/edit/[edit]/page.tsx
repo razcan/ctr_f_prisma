@@ -35,6 +35,7 @@ export default function Financial() {
     const [allCurrency, setAllCurrency] = useState([]);
     const [currencyPercent, setCurrencyPercent] = useState(1);
     const [currencyValue, setCurrencyValue] = useState([]);
+    const [price, setPrice] = useState(0);
     const [paymentType, setPaymentType] = useState([]);
     const [allPaymentType, setAllPaymentType] = useState([]);
     const [remarks, setRemarks] = useState('');
@@ -895,65 +896,149 @@ export default function Financial() {
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
 
-
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="item">Obiect de contract</label>
                             <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12  md:col-3">
-                            <label htmlFor="totalContractValue">Pret</label>
-                            <InputText id="totalContractValue" type="text" value={totalContractValue} onChange={(e) => setTotalContractValue(e.target.value)} />
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="measuringUnit">Unitate de masura</label>
+                            <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="billingQtty">Cantitate facturata</label>
+                            <InputText keyfilter="int" id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="price">Pret</label>
+                            <InputText keyfilter="int" id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="currency">Valuta</label>
                             <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="paymentType">Tip plata</label>
+                            <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="billingDay">Zi facturare</label>
+                            <InputText keyfilter="int" id="billingDay" type="text" value={billingDay} onChange={(e) => setBillingDay(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="billingFrequency">Interval facturare</label>
+                            <Dropdown id="billingFrequency" filter showClear value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="currencyValue">Procent Avans(%)</label>
+                            <InputText keyfilter="int" id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="billingDueDays">Zile scadenta</label>
+                            <InputText keyfilter="int" id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
+                            <InputText keyfilter="int" id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
+                        </div>
+
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="currencyValue">Curs referinta</label>
+                            <InputText keyfilter="int" id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
+                            <InputText keyfilter="int" id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
+                        </div>
+
+                        <div className="field-checkbox col-12 md:col-2">
+                            <Checkbox id="ent_legal_person" checked={active} onChange={e => setActive(e.checked)}></Checkbox>
+                            <label htmlFor="ent_legal_person" className="ml-2">Activ</label>
+                        </div>
+
+
+                        <div className="field col-12 md:col-12">
+                            <label htmlFor="guaranteeLetterOtherInfo">Note</label>
+                            <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={3} cols={30} />
+                        </div>
+
+                        <div className="field col-12 md:col-12 pt-4">
+                            <ToggleButton onLabel="Da" offLabel="Nu" checked={guaranteeLetter} onChange={(e) => setGuaranteeLetter(e.value)} className="w-8rem" />
+                            <label htmlFor="default" className="ml-2">Exista scrisoare garantie?</label>
+                        </div>
+
+
+
+                        {/* <div className="field col-12 md:col-2">
+                            <label htmlFor="item">Obiect de contract</label>
+                            <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="totalContractValue">Pret</label>
+                            <InputText id="totalContractValue" type="text" value={totalContractValue} onChange={(e) => setTotalContractValue(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="currency">Valuta</label>
+                            <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Curs referinta</label>
                             <InputText id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
                         </div>
 
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
                             <InputText id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
                         </div>
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="billingDay">Zi facturare</label>
                             <InputText id="billingDay" type="text" value={billingDay} onChange={(e) => setBillingDay(e.target.value)} />
                         </div>
 
-                        <div className="field col-12  md:col-3">
+                        <div className="field col-12  md:col-2">
                             <label htmlFor="billingQtty">Cantitate facturata</label>
                             <InputText id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="measuringUnit">Unitate de masura</label>
                             <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="paymentType">Tip plata</label>
                             <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="billingFrequency">Interval facturare</label>
                             <Dropdown id="billingFrequency" filter showClear value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
                             <InputText id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
                         </div>
 
-                        <div className="field col-12 md:col-3">
+                        <div className="field col-12 md:col-2">
                             <label htmlFor="billingDueDays">Zile scadente</label>
                             <InputText id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
                         </div>
@@ -972,7 +1057,7 @@ export default function Financial() {
                         <div className="field col-12 md:col-12 pt-4">
                             <ToggleButton onLabel="Da" offLabel="Nu" checked={guaranteeLetter} onChange={(e) => setGuaranteeLetter(e.value)} className="w-8rem" />
                             <label htmlFor="default" className="ml-2">Exista scrisoare garantie?</label>
-                        </div>
+                        </div> */}
 
                         {/* <Checkbox onChange={e => setChecked(e.checked)} checked={checked}></Checkbox> */}
 
