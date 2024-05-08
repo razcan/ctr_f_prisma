@@ -553,7 +553,7 @@ export default function EditContract() {
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
 
-        // console.log(fields, "fields")
+        console.log(fields, "fields")
 
         if (!fields.start) {
             errors.push("Trebuie sa setati o data de start a contractului!");
@@ -561,6 +561,14 @@ export default function EditContract() {
 
         if (!fields.end) {
             errors.push("Trebuie sa setati o data de final a contractului!");
+        }
+
+        if (fields.start > fields.end) {
+            errors.push("Data de start nu trebuie sa fie mai mare decat data de final!");
+        }
+
+        if (fields.sign > fields.end) {
+            errors.push("Data de semnare nu trebuie sa fie mai mare decat data de final!");
         }
 
         if (!fields.statusId) {
@@ -583,9 +591,29 @@ export default function EditContract() {
             errors.push("Trebuie sa setati o linie de CashFlow!");
         }
 
-
         if (!fields.locationId) {
             errors.push("Trebuie sa setati o locatie!");
+        }
+
+        if (!fields.partnersId) {
+            errors.push("Trebuie sa setati un partener!");
+        }
+
+        if (!fields.entityId) {
+            errors.push("Trebuie sa setati o entitate!");
+        }
+        if (!fields.partnerpersonsId) {
+            errors.push("Trebuie sa setati o pesoana responsabila pentru partener!");
+        }
+        if (!fields.entitypersonsId) {
+            errors.push("Trebuie sa setati o pesoana responsabila pentru entitate!");
+        }
+        if (!fields.entityaddressId) {
+            errors.push("Trebuie sa setati o adresa pentru entitate!");
+        }
+
+        if (!fields.partneraddressId) {
+            errors.push("Trebuie sa setati o adresa pentru partener!");
         }
 
         const isValid = errors.length === 0;

@@ -235,21 +235,27 @@ function Contracts() {
                 <div className='p-1'><Button label="Adauga" onClick={addContract} /></div>
                 <DataTable value={data}
                     filters={filters}
-                    globalFilterFields={['number', 'partner.name', 'entity.name', 'type.name', 'status.name', 'start', 'Category.name']} header={header}
+                    globalFilterFields={['number', 'partner.name', 'entity.name',
+                        'type.name', 'status.name', 'start', 'end', 'Category.name', 'location.name',
+                        'costcenter.name', 'cashflow.name'
+                    ]} header={header}
                     stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
                     selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
                         setselectedContract(e.value),
                             editContract(e.value.id)
                     }} dataKey="id" metaKeySelection={metaKey}>
-                    <Column field="id" header="Id"></Column>
+                    <Column hidden field="id" header="Id"></Column>
                     <Column field="number" header="Numar" sortable></Column>
                     <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
                     <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
                     <Column field="entity.name" header="Entitate" sortable></Column>
                     <Column field="partner.name" header="Partener" sortable></Column>
-                    <Column field="status.name" header="Status" sortable></Column>
+                    <Column field="status.name" header="Stare" sortable></Column>
                     <Column field="type.name" header="Tip" sortable></Column>
                     <Column field="Category.name" header="Categorie" sortable></Column>
+                    <Column field="location.name" header="Locatie" sortable></Column>
+                    <Column field="costcenter.name" header="CentruCost" sortable></Column>
+                    <Column field="cashflow.name" header="Cashflow" sortable></Column>
 
                 </DataTable>
             </div>

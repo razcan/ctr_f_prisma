@@ -368,7 +368,7 @@ export default function HeaderContract({ setContractId }: any) {
     function validateForm(fields: Record<string, any>): ValidationResult {
         const errors: string[] = [];
 
-        // console.log(fields, "fields")
+        console.log(fields, "fields")
 
         if (!fields.start) {
             errors.push("Trebuie sa setati o data de start a contractului!");
@@ -376,6 +376,14 @@ export default function HeaderContract({ setContractId }: any) {
 
         if (!fields.end) {
             errors.push("Trebuie sa setati o data de final a contractului!");
+        }
+
+        if (fields.start > fields.end) {
+            errors.push("Data de start nu trebuie sa fie mai mare decat data de final!");
+        }
+
+        if (fields.sign > fields.end) {
+            errors.push("Data de semnare nu trebuie sa fie mai mare decat data de final!");
         }
 
         if (!fields.statusId) {
@@ -398,9 +406,29 @@ export default function HeaderContract({ setContractId }: any) {
             errors.push("Trebuie sa setati o linie de CashFlow!");
         }
 
-
         if (!fields.locationId) {
             errors.push("Trebuie sa setati o locatie!");
+        }
+
+        if (!fields.partnersId) {
+            errors.push("Trebuie sa setati un partener!");
+        }
+
+        if (!fields.entityId) {
+            errors.push("Trebuie sa setati o entitate!");
+        }
+        if (!fields.partnerpersonsId) {
+            errors.push("Trebuie sa setati o pesoana responsabila pentru partener!");
+        }
+        if (!fields.entitypersonsId) {
+            errors.push("Trebuie sa setati o pesoana responsabila pentru entitate!");
+        }
+        if (!fields.entityaddressId) {
+            errors.push("Trebuie sa setati o adresa pentru entitate!");
+        }
+
+        if (!fields.partneraddressId) {
+            errors.push("Trebuie sa setati o adresa pentru partener!");
         }
 
         const isValid = errors.length === 0;
@@ -430,20 +458,20 @@ export default function HeaderContract({ setContractId }: any) {
             sign: (sign ? addOneDay(sign) : null),
             completion: (completion ? addOneDay(completion) : null),
             remarks: remarks,
-            categoryId: selectedCategory.id,
-            departmentId: selectedDepartment.id,
-            cashflowId: selectedCashflow.id,
-            locationId: selectedLocation.id,
-            costcenterId: selectedCostCenter.id,
+            categoryId: selectedCategory ? selectedCategory.id : null,
+            departmentId: selectedDepartment ? selectedDepartment.id : null,
+            cashflowId: selectedCashflow ? selectedCashflow.id : null,
+            locationId: selectedLocation ? selectedLocation.id : null,
+            costcenterId: selectedCostCenter ? selectedCostCenter.id : null,
             automaticRenewal: automaticRenewalValue,
             // contract: selectedItem,
-            partnersId: selectedPartner.id,
-            entityId: selectedEntity.id,
+            partnersId: selectedPartner ? selectedPartner.id : null,
+            entityId: selectedEntity ? selectedEntity.id : null,
             partnerpersonsId: party_id,
             entitypersonsId: ent_id,
-            entityaddressId: ent_address.id,
+            entityaddressId: ent_address ? ent_address.id : null,
             partneraddressId: party_address?.id ?? null,
-            entitybankId: ent_iban.id,
+            entitybankId: ent_iban ? ent_iban.id : null,
             partnerbankId: party_iban?.id ?? null,
             userId: userId,
             isPurchasing: isPurchasing
