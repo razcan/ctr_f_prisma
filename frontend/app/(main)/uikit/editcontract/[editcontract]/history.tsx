@@ -93,6 +93,28 @@ export default function History() {
         });
     };
 
+    const data_modificareTemplate = (rowData: any) => {
+        const formattedDate = formatDateHour(rowData.data_modificare);
+        return <span>{formattedDate}</span>;
+    };
+
+    const formatDateHour = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false // 24-hour format
+        };
+
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -106,7 +128,7 @@ export default function History() {
                     >
                         <Column field="contract_id" header="contract_id"></Column>
                         <Column field="tip_modificare" sortable header="tip_modificare"></Column>
-                        <Column field="data_modificare" sortable header="data_modificare"></Column>
+                        <Column field="data_modificare" sortable header="data_modificare" body={data_modificareTemplate}></Column>
                         <Column field="contract_number" header="contract_number"></Column>
                         <Column field="nume_partener" header="nume_partener"></Column>
                         <Column field="nume_entitate" header="nume_entitate"></Column>

@@ -168,6 +168,8 @@ export default function Financial() {
                 setSelectedItem(contractItem[0].item);
                 setCurrency(contractItem[0].currency);
 
+                setPrice(contractItem[0].ContractFinancialDetail[0].price);
+
                 setGuaranteeSelectedCurrency(contractItem[0].ContractFinancialDetail[0].guaranteecurrency);
                 setGuaranteeSelectedBank(contractItem[0].ContractFinancialDetail[0].guaranteeLetterBank);
                 setGuaranteeLetter(contractItem[0].ContractFinancialDetail[0].guaranteeLetter);
@@ -270,7 +272,7 @@ export default function Financial() {
 
     useEffect(() => {
         setIndextable(indexTable + 1)
-        console.log(scadentar)
+        // console.log(scadentar)
     }, [scadentar])
 
 
@@ -644,6 +646,14 @@ export default function Financial() {
             errors.push("Trebuie sa setati un articol!");
         }
 
+        if (scadentar.length > 0) {
+            const item_details = scadentar[0].itemid;
+
+            if (fields.itemid !== item_details) {
+                errors.push("Trebuie sa avem acelasi articol si in heder si in detalii!");
+            }
+        }
+
         if (!fields.currencyid) {
             errors.push("Trebuie sa setati o valuta!");
         }
@@ -697,29 +707,6 @@ export default function Financial() {
 
     const saveData = async () => {
 
-        // let addedfinancialDetail: financialDetail = {
-        //     itemid: selectedItem.id,
-        //     totalContractValue: parseFloat(totalContractValue),
-        //     currencyid: currency.id,
-        //     currencyValue: parseFloat(currencyValue),
-        //     currencyPercent: parseFloat(currencyPercent),
-        //     billingDay: parseInt(billingDay),
-        //     billingQtty: parseFloat(billingQtty),
-        //     billingFrequencyid: billingFrequency.id,
-        //     measuringUnitid: measuringUnit.id,
-        //     paymentTypeid: paymentType.id,
-        //     billingPenaltyPercent: billingPenaltyPercent,
-        //     billingDueDays: parseInt(billingDueDays),
-        //     remarks: remarks,
-        //     guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
-        //     guaranteeLetterCurrencyid: guaranteeLetterCurrency ? guaranteeLetterCurrency.id : null,
-        //     guaranteeLetterDate: guaranteeLetterDate ? guaranteeLetterDate : null,
-        //     guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
-        //     contractItemId: 0,
-        //     active: active,
-        //     // contractfinancialItemId: 0
-        // }
-
         let addedfinancialDetail = {
             itemid: parseInt(selectedItem.id),
             price: parseFloat(price),
@@ -748,91 +735,77 @@ export default function Financial() {
             goodexecutionLetterValue: goodexecutionValue ? parseFloat(goodexecutionValue) : null,
             goodexecutionLetterInfo: goodexecutionInfo,
             goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
-            advancePercent: parseFloat(advancePercent)
-            // contractfinancialItemId: 0
+            advancePercent: parseFloat(advancePercent),
+            contractfinancialItemId: parseInt(contractfinancialItemId)
         }
 
+        const validationResult = validateForm(addedfinancialDetail);
 
-        const ResultSchedule: financialDetailSchedule[] = []
-        scadentar.forEach(
-            scadenta => {
-                const add: financialDetailSchedule = {
-                    itemid: scadenta.itemid,
-                    currencyid: scadenta.currencyid,
-                    date: new Date(scadenta.date),
-                    measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: parseFloat(scadenta.billingQtty),
-                    totalContractValue: scadenta.totalContractValue,
-                    billingValue: parseFloat(scadenta.billingValue),
-                    isInvoiced: scadenta.isInvoiced,
-                    isPayed: scadenta.isPayed,
-                    active: active,
-                    contractfinancialItemId: contractfinancialItemId
+        if (!validationResult.isValid) {
+            showMessage('error', 'Eroare', validationResult.errors)
+        } else {
+            const ResultSchedule: financialDetailSchedule[] = []
+            scadentar.forEach(
+                scadenta => {
+                    const add: financialDetailSchedule = {
+                        itemid: scadenta.itemid,
+                        currencyid: scadenta.currencyid,
+                        date: new Date(scadenta.date),
+                        measuringUnitid: scadenta.measuringunitid,
+                        billingQtty: parseFloat(scadenta.billingQtty),
+                        totalContractValue: scadenta.totalContractValue,
+                        billingValue: parseFloat(scadenta.billingValue),
+                        isInvoiced: scadenta.isInvoiced,
+                        isPayed: scadenta.isPayed,
+                        active: active,
+                        contractfinancialItemId: contractfinancialItemId
 
+                    }
+                    ResultSchedule.push(add)
                 }
-                ResultSchedule.push(add)
+            )
+
+            interface financialContractItem {
+                id: number,
+                contractId?: number,
+                itemid: number,
+                currencyid?: number,
+                currencyValue?: number,
+                billingFrequencyid: number,
+                active?: boolean
             }
-        )
 
-        interface financialContractItem {
-            id: number,
-            contractId?: number,
-            itemid: number,
-            currencyid?: number,
-            currencyValue?: number,
-            billingFrequencyid: number,
-            active?: boolean
+
+            const financialContractItem = {
+                id: parseInt(contractItem),
+                contractId: parseInt(ctrId),
+                itemid: selectedItem.id,
+                currencyid: currency.id,
+                currencyValue: parseFloat(totalContractValue),
+                billingFrequencyid: billingFrequency.id,
+                active: active,
+
+            }
+
+            try {
+
+                const responseitem = await axios.patch(`http://localhost:3000/contracts/updatecontractItems/${Id}/${ctrId}/${contractfinancialItemId}`,
+                    [financialContractItem, addedfinancialDetail, ResultSchedule]
+                );
+
+                showMessage('success', 'Salvat cu succes!', 'Ok');
+
+                console.log('Contract details added:', responseitem.data
+                    // , response.data, responsesch.data
+                );
+            } catch (error) {
+                console.error('Error creating contract details:', error);
+            }
+
         }
 
-
-        const financialContractItem = {
-            id: parseInt(contractItem),
-            contractId: parseInt(ctrId),
-            itemid: selectedItem.id,
-            currencyid: currency.id,
-            currencyValue: parseFloat(totalContractValue),
-            billingFrequencyid: billingFrequency.id,
-            active: active,
-
-        }
-
-        try {
-
-            // console.log(financialContractItem)
-            const responseitem = await axios.patch(`http://localhost:3000/contracts/updatecontractItems/${Id}/${ctrId}/${contractfinancialItemId}`,
-                [financialContractItem, addedfinancialDetail, ResultSchedule]
-            );
-
-            // const response = await axios.post('http://localhost:3000/contracts/financialDetail',
-            //     addedfinancialDetail
-            // );
-
-            // const responsesch = await axios.post('http://localhost:3000/contracts/financialDetailSchedule',
-            //     ResultSchedule
-            // );
-
-
-
-
-            console.log('Contract details added:', responseitem.data
-                // , response.data, responsesch.data
-            );
-        } catch (error) {
-            console.error('Error creating contract details:', error);
-        }
 
     }
-
-    // const saveData = () => {
-    //     console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
-    //         paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
-
-    //     console.log("scadentar", scadentar)
-    //     //treb adaugate id-urile si ascune la afisare - fol doar la export
-    // }
-
-    //in cazul saptm - zi facturare reprez ziua din sapt de la 1 - 7
-    //se sparge in func de start end la nr de intervale si se copiaza valoarile in tabel.
 
 
     const statusInvoiceTemplate = (product) => {
@@ -886,8 +859,6 @@ export default function Financial() {
         const formattedDate = formatDate(rowData.date);
         return <span>{formattedDate}</span>;
     };
-
-    console.log(currency, "currency", guaranteeSelectedBank, "guaranteeSelectedBank")
 
     return (
         <div className='card'>
@@ -981,85 +952,6 @@ export default function Financial() {
 
 
 
-                        {/* <div className="field col-12 md:col-2">
-                            <label htmlFor="item">Obiect de contract</label>
-                            <Dropdown id="item" filter showClear value={selectedItem} onChange={(e) => setSelectedItem(e.value)} options={item} optionLabel="name" placeholder="Select One"></Dropdown>
-                        </div>
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="totalContractValue">Pret</label>
-                            <InputText id="totalContractValue" type="text" value={totalContractValue} onChange={(e) => setTotalContractValue(e.target.value)} />
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="currency">Valuta</label>
-                            <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
-                        </div>
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="currencyValue">Curs referinta</label>
-                            <InputText id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
-                        </div>
-
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
-                            <InputText id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
-                        </div>
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="billingDay">Zi facturare</label>
-                            <InputText id="billingDay" type="text" value={billingDay} onChange={(e) => setBillingDay(e.target.value)} />
-                        </div>
-
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="billingQtty">Cantitate facturata</label>
-                            <InputText id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="measuringUnit">Unitate de masura</label>
-                            <Dropdown id="measuringUnit" filter showClear value={measuringUnit} onChange={(e) => setMeasuringUnit(e.value)} options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
-                        </div>
-
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="paymentType">Tip plata</label>
-                            <Dropdown id="paymentType" filter showClear value={paymentType} onChange={(e) => setPaymentType(e.value)} options={allPaymentType} optionLabel="name" placeholder="Select One"></Dropdown>
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="billingFrequency">Interval facturare</label>
-                            <Dropdown id="billingFrequency" filter showClear value={billingFrequency} onChange={(e) => setBillingFrequency(e.value)} options={allBillingFrequency} optionLabel="name" placeholder="Select One"></Dropdown>
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
-                            <InputText id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="billingDueDays">Zile scadente</label>
-                            <InputText id="billingDueDays" value={billingDueDays} onChange={(e) => setBillingDueDays(e.target.value)} placeholder="Select One" />
-                        </div>
-
-                        <div className="field-checkbox col-12 md:col-12">
-                            <Checkbox id="ent_legal_person" checked={active} onChange={e => setActive(e.checked)}></Checkbox>
-                            <label htmlFor="ent_legal_person" className="ml-2">Activ</label>
-                        </div>
-
-
-                        <div className="field col-12 md:col-12">
-                            <label htmlFor="guaranteeLetterOtherInfo">Note</label>
-                            <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
-                        </div>
-
-                        <div className="field col-12 md:col-12 pt-4">
-                            <ToggleButton onLabel="Da" offLabel="Nu" checked={guaranteeLetter} onChange={(e) => setGuaranteeLetter(e.value)} className="w-8rem" />
-                            <label htmlFor="default" className="ml-2">Exista scrisoare garantie?</label>
-                        </div> */}
-
-                        {/* <Checkbox onChange={e => setChecked(e.checked)} checked={checked}></Checkbox> */}
 
                         {guaranteeLetter ?
                             <div className="col-12 md:col-12">
@@ -1093,7 +985,7 @@ export default function Financial() {
                                         <label className="font-bold block mb-2">
                                             Valoare
                                         </label>
-                                        <InputText id="guaranteeLetterValue" value={guaranteeLetterValue} onChange={(e) => setGuaranteeLetterValue(e.target.value)} />
+                                        <InputText keyfilter="int" id="guaranteeLetterValue" value={guaranteeLetterValue} onChange={(e) => setGuaranteeLetterValue(e.target.value)} />
                                     </div>
 
                                     <div className="field col-12  md:col-3">
@@ -1145,7 +1037,7 @@ export default function Financial() {
                                         <label className="font-bold block mb-2">
                                             Valoare
                                         </label>
-                                        <InputText id="guaranteeLetterValue" value={goodexecutionValue} onChange={(e) => setGoodexecutionValue(e.target.value)} />
+                                        <InputText keyfilter="int" id="guaranteeLetterValue" value={goodexecutionValue} onChange={(e) => setGoodexecutionValue(e.target.value)} />
                                     </div>
 
                                     <div className="field col-12  md:col-3">

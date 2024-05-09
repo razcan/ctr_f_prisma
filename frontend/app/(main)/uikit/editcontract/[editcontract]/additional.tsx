@@ -38,6 +38,23 @@ export default function AddContract() {
         fetchContent()
     }, [])
 
+    const formatDate = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
+    const StartBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.start);
+        return <span>{formattedDate}</span>;
+    };
+    const EndBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(rowData.end);
+        return <span>{formattedDate}</span>;
+    };
+
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -57,11 +74,11 @@ export default function AddContract() {
                                     editContract(e.value.id)
                                 }}
                             >
-                                <Column field="id" header="Id"></Column>
+                                <Column hidden field="id" header="Id"></Column>
                                 <Column field="number" header="Numar"></Column>
                                 <Column field="status.name" header="Stare"></Column>
-                                <Column field="start" header="Data Start"></Column>
-                                <Column field="end" header="Data Final"></Column>
+                                <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
+                                <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
                                 <Column field="remarks" header="Detalii Contract"></Column>
                             </DataTable>
                             : null}

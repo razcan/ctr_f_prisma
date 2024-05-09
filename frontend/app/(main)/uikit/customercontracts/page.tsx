@@ -87,13 +87,6 @@ function Contracts() {
     // if (error) return 'An error has occurred: ' + error.message;
 
 
-    const formatDate = (dateString: Date) => {
-        // Implement your date formatting logic here
-        const date = new Date(dateString);
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('ro-Ro', options);
-    };
-
     // const fetchContracts_old = async () => {
     //     const session: any = sessionStorage.getItem('token');
     //     const jwtToken = JSON.parse(session);
@@ -183,6 +176,12 @@ function Contracts() {
     }, [])
 
 
+    const formatDate = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
 
     const StartBodyTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.start);
@@ -251,7 +250,7 @@ function Contracts() {
                     <Column field="entity.name" header="Entitate" sortable></Column>
                     <Column field="partner.name" header="Partener" sortable></Column>
                     <Column field="status.name" header="Stare" sortable></Column>
-                    <Column field="type.name" header="Tip" sortable></Column>
+                    {/* <Column field="type.name" header="Tip" sortable></Column> */}
                     <Column field="Category.name" header="Categorie" sortable></Column>
                     <Column field="location.name" header="Locatie" sortable></Column>
                     <Column field="costcenter.name" header="CentruCost" sortable></Column>

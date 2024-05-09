@@ -614,6 +614,14 @@ export default function Financial() {
             errors.push("Trebuie sa setati un articol!");
         }
 
+        if (scadentar.length > 0) {
+            const item_details = scadentar[0].itemid;
+
+            if (fields.itemid !== item_details) {
+                errors.push("Trebuie sa avem acelasi articol si in detaliile scadentarului! Regenerati scadentarul sau modificati obiectul de contract.");
+            }
+        }
+
         if (!fields.currencyid) {
             errors.push("Trebuie sa setati o valuta!");
         }

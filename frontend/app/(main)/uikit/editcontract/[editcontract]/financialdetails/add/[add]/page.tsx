@@ -42,7 +42,7 @@ export default function Financial() {
     const [billingQtty, setBillingQtty] = useState(1);
     const [billingDay, setBillingDay] = useState(1);
     const [billingDueDays, setBillingDueDays] = useState(10);
-    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState('');
+    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(0);
     const [advancePercent, setAdvancePercent] = useState(0);
 
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
@@ -101,7 +101,7 @@ export default function Financial() {
         billingFrequencyid?: number,
         measuringUnitid?: number,
         paymentTypeid?: number,
-        billingPenaltyPercent?: boolean,
+        billingPenaltyPercent?: number,
         billingDueDays?: number,
         remarks?: String,
         guaranteeLetter?: Boolean,
@@ -614,6 +614,16 @@ export default function Financial() {
             errors.push("Trebuie sa setati un articol!");
         }
 
+
+        if (scadentar.length > 0) {
+            const item_details = scadentar[0].itemid;
+
+            if (fields.itemid !== item_details) {
+                errors.push("Trebuie sa avem acelasi articol si in detaliile scadentarului! Regenerati scadentarul sau modificati obiectul de contract.");
+            }
+        }
+
+
         if (!fields.currencyid) {
             errors.push("Trebuie sa setati o valuta!");
         }
@@ -675,10 +685,10 @@ export default function Financial() {
             currencyPercent: parseFloat(currencyPercent),
             billingDay: parseInt(billingDay),
             billingQtty: parseFloat(billingQtty),
-            billingFrequencyid: billingFrequency.id,
-            measuringUnitid: measuringUnit.id,
-            paymentTypeid: paymentType.id,
-            billingPenaltyPercent: parseInt(billingPenaltyPercent),
+            billingFrequencyid: billingFrequency ? billingFrequency.id : null,
+            measuringUnitid: measuringUnit ? measuringUnit.id : null,
+            paymentTypeid: paymentType ? paymentType.id : null,
+            billingPenaltyPercent: parseFloat(billingPenaltyPercent),
             billingDueDays: parseInt(billingDueDays),
             remarks: remarks,
             guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
@@ -933,7 +943,7 @@ export default function Financial() {
                                         <label className="font-bold block mb-2">
                                             Valoare
                                         </label>
-                                        <InputText id="guaranteeLetterValue" value={guaranteeLetterValue} onChange={(e) => setGuaranteeLetterValue(e.target.value)} />
+                                        <InputText keyfilter="int" id="guaranteeLetterValue" value={guaranteeLetterValue} onChange={(e) => setGuaranteeLetterValue(e.target.value)} />
                                     </div>
 
                                     <div className="field col-12  md:col-3">
@@ -983,7 +993,7 @@ export default function Financial() {
                                         <label className="font-bold block mb-2">
                                             Valoare
                                         </label>
-                                        <InputText id="guaranteeLetterValue" value={goodexecutionValue} onChange={(e) => setGoodexecutionValue(e.target.value)} />
+                                        <InputText keyfilter="int" id="guaranteeLetterValue" value={goodexecutionValue} onChange={(e) => setGoodexecutionValue(e.target.value)} />
                                     </div>
 
                                     <div className="field col-12  md:col-3">

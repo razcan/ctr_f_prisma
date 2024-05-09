@@ -98,7 +98,7 @@ export default function Financial() {
                                         editContractItem(e.value.id)
                                 }}
                             >
-                                <Column field="id" header="id"></Column>
+                                <Column hidden field="id" header="id"></Column>
                                 <Column field="item.name" header="Articol"></Column>
                                 <Column field="frequency.name" header="Perioada"></Column>
                                 <Column field="currency.code" header="Valuta"></Column>

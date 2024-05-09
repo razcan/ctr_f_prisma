@@ -251,7 +251,7 @@ function Contracts() {
                     <Column field="entity.name" header="Entitate" sortable></Column>
                     <Column field="partner.name" header="Partener" sortable></Column>
                     <Column field="status.name" header="Stare" sortable></Column>
-                    <Column field="type.name" header="Tip" sortable></Column>
+                    {/* <Column field="type.name" header="Tip" sortable></Column> */}
                     <Column field="Category.name" header="Categorie" sortable></Column>
                     <Column field="location.name" header="Locatie" sortable></Column>
                     <Column field="costcenter.name" header="CentruCost" sortable></Column>

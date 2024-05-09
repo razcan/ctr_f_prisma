@@ -112,14 +112,15 @@ export default function AddContract() {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
+                    {IsAdditionalContract ?
+                        <Tag severity="warning" className='text-base w-1' value="Act Aditional"></Tag>
+                        : null
+                    }
                     <div className="field lg:col-12 xs:col-3 md:col-12">
                         <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
                     </div>
                     {/* <div className="p-fluid formgrid grid pt-2"> */}
-                    {IsAdditionalContract ?
-                        <Tag severity="warning" value="Act Aditional"></Tag>
-                        : null
-                    }
+
                     {activeIndex === 0 ?
 
                         <div>
