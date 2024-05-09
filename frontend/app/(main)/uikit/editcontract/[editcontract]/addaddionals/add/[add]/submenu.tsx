@@ -44,7 +44,7 @@ export default function Submenu() {
 
     const searchParams = useSearchParams()
 
-    console.log(paramId, searchParams.get("addId"))
+    // console.log(paramId, searchParams.get("addId"))
 
     const changeTab = (e) => {
         setParamId(parseInt(searchParams.get("addId")));

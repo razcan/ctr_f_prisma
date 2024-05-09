@@ -27,7 +27,7 @@ export default function Financial() {
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const [contractValue, setContractValue] = useState();
-    const [totalContractValue, setTotalContractValue] = useState(1000);
+    const [totalContractValue, setTotalContractValue] = useState(0);
     const [currency, setCurrency] = useState<any>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<any>([]);
     // const [Currency, setCurrency] = useState<any>([]);

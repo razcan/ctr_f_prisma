@@ -93,7 +93,7 @@ export default function Financial() {
                                 <Column field="item.name" header="Articol"></Column>
                                 <Column field="frequency.name" header="Perioada"></Column>
                                 <Column field="currency.code" header="Valuta"></Column>
-                                <Column field="currencyValue" header="Valoare"></Column>
+                                <Column field="currencyValue" header="Pret"></Column>
                                 <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
                             </DataTable>
                             : null}

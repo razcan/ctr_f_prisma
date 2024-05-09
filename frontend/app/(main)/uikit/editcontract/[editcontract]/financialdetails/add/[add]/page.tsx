@@ -42,7 +42,7 @@ export default function Financial() {
     const [billingQtty, setBillingQtty] = useState(1);
     const [billingDay, setBillingDay] = useState(1);
     const [billingDueDays, setBillingDueDays] = useState(10);
-    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(0);
+    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState('');
     const [advancePercent, setAdvancePercent] = useState(0);
 
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
@@ -739,8 +739,7 @@ export default function Financial() {
                 contractId: parseInt(Id),
                 itemid: selectedItem.id,
                 currencyid: currency.id,
-                currencyValue: 0,
-                // parseFloat(totalContractValue),
+                currencyValue: parseFloat(price),
                 billingFrequencyid: billingFrequency.id,
                 active: active,
             }

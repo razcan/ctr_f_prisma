@@ -140,16 +140,15 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 2 ?
 
+                    {activeIndex === 2 && !IsAdditionalContract && (
                         <div>
                             <div className='pt-4'>
                                 <Additional />
                             </div>
                         </div>
+                    )}
 
-                        : null
-                    }
                     {activeIndex === 3 ?
 
                         <div>
