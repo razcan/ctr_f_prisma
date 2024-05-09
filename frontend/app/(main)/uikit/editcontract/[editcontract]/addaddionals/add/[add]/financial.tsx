@@ -50,10 +50,9 @@ export default function Financial() {
 
     const addContractItem = () => {
         router.push(`/uikit/editcontract/editcontract/financialdetails/add/ctr?Id=${Id}`);
-        // router.push('/uikit/addcontract/financialdetails');
+
     }
 
-    // http://localhost:3000/contracts/contractItemsDetails/95
 
     const statusTemplate = (item) => {
         return <Tag value={item.active} severity={getSeverity(item)}></Tag>;

@@ -83,6 +83,8 @@ export default function Financial() {
     const [selectedSchLine, setSelectedSchLine] = useState([]);
     const [isPurchasing, setIsPurchasing] = useState('');
 
+    const [parentId, setParentId] = useState(0);
+
 
     const [allBanks, setAllBanks] = useState<any>([]);
 
@@ -232,6 +234,13 @@ export default function Financial() {
             .then(item => { setItems(item) })
     }
 
+    const contractData = () => {
+        fetch(`http://localhost:3000/contracts/details/${ctrId}`).then(response => { return response.json() })
+            .then(ctr => {
+                setParentId(ctr.parentId)
+            })
+    }
+
     const fetchAllCurrencies = async () => {
         const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
         setAllCurrency(response);
@@ -265,9 +274,8 @@ export default function Financial() {
             fetchAllBillingFrequency(),
             fetchAllPaymentType(),
             fetchAllMeasuringUnit(),
-            fetchAllBanks()
-
-
+            fetchAllBanks(),
+            contractData()
     }, [])
 
     useEffect(() => {
@@ -865,7 +873,13 @@ export default function Financial() {
             <Toast ref={toast} position="top-right" />
             <div className="grid">
                 <div className="col-12">
+
+                    {parentId > 0 ? <Tag severity="warning" className='text-base w-1' value="Act Aditional"></Tag> : null}
+
+
                     <div className="p-fluid formgrid grid pt-2">
+
+
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="item">Obiect de contract</label>

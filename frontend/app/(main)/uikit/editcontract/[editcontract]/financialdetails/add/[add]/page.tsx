@@ -88,6 +88,8 @@ export default function Financial() {
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
+    const ctrId = searchParams.get("ctrId");
+    const [parentId, setParentId] = useState(0);
 
 
     interface financialDetail {
@@ -194,6 +196,13 @@ export default function Financial() {
         setAllMeasuringUnit(response);
     }
 
+    const contractData = () => {
+        fetch(`http://localhost:3000/contracts/details/${Id}`).then(response => { return response.json() })
+            .then(ctr => {
+                setParentId(ctr.parentId)
+            })
+    }
+
 
     useEffect(() => {
         fetchContractData(),
@@ -202,7 +211,8 @@ export default function Financial() {
             fetchAllBillingFrequency(),
             fetchAllPaymentType(),
             fetchAllMeasuringUnit(),
-            fetchAllBanks()
+            fetchAllBanks(),
+            contractData()
     }, [])
 
     useEffect(() => {
@@ -824,6 +834,9 @@ export default function Financial() {
             <Toast ref={toast} position="top-right" />
             <div className="grid">
                 <div className="col-12">
+                    {parentId > 0 ? <Tag severity="warning" className='text-base w-1' value="Act Aditional"></Tag> : null}
+
+
                     <div className="p-fluid formgrid grid pt-2">
 
 

@@ -865,7 +865,10 @@ export default function Financial() {
             <Toast ref={toast} position="top-right" />
             <div className="grid">
                 <div className="col-12">
+
+
                     <div className="p-fluid formgrid grid pt-2">
+
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="item">Obiect de contract</label>
