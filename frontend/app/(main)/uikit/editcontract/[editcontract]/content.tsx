@@ -14,7 +14,7 @@ import axios from 'axios';
 import 'quill/dist/quill.snow.css'; // Import Quill CSS
 
 
-const PrintButton = () => {
+const Content = () => {
     const [editorContent, setEditorContent] = useState('');
     const editorRef = useRef();
     const iframeRef = useRef();
@@ -302,4 +302,4 @@ const PrintButton = () => {
     );
 };
 
-export default PrintButton;
+export default Content;
