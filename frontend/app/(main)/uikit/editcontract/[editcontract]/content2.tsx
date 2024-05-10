@@ -1,8 +1,5 @@
 'use client';
 
-
-
-
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
 import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -11,19 +8,23 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
-import 'quill/dist/quill.snow.css'; // Import Quill CSS
+import { jsPDF } from "jspdf";
+import { parse } from 'parse5';
+import ReactQuill from 'react-quill';
 
+export default function Content() {
 
-const PrintButton = () => {
-    const [editorContent, setEditorContent] = useState('');
-    const editorRef = useRef();
-    const iframeRef = useRef();
+    // const [text, setText] = useState([]);
+
+    const router = useRouter();
     const searchParams = useSearchParams()
     const Id = parseInt(searchParams.get("Id"));
     const [templates, setTemplates] = useState([]);
     const [type, setType] = useState();
     const [actualContract, setActualContract] = useState();
     const [text, setText] = useState('');
+    const [newtext, setnewText] = useState('');
+    const componentRef = useRef(null);
 
     const fetchContent = async () => {
         const response = await fetch(`http://localhost:3000/contracts/content/${Id}`).then(res => res.json().then(res => {
@@ -198,53 +199,157 @@ const PrintButton = () => {
         setText(replacedString)
     }
 
+    const cols = [
+        { field: 'text', header: 'text' }
+    ];
 
-    const handleTextChange = (e) => {
-        // setEditorContent(e.htmlValue);
-        setText(e.htmlValue)
+
+    const exportColumns = cols.map((col) => ({ title: col.header, dataKey: col.field }));
+
+
+    const exportPdf = () => {
+        const doc = new jsPDF({
+            // orientation: "landscape"
+
+        });
+        const text_fin = `<p style="font-size: 2px;">${text}</p>`;
+        doc.html(text_fin, {
+            callback: function (doc) {
+                doc.save("contract_exp.pdf");
+
+            },
+            // x: 10,
+            // y: 10
+        });
+    };
+
+    const exportPdf2 = () => {
+        const doc = new jsPDF({
+            orientation: 'landscape'
+        });
+
+        const text_fin = `<p style="font-family: Arial, sans-serif; font-size: 8px;">${text}</p>`;
+
+        console.log(text_fin)
+
+        doc.html(text_fin, {
+            callback: (pdf) => {
+                // Configure additional settings
+                // pdf.setFont('times', 'italic', 'normal');
+                pdf.setFontSize(2);
+                pdf.setTextColor(10);
+                pdf.setCreationDate(new Date());
+                pdf.setDocumentProperties({ "author": "razvan" });
+                pdf.putTotalPages;
+                pdf.setTextColor('#FFFFFF');
+                // Auto print (optional)
+                pdf.autoPrint();
+
+                // Save PDF
+                pdf.save('exported_content.pdf');
+            },
+            x: 10,
+            y: 10,
+        });
+    };
+
+
+    const contentToPrint = useRef<HTMLDivElement>(null);
+
+
+    // Your HTML string
+    const htmlString = `
+<div>
+  <div class="x">
+    <div class="y">
+    </div>
+    <div class="z">
+      Content under z class
+    </div>
+  </div>
+</div>
+`;
+
+    // Parse the HTML string
+    const document = parse(htmlString);
+
+
+    const extractContentByClass = (document: any, className: string): string | null => {
+        // Find the element with the specified class name
+        const element = findElementByClassName(document, className);
+
+        console.log(document, className)
+
+        // Extract text content if the element exists
+        return element ? element.childNodes[0]?.value.trim() : null;
+    };
+
+    // Define a function to find an element by class name recursively
+    const findElementByClassName = (node: any, className: string): any => {
+        // Check if the current node has the specified class name
+        if (node.attrs && node.attrs.some((attr: any) => attr.name === 'class' && attr.value === className)) {
+            return node;
+        }
+
+        // Check child nodes recursively
+        if (node.childNodes) {
+            for (const childNode of node.childNodes) {
+                const element = findElementByClassName(childNode, className);
+                if (element) {
+                    return element;
+                }
+            }
+        }
+
+        return null;
+    };
+
+    const handleChange = (e) => {
+        const content = e.htmlValue;
+        setnewText(content);
+        // console.log(content);
     };
 
     const handlePrint = () => {
-        // const printWindow = window.open('', '_blank');
-        //     printWindow.document.write(`
-        //   <!DOCTYPE html>
-        //   <html>
-        //     <head>
-        //       <title>Print</title>
-        //     </head>
-        //     <body>
-        //       <div style="height: 100%; width: 100%;">${text}</div>
-        //     </body>
-        //   </html>
-        // `);
-        //     printWindow.document.close();
-        //     printWindow.print();
-        const iframe = iframeRef.current;
-        const iframeContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Print</title>
-          <style>
-            body { margin: 0; }
-            .print-content { height: 100%; width: 100%; }
-          </style>
-        </head>
-        <body>
-          <div class="print-content">${text}</div>
-        </body>
-      </html>
-    `;
-        const iframeDoc = iframe.contentWindow.document;
-        iframeDoc.open();
-        iframeDoc.write(iframeContent);
-        iframeDoc.close();
-        iframe.contentWindow.print();
 
+        // content: () => componentRef.current
+
+        if (contentToPrint.current) {
+            // Get the HTMLDivElement from the ref
+            const content = contentToPrint.current
+
+
+
+
+
+
+            // Select the content of the element with class "z"
+            // const zContent = $('.p-editor-content ql-container ql-snow').text().trim();
+
+            // Function to extract elements by class name
+
+            // const result = Array.from(doc.getElementsByClassName('p-editor-content ql-container ql-snow') as HTMLCollectionOf<HTMLElement>)
+
+            // console.log(result, "result")
+
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.body.innerHTML = content.innerHTML;
+                const x = content.innerHTML;
+                const zContent = extractContentByClass(x, '.ql-editor');
+                console.log(zContent, "ql cont");
+                console.log(content.innerHTML)
+                // printWindow.print();
+            } else {
+                console.error('Failed to open print window.');
+            }
+        }
     };
 
-    return (
 
+
+    return (
         <div className="grid">
             <div className="col-12">
 
@@ -257,7 +362,6 @@ const PrintButton = () => {
                                     onChange={(e) => {
                                         setType(e.value)
                                         setText(e.value.content)
-                                        // console.log(e.value.content)
                                     }}
                                     options={templates}
                                     optionLabel="name"
@@ -282,24 +386,18 @@ const PrintButton = () => {
                     </div>
                 </div>
 
-                <Editor
-                    ref={(ref) => (editorRef.current = ref)}
-                    style={{ height: '100vw' }}
-                    value={text}
-                    // onTextChange={handleChange}
-                    onTextChange={handleTextChange}
-                />
-                <iframe
-                    ref={iframeRef}
-                    style={{ display: 'none' }}
-                    title="Print Frame"
-                />
+                <div ref={contentToPrint}>
+                    <Editor
+                        value={text}
+                        onTextChange={handleChange}
+                        style={{ height: '100vw' }} />
+                </div>
 
+                {/* <button onClick={getContent}>Get Content</button> */}
             </div>
 
         </div>
 
     );
-};
+}
 
-export default PrintButton;
