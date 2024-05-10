@@ -227,7 +227,7 @@ const Content = () => {
           <title>Print</title>
           <style>
             body { margin: 0; }
-            .print-content { height: 100%; width: 100%; }
+           .print-content { height: 100%; width: 100%; font-size:16px; color: black }
           </style>
         </head>
         <body>

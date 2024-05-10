@@ -27,7 +27,6 @@ import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
 
 export default function Alerts() {
 
-
     const [fields, setFields] = useState([]);
 
     const [AvailableOrderList, setAvailableOrderList] = useState([]);
@@ -49,6 +48,14 @@ export default function Alerts() {
     } = useMyContext();
 
     const router = useRouter()
+
+    const showInfo = () => {
+        toast.current.show({
+            severity: 'info', summary: 'Detalii Campuri',
+            detail: 'Campurile ce contin in denumire Int sunt de tip numar(ex: 5), cele ce contin String, sunt de tip text(ex: "numar act" iar cele ce contin Date, sunt de tip Data(ex: 2024-01-04))', life: 5000
+        });
+    }
+
 
     const checkUserRole = () => {
         const session = sessionStorage.getItem('token');
@@ -246,7 +253,10 @@ export default function Alerts() {
                                                 value={selectedField} onChange={(e) => setSelectedField(e.value)}
                                                 options={AvailableFieldList} optionLabel="name"
                                                 placeholder="Select One"></Dropdown>
+                                            <Button label="Info" severity="info" text raised onClick={showInfo} />
                                         </div>
+
+
 
                                         <div className="field col-12 md:col-12">
                                             <label htmlFor="type">Ordine</label>
