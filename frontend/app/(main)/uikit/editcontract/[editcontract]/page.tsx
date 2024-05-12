@@ -12,7 +12,7 @@ import { Calendar } from 'primereact/calendar';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { InputTextarea } from "primereact/inputtextarea";
 import { Editor } from 'primereact/editor';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import {
     QueryClient,
     QueryClientProvider,
@@ -63,15 +63,49 @@ export default function AddContract() {
     const [IsAdditionalContract, setIsAdditionalContract] = useState(false);
 
     const fetchContractData = async () => {
-        await fetch(`http://localhost:3000/contracts/details/${Id}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(contractdetails => {
-                if (contractdetails.parentId > 0) {
-                    setIsAdditionalContract(true)
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/contracts/false`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
                 }
-            })
+            };
+            axios(config)
+                .then(function (response) {
+                    if (response.data.parentId > 0) {
+                        setIsAdditionalContract(true)
+                    }
+                })
+                .catch(function (error) {
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
+
+        // await fetch(`http://localhost:3000/contracts/details/${Id}`)
+        //     .then(response => {
+        //         return response.json()
+        //     })
+        //     .then(contractdetails => {
+        //         if (contractdetails.parentId > 0) {
+        //             setIsAdditionalContract(true)
+        //         }
+        //     })
+
+
     }
 
     useEffect(() => {

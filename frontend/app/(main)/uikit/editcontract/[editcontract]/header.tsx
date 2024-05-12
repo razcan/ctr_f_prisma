@@ -79,8 +79,13 @@ interface DynamicInfo {
 export default function EditContract() {
 
     const toast = useRef(null);
+
     const useMyContext = () => useContext(MyContext);
-    const { userId, setUserId } = useMyContext();
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
 
     const router = useRouter();
@@ -174,6 +179,16 @@ export default function EditContract() {
 
     const [dffDate1, setdffDate1] = useState('');
     const [dffDate2, setdffDate2] = useState('');
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
+
 
 
     const getSourceOptions = (sourceName) => {

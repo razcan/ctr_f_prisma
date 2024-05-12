@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { useRef } from 'react';
@@ -14,6 +14,10 @@ import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useData } from './DataContext';
+import { useSearchParams } from 'next/navigation'
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import axios, { AxiosRequestConfig } from 'axios';
+
 
 export default function Documents() {
 
@@ -31,7 +35,25 @@ export default function Documents() {
     const [selectedCell, setSelectedCell] = useState(null);
     const { value, updateValue } = useData();
 
-    const onTemplateSelect = (e) => {
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
+
+
+    const onTemplateSelect = (e: { files: any; }) => {
         let _totalSize = totalSize;
         let files = e.files;
 
@@ -42,10 +64,10 @@ export default function Documents() {
         setTotalSize(_totalSize);
     };
 
-    const onTemplateUpload = (e) => {
+    const onTemplateUpload = (e: { files: any[]; }) => {
         let _totalSize = 0;
 
-        e.files.forEach((file) => {
+        e.files.forEach((file: { size: any; }) => {
             _totalSize += file.size || 0;
         });
 
@@ -60,7 +82,7 @@ export default function Documents() {
     };
 
 
-    const onTemplateRemove = (file, callback) => {
+    const onTemplateRemove = (file: { size: number; }, callback: () => void) => {
         setTotalSize(totalSize - file.size);
         callback();
     };
@@ -69,7 +91,7 @@ export default function Documents() {
         setTotalSize(0);
     };
 
-    const headerTemplate = (options) => {
+    const headerTemplate = (options: { className: any; chooseButton: any; uploadButton: any; cancelButton: any; }) => {
         const { className, chooseButton, uploadButton, cancelButton } = options;
         const value = totalSize / 200000;
         const formatedValue = fileUploadRef && fileUploadRef.current ? fileUploadRef.current.formatSize(totalSize) : '0 B';
@@ -90,7 +112,7 @@ export default function Documents() {
         );
     };
 
-    const itemTemplate = (file, props) => {
+    const itemTemplate = (file: { name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; }, props: { formatSize: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; onRemove: any; }) => {
         return (
             <div className="flex align-items-center flex-wrap">
                 <div className="flex align-items-center" style={{ width: '40%' }}>
@@ -126,32 +148,77 @@ export default function Documents() {
 
 
     const fetchAttachmentsData = () => {
-        fetch(`http://localhost:3000/contracts/file/${value}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(attachmentsfiles => {
-                setAttachmentsfiles(attachmentsfiles)
 
-                // Specify the column you want to divide
-                const columnName = 'size';
-                const originalname = 'originalname';
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
 
-                if (attachmentsfiles.length > 0) {
-                    const newArray = attachmentsfiles.map((item) =>
-                    ({
-                        ...item,
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
 
-                        [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
-                        // [originalname]: item[originalname].toUpperCase()
-                    }));
-
-                    setCalAttachmentsfiles(newArray);
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/contracts/false`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
                 }
+            };
+            axios(config)
+                .then(function (response) {
+                    setAttachmentsfiles(response.data)
+                    // Specify the column you want to divide
+                    const columnName = 'size';
+                    const originalname = 'originalname';
+
+                    if (attachmentsfiles.length > 0) {
+                        const newArray = attachmentsfiles.map((item: { [x: string]: number; }) =>
+                        ({
+                            ...item,
+
+                            [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+                            // [originalname]: item[originalname].toUpperCase()
+                        }));
+
+                        setCalAttachmentsfiles(newArray);
+                    })
+                .catch(function (error) {
+                    // if (response.status === 401) {
+                    // }
+                    setAttachmentsfiles([]);
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+                    console.log(error);
+                });
+        }
 
 
+        // fetch(`http://localhost:3000/contracts/file/${value}`)
+        //     .then(response => {
+        //         return response.json()
+        //     })
+        //     .then(attachmentsfiles => {
+        //         setAttachmentsfiles(attachmentsfiles)
 
-            })
+        //         // Specify the column you want to divide
+        //         const columnName = 'size';
+        //         const originalname = 'originalname';
+
+        //         if (attachmentsfiles.length > 0) {
+        //             const newArray = attachmentsfiles.map((item) =>
+        //             ({
+        //                 ...item,
+
+        //                 [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+        //                 // [originalname]: item[originalname].toUpperCase()
+        //             }));
+
+        //             setCalAttachmentsfiles(newArray);
+        //         }
+        //     }
+        // )
     }
 
     useEffect(() => {
@@ -159,12 +226,12 @@ export default function Documents() {
     }, [])
 
 
-    const deleteTemplate = (event) => {
+    const deleteTemplate = (event: any) => {
         return <i className="pi pi-delete-left" style={{ color: 'red' }}></i>
         // <Tag severity="danger" value="Delete"></Tag>
     };
 
-    const downloadTemplate = (rowData) => {
+    const downloadTemplate = (rowData: any) => {
         return (<div>
             <i className="pi pi-download" style={{ color: 'green' }}></i>
         </div>)
@@ -173,9 +240,13 @@ export default function Documents() {
 
     const deleteFile = async (file: string): Promise<void> => {
         try {
+
+
             const response = await fetch(`http://localhost:3000/contracts/delete/${file}`, {
                 method: 'DELETE',
             });
+
+
 
             if (response.ok) {
                 console.log(`File ${file} deleted successfully.`);
@@ -228,7 +299,7 @@ export default function Documents() {
         }
     };
 
-    const onCellSelect = (event) => {
+    const onCellSelect = (event: { cellIndex: number; rowData: { filename: string; originalname: string; }; }) => {
         // console.log(event.rowData.id)
         // console.log(event.cellIndex)
 
@@ -277,7 +348,7 @@ export default function Documents() {
                         calattachmentsfiles.length > 0 ?
                             <DataTable value={calattachmentsfiles} tableStyle={{ minWidth: '50rem' }}
                                 cellSelection selectionMode="single" selection={selectedCell}
-                                onSelectionChange={(e) => setSelectedCell(e.value)}
+                                onSelectionChange={(e: { value: React.SetStateAction<null>; }) => setSelectedCell(e.value)}
                                 onCellSelect={onCellSelect}
                                 //onCellUnselect={onCellUnselect}
                                 metaKeySelection={false}

@@ -166,7 +166,7 @@ export default function Financial() {
         fetch(`http://localhost:3000/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
             .then(contractItem => {
                 // setContractItem(contractItem)
-                console.log(contractItem)
+                // console.log(contractItem)
                 setSelectedItem(contractItem[0].item);
                 setCurrency(contractItem[0].currency);
 

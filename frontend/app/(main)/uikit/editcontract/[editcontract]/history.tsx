@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -17,8 +17,11 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
-import axios from 'axios';
 import * as XLSX from 'xlsx';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import axios, { AxiosRequestConfig } from 'axios';
+
+
 
 export default function History() {
 
@@ -28,11 +31,60 @@ export default function History() {
 
     const [logs, setLogs] = useState('');
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
+
+
+
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${Id}`).then(res => res.json())
-        //treb modificat pe id de ctr
-        setLogs(response);
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/nomenclatures/executeAuditPartner/${Id}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios(config)
+                .then(function (response) {
+                    setLogs(response.data);
+                })
+                .catch(function (error) {
+                    // if (response.status === 401) {
+                    // }
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
+        // const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${Id}`).then(res => res.json())
+        // setLogs(response);
     }
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
 
     useEffect(() => {
         fetchContent()

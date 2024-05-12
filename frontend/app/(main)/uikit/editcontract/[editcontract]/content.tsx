@@ -31,6 +31,15 @@ const Content = () => {
         , isLoggedIn, login, userId
     } = useMyContext();
 
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
+
+
     const fetchContent = async () => {
 
 
@@ -55,7 +64,11 @@ const Content = () => {
             axios(config)
                 .then(function (response) {
                     // setData(response.data);
-                    setText(response.data[0].content);
+
+                    if (response.data[0]) {
+                        setText(response.data[0].content);
+                    }
+
                 })
                 .catch(function (error) {
                     // if (response.status === 401) {

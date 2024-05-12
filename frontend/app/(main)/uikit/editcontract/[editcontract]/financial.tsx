@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -18,6 +18,9 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import axios, { AxiosRequestConfig } from 'axios';
+
 
 
 export default function Financial() {
@@ -30,16 +33,64 @@ export default function Financial() {
     const [allBillingFrequency, setAllBillingFrequency] = useState([]);
     const [allCurrency, setAllCurrency] = useState([]);
     const [selectedContractItem, setSelectedContractItem] = useState(null);
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
+
+
 
     const fetchTypeData = () => {
-        fetch(`http://localhost:3000/contracts/contractItems/${Id}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(item => {
-                setItem(item)
-            })
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'GET',
+                url: `${Backend_BASE_URL}/contracts/contractItems/${Id}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios(config)
+                .then(function (response) {
+                    setItem(response.data)
+                })
+                .catch(function (error) {
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+                    console.log(error);
+                });
+        }
+
+        // fetch(`http://localhost:3000/contracts/contractItems/${Id}`)
+        //     .then(response => {
+        //         return response.json()
+        //     })
+        //     .then(item => {
+        //         setItem(item)
+        //     })
+
     }
+
     useEffect(() => {
         fetchTypeData()
     }, [])
@@ -77,14 +128,19 @@ export default function Financial() {
             <div className="col-12">
                 <div className="card">
 
-                    <Button label="Adauga" icon="pi pi-external-link" onClick={() => addContractItem()} />
+                    <Button label="Adauga" icon="pi pi-external-link"
+                        onClick={() => addContractItem()} />
                     {
                         item.length > 0 ?
-                            < DataTable className='pt-2' value={item} tableStyle={{ minWidth: '50rem' }}
+                            < DataTable
+                                className='pt-2'
+                                key="id"
+                                value={item} tableStyle={{ minWidth: '50rem' }}
                                 stripedRows
                                 sortMode="multiple"
                                 selectionMode="single"
-                                selection={selectedContractItem} onSelectionChange={(e) => {
+                                selection={selectedContractItem}
+                                onSelectionChange={(e) => {
                                     setSelectedContractItem(e.value),
                                         editContractItem(e.value.id)
                                 }}

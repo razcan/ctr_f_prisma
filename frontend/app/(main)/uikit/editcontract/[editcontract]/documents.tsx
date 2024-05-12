@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { useRef } from 'react';
@@ -14,6 +14,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import axios, { AxiosRequestConfig } from 'axios';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 export default function Documents() {
 
@@ -32,6 +34,21 @@ export default function Documents() {
     const [deleteVisible, setDeleteVisible] = useState(false);
     const [metaKey, setMetaKey] = useState(true);
     const [selectedCell, setSelectedCell] = useState(null);
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
 
 
     const onTemplateSelect = (e) => {
@@ -128,39 +145,89 @@ export default function Documents() {
     const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
 
-    const fetchAttachmentsData = () => {
-        fetch(`http://localhost:3000/contracts/file/${Id}`) //pt fiecare cre Id
-            .then(response => {
-                return response.json()
-            })
-            .then(attachmentsfiles => {
-                setAttachmentsfiles(attachmentsfiles)
+    const fetchAttachmentsData = async () => {
 
-                // Specify the column you want to divide
-                const columnName = 'size';
-                const originalname = 'originalname';
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
 
-                // Use map to create a new array with the transformation
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
 
-                if (attachmentsfiles.length > 0) {
-                    if (attachmentsfiles !== null && attachmentsfiles !== undefined) {
-                        const newArray = attachmentsfiles?.map((item) =>
-                        ({
-                            ...item,
-
-                            [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
-                            // [originalname]: item[originalname].toUpperCase()
-                        }));
-
-                        setCalAttachmentsfiles(newArray);
-                    }
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/contracts/file/${Id}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
                 }
-            })
+            };
+            axios(config)
+                .then(function (response) {
+                    setAttachmentsfiles(response.data)
+
+                    const columnName = 'size';
+                    const originalname = 'originalname';
+
+                    if (response.data.length > 0) {
+
+                        if (response.data !== null && response.data !== undefined) {
+                            const newArray = response.data?.map((item) =>
+                            ({
+                                ...item,
+
+                                [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+                                // [originalname]: item[originalname].toUpperCase()
+                            }));
+
+                            setCalAttachmentsfiles(newArray);
+                        }
+                    }
+
+                })
+                .catch(function (error) {
+
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
+
+        // fetch(`http://localhost:3000/contracts/file/${Id}`) //pt fiecare cre Id
+        //     .then(response => {
+        //         return response.json()
+        //     })
+        //     .then(attachmentsfiles => {
+        //         setAttachmentsfiles(attachmentsfiles)
+
+        //         // Specify the column you want to divide
+        //         const columnName = 'size';
+        //         const originalname = 'originalname';
+
+        //         // Use map to create a new array with the transformation
+
+        //         if (attachmentsfiles.length > 0) {
+        //             if (attachmentsfiles !== null && attachmentsfiles !== undefined) {
+        //                 const newArray = attachmentsfiles?.map((item) =>
+        //                 ({
+        //                     ...item,
+
+        //                     [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+        //                     // [originalname]: item[originalname].toUpperCase()
+        //                 }));
+
+        //                 setCalAttachmentsfiles(newArray);
+        //             }
+        //         }
+        //     })
     }
 
     useEffect(() => {
         fetchAttachmentsData()
-    }, [])
+    }, [calattachmentsfiles])
 
 
     const deleteTemplate = (event) => {
@@ -177,17 +244,49 @@ export default function Documents() {
 
     const deleteFile = async (file: string): Promise<void> => {
         try {
-            const response = await fetch(`http://localhost:3000/contracts/delete/${file}`, {
-                method: 'DELETE',
-            });
 
-            if (response.ok) {
-                console.log(`File ${file} deleted successfully.`);
-                fetchAttachmentsData()
-            } else {
-                const errorMessage = await response.text();
-                console.error(`Error deleting file ${file}: ${errorMessage}`);
+            const session = sessionStorage.getItem('token');
+            const jwtToken = JSON.parse(session);
+
+            if (jwtToken && jwtToken.access_token) {
+                const jwtTokenf = jwtToken.access_token;
+
+                const roles = jwtToken.roles;
+                const entity = jwtToken.entity;
+                const config: AxiosRequestConfig = {
+                    method: 'delete',
+                    url: `${Backend_BASE_URL}/contracts/delete/${file}`,
+                    headers: {
+                        'user-role': `${roles}`,
+                        'entity': `${entity}`,
+                        'Authorization': `Bearer ${jwtTokenf}`,
+                        'Content-Type': 'application/json'
+                    }
+                };
+                axios(config)
+                    .then(function (response) {
+                        if (response.data.ok) {
+                            console.log(`File ${file} deleted successfully.`);
+                            fetchAttachmentsData()
+                        }
+                        // else {
+                        //     const errorMessage = "Eroare";
+                        //     console.error(`Error deleting file ${file}: ${errorMessage}`);
+                        // }
+                    })
             }
+
+            // const response = await fetch(`http://localhost:3000/contracts/delete/${file}`, {
+            //     method: 'DELETE',
+            // });
+
+            // if (response.ok) {
+            //     console.log(`File ${file} deleted successfully.`);
+            //     fetchAttachmentsData()
+            // } else {
+            //     const errorMessage = await response.text();
+            //     console.error(`Error deleting file ${file}: ${errorMessage}`);
+            // }
         } catch (error) {
             console.error(`Error deleting file ${file}: ${error.message}`);
         }
@@ -198,6 +297,52 @@ export default function Documents() {
         // console.log("originalname", originalname)
 
         try {
+
+            // const session = sessionStorage.getItem('token');
+            // const jwtToken = JSON.parse(session);
+
+            // if (jwtToken && jwtToken.access_token) {
+            //     const jwtTokenf = jwtToken.access_token;
+
+            //     const roles = jwtToken.roles;
+            //     const entity = jwtToken.entity;
+            //     const config: AxiosRequestConfig = {
+            //         method: 'GET',
+            //         url: `${Backend_BASE_URL}/contracts/download/${file}`,
+            //         headers: {
+            //             'user-role': `${roles}`,
+            //             'entity': `${entity}`,
+            //             'Authorization': `Bearer ${jwtTokenf}`,
+            //             'Content-Type': 'application/json'
+            //         }
+            //     };
+            //     axios(config)
+            //         .then(async function (response) {
+            //             console.log(response.data.ok, "ok")
+            //             if (response.data) {
+
+            //                 const blobData = response.data as Blob;
+            //                 const url = window.URL.createObjectURL(blobData);
+            //                 const link = document.createElement('a');
+            //                 link.download = `${originalname}`;
+
+            //                 link.href = url;
+
+            //                 document.body.appendChild(link);
+            //                 link.click();
+
+            //                 document.body.removeChild(link);
+            //                 window.URL.revokeObjectURL(url);
+
+            //                 console.log(`File ${originalname} downloaded successfully.`);
+            //             }
+            //             else {
+            //                 const errorMessage = "Eroare";
+            //                 console.error(`Error on downloading file ${originalname}: ${errorMessage}`);
+            //             }
+            //         })
+            // }
+
             const response = await fetch(`http://localhost:3000/contracts/download/${file}`, {
                 method: 'GET',
             });
@@ -227,6 +372,7 @@ export default function Documents() {
                 const errorMessage = await response.text();
                 console.error(`Error on downloading file ${originalname}: ${errorMessage}`);
             }
+
         } catch (error) {
             console.error(`Error ${originalname}: ${error.message}`);
         }
@@ -266,7 +412,7 @@ export default function Documents() {
         return <div>Doriti stergerea fisierului {selectedoriginalname}?</div>
     }
 
-    const url_link = `http://localhost:3000/contracts/file/${Id}`
+    const url_link = `${Backend_BASE_URL}/contracts/file/${Id}`;
 
     return (
         <div className="card">

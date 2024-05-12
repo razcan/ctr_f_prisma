@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -18,7 +18,9 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { Editor } from 'primereact/editor';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+
 
 
 export default function Content() {
@@ -30,12 +32,64 @@ export default function Content() {
     const Id = parseInt(searchParams.get("Id"));
     const [wfHistory, setWFHistory] = useState([]);
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
+
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+    }, [])
+
 
 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/contracts/getWFHistory/${Id}`).then(res => res.json())
-        setWFHistory(response);
-        // console.log(response)
+
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'GET',
+                url: `${Backend_BASE_URL}/contracts/getWFHistory/${Id}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            axios(config)
+                .then(function (response) {
+                    if (response.data) {
+                        console.log(response.data, "rez")
+                        setWFHistory(response.data);
+                    }
+                })
+                .catch(function (error) {
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
+
+        // const response = await fetch(`http://localhost:3000/contracts/getWFHistory/${Id}`).then(res => res.json())
+        // setWFHistory(response);
+
     }
 
     useEffect(() => {
