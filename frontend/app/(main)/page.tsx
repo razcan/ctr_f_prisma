@@ -413,55 +413,133 @@ const Charts = () => {
 
   const fetchCashFlow = async () => {
 
-    await fetch("http://localhost:3000/contracts/cashflow")
-      .then(response => {
-        return response.json()
-      })
-      .then(results => {
+    const session = sessionStorage.getItem('token');
+    const jwtToken = JSON.parse(session);
+
+    if (jwtToken && jwtToken.access_token) {
+      const jwtTokenf = jwtToken.access_token;
+
+      const roles = jwtToken.roles;
+      const entity = jwtToken.entity;
+      const config: AxiosRequestConfig = {
+        method: 'get',
+        url: `${Backend_BASE_URL}/contracts/cashflow`,
+        headers: {
+          'user-role': `${roles}`,
+          'entity': `${entity}`,
+          'Authorization': `Bearer ${jwtTokenf}`,
+          'Content-Type': 'application/json'
+        }
+      };
+      axios(config)
+        .then(function (response) {
+          // setAll_users(response.data);
+          // setData(response.data);
 
 
-        setReceipts(results[0])
-        setPayments(results[1])
-        const start_month = results[2]
-        const end_month = 1 + results[3]
+          setReceipts(response.data[0])
+          setPayments(response.data[1])
+          const start_month = response.data[2]
+          const end_month = 1 + response.data[3]
 
 
 
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
-        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
-        const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
+          const documentStyle = getComputedStyle(document.documentElement);
+          const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
+          const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
+          const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
 
-        const months = getMonthsBetween(start_month, end_month)
+          const months = getMonthsBetween(start_month, end_month)
 
-        const lineData: ChartData = {
-          labels: months,
-          datasets: [
-            {
-              label: 'Plati',
-              data: results[1]
-              ,
-              fill: false,
-              backgroundColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
-              // borderColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
-              borderColor: documentStyle.getPropertyValue('--red-500'),
-              tension: 0.6
-            },
-            {
-              label: 'Incasari',
-              data: results[0]
-              ,
-              fill: false,
-              backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-              // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
-              borderColor: documentStyle.getPropertyValue('--green-500'),
-              tension: 0.6
-            }
-          ]
-        };
-        setMyLinearData(lineData)
-      }
-      )
+          const lineData: ChartData = {
+            labels: months,
+            datasets: [
+              {
+                label: 'Plati',
+                data: response.data[1]
+                ,
+                fill: false,
+                backgroundColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
+                // borderColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
+                borderColor: documentStyle.getPropertyValue('--red-500'),
+                tension: 0.6
+              },
+              {
+                label: 'Incasari',
+                data: response.data[0]
+                ,
+                fill: false,
+                backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+                // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+                borderColor: documentStyle.getPropertyValue('--green-500'),
+                tension: 0.6
+              }
+            ]
+          };
+          setMyLinearData(lineData)
+
+        })
+        .catch(function (error) {
+          // if (response.status === 401) {
+          // }
+          setReceipts([])
+          setPayments([])
+          router.push(`${Frontend_BASE_URL}/auth/login`)
+
+          console.log(error);
+        });
+    }
+
+
+    // await fetch("http://localhost:3000/contracts/cashflow")
+    //   .then(response => {
+    //     return response.json()
+    //   })
+    //   .then(results => {
+
+
+    //     setReceipts(results[0])
+    //     setPayments(results[1])
+    //     const start_month = results[2]
+    //     const end_month = 1 + results[3]
+
+
+
+    //     const documentStyle = getComputedStyle(document.documentElement);
+    //     const textColor = documentStyle.getPropertyValue('--text-color') || '#495057';
+    //     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#6c757d';
+    //     const surfaceBorder = documentStyle.getPropertyValue('--surface-border') || '#dfe7ef';
+
+    //     const months = getMonthsBetween(start_month, end_month)
+
+    //     const lineData: ChartData = {
+    //       labels: months,
+    //       datasets: [
+    //         {
+    //           label: 'Plati',
+    //           data: results[1]
+    //           ,
+    //           fill: false,
+    //           backgroundColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
+    //           // borderColor: documentStyle.getPropertyValue('--primary-200') || '#bcbdf9',
+    //           borderColor: documentStyle.getPropertyValue('--red-500'),
+    //           tension: 0.6
+    //         },
+    //         {
+    //           label: 'Incasari',
+    //           data: results[0]
+    //           ,
+    //           fill: false,
+    //           backgroundColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+    //           // borderColor: documentStyle.getPropertyValue('--primary-500') || '#6366f1',
+    //           borderColor: documentStyle.getPropertyValue('--green-500'),
+    //           tension: 0.6
+    //         }
+    //       ]
+    //     };
+    //     setMyLinearData(lineData)
+    //   }
+    //   )
   }
 
   const pieData: ChartData = {

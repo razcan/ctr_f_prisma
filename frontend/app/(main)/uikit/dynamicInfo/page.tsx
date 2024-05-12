@@ -184,6 +184,7 @@ export default function Alerts() {
 
     }, [])
 
+
     const saveInfo = async () => {
         // console.log(name, type, selectedField, order)
 
@@ -208,6 +209,7 @@ export default function Alerts() {
                 ToAdd
             );
             console.log('Field edited:', response.data);
+            fetchDynamicFields();
             setVisible(false)
         } catch (error) {
             console.error('Error editing field:', error);

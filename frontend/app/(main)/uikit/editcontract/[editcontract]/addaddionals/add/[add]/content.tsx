@@ -5,13 +5,14 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
 import 'quill/dist/quill.snow.css'; // Import Quill CSS
+import { MyContext, MyProvider } from '../../../../../../../../layout/context/myUserContext'
 
 
 const Content = () => {
@@ -26,7 +27,12 @@ const Content = () => {
     const [actualContract, setActualContract] = useState();
     const [text, setText] = useState('');
 
-    console.log(addId)
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
     const fetchContent = async () => {
         const response = await fetch(`http://localhost:3000/contracts/content/${addId}`).then(res => res.json().then(res => {

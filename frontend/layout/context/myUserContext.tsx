@@ -171,7 +171,7 @@ export const MyProvider = ({ children }: any) => {
 
     const GetUserTasks = async (Id: any) => {
 
-        const tasks = await fetch(`http://localhost:3000/contracts/usertask/${Id}`).then(res => res.json())
+        const tasks = await fetch(`${Backend_BASE_URL}/contracts/usertask/${Id}`).then(res => res.json())
 
         const nrOfTasks: number = tasks.length > 0 ? tasks.length : 0
 

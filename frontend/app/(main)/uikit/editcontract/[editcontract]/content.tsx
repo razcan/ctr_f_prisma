@@ -1,17 +1,15 @@
 'use client';
 
-
-
-
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Editor } from 'primereact/editor';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import 'quill/dist/quill.snow.css'; // Import Quill CSS
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 
 const Content = () => {
@@ -24,16 +22,58 @@ const Content = () => {
     const [type, setType] = useState();
     const [actualContract, setActualContract] = useState();
     const [text, setText] = useState('');
+    const router = useRouter()
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/contracts/content/${Id}`).then(res => res.json().then(res => {
-            if (res.length > 0) {
-                if (res[0].content !== null && res[0].content !== undefined) {
-                    setText(res[0].content);
+
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'get',
+                url: `${Backend_BASE_URL}/contracts/content/${Id}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
                 }
-            }
-        })
-        )
+            };
+            axios(config)
+                .then(function (response) {
+                    // setData(response.data);
+                    setText(response.data[0].content);
+                })
+                .catch(function (error) {
+                    // if (response.status === 401) {
+                    // }
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
+
+        // const response = await fetch(`http://localhost:3000/contracts/content/${Id}`).then(res => res.json().then(res => {
+        //     if (res.length > 0) {
+        //         if (res[0].content !== null && res[0].content !== undefined) {
+        //             setText(res[0].content);
+        //         }
+        //     }
+        // })
+        // )
     }
 
     const fetchTemplatesData = () => {
