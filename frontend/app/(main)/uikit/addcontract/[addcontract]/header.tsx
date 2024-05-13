@@ -46,6 +46,7 @@ interface Contract {
     number?: number,
     typeId?: number,
     statusId?: number,
+    statusWFId?: number,
     start?: Date,
     end?: Date,
     sign?: Date,
@@ -99,6 +100,7 @@ export default function HeaderContract({ setContractId }: any) {
     const { value, updateValue } = useData();
     const router = useRouter();
     const [contractStatus, setContractStatus] = useState([]);
+    const [contractWFStatus, setContractWFStatus] = useState([]);
     const [number, setNumber] = useState();
     const [type, setType] = useState();
     const [contractType, setContractType] = useState([]);
@@ -108,6 +110,9 @@ export default function HeaderContract({ setContractId }: any) {
     const [completion, setCompletionDate] = useState();
     const [remarks, setRemarks] = useState();
     const [status, setStatus] = useState();
+    const [statusWF, setStatusWF] = useState('');
+
+
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -164,7 +169,6 @@ export default function HeaderContract({ setContractId }: any) {
 
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-    // console.log("Id: ", Id)
     const [paramId, setParamId] = useState(0);
     const [dynamicFields, setDynamicFields] = useState([]);
 
@@ -254,6 +258,18 @@ export default function HeaderContract({ setContractId }: any) {
                 setContractStatus(status)
             })
     }
+
+    const fetchWFStatusData = () => {
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractwfstatus`)
+            .then(response => {
+                return response.json()
+            })
+            .then(status => {
+                setContractWFStatus(status)
+            })
+    }
+
+
     const fetchCategoriesData = () => {
         fetch("http://localhost:3000/contracts/category")
             .then(response => {
@@ -358,7 +374,8 @@ export default function HeaderContract({ setContractId }: any) {
             fetchTypeData(),
             fetchStatusData(),
             fetchDynamicFields(),
-            fetchLocationData()
+            fetchLocationData(),
+            fetchWFStatusData()
     }, [])
     interface ValidationResult {
         isValid: boolean;
@@ -387,6 +404,10 @@ export default function HeaderContract({ setContractId }: any) {
 
         if (!fields.statusId) {
             errors.push("Trebuie sa setati o stare a contractului!");
+        }
+
+        if (!fields.statusWFId) {
+            errors.push("Trebuie sa setati o stare flux contract!");
         }
 
         if (!fields.categoryId) {
@@ -452,6 +473,7 @@ export default function HeaderContract({ setContractId }: any) {
             typeId: type ? type.id : null,
             // partner: partner,
             statusId: status ? status.id : null,
+            statusWFId: statusWF ? statusWF.id : null,
             start: (start ? addOneDay(start) : null),
             end: (end ? addOneDay(end) : null),
             sign: (sign ? addOneDay(sign) : null),
@@ -477,6 +499,7 @@ export default function HeaderContract({ setContractId }: any) {
         }
 
         const validationResult = validateForm(addedContract);
+
 
         if (!validationResult.isValid) {
             showMessage('error', 'Eroare', validationResult.errors)
@@ -814,13 +837,15 @@ export default function HeaderContract({ setContractId }: any) {
                     </div>
 
                     <div className="field col-12 md:col-3">
-                        <label htmlFor="status">Stare</label>
+                        <label htmlFor="status">Stare Contract</label>
                         <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field col-12 md:col-3">
-                        <label htmlFor="category">Categorie</label>
-                        <Dropdown id="category" filter showClear value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <label htmlFor="state">Stare Flux</label>
+                        <Dropdown id="state" showClear filter value={statusWF} onChange={(e) => setStatusWF(e.value)} options={contractWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
+
+
                     <div className="field col-12 md:col-3">
                         <label className="font-bold block mb-2">
                             Data Start
@@ -860,6 +885,12 @@ export default function HeaderContract({ setContractId }: any) {
                         <label htmlFor="costcenter">Centru de cost&profit</label>
                         <Dropdown id="costcenter" showClear filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
+
+                    <div className="field col-12 md:col-3">
+                        <label htmlFor="category">Categorie</label>
+                        <Dropdown id="category" filter showClear value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                    </div>
+
                     <div className="field col-12 md:col-3">
                         <label htmlFor="cashflow">CashFlow</label>
                         <Dropdown id="cashflow" showClear filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>

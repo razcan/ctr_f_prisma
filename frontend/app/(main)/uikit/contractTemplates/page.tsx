@@ -285,29 +285,30 @@ export default function Alerts() {
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
-                    Modele de Contract
                     <div className="card">
                         <Button label="Adauga" onClick={addContracttemplate} />
-                        <DataTable className='pt-2'
-                            value={templates}
-                            tableStyle={{ minWidth: '50rem' }}
-                            selectionMode="single"
-                            selection={selectedTemplate}
-                            onSelectionChange={(e) => {
-                                setSelectedTemplate(e.value),
-                                    setIsActive(e.value.active),
-                                    setText(e.value.content),
-                                    setName(e.value.name),
-                                    setType(e.value.contractType)
-                                setVisible(true)
-                            }}>
-                            {/* <Column hidden field="id" header="Id"></Column> */}
-                            <Column field="id" header="Id"></Column>
-                            <Column field="name" header="Denumire Model"></Column>
-                            <Column field="contractType.name" header="Tip Contract(la care se aplica)"></Column>
-                            {/* <Column field="active" header="Activa"></Column> */}
-                            <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
-                        </DataTable>
+                        {templates.length > 0 ?
+                            <DataTable className='pt-2'
+                                value={templates}
+                                tableStyle={{ minWidth: '50rem' }}
+                                selectionMode="single"
+                                selection={selectedTemplate}
+                                onSelectionChange={(e) => {
+                                    setSelectedTemplate(e.value),
+                                        setIsActive(e.value.active),
+                                        setText(e.value.content),
+                                        setName(e.value.name),
+                                        setType(e.value.contractType)
+                                    setVisible(true)
+                                }}>
+                                {/* <Column hidden field="id" header="Id"></Column> */}
+                                <Column field="id" header="Id"></Column>
+                                <Column field="name" header="Denumire Model"></Column>
+                                <Column field="contractType.name" header="Tip Contract(la care se aplica)"></Column>
+                                {/* <Column field="active" header="Activa"></Column> */}
+                                <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
+                            </DataTable>
+                            : null}
 
 
                     </div>

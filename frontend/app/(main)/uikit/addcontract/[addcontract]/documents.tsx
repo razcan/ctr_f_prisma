@@ -34,6 +34,7 @@ export default function Documents() {
     const [metaKey, setMetaKey] = useState(true);
     const [selectedCell, setSelectedCell] = useState(null);
     const { value, updateValue } = useData();
+    const [key, setKey] = useState(0); // Initialize key state
 
 
     const useMyContext = () => useContext(MyContext);
@@ -78,6 +79,8 @@ export default function Documents() {
 
         setVisible(false);
         fetchAttachmentsData();
+        setKey(prevKey => prevKey + 1);
+
 
     };
 
@@ -146,8 +149,7 @@ export default function Documents() {
     const uploadOptions = { icon: 'pi pi-fw pi-cloud-upload', iconOnly: true, className: 'custom-upload-btn p-button-success p-button-rounded p-button-outlined' };
     const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
-
-    const fetchAttachmentsData = () => {
+    const fetchAttachmentsData = async () => {
 
         const session = sessionStorage.getItem('token');
         const jwtToken = JSON.parse(session);
@@ -159,7 +161,7 @@ export default function Documents() {
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: `${Backend_BASE_URL}/contracts/false`,
+                url: `${Backend_BASE_URL}/contracts/file/${value}`,
                 headers: {
                     'user-role': `${roles}`,
                     'entity': `${entity}`,
@@ -170,32 +172,35 @@ export default function Documents() {
             axios(config)
                 .then(function (response) {
                     setAttachmentsfiles(response.data)
-                    // Specify the column you want to divide
+
                     const columnName = 'size';
                     const originalname = 'originalname';
 
-                    if (attachmentsfiles.length > 0) {
-                        const newArray = attachmentsfiles.map((item: { [x: string]: number; }) =>
-                        ({
-                            ...item,
+                    if (response.data.length > 0) {
 
-                            [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
-                            // [originalname]: item[originalname].toUpperCase()
-                        }));
+                        if (response.data !== null && response.data !== undefined) {
+                            const newArray = response.data?.map((item) =>
+                            ({
+                                ...item,
 
-                        setCalAttachmentsfiles(newArray);
-                    })
+                                [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+                                // [originalname]: item[originalname].toUpperCase()
+                            }));
+
+                            setCalAttachmentsfiles(newArray);
+                        }
+                    }
+
+                })
                 .catch(function (error) {
-                    // if (response.status === 401) {
-                    // }
-                    setAttachmentsfiles([]);
+
                     router.push(`${Frontend_BASE_URL}/auth/login`)
+
                     console.log(error);
                 });
         }
 
-
-        // fetch(`http://localhost:3000/contracts/file/${value}`)
+        // fetch(`http://localhost:3000/contracts/file/${Id}`) //pt fiecare cre Id
         //     .then(response => {
         //         return response.json()
         //     })
@@ -206,24 +211,101 @@ export default function Documents() {
         //         const columnName = 'size';
         //         const originalname = 'originalname';
 
+        //         // Use map to create a new array with the transformation
+
         //         if (attachmentsfiles.length > 0) {
-        //             const newArray = attachmentsfiles.map((item) =>
-        //             ({
-        //                 ...item,
+        //             if (attachmentsfiles !== null && attachmentsfiles !== undefined) {
+        //                 const newArray = attachmentsfiles?.map((item) =>
+        //                 ({
+        //                     ...item,
 
-        //                 [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
-        //                 // [originalname]: item[originalname].toUpperCase()
-        //             }));
+        //                     [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+        //                     // [originalname]: item[originalname].toUpperCase()
+        //                 }));
 
-        //             setCalAttachmentsfiles(newArray);
+        //                 setCalAttachmentsfiles(newArray);
+        //             }
         //         }
-        //     }
-        // )
+        //     })
     }
+
+    // const fetchAttachmentsData = () => {
+
+    //     const session = sessionStorage.getItem('token');
+    //     const jwtToken = JSON.parse(session);
+
+    //     if (jwtToken && jwtToken.access_token) {
+    //         const jwtTokenf = jwtToken.access_token;
+
+    //         const roles = jwtToken.roles;
+    //         const entity = jwtToken.entity;
+    //         const config: AxiosRequestConfig = {
+    //             method: 'get',
+    //             url: `${Backend_BASE_URL}/contracts/file/${value}}`,
+    //             headers: {
+    //                 'user-role': `${roles}`,
+    //                 'entity': `${entity}`,
+    //                 'Authorization': `Bearer ${jwtTokenf}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         };
+    //         axios(config)
+    //             .then(function (response) {
+    //                 setAttachmentsfiles(response.data)
+    //                 // Specify the column you want to divide
+    //                 const columnName = 'size';
+    //                 const originalname = 'originalname';
+
+    //                 if (attachmentsfiles.length > 0) {
+    //                     const newArray = attachmentsfiles.map((item: { [x: string]: number; }) =>
+    //                     ({
+    //                         ...item,
+
+    //                         [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+    //                         // [originalname]: item[originalname].toUpperCase()
+    //                     }));
+
+    //                     setCalAttachmentsfiles(newArray);
+    //                 })
+    //             .catch(function (error) {
+    //                 // if (response.status === 401) {
+    //                 // }
+    //                 setAttachmentsfiles([]);
+    //                 router.push(`${Frontend_BASE_URL}/auth/login`)
+    //                 console.log(error);
+    //             });
+    //     }
+
+
+    //     // fetch(`http://localhost:3000/contracts/file/${value}`)
+    //     //     .then(response => {
+    //     //         return response.json()
+    //     //     })
+    //     //     .then(attachmentsfiles => {
+    //     //         setAttachmentsfiles(attachmentsfiles)
+
+    //     //         // Specify the column you want to divide
+    //     //         const columnName = 'size';
+    //     //         const originalname = 'originalname';
+
+    //     //         if (attachmentsfiles.length > 0) {
+    //     //             const newArray = attachmentsfiles.map((item) =>
+    //     //             ({
+    //     //                 ...item,
+
+    //     //                 [columnName]: Math.ceil(item[columnName] / 1000000 * Math.pow(10, 2)) / Math.pow(10, 2),
+    //     //                 // [originalname]: item[originalname].toUpperCase()
+    //     //             }));
+
+    //     //             setCalAttachmentsfiles(newArray);
+    //     //         }
+    //     //     }
+    //     // )
+    // }
 
     useEffect(() => {
         fetchAttachmentsData()
-    }, [])
+    }, [calattachmentsfiles])
 
 
     const deleteTemplate = (event: any) => {
@@ -242,7 +324,7 @@ export default function Documents() {
         try {
 
 
-            const response = await fetch(`http://localhost:3000/contracts/delete/${file}`, {
+            const response = await fetch(`${Backend_BASE_URL}/contracts/delete/${file}`, {
                 method: 'DELETE',
             });
 
@@ -265,7 +347,7 @@ export default function Documents() {
         // console.log("originalname", originalname)
 
         try {
-            const response = await fetch(`http://localhost:3000/contracts/download/${file}`, {
+            const response = await fetch(`${Backend_BASE_URL}/contracts/download/${file}`, {
                 method: 'GET',
             });
 
@@ -336,7 +418,7 @@ export default function Documents() {
         return <div>Doriti stergerea fisierului {selectedoriginalname}?</div>
     }
 
-    const url_link = `http://localhost:3000/contracts/file/${value}`
+    const url_link = `${Backend_BASE_URL}/contracts/file/${value}`
 
 
     return (
@@ -346,7 +428,7 @@ export default function Documents() {
                     <Toast ref={toast} />
                     {
                         calattachmentsfiles.length > 0 ?
-                            <DataTable value={calattachmentsfiles} tableStyle={{ minWidth: '50rem' }}
+                            <DataTable key={key} value={calattachmentsfiles} tableStyle={{ minWidth: '50rem' }}
                                 cellSelection selectionMode="single" selection={selectedCell}
                                 onSelectionChange={(e: { value: React.SetStateAction<null>; }) => setSelectedCell(e.value)}
                                 onCellSelect={onCellSelect}

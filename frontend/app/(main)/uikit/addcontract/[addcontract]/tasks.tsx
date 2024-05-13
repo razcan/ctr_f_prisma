@@ -50,6 +50,7 @@ export default function Tasks() {
     const [due, setDue] = useState(new Date());
     const [notes, setNotes] = useState('');
     const [taskId, setTaskId] = useState('');
+    const [rejectionReason, setRejectionReason] = useState('');
 
     const [selectedtaskName, setselectedTaskName] = useState('');
     const [selectedprogress, setselectedProgress] = useState(0);
@@ -68,6 +69,14 @@ export default function Tasks() {
 
     const [users, setUsers] = useState([]);
 
+    const [selectedPriority, setSelectedPriority] = useState([]);
+
+    const [selectedRejectedReason, setSelectedRejectedReason] = useState('');
+    const [priority, setPriority] = useState([]);
+
+
+
+
 
     const getRequestor = (id: number) => {
         return users.find((obj) => obj.id === id);
@@ -75,6 +84,11 @@ export default function Tasks() {
 
     const getStatusJson = (id: InputNumber) => {
         return allStatus.find((obj) => obj.id === id);
+    };
+
+    const getPriorityJson = (id) => {
+        return priority.find((obj) => obj.id === id);
+
     };
 
     const fetchTasksData = () => {
@@ -88,6 +102,15 @@ export default function Tasks() {
             })
     }
 
+    const fetchPriority = () => {
+        fetch(`${Backend_BASE_URL}/contracts/priority`)
+            .then(response => {
+                return response.json()
+            })
+            .then(priority => {
+                setPriority(priority)
+            })
+    }
 
 
     const fetchTasksStatusData = () => {
@@ -135,7 +158,8 @@ export default function Tasks() {
         fetchTasksData(),
             fetchTasksStatusData(),
             fetchUsers(),
-            fetchRequestor()
+            fetchRequestor(),
+            fetchPriority()
     }, [])
 
 
@@ -189,13 +213,16 @@ export default function Tasks() {
             interface Task {
                 taskName: String,
                 contractId: Number,
-                progress: Number,
                 statusId: Number,
-                statusDate: Date,
                 requestorId: Number,
                 assignedId: Number,
                 due: Date,
-                notes: String
+                notes: String,
+                uuid: String,
+                type: String,
+                taskPriorityId: Number | undefined,
+                rejected_reason: String,
+
             }
 
             // Define the URL endpoint
@@ -205,13 +232,15 @@ export default function Tasks() {
             let data: Task = {
                 taskName: taskName,
                 contractId: Id,
-                progress: Number.parseInt(progress, 10),
                 statusId: status.id,
-                statusDate: statusDate,
                 requestorId: requestor.id,
                 assignedId: assigned.id,
                 due: due,
-                notes: notes
+                notes: notes,
+                uuid: '',
+                type: 'action_task',
+                taskPriorityId: selectedPriority.id,
+                rejected_reason: rejectionReason,
             }
 
             // Call the fetchWithToken method with the URL and data
@@ -220,7 +249,6 @@ export default function Tasks() {
             setVisible(false)
             fetchTasksData()
             setselectedTask(undefined)
-            setProgress(0)
             setVisible(false)
             setTaskName('')
             setNotes('')
@@ -236,14 +264,12 @@ export default function Tasks() {
 
 
 
+
+
     const addtask = () => {
         setVisible(true)
     }
 
-    const StatusDateTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.statusDate);
-        return <span>{formattedDate}</span>;
-    };
 
     const DueDateTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.due);
@@ -255,12 +281,31 @@ export default function Tasks() {
         return <span>{formattedDate}</span>;
     };
 
-
+    const LastChangeTemplate = (rowData: any) => {
+        const formattedDate = formatDateHour(rowData.updateadAt);
+        return <span>{formattedDate}</span>;
+    };
 
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
         const date = new Date(dateString);
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('ro-Ro', options);
+    };
+
+    const formatDateHour = (dateString: Date) => {
+        // Implement your date formatting logic here
+        const date = new Date(dateString);
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: false // 24-hour format
+        };
+
         return date.toLocaleDateString('ro-Ro', options);
     };
 
@@ -271,9 +316,9 @@ export default function Tasks() {
             <div className="col-12">
                 <div className='card'>
 
+
                     <Dialog header="Task" visible={visible} style={{ width: '60vw' }} onHide={() => {
                         setselectedTask(undefined)
-                        setProgress(0)
                         setVisible(false)
                         setTaskName('')
                         setNotes('')
@@ -285,18 +330,10 @@ export default function Tasks() {
                                     {selectedTask ?
                                         <div className="p-fluid formgrid grid pt-2">
 
-
-
-                                            <div className="field col-12  md:col-6">
+                                            <div className="field col-12  md:col-12">
                                                 <label htmlFor="taskName">Nume Task</label>
-                                                <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => {
-                                                    setselectedTaskName(e.target.value)
-                                                }
-
-                                                } />
-
+                                                <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
                                             </div>
-
 
 
                                             <div className="field col-12 md:col-3">
@@ -304,35 +341,44 @@ export default function Tasks() {
                                                 <Dropdown id="status" filter showClear value={getStatusJson(selectedstatus)} onChange={(e) => setselectedStatus(e.value.id)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
+                                            <div className="field col-12  md:col-9">
+                                                <label htmlFor="taskName">Motiv</label>
+                                                <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
+                                            </div>
+
                                             <div className="field col-12 md:col-3">
                                                 <label className="font-bold block mb-2">
-                                                    De rezolvat pana la data
+                                                    De rezolvat pana la
                                                 </label>
                                                 <Calendar id="due" value={new Date(selecteddue)} onChange={(e) => setselectedDue(e.value)} showIcon dateFormat="dd/mm/yy" />
                                             </div>
 
 
-                                            <div className="field col-12  md:col-3">
-                                                <label htmlFor="progress">Progres Actual(%)</label>
-                                                <InputText id="progress" type="int" value={selectedprogress} onChange={(e) => setselectedProgress(e.target.value)} />
-                                            </div>
-
+                                            <span className="field col-12 md:col-3">
+                                                <label htmlFor="selectedPriority">Prioritate</label>
+                                                <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
+                                                    filter showClear
+                                                    onChange={(e) => setSelectedPriority(e.value.id)}
+                                                    options={priority} optionLabel="name"
+                                                    placeholder="Select One" className="w-full" />
+                                            </span>
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="requestor">Solicitant</label>
                                                 <Dropdown id="requestor" filter showClear
-                                                    disabled
-                                                    //value={selectedrequestor} 
                                                     value={getRequestor(selectedrequestor)}
-                                                    onChange={(e) => setselectedRequestor(e.value)} options={users} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                    disabled
+                                                    onChange={(e) => {
+                                                        setRequestor(e.value)
+                                                    }} options={users} optionLabel="name"
+                                                    placeholder="Select One"></Dropdown>
                                             </div>
 
                                             <div className="field col-12 md:col-3">
-                                                <label htmlFor="">Asignat catre</label>
+                                                <label htmlFor="assigned">Asignat catre</label>
                                                 <Dropdown id="assigned" filter showClear
-                                                    // value={selectedassigned} 
                                                     value={getRequestor(selectedassigned)}
-                                                    onChange={(e) => setselectedAssigned(e.value)}
+                                                    onChange={(e) => setselectedAssigned(e.value.id)}
                                                     options={users} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
@@ -342,13 +388,17 @@ export default function Tasks() {
                                                 <label className="ml-2">Descriere Task</label>
                                             </div>
 
-                                            <div className="field-checkbox col-12 md:col-12">
-                                                <InputTextarea id="notes" value={selectednotes} onChange={(e) => setselectedNotes(e.target.value)} rows={3} cols={60} />
+
+
+                                            <div className="field col-12  md:col-12">
+                                                <Editor value={selectednotes}
+                                                    onChange={(e) => setselectedNotes(e.htmlValue)}
+                                                    style={{ height: '320px' }} />
                                             </div>
+
                                             <div className="field-checkbox col-12 md:col-3">
                                                 <Button label="Salveaza" onClick={EditTask} />
                                             </div>
-
                                         </div>
                                         :
 
@@ -356,25 +406,39 @@ export default function Tasks() {
                                             {requestor ?
                                                 <div className="p-fluid formgrid grid pt-2">
 
-
-                                                    <div className="field col-12  md:col-6">
+                                                    <div className="field col-12  md:col-12">
                                                         <label htmlFor="taskName">Nume Task</label>
                                                         <InputText id="taskName" type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
-
                                                     </div>
 
                                                     <div className="field col-12 md:col-3">
                                                         <label htmlFor="status">Stare</label>
-                                                        <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                        <Dropdown id="status" filter showClear value={status}
+                                                            onChange={(e) => setStatus(e.value)} options={allStatus}
+                                                            optionLabel="name" placeholder="Select One"></Dropdown>
+                                                    </div>
+
+                                                    <div className="field col-12  md:col-9">
+                                                        <label htmlFor="taskName">Motiv</label>
+                                                        <InputText id="taskName" type="text" value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
                                                     </div>
 
                                                     <div className="field col-12 md:col-3">
                                                         <label className="font-bold block mb-2">
-                                                            De rezolvat pana la data
+                                                            De rezolvat pana la
                                                         </label>
                                                         <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
                                                     </div>
 
+
+                                                    <span className="field col-12 md:col-3">
+                                                        <label htmlFor="selectedPriority">Prioritate</label>
+                                                        <Dropdown id="selectedPriority" value={selectedPriority}
+                                                            filter showClear
+                                                            onChange={(e) => setSelectedPriority(e.value)}
+                                                            options={priority} optionLabel="name"
+                                                            placeholder="Select One" className="w-full" />
+                                                    </span>
 
                                                     <div className="field col-12 md:col-3">
                                                         <label htmlFor="requestor">Solicitant</label>
@@ -389,7 +453,7 @@ export default function Tasks() {
                                                     </div>
 
                                                     <div className="field col-12 md:col-3">
-                                                        <label htmlFor="">Asignat catre</label>
+                                                        <label htmlFor="assigned">Asignat catre</label>
                                                         <Dropdown id="assigned" filter showClear
                                                             value={assigned} onChange={(e) => setAssigned(e.value)}
                                                             options={users} optionLabel="name" placeholder="Select One"></Dropdown>
@@ -401,21 +465,22 @@ export default function Tasks() {
                                                         <label className="ml-2">Descriere Task</label>
                                                     </div>
 
-                                                    <div className="field-checkbox col-12 md:col-12">
-                                                        <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
+
+
+                                                    <div className="field col-12  md:col-12">
+
+                                                        <Editor value={notes}
+                                                            onTextChange={(e) => setNotes(e.htmlValue)}
+                                                            style={{ height: '320px' }} />
                                                     </div>
+
                                                     <div className="field-checkbox col-12 md:col-3">
                                                         <Button label="Salveaza" onClick={SaveTask} />
                                                     </div>
                                                 </div>
                                                 : null}
-
                                         </div>
-
-
                                     }
-
-
                                 </div>
                             </div>
                         </div>
@@ -423,43 +488,45 @@ export default function Tasks() {
 
                     <Button label="Adauga Task" onClick={addtask} />
 
-                    {tasks.length > 0 ?
-                        <DataTable
-                            dataKey={tasks.id}
-                            className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
-                            selectionMode="single"
-                            //selection={selectedTask} 
+                    <DataTable
+                        dataKey={tasks.id}
+                        className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
-                            onSelectionChange={(e) => {
-                                setselectedRequestor(e.value.requestorId),
-                                    setselectedAssigned(e.value.assignedId),
-                                    setselectedTask(e.value), setselectedTaskName(e.value.taskName),
-                                    setselectedProgress(e.value.progress), setselectedStatus(e.value.statusId),
-                                    setselectedStatusDate(e.value.statusDate),
-                                    setselectedDue(e.value.due),
-                                    setselectedNotes(e.value.notes),
-                                    setselectedtaskId(e.value.id)
+                        selectionMode="single"
+                        //selection={selectedTask} 
+
+                        onSelectionChange={(e) => {
+                            setselectedRequestor(e.value.requestorId),
+                                setselectedAssigned(e.value.assignedId),
+                                setselectedTask(e.value),
+                                setselectedTaskName(e.value.taskName),
+                                setselectedDue(e.value.due),
+                                setselectedNotes(e.value.notes),
+                                setselectedtaskId(e.value.id),
+                                setSelectedRejectedReason(e.value.rejected_reason),
+                                setSelectedPriority(e.value.taskPriorityId),
+                                setselectedStatus(e.value.statusId),
                                 setVisible(true)
 
-                            }}
-                            stripedRows
-                            sortMode="multiple"
-                            sortField="data"
-                            sortOrder={1}
-                        >
-                            <Column field="id" header="id"></Column>
-                            <Column field="progress" header="Progres(%)"></Column>
-                            <Column field="status.name" header="Stare"></Column>
-                            <Column field="statusDate" header="Stare la data" body={StatusDateTemplate} ></Column>
-                            <Column field="requestor.name" header="Solicitant" ></Column>
-                            <Column field="assigned.name" header="Responsabil"></Column>
-                            <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
-                            <Column field="notes" header="Detalii"></Column>
-                            <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
+                        }}
+                        stripedRows
+                        sortMode="multiple"
+                        sortField="data"
+                        sortOrder={1}
+                    >
+                        <Column hidden field="id" header="id"></Column>
+                        <Column hidden field="rejected_reason" header="rejected_reason"></Column>
+                        <Column field="requestor.name" header="Solicitant" ></Column>
+                        <Column field="assigned.name" header="Responsabil"></Column>
+                        <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
+                        <Column field="taskName" header="Denumire"></Column>
+                        <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
+                        <Column field="status.name" header="Stare"></Column>
+                        <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
-                        </DataTable>
-                        : null}
+                    </DataTable>
+
 
                 </div>
             </div>

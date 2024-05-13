@@ -63,9 +63,9 @@ export default function HeaderContract({ setContractId }: any) {
 
     useEffect(() => {
 
-        if (!userId) {
-            router.push(`${Frontend_BASE_URL}/auth/login`);
-        };
+        // if (!userId) {
+        //     router.push(`${Frontend_BASE_URL}/auth/login`);
+        // };
 
         setBreadCrumbItems(
             [{
@@ -75,7 +75,7 @@ export default function HeaderContract({ setContractId }: any) {
             {
                 label: 'Utilizatori',
                 template: () => {
-                    const url = `${Frontend_BASE_URL}/uikit/usergroups`
+                    const url = `${Frontend_BASE_URL}/uikit/users`
                     return (
                         <Link href={url}>Utilizatori</Link>
                     )

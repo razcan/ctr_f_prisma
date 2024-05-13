@@ -23,7 +23,6 @@ const Content = () => {
     const [text, setText] = useState('');
     const router = useRouter()
 
-
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
@@ -32,11 +31,13 @@ const Content = () => {
     } = useMyContext();
 
 
+    console.log(userId, "userId")
+    console.log(Id, "Id")
     useEffect(() => {
 
-        if (!userId) {
-            router.push(`${Frontend_BASE_URL}/auth/login`)
-        }
+        // if (!userId) {
+        //     router.push(`${Frontend_BASE_URL}/auth/login`)
+        // }
 
     }, [])
 
@@ -64,13 +65,17 @@ const Content = () => {
             };
             axios(config)
                 .then(function (response) {
+                    // console.log(response.data[0].content)
                     // setData(response.data);
-                    setText(response.data[0].content);
+                    if (response.data[0].content) {
+                        setText(response.data[0].content);
+                    }
+
                 })
                 .catch(function (error) {
                     // if (response.status === 401) {
                     // }
-                    router.push(`${Frontend_BASE_URL}/auth/login`)
+                    // router.push(`${Frontend_BASE_URL}/auth/login`)
 
                     console.log(error);
                 });

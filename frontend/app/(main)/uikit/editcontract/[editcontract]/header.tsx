@@ -95,6 +95,8 @@ export default function EditContract() {
     // console.log(Id)
     const [contractDetails, setContractDetails] = useState([]);
     const [contractStatus, setContractStatus] = useState([]);
+    const [contractWFStatus, setContractWFStatus] = useState([]);
+
     const [number, setNumber] = useState('');
     const [type, setType] = useState('');
     const [contractType, setContractType] = useState([]);
@@ -103,7 +105,10 @@ export default function EditContract() {
     const [sign, setSignDate] = useState();
     const [completion, setCompletionDate] = useState();
     const [remarks, setRemarks] = useState('');
+
     const [status, setStatus] = useState('');
+    const [statusWF, setStatusWF] = useState('');
+
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -323,6 +328,7 @@ export default function EditContract() {
 
                 setType(contractdetails.type)
                 setStatus(contractdetails.status)
+                setStatusWF(contractdetails.statusWF)
                 setSelectedCategory(contractdetails.Category)
                 setSelectedDepartment(contractdetails.departament)
                 setSelectedLocation(contractdetails.location)
@@ -468,8 +474,19 @@ export default function EditContract() {
             .then(status => {
                 setContractStatus(status)
             })
-
     }
+
+    const fetchWFStatusData = () => {
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractwfstatus`)
+            .then(response => {
+                return response.json()
+            })
+            .then(status => {
+                console.log(status);
+                setContractWFStatus(status)
+            })
+    }
+
 
     const fetchCategoriesData = () => {
         fetch(`${Backend_BASE_URL}/contracts/category`)
@@ -556,7 +573,8 @@ export default function EditContract() {
             fetchStatusData(),
             fetchDynamicFields(),
             fetchContractDynamicInfo(),
-            fetchLocationData()
+            fetchLocationData(),
+            fetchWFStatusData()
 
     }, [])
 
@@ -1002,14 +1020,19 @@ export default function EditContract() {
                             <label htmlFor="state">Tip</label>
                             <Dropdown id="type" showClear filter value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
                         <div className="field col-12 md:col-3">
-                            <label htmlFor="state">Stare</label>
+                            <label htmlFor="state">Stare Contract</label>
                             <Dropdown id="state" showClear filter value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
+
                         <div className="field col-12 md:col-3">
-                            <label htmlFor="category">Categorie</label>
-                            <Dropdown id="category" showClear filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <label htmlFor="state">Stare Flux</label>
+                            <Dropdown id="state" showClear filter value={statusWF} onChange={(e) => setStatusWF(e.value)} options={contractWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
+
                         <div className="field col-12 md:col-3">
                             <label className="font-bold block mb-2">
                                 Data Start
@@ -1053,10 +1076,17 @@ export default function EditContract() {
                             <label htmlFor="costcenter">Centru de cost&profit</label>
                             <Dropdown id="costcenter" showClear filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
+                        <div className="field col-12 md:col-3">
+                            <label htmlFor="category">Categorie</label>
+                            <Dropdown id="category" showClear filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
                         <div className="field col-12 md:col-3">
                             <label htmlFor="cashflow">CashFlow</label>
                             <Dropdown id="cashflow" showClear filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
                         <div className="field col-12 md:col-3">
                             <div className="field-checkbox">
                                 <Checkbox onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>

@@ -90,9 +90,9 @@ const LookupsPage = () => {
 
         setTheme("blue");
 
-        if (!userId) {
-            router.push(`${Frontend_BASE_URL}/auth/login`)
-        };
+        // if (!userId) {
+        //     router.push(`${Frontend_BASE_URL}/auth/login`)
+        // };
 
         setBreadCrumbItems(
             [{
