@@ -17,12 +17,14 @@ import {
 import { InputText } from 'primereact/inputtext';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 
 
 const queryClient = new QueryClient();
 
 const ContractListPage = () => {
+
 
     return (
         <QueryClientProvider client={queryClient}>
@@ -49,6 +51,9 @@ function Contracts() {
         , isLoggedIn, login, userId
     } = useMyContext();
 
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+
     const router = useRouter()
 
 
@@ -58,6 +63,23 @@ function Contracts() {
         if (!userId) {
             router.push(`${Frontend_BASE_URL}/auth/login`)
         }
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Contracte furnizori',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/suppliercontracts`
+                    return (
+                        <Link href={url}>Contracte Furnizare</Link>
+                    )
+
+                }
+            }]
+        )
 
     }, [])
 
@@ -239,7 +261,8 @@ function Contracts() {
                         'type.name', 'status.name', 'start', 'end', 'Category.name', 'location.name',
                         'costcenter.name', 'cashflow.name'
                     ]} header={header}
-                    stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                    stripedRows tableStyle={{ minWidth: '50rem' }}
+                    paginator rows={8} rowsPerPageOptions={[8, 20, 30, 40, 100]} sortMode="multiple"
                     selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
                         setselectedContract(e.value),
                             editContract(e.value.id)

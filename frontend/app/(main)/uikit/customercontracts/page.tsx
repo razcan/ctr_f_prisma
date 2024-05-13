@@ -17,6 +17,7 @@ import {
 import { InputText } from 'primereact/inputtext';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 
 
@@ -49,6 +50,10 @@ function Contracts() {
         , isLoggedIn, login, userId
     } = useMyContext();
 
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+
+
     const router = useRouter()
 
 
@@ -58,6 +63,23 @@ function Contracts() {
         if (!userId) {
             router.push(`${Frontend_BASE_URL}/auth/login`)
         }
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Contracte clienti',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/customercontracts`
+                    return (
+                        <Link href={url}>Contracte clienti</Link>
+                    )
+
+                }
+            }]
+        )
 
     }, [])
 

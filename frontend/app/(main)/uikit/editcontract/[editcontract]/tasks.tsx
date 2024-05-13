@@ -61,6 +61,7 @@ export default function Tasks() {
     const [selectedTask, setselectedTask] = useState();
     const [allStatus, setAllStatus] = useState([])
 
+
     const [users, setUsers] = useState([]);
 
 
@@ -78,7 +79,7 @@ export default function Tasks() {
     };
 
     const fetchTasksData = () => {
-        fetch(`http://localhost:3000/contracts/task/${Id}`)
+        fetch(`${Backend_BASE_URL}/contracts/task/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -90,7 +91,7 @@ export default function Tasks() {
     }
 
     const fetchPriority = () => {
-        fetch("http://localhost:3000/contracts/priority")
+        fetch(`${Backend_BASE_URL}/contracts/priority`)
             .then(response => {
                 return response.json()
             })
@@ -101,7 +102,7 @@ export default function Tasks() {
 
 
     const fetchTasksStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/taskStatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/taskStatus`)
             .then(response => {
                 return response.json()
             })

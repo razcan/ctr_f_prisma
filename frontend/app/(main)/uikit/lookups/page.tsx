@@ -27,10 +27,22 @@ import CostCenter from './costcenter';
 import Type from './type';
 import Partner from './partner';
 import Location from './location';
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 const queryClient = new QueryClient();
 
 const LookupsPage = () => {
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+
 
     const [category, setCategory] = useState('');
     const [categoryIndex, setCategoryIndex] = useState<number>(0);
@@ -75,8 +87,32 @@ const LookupsPage = () => {
     }
 
     useEffect(() => {
-        setTheme("blue")
-    }, []);
+
+        setTheme("blue");
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        };
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Nomenclatoare',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/lookups`
+                    return (
+                        <Link href={url}>Nomenclatoare</Link>
+                    )
+
+                }
+            }]
+        );
+
+
+    }, [])
 
 
     const items = [
@@ -104,7 +140,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/category',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/category`,
                     toAdd
                 );
                 showSuccess(`Categoria ${toAdd.name} a fost adaugata!`)
@@ -132,7 +168,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/location',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/location`,
                     toAdd
                 );
                 showSuccess(`Locatia ${toAdd.name} a fost adaugata!`)
@@ -160,7 +196,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/department',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/department`,
                     toAdd
                 );
                 showSuccess(`Departmentul ${toAdd.name} a fost adaugat!`)
@@ -188,7 +224,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/cashflow',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/cashflow`,
                     toAdd
                 );
                 showSuccess(`Linia de cashflow ${toAdd.name} a fost adaugata!`)
@@ -216,7 +252,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/item',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/item`,
                     toAdd
                 );
                 showSuccess(`Obiectul de contract ${toAdd.name} a fost adaugat!`)
@@ -244,7 +280,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/costcenter',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/costcenter`,
                     toAdd
                 );
                 showSuccess(`Centrul de cost/profit ${toAdd.name} a fost adaugat!`)
@@ -271,7 +307,7 @@ const LookupsPage = () => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post('http://localhost:3000/contracts/entity',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts/entity`,
                     toAdd
                 );
                 showSuccess(`Entitatea ${toAdd.name} a fost adaugata!`)

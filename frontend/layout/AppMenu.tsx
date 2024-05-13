@@ -1,30 +1,81 @@
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import AppMenuitem from './AppMenuitem';
 import { LayoutContext } from './context/layoutcontext';
 import { MenuProvider } from './context/menucontext';
 import Link from 'next/link';
 import { AppMenuItem } from '@/types';
+import { MyContext, MyProvider } from '../layout/context/myUserContext'
 
 const AppMenu = () => {
     const { layoutConfig } = useContext(LayoutContext);
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    const useMyContext = () => useContext(MyContext);
+    const { Frontend_BASE_URL } = useMyContext();
+
+    useEffect(() => {
+    }, [BreadCrumbItems])
+
 
     const model: AppMenuItem[] = [
         {
             label: 'Acasa',
-            items: [{ label: 'Panou de bord', icon: 'pi pi-fw pi-home', to: '/' }]
+            items: [{
+                label: 'Panou de bord', icon: 'pi pi-fw pi-home', to: '/'
+                //     ,command: () => setBreadCrumbItems(
+                //         [{
+                //             label: 'Home',
+                //             template: () => <Link href="/">Home</Link>
+                //         }]
+                //     )
+            },
+            ]
         },
         {
             label: 'Contracte',
             items: [
-                { label: 'Contracte furnizori', icon: 'pi pi-fw pi-id-card', to: '/uikit/suppliercontracts' },
-                // { label: 'Formular2', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
-                { label: 'Contracte clienti', icon: 'pi pi-fw pi-bookmark', to: '/uikit/customercontracts' },
-                // { label: 'Invalid State', icon: 'pi pi-fw pi-exclamation-circle', to: '/uikit/invalidstate' },
-                // { label: 'Button', icon: 'pi pi-fw pi-mobile', to: '/uikit/button', class: 'rotated-icon' },
-                // { label: 'Table', icon: 'pi pi-fw pi-table', to: '/uikit/table' },
-                // { label: 'List', icon: 'pi pi-fw pi-list', to: '/uikit/list' },
+                {
+                    label: 'Contracte furnizori', icon: 'pi pi-fw pi-id-card',
+                    to: '/uikit/suppliercontracts'
+                    // command: () => setBreadCrumbItems(
+                    //     [{
+                    //         label: 'Home',
+                    //         template: () => <Link href="/">Home</Link>
+                    //     },
+                    //     {
+                    //         label: 'Contracte furnizori',
+                    //         template: () => {
+                    //             const url = `${Frontend_BASE_URL}/uikit/suppliercontracts`
+                    //             return (
+                    //                 <Link href={url}>Contracte Furnizare</Link>
+                    //             )
+
+                    //         }
+                    //     }]
+                    // )
+                },
+                {
+                    label: 'Contracte clienti', icon: 'pi pi-fw pi-bookmark',
+                    to: '/uikit/customercontracts'
+                    // command: () => setBreadCrumbItems(
+                    //     [{
+                    //         label: 'Home',
+                    //         template: () => <Link href="/">Home</Link>
+                    //     },
+                    //     {
+                    //         label: 'Contracte clienti',
+                    //         template: () => {
+                    //             const url = `${Frontend_BASE_URL}/uikit/customercontracts`
+                    //             return (
+                    //                 <Link href={url}>Contracte clienti</Link>
+                    //             )
+
+                    //         }
+                    //     }]
+                    // )
+                },
             ]
         },
         {

@@ -19,6 +19,7 @@ import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
 import { MultiSelect } from 'primereact/multiselect';
 import * as XLSX from 'xlsx';
+import Link from 'next/link';
 
 
 
@@ -66,6 +67,7 @@ function Report() {
         Frontend_BASE_URL, isPurchasing, setIsPurchasing
         , isLoggedIn, login, userId
     } = useMyContext();
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
 
     const router = useRouter()
 
@@ -75,6 +77,24 @@ function Report() {
         if (!userId) {
             router.push(`${Frontend_BASE_URL}/auth/login`)
         }
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Raport financiar',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/reports_financial`
+                    return (
+                        <Link href={url}>Raport financiar</Link>
+                    )
+
+                }
+            }]
+        )
+
 
     }, [])
 

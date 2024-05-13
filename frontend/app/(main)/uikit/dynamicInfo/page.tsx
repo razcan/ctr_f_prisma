@@ -24,6 +24,7 @@ import axios from 'axios';
 import { Tag } from 'primereact/tag';
 import { Slider } from 'primereact/slider';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 export default function Alerts() {
 
@@ -46,6 +47,7 @@ export default function Alerts() {
         Frontend_BASE_URL, isPurchasing, setIsPurchasing
         , isLoggedIn, login, userId
     } = useMyContext();
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
 
     const router = useRouter()
 
@@ -96,6 +98,23 @@ export default function Alerts() {
                 showError();
             }
         }
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Informatii dinamice',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/dynamicInfo`
+                    return (
+                        <Link href={url}>Informatii dinamice</Link>
+                    )
+
+                }
+            }]
+        );
 
     }, [])
 

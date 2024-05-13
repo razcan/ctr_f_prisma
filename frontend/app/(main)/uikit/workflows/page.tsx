@@ -24,6 +24,8 @@ import axios from 'axios';
 import { ProgressBar } from 'primereact/progressbar';
 import { Slider } from 'primereact/slider';
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 
 export default function Tasks() {
@@ -41,6 +43,41 @@ export default function Tasks() {
     const [selectedWF, setSelectedWF] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState([]);
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        };
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Fluxuri de aprobare',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/workflows`
+                    return (
+                        <Link href={url}>Fluxuri de aprobare</Link>
+                    )
+
+                }
+            }]
+        );
+
+    }, [])
+
+
     const addFlow = () => {
         router.push(`/uikit/workflows/add/add`)
     }
@@ -50,7 +87,7 @@ export default function Tasks() {
     }
 
     const fetchwflist = () => {
-        fetch("http://localhost:3000/contracts/wflist")
+        fetch(`${Backend_BASE_URL}/contracts/wflist`)
             .then(response => {
                 return response.json()
             })

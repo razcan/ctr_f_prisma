@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -22,11 +22,13 @@ import axios from 'axios';
 // import ReactQuill, { Quill } from 'react-quill';
 // import "react-quill/dist/quill.snow.css";
 import { Tag } from 'primereact/tag';
-
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 
 export default function Alerts() {
 
+    const router = useRouter();
     const [visible, setVisible] = useState(false);
     const [name, setName] = useState('');
     const [isActive, setIsActive] = useState(true);
@@ -39,6 +41,40 @@ export default function Alerts() {
     const [isActivePerson, setIsActivePerson] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [selectedAlert, setSelectedAlert] = useState([]);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        };
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Alerte',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/alerts`
+                    return (
+                        <Link href={url}>Alerte</Link>
+                    )
+
+                }
+            }]
+        );
+
+    }, [])
 
 
     const placeholders = [
@@ -155,20 +191,8 @@ export default function Alerts() {
         },
     ]
 
-    // const alerts = [
-    //     { Denumire: "Expirare Contract", Recurenta: "30 de zile inainte de data finalizare", Subiect: "Va expira contractul", Activa: "True" },
-    //     { Denumire: "Contract inchis inainte de termen", Recurenta: "In data inchiderii", Subiect: "A fost inchis contractul", Activa: "True" },
-    //     { Denumire: "Modificare Contract", Recurenta: "In data nodificarii", Subiect: "Modificare Contract", Activa: "True" }
-    // ]
-
-    // const fetchContent = async () => {
-    //     const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${4}`).then(res => res.json())
-    //     //treb modificat pe id de ctr
-    //     setLogs(response);
-    // }
-
     const fetchAlertsData = () => {
-        fetch("http://localhost:3000/alerts")
+        fetch(`${Backend_BASE_URL}/alerts`)
             .then(response => {
                 // console.log(response);
                 return response.json()
@@ -182,15 +206,6 @@ export default function Alerts() {
         fetchAlertsData()
     }, [])
 
-
-    //     setari alerte,
-    //         alerte prestabilite in functie de data de expirare
-    //             in ecranul de ctr, se vor vedea doar cand se vor transmite urmatoarele alerte prestabilite
-    //             in ecranul de alerte, un buton de afisare trimise sau ce urmeaza a fi trimise
-    //o lista de alerte predefinite
-    // 9.meniu setari alerte(expira inainte cu n zile, s - a inchis inainte de termen, s - a schimbat resp ctr, nu a ajuns factura, modificat stare/ctr, facturi nesosite/emise)
-    // de facut o tabela in care se genereaza toate alertele la nivel de contract ContractAlertSchedule( ContractId, AlertId,IsActive,Status, AlertDate, Subject, ScheduleDate( 2 days before... ) )
-    //generarea de alerte la nivel de ctr se face prin serviciu
 
     const saveAlert = async () => {
         // console.log("Alerta:", name, isActive, subject, text, internal_emails, nrofdays, param, isActivePartner, isActivePerson)
@@ -220,7 +235,7 @@ export default function Alerts() {
         }
 
         try {
-            const response = await axios.patch(`http://localhost:3000/alerts/${selectedAlert.id}`,
+            const response = await axios.patch(`${Backend_BASE_URL}/alerts/${selectedAlert.id}`,
                 Alert
             );
             setVisible(false)
@@ -253,9 +268,6 @@ export default function Alerts() {
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
-                    Config  Alerte
-
-
                     <div className="card">
                         <DataTable value={alerts} tableStyle={{ minWidth: '50rem' }}
                             selectionMode="single" selection={selectedAlert} onSelectionChange={(e) => {

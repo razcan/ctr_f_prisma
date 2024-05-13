@@ -25,6 +25,7 @@ import { Tag } from 'primereact/tag';
 import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
 import * as XLSX from 'xlsx';
+import Link from 'next/link';
 
 interface Car {
     make: string;
@@ -78,6 +79,9 @@ function Report() {
         , isLoggedIn, login, userId
     } = useMyContext();
 
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+
     const router = useRouter()
 
 
@@ -86,6 +90,23 @@ function Report() {
         if (!userId) {
             router.push(`${Frontend_BASE_URL}/auth/login`)
         }
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Raport general',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/reports`
+                    return (
+                        <Link href={url}>Raport general</Link>
+                    )
+
+                }
+            }]
+        )
 
     }, [])
 

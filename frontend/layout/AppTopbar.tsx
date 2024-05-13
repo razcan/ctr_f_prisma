@@ -11,14 +11,18 @@ import { Badge } from 'primereact/badge';
 import { Chip } from 'primereact/chip';
 import { Button } from 'primereact/button';
 import { AvatarGroup } from 'primereact/avatargroup';
+import { BreadCrumb } from 'primereact/breadcrumb';
+
 
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
+
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
+
+
     const menubuttonRef = useRef(null);
     const topbarmenuRef = useRef(null);
     const topbarmenubuttonRef = useRef(null);
-
 
     const useMyContext = () => useContext(MyContext);
 
@@ -27,6 +31,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { picture, setPicture } = useMyContext();
     const { isLoggedIn, setIsLoggedIn } = useMyContext();
     const { nrOfTasks, setNrOfTasks } = useMyContext();
+    const { BreadCrumbItems, setBreadCrumbItems } = useMyContext();
+    const { Backend_BASE_URL, Frontend_BASE_URL, login } = useMyContext();
 
 
 
@@ -48,6 +54,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 <button ref={menubuttonRef} type="button" className="p-link layout-menu-button layout-topbar-button" onClick={onMenuToggle}>
                     <i className="pi pi-bars" />
                 </button>
+
+                <BreadCrumb model={BreadCrumbItems} />
+
 
 
                 <button ref={topbarmenubuttonRef} type="button" className="p-link layout-topbar-menu-button layout-topbar-button" onClick={showProfileSidebar}>

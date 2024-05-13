@@ -7,6 +7,7 @@ import type { ChartDataState, ChartOptionsState } from '@/types';
 import axios, { AxiosRequestConfig } from 'axios';
 import { MyContext, MyProvider } from '../../layout/context/myUserContext'
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link';
 
 
 const Charts = () => {
@@ -17,6 +18,7 @@ const Charts = () => {
     Frontend_BASE_URL, isLoggedIn, login, userId } = useMyContext();
 
   const router = useRouter()
+  const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
 
 
 
@@ -25,6 +27,13 @@ const Charts = () => {
     if (!userId) {
       router.push(`${Frontend_BASE_URL}/auth/login`)
     }
+
+    setBreadCrumbItems(
+      [{
+        label: 'Home',
+        template: () => <Link href="/">Home</Link>
+      }]
+    )
 
   }, [])
 

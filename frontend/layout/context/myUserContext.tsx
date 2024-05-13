@@ -2,6 +2,7 @@
 import router from 'next/router';
 import React, { createContext, useContext, useState } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link';
 
 // Step 1: Create the context
 export const MyContext = createContext(null);
@@ -16,9 +17,20 @@ export const MyProvider = ({ children }: any) => {
     const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
 
+    const [BreadCrumbItems, setBreadCrumbItems] = useState([
+        {
+            label: 'Home',
+            template: () => <Link href="/">Home</Link>
+        },
+    ]);
+
     const [isPurchasing, setIsPurchasing] = useState(true);
+
     const Backend_BASE_URL = 'http://localhost:3000'; //  backend base URL
     const Frontend_BASE_URL = 'http://localhost:5500'; //  frontend base URL
+
+
+
 
     const router = useRouter()
 
@@ -248,7 +260,9 @@ export const MyProvider = ({ children }: any) => {
         setIsPurchasing,
         nrOfTasks,
         setNrOfTasks,
-        GetUserTasks
+        GetUserTasks,
+        BreadCrumbItems,
+        setBreadCrumbItems
     };
 
 

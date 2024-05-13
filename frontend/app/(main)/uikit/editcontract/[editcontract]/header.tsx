@@ -28,6 +28,7 @@ import { MyContext, MyProvider } from '../../../../../layout/context/myUserConte
 import { InputNumber } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
 
+
 const queryClient = new QueryClient();
 
 function addOneDay(date: Date): Date {
@@ -241,7 +242,7 @@ export default function EditContract() {
 
 
     const fetchContractDynamicInfo = async () => {
-        await fetch(`http://localhost:3000/contracts/dynamicfields/${Id}`)
+        await fetch(`${Backend_BASE_URL}/contracts/dynamicfields/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -273,7 +274,7 @@ export default function EditContract() {
     }
 
     const fetchContractData = async () => {
-        await fetch(`http://localhost:3000/contracts/details/${Id}`)
+        await fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -342,7 +343,7 @@ export default function EditContract() {
 
 
                 const fetchEntityPersons = async () => {
-                    const response = await fetch(`http://localhost:3000/nomenclatures/persons/${contractdetails.entity.id}`).then(res => res.json().then(res => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.entity.id}`).then(res => res.json().then(res => {
                         setEntityPersons(res);
                     })
                     )
@@ -350,12 +351,12 @@ export default function EditContract() {
                 fetchEntityPersons()
 
                 const fetchEntityBanks = async () => {
-                    const response = await fetch(`http://localhost:3000/nomenclatures/bank/${contractdetails.entity.id}`).then(res => res.json())
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${contractdetails.entity.id}`).then(res => res.json())
                     setEntityBanks(response);
                 }
                 fetchEntityBanks()
                 const fetchEntityAddress = async () => {
-                    const response = await fetch(`http://localhost:3000/nomenclatures/address/${contractdetails.entity.id}`).then(res => res.json())
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${contractdetails.entity.id}`).then(res => res.json())
                     setEntityAddress(response);
                 }
                 fetchEntityAddress()
@@ -371,7 +372,7 @@ export default function EditContract() {
                 setEnt_Address(contractdetails.EntityAddress.id)
 
                 const fetchPartnerPersons = async () => {
-                    const response = await fetch(`http://localhost:3000/nomenclatures/persons/${contractdetails.partner.id}`).then(res => res.json().then(res => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.partner.id}`).then(res => res.json().then(res => {
                         setPartnerPersons(res);
                         // console.log(res)
 
@@ -390,12 +391,12 @@ export default function EditContract() {
                 fetchPartnerPersons()
 
                 const fetchPartnerBanks = async () => {
-                    const response = await fetch(`http://localhost:3000/nomenclatures/bank/${contractdetails.partner.id}`).then(res => res.json())
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${contractdetails.partner.id}`).then(res => res.json())
                     setPartnerBanks(response);
                 }
                 fetchPartnerBanks()
                 const fetchPartnerAddress = async () => {
-                    const response = await fetch(`http://localhost:3000/nomenclatures/address/${contractdetails.partner.id}`).then(res => res.json())
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${contractdetails.partner.id}`).then(res => res.json())
                     setPartnerAddress(response);
                 }
                 fetchPartnerAddress()
@@ -439,7 +440,7 @@ export default function EditContract() {
     };
 
     const fetchLocationData = () => {
-        fetch("http://localhost:3000/nomenclatures/location")
+        fetch(`${Backend_BASE_URL}/nomenclatures/location`)
             .then(response => {
                 return response.json()
             })
@@ -449,7 +450,7 @@ export default function EditContract() {
     }
 
     const fetchTypeData = () => {
-        fetch("http://localhost:3000/nomenclatures/contracttype")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contracttype`)
             .then(response => {
                 return response.json()
             })
@@ -460,7 +461,7 @@ export default function EditContract() {
     }
 
     const fetchStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/contractstatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractstatus`)
             .then(response => {
                 return response.json()
             })
@@ -471,7 +472,7 @@ export default function EditContract() {
     }
 
     const fetchCategoriesData = () => {
-        fetch("http://localhost:3000/contracts/category")
+        fetch(`${Backend_BASE_URL}/contracts/category`)
             .then(response => {
                 return response.json()
             })
@@ -482,7 +483,7 @@ export default function EditContract() {
     }
 
     const fetchEntity = () => {
-        fetch("http://localhost:3000/nomenclatures/entity")
+        fetch(`${Backend_BASE_URL}/nomenclatures/entity`)
             .then(response => {
                 return response.json()
             })
@@ -492,7 +493,7 @@ export default function EditContract() {
     }
 
     const fetchPartners = () => {
-        fetch("http://localhost:3000/nomenclatures/partners")
+        fetch(`${Backend_BASE_URL}/nomenclatures/partners`)
             .then(response => {
                 return response.json()
             })
@@ -503,7 +504,7 @@ export default function EditContract() {
 
 
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflownom")
+        fetch(`${Backend_BASE_URL}/contracts/cashflownom`)
             .then(response => {
                 return response.json()
             })
@@ -513,7 +514,7 @@ export default function EditContract() {
     }
 
     const fetchCostCenter = () => {
-        fetch("http://localhost:3000/contracts/costcenter")
+        fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
                 return response.json()
             })
@@ -524,7 +525,7 @@ export default function EditContract() {
 
 
     const fetchDepartmentsData = () => {
-        fetch("http://localhost:3000/contracts/department")
+        fetch(`${Backend_BASE_URL}/contracts/department`)
             .then(response => {
                 return response.json()
             })
@@ -534,7 +535,7 @@ export default function EditContract() {
     }
 
     const fetchDynamicFields = () => {
-        fetch("http://localhost:3000/nomenclatures/dynamicfield")
+        fetch(`${Backend_BASE_URL}/nomenclatures/dynamicfield`)
             .then(response => {
                 return response.json()
             })
@@ -718,7 +719,7 @@ export default function EditContract() {
             toSend.push(addDynamicInfo)
 
             try {
-                const response = await axios.patch(`http://localhost:3000/contracts/${Id}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/contracts/${Id}`,
                     toSend
                 );
 

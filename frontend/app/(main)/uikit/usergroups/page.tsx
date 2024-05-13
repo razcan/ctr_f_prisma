@@ -23,9 +23,13 @@ import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { ToggleButton } from 'primereact/togglebutton';
 import { _descriptors } from 'chart.js/helpers';
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
+
 
 export default function UserGroup() {
 
+    const router = useRouter();
     const toast = useRef(null);
     const [visible, setVisible] = useState(false);
     const [entity, setEntity] = useState([]);
@@ -35,8 +39,42 @@ export default function UserGroup() {
     const [allGroups, setAllGroups] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState([]);
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        };
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Grupuri Utilizatori',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/usergroups`
+                    return (
+                        <Link href={url}>Grupuri Utilizatori</Link>
+                    )
+
+                }
+            }]
+        );
+
+    }, [])
+
     const fetchEntity = () => {
-        fetch("http://localhost:3000/nomenclatures/entity")
+        fetch(`${Backend_BASE_URL}/nomenclatures/entity`)
             .then(response => {
                 return response.json()
             })
@@ -47,7 +85,7 @@ export default function UserGroup() {
     }
 
     const fetchGroups = () => {
-        fetch("http://localhost:3000/nomenclatures/groups")
+        fetch(`${Backend_BASE_URL}/nomenclatures/groups`)
             .then(response => {
                 return response.json()
             })
@@ -104,7 +142,7 @@ export default function UserGroup() {
         }
 
         try {
-            const response = await axios.post('http://localhost:3000/nomenclatures/groups',
+            const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/groups`,
                 addGroup
             );
             setVisible(false)
@@ -115,7 +153,7 @@ export default function UserGroup() {
 
     }
     const fetchGroupById = async (Id) => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/groups/${Id}`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/groups/${Id}`).then(res => res.json())
 
         setName(response.name)
         setDescription(response.description)
@@ -127,7 +165,6 @@ export default function UserGroup() {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    Grupuri Utilizatori
                     <div className="field col-12  md:col-2">
                         <Button label="Adauga" onClick={setDialogVisible} />
                     </div>

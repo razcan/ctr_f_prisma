@@ -20,6 +20,7 @@ import router from 'next/router';
 import { Editor } from 'primereact/editor';
 import axios, { AxiosRequestConfig } from 'axios';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import Link from 'next/link';
 
 
 
@@ -29,7 +30,6 @@ export default function Content() {
 
     const router = useRouter();
     const searchParams = useSearchParams()
-    const Id = parseInt(searchParams.get("Id"));
     const [wfHistory, setWFHistory] = useState([]);
 
     const useMyContext = () => useContext(MyContext);
@@ -38,15 +38,11 @@ export default function Content() {
         Frontend_BASE_URL, isPurchasing, setIsPurchasing
         , isLoggedIn, login, userId
     } = useMyContext();
-
-
-
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
 
     useEffect(() => {
 
-        if (!userId) {
-            router.push(`${Frontend_BASE_URL}/auth/login`)
-        }
+        fetchContent();
 
     }, [])
 
@@ -91,10 +87,6 @@ export default function Content() {
         // setWFHistory(response);
 
     }
-
-    useEffect(() => {
-        fetchContent()
-    }, [])
 
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here

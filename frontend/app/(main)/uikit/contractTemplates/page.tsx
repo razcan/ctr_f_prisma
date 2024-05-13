@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -18,9 +18,13 @@ import axios from 'axios';
 // import 'primeflex/primeflex.scss';
 import "../../../../node_modules/primeflex/primeflex.scss"
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
+import Link from 'next/link';
+
 
 export default function Alerts() {
 
+    const router = useRouter()
     const [visible, setVisible] = useState(false);
     const [name, setName] = useState('');
     const [isActive, setIsActive] = useState(true);
@@ -30,6 +34,38 @@ export default function Alerts() {
     const [type, setType] = useState();
     const [contractType, setContractType] = useState([]);
     const [templates, setTemplates] = useState([]);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        }
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Modele Contracte',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/contractTemplates`
+                    return (
+                        <Link href={url}>Modele Contracte</Link>
+                    )
+
+                }
+            }]
+        );
+
+    }, [])
 
 
     const placeholders = [

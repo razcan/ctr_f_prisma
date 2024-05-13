@@ -29,6 +29,7 @@ import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { Calendar } from 'primereact/calendar';
+import Link from 'next/link';
 
 export default function ExchangeRates() {
 
@@ -48,18 +49,46 @@ export default function ExchangeRates() {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
 
-    const fetchAllCurrencies = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
-        setAllCurrency(response);
-    }
+
 
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, userRoles, setUserRoles
-        // ,
-        // setUserRoles 
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
     } = useMyContext();
+
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        };
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Cursuri Valutare',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/usergroups`
+                    return (
+                        <Link href={url}>Cursuri Valutare</Link>
+                    )
+
+                }
+            }]
+        );
+
+    }, [])
+
+    const fetchAllCurrencies = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
+        setAllCurrency(response);
+    }
 
     function getCurrentDate(): string {
         const today = new Date();
@@ -164,7 +193,7 @@ export default function ExchangeRates() {
                     // if (response.status === 401) {
                     // }
                     setAll_exchangeRates([]);
-                    router.push('http://localhost:5500/auth/login')
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
 
                     console.log(error);
                 });
@@ -211,7 +240,7 @@ export default function ExchangeRates() {
                     // if (response.status === 401) {
                     // }
                     setFilteredCurrency([]);
-                    router.push('http://localhost:5500/auth/login')
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
 
                     console.log(error);
                 });

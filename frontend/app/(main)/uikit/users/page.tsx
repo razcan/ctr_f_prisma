@@ -24,11 +24,13 @@ import { ToggleButton } from 'primereact/togglebutton';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
 import axios, { AxiosRequestConfig } from 'axios';
 import { Tag } from 'primereact/tag';
+import Link from 'next/link';
 
 
 
 
 export default function HeaderContract({ setContractId }: any) {
+
 
     const toast = useRef(null);
     const router = useRouter();
@@ -53,15 +55,42 @@ export default function HeaderContract({ setContractId }: any) {
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, userRoles, setUserRoles
-        // ,
-        // setUserRoles 
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
     } = useMyContext();
+
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
+    useEffect(() => {
+
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`);
+        };
+
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Utilizatori',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/usergroups`
+                    return (
+                        <Link href={url}>Utilizatori</Link>
+                    )
+
+                }
+            }]
+        );
+
+    }, [])
+
 
     // console.log("din users", userRoles);
 
     const fetchAllgroups = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/groups`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/groups`).then(res => res.json())
         setAll_groups(response);
     }
 
@@ -71,7 +100,7 @@ export default function HeaderContract({ setContractId }: any) {
     };
 
     const fetchAllUserRoles = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/roles`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/roles`).then(res => res.json())
         setAll_roles(response);
     }
 
@@ -104,7 +133,7 @@ export default function HeaderContract({ setContractId }: any) {
                     // if (response.status === 401) {
                     // }
                     setAll_users([]);
-                    router.push('http://localhost:5500/auth/login')
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
 
                     console.log(error);
                 });
@@ -112,15 +141,9 @@ export default function HeaderContract({ setContractId }: any) {
     }
 
 
-    // const fetchAllUsers = async () => {
-    //     const response = await fetch(`http://localhost:3000/nomenclatures/users`).then(res => res.json())
-    //     setAll_users(response);
-    // }
-
-
     const deleteUser = async (file: string): Promise<void> => {
         try {
-            const response = await fetch(`http://localhost:3000/nomenclatures/user/${selectedUserId}`, {
+            const response = await fetch(`${Backend_BASE_URL}/nomenclatures/user/${selectedUserId}`, {
                 method: 'DELETE',
             });
 
@@ -139,7 +162,7 @@ export default function HeaderContract({ setContractId }: any) {
     };
 
     const fetchUserById = async (Id) => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/user/${Id}`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/user/${Id}`).then(res => res.json())
 
         setIsActive(response.status)
         setName(response.name)
@@ -263,7 +286,7 @@ export default function HeaderContract({ setContractId }: any) {
                     redirect: 'follow'
                 };
 
-                fetch("http://localhost:3000/nomenclatures/users", requestOptions)
+                fetch(`${Backend_BASE_URL}/nomenclatures/users`, requestOptions)
                     .then(response => response.text())
                     .then(result => {
                         // console.log(result)
@@ -333,7 +356,7 @@ export default function HeaderContract({ setContractId }: any) {
                     body: formdata,
                     redirect: 'follow'
                 };
-                fetch(`http://localhost:3000/nomenclatures/user/${selectedUserId}`, requestOptions)
+                fetch(`${Backend_BASE_URL}/nomenclatures/user/${selectedUserId}`, requestOptions)
                     .then(response => response.text())
                     .then(result => {
                         fetchAllUsers()
@@ -369,8 +392,6 @@ export default function HeaderContract({ setContractId }: any) {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-
-                    Utilizatori
                     <div className="p-fluid formgrid grid p-3">
 
                         <div className="field col-12  md:col-2">
@@ -382,9 +403,9 @@ export default function HeaderContract({ setContractId }: any) {
                             <DataTable value={all_users} tableStyle={{ minWidth: '50rem' }}
                                 selectionMode="single" selection={selectedUser}
                                 onSelectionChange={(e) => {
-                                    setSelectedUser(e.value),
-                                        fetchUserById(e.value.id)
-                                    setSelectedUserId(e.value.id)
+                                    setSelectedUser(e.value);
+                                    fetchUserById(e.value.id);
+                                    setSelectedUserId(e.value.id);
 
                                     setVisible(true)
                                 }}>
@@ -414,7 +435,7 @@ export default function HeaderContract({ setContractId }: any) {
                                 <div className="grid flex justify-content-center flex-wrap">
                                     <div>
                                         <span>
-                                            <Avatar image={`http://localhost:3000/nomenclatures/download/${AvatarUser}`}
+                                            <Avatar image={`${Backend_BASE_URL}/nomenclatures/download/${AvatarUser}`}
                                                 size="xlarge" shape="circle" style={{ width: '16vh', height: '16vh' }} />
                                         </span>
                                     </div>
