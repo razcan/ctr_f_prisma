@@ -12,6 +12,7 @@ export const MyProvider = ({ children }: any) => {
 
     const [userName, setUserName] = useState('{NC}');
     const [userId, setUserId] = useState(0);
+    const [actualContractId, setactualContractId] = useState(0);
     const [nrOfTasks, setNrOfTasks] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");
@@ -262,7 +263,9 @@ export const MyProvider = ({ children }: any) => {
         setNrOfTasks,
         GetUserTasks,
         BreadCrumbItems,
-        setBreadCrumbItems
+        setBreadCrumbItems,
+        actualContractId,
+        setactualContractId
     };
 
 

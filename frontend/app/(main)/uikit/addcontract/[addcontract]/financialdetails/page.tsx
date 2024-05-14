@@ -1,7 +1,8 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -17,20 +18,22 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Tag } from 'primereact/tag';
 import axios from 'axios';
 import { Toast } from 'primereact/toast';
+import { RadioButton } from 'primereact/radiobutton';
 import { Dialog } from 'primereact/dialog';
+import { MyContext, MyProvider } from '../../../../../../layout/context/myUserContext'
 
 export default function Financial() {
 
+    const [visible, setVisible] = useState(false);
     const [financialVisible, setfinancialVisible] = useState(false);
     const [indexTable, setIndextable] = useState(0)
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const [contractValue, setContractValue] = useState();
     const [price, setPrice] = useState(0);
-    const [totalContractValue, setTotalContractValue] = useState(1000);
     const [currency, setCurrency] = useState([]);
     const [allCurrency, setAllCurrency] = useState([]);
-    const [currencyPercent, setCurrencyPercent] = useState(1);
+    const [currencyPercent, setCurrencyPercent] = useState(0);
     const [currencyValue, setCurrencyValue] = useState([]);
     const [paymentType, setPaymentType] = useState([]);
     const [allPaymentType, setAllPaymentType] = useState([]);
@@ -40,21 +43,9 @@ export default function Financial() {
     const [billingQtty, setBillingQtty] = useState(1);
     const [billingDay, setBillingDay] = useState(1);
     const [billingDueDays, setBillingDueDays] = useState(10);
-    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
-    const [measuringUnit, setMeasuringUnit] = useState();
-    const [allMeasuringUnit, setAllMeasuringUnit] = useState();
-    const [scadentar, setScadentar] = useState([]);
-    const [active, setActive] = useState(true);
-    const [contractfinancialItemId, setContractfinancialItemId] = useState(0);
-    const [contractItem, setContractItem] = useState([]);
-
-    const [isInvoiced, setIsInvoiced] = useState(false);
-    const [isPayed, setIsPayed] = useState(false);
-    const [selectedSchedule, setSelectedSchedule] = useState();
-
-
+    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(0);
     const [advancePercent, setAdvancePercent] = useState(0);
-    const [visible, setVisible] = useState(false);
+
     const [guaranteeLetter, setGuaranteeLetter] = useState(false);
     const [guaranteeLetterValue, setGuaranteeLetterValue] = useState(0);
     const [guaranteeLetterDate, setGuaranteeLetterDate] = useState('');
@@ -74,6 +65,19 @@ export default function Financial() {
     const [goodexecutionSelectedBank, setGoodexecutionSelectedBank] = useState<any>([]);
     const [goodexecutionSelectedCurrency, setGoodexecutionSelectedCurrency] = useState<any>([]);
 
+    const [allBanks, setAllBanks] = useState<any>([]);
+
+    const [measuringUnit, setMeasuringUnit] = useState();
+    const [allMeasuringUnit, setAllMeasuringUnit] = useState();
+    const [scadentar, setScadentar] = useState([]);
+    const [active, setActive] = useState(true);
+    const [isInvoiced, setIsInvoiced] = useState(false);
+    const [isPayed, setIsPayed] = useState(false);
+    const [selectedSchedule, setSelectedSchedule] = useState();
+    const [contract, setContract] = useState([]);
+    const [startContractDate, setStartContractDate] = useState('');
+    const [endContractDate, setEndContractDate] = useState('');
+
     const [selectedSchLineDate, setSelectedSchLineDate] = useState('');
     const [selectedSchLineQtty, setSelectedSchLineQtty] = useState(0);
     const [selectedSchLinePrice, setSelectedSchLinePrice] = useState(0);
@@ -81,23 +85,48 @@ export default function Financial() {
     const [selectedSchLine, setSelectedSchLine] = useState([]);
     const [isPurchasing, setIsPurchasing] = useState('');
 
-    const [parentId, setParentId] = useState(0);
-
-
-    const [allBanks, setAllBanks] = useState<any>([]);
-
-    const [startContractDate, setStartContractDate] = useState('');
-    const [endContractDate, setEndContractDate] = useState('');
-
     const toast = useRef(null);
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
     const ctrId = searchParams.get("ctrId");
+    const [parentId, setParentId] = useState(0);
 
 
-    const dt = useRef(null);
-    // const [data, setData] = useState(null);
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL } = useMyContext();
+
+
+    const { actualContractId, setactualContractId } = useMyContext();
+
+
+
+    interface financialDetail {
+        itemid?: number,
+        price?: number,
+        currencyid?: number,
+        currencyValue?: boolean,
+        currencyPercent?: number,
+        billingDay?: number,
+        billingQtty?: number,
+        billingFrequencyid?: number,
+        measuringUnitid?: number,
+        paymentTypeid?: number,
+        billingPenaltyPercent?: number,
+        billingDueDays?: number,
+        remarks?: String,
+        guaranteeLetter?: Boolean,
+        guaranteeLetterCurrencyid?: number,
+        guaranteeLetterDate?: Date | undefined,
+        guaranteeLetterValue?: Boolean,
+        contractItemId?: number,
+        active?: boolean,
+        advancePercent?: number
+        // contractfinancialItemId: number
+
+    }
 
     interface financialDetailSchedule {
         itemid: number,
@@ -114,16 +143,20 @@ export default function Financial() {
 
     }
 
+
+    const dt = useRef(null);
+    // const [data, setData] = useState(null);
+
     const cols = [
-        { field: 'item', header: 'item' },
-        { field: 'data', header: 'data' },
-        { field: 'um', header: 'um' },
-        { field: 'cantitate', header: 'cantitate' },
-        { field: 'pret', header: 'pret' },
-        { field: 'valoare', header: 'valoare' },
-        { field: 'moneda', header: 'moneda' },
-        { field: 'isInvoiced', header: 'isInvoiced' },
-        { field: 'isPayed', header: 'isPayed' }
+        { field: 'articol', header: 'Articol' },
+        { field: 'date', header: 'Data' },
+        { field: 'measuringUnit.name', header: 'UM' },
+        { field: 'billingQtty', header: 'Cantitate' },
+        { field: 'price', header: 'Pret' },
+        { field: 'billingValue', header: 'Valoare' },
+        { field: 'currency.code', header: 'Moneda' },
+        { field: 'isInvoiced', header: 'Facturat' },
+        { field: 'isPayed', header: 'Platit' }
         // { field: 'facturat', header: 'facturat' },
         // { field: 'platit', header: 'platit' },
     ];
@@ -134,11 +167,24 @@ export default function Financial() {
     const [selectedCell, setSelectedCell] = useState(null);
     const [editingCell, setEditingCell] = useState(null);
 
-    //la nivel de partener trebuie adaugata o bifa, daca este sau nu platitor TVA
+    const fetchContractData = () => {
+        fetch(`http://localhost:3000/contracts/onlycontract/${actualContractId}`).then(response => { return response.json() })
+            .then(contract => {
+                setContract(contract)
+                setStartContractDate(contract.start)
+                setEndContractDate(contract.end)
+                setIsPurchasing(contract.isPurchasing)
+            })
+    }
 
     const fetchItemsData = () => {
         fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
             .then(item => { setItems(item) })
+    }
+
+    const fetchAllBanks = async () => {
+        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        setAllBanks(response);
     }
 
     const fetchAllCurrencies = async () => {
@@ -161,13 +207,23 @@ export default function Financial() {
         setAllMeasuringUnit(response);
     }
 
+    const contractData = () => {
+        fetch(`http://localhost:3000/contracts/details/${actualContractId}`).then(response => { return response.json() })
+            .then(ctr => {
+                setParentId(ctr.parentId)
+            })
+    }
+
 
     useEffect(() => {
-        fetchItemsData(),
+        fetchContractData(),
+            fetchItemsData(),
             fetchAllCurrencies(),
             fetchAllBillingFrequency(),
             fetchAllPaymentType(),
-            fetchAllMeasuringUnit()
+            fetchAllMeasuringUnit(),
+            fetchAllBanks(),
+            contractData()
     }, [])
 
     useEffect(() => {
@@ -441,12 +497,18 @@ export default function Financial() {
 
     }
 
+    const deleteDataScadentar = () => {
+        setScadentar([]);
+    }
+
+
     const header = (
         <div className="flex align-items-center justify-content-end gap-2">
             <Button type="button" icon="pi pi-file" rounded onClick={() => exportCSV(false)} data-pr-tooltip="CSV" />
             <Button type="button" icon="pi pi-file-excel" severity="success" rounded onClick={exportExcel} data-pr-tooltip="XLS" />
             <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" />
             <Button type="button" icon="pi pi-sign-out" severity="info" rounded onClick={generateTimeTable} />
+            <Button type="button" icon="pi pi-delete-left" severity="danger" rounded onClick={deleteDataScadentar} />
 
             <FileUpload
                 mode="basic"
@@ -460,6 +522,35 @@ export default function Financial() {
             />
         </div>
     );
+
+    const deleteSchLine = (id: number) => {
+        const result = scadentar.filter(item => item.id !== id);
+        setScadentar(result);
+        setVisible(false)
+    }
+
+    const calculateMultiplication = () => {
+        const multiplicationResult = selectedSchLinePrice * selectedSchLineQtty;
+        setSelectedSchLineValue(multiplicationResult);
+    };
+
+    useEffect(() => {
+        calculateMultiplication();
+    }, [selectedSchLinePrice, selectedSchLineQtty]);
+
+
+
+    const saveSchLine = (line: any) => {
+        console.log("line", line)
+        //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
+        //stearsa linia existenta, si salvata noua linie
+        line.billingQtty = selectedSchLineQtty;
+        line.pret = selectedSchLineValue;
+        line.billingValue = selectedSchLineValue / selectedSchLineQtty;
+        line.date = selectedSchLineDate;
+        line.totalContractValue = selectedSchLineValue;
+        setVisible(false)
+    }
 
     const onCellSelect = (event) => {
 
@@ -487,6 +578,7 @@ export default function Financial() {
             setVisible(true)
         }
 
+
         setIndextable(indexTable + 1)
 
         // console.log(event.rowData.id)
@@ -509,13 +601,15 @@ export default function Financial() {
             errors.push("Trebuie sa setati un articol!");
         }
 
+
         if (scadentar.length > 0) {
             const item_details = scadentar[0].itemid;
 
             if (fields.itemid !== item_details) {
-                errors.push("Trebuie sa avem acelasi articol si in heder si in detalii!");
+                errors.push("Trebuie sa avem acelasi articol si in detaliile scadentarului! Regenerati scadentarul sau modificati obiectul de contract.");
             }
         }
+
 
         if (!fields.currencyid) {
             errors.push("Trebuie sa setati o valuta!");
@@ -570,31 +664,6 @@ export default function Financial() {
 
     const saveData = async () => {
 
-        interface financialDetail {
-            itemid?: number,
-            totalContractValue?: number,
-            currencyid?: number,
-            currencyValue?: number,
-            currencyPercent?: number,
-            billingDay?: number,
-            billingQtty?: number,
-            billingFrequencyid?: number,
-            measuringUnitid?: number,
-            paymentTypeid?: number,
-            billingPenaltyPercent?: boolean,
-            billingDueDays?: number,
-            remarks?: String,
-            guaranteeLetter?: Boolean,
-            guaranteeLetterCurrencyid?: number,
-            guaranteeLetterDate?: Date | undefined,
-            guaranteeLetterValue?: Boolean,
-            contractItemId?: number,
-            active?: boolean,
-            // contractfinancialItemId: number
-
-        }
-
-
         let addedfinancialDetail = {
             itemid: parseInt(selectedItem.id),
             price: parseFloat(price),
@@ -603,10 +672,10 @@ export default function Financial() {
             currencyPercent: parseFloat(currencyPercent),
             billingDay: parseInt(billingDay),
             billingQtty: parseFloat(billingQtty),
-            billingFrequencyid: billingFrequency.id,
-            measuringUnitid: measuringUnit.id,
-            paymentTypeid: paymentType.id,
-            billingPenaltyPercent: parseInt(billingPenaltyPercent),
+            billingFrequencyid: billingFrequency ? billingFrequency.id : null,
+            measuringUnitid: measuringUnit ? measuringUnit.id : null,
+            paymentTypeid: paymentType ? paymentType.id : null,
+            billingPenaltyPercent: parseFloat(billingPenaltyPercent),
             billingDueDays: parseInt(billingDueDays),
             remarks: remarks,
             guaranteeLetter: guaranteeLetter ? guaranteeLetter : null,
@@ -623,21 +692,22 @@ export default function Financial() {
             goodexecutionLetterValue: goodexecutionValue ? parseFloat(goodexecutionValue) : null,
             goodexecutionLetterInfo: goodexecutionInfo,
             goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
-            advancePercent: parseFloat(advancePercent),
-            contractfinancialItemId: parseInt(contractfinancialItemId)
+            advancePercent: parseFloat(advancePercent)
+            // contractfinancialItemId: 0
         }
 
+        // console.log(addedfinancialDetail)
 
         const validationResult = validateForm(addedfinancialDetail);
-
 
         if (!validationResult.isValid) {
             showMessage('error', 'Eroare', validationResult.errors)
         } else {
+
             const ResultSchedule: financialDetailSchedule[] = []
             scadentar.forEach(
                 scadenta => {
-                    const add: financialDetailSchedule = {
+                    const add = {
                         itemid: scadenta.itemid,
                         currencyid: scadenta.currencyid,
                         date: new Date(scadenta.date),
@@ -648,15 +718,13 @@ export default function Financial() {
                         isInvoiced: scadenta.isInvoiced,
                         isPayed: scadenta.isPayed,
                         active: active,
-                        contractfinancialItemId: contractfinancialItemId
+                        contractfinancialItemId: 0
 
                     }
                     ResultSchedule.push(add)
                 }
             )
-
             interface financialContractItem {
-                id: number,
                 contractId?: number,
                 itemid: number,
                 currencyid?: number,
@@ -664,51 +732,27 @@ export default function Financial() {
                 billingFrequencyid: number,
                 active?: boolean
             }
-
-
             const financialContractItem = {
-                id: parseInt(contractItem),
-                contractId: parseInt(ctrId),
+                contractId: parseInt(actualContractId),
                 itemid: selectedItem.id,
                 currencyid: currency.id,
-                currencyValue: parseFloat(totalContractValue),
+                currencyValue: parseFloat(price),
                 billingFrequencyid: billingFrequency.id,
                 active: active,
-
             }
-
             try {
-
-                const responseitem = await axios.patch(`http://localhost:3000/contracts/updatecontractItems/${Id}/${ctrId}/${contractfinancialItemId}`,
+                const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
                     [financialContractItem, addedfinancialDetail, ResultSchedule]
                 );
-
-                showMessage('success', 'Salvat cu succes!', 'Ok');
-
                 console.log('Contract details added:', responseitem.data
-                    // , response.data, responsesch.data
                 );
             } catch (error) {
                 console.error('Error creating contract details:', error);
             }
 
+            showMessage('success', 'Salvat cu succes!', 'Ok');
         }
-
     }
-
-    // const saveData = () => {
-    //     console.log(selectedItem.id, totalContractValue, currency.id, currencyValue, currencyPercent, billingDay, billingQtty, billingFrequency.id, measuringUnit.id,
-    //         paymentType.id, billingPenaltyPercent, billingDueDays, remarks, guaranteeLetter, guaranteeLetterCurrency.id, guaranteeLetterDate, guaranteeLetterValue)
-
-    //     console.log("scadentar", scadentar)
-    //     //treb adaugate id-urile si ascune la afisare - fol doar la export
-    // }
-
-    //in cazul saptm - zi facturare reprez ziua din sapt de la 1 - 7
-    //se sparge in func de start end la nr de intervale si se copiaza valoarile in tabel.
-
-
-
 
     const statusInvoiceTemplate = (product) => {
         return <Tag value={product.isInvoiced} severity={getSeverity(product)}></Tag>;
@@ -745,7 +789,6 @@ export default function Financial() {
         }
     };
 
-
     const editSchTemplate = (product) => {
         return <Tag value="Edit"></Tag>;
     }
@@ -762,17 +805,16 @@ export default function Financial() {
         return <span>{formattedDate}</span>;
     };
 
+
     return (
         <div className='card'>
             <Toast ref={toast} position="top-right" />
             <div className="grid">
                 <div className="col-12">
-
                     {parentId > 0 ? <Tag severity="warning" className='text-base w-1' value="Act Aditional"></Tag> : null}
 
 
                     <div className="p-fluid formgrid grid pt-2">
-
 
 
                         <div className="field col-12 md:col-2">
@@ -859,8 +901,6 @@ export default function Financial() {
                         </div>
 
 
-
-
                         {guaranteeLetter ?
                             <div className="col-12 md:col-12">
                                 <div className="p-fluid formgrid grid pt-2">
@@ -900,8 +940,6 @@ export default function Financial() {
                                         <label htmlFor="goodexecutionInfo">Alte Info</label>
                                         <InputText id="goodexecutionInfo" type="text" value={guaranteeLetterInfo} onChange={(e) => setGuaranteeLetterInfo(e.target.value)} />
                                     </div>
-
-
 
                                 </div>
                             </div> : null}
@@ -1021,11 +1059,9 @@ export default function Financial() {
                         </Dialog>
 
 
-
                         <div className="field col-12 md:col-12 pt-4">
 
-                            <DataTable key={indexTable} ref={dt} className='pt-2' value={scadentar}
-                                tableStyle={{ minWidth: '50rem' }} header={header}
+                            <DataTable key={indexTable} ref={dt} className='pt-2' value={scadentar} tableStyle={{ minWidth: '50rem' }} header={header}
                                 cellSelection selectionMode="single" selection={selectedSchedule}
                                 onCellSelect={onCellSelect}
                                 onSelectionChange={(e) => {
@@ -1038,7 +1074,7 @@ export default function Financial() {
                                 dataKey="data"
                                 sortOrder={1} //cres
                             >
-                                <Column field="item.name" header="Articol"></Column>
+                                <Column field="Articol" header="Articol"></Column>
                                 <Column field="Date" header="Data" sortable body={StartBodyTemplate}></Column>
                                 <Column field="measuringUnit.name" header="UM"></Column>
                                 <Column field="billingQtty" header="Cantitate"></Column>
@@ -1054,11 +1090,15 @@ export default function Financial() {
 
                             </DataTable>
 
+
                         </div>
                         <div className="field col-12 md:col-2">
                             <Button label="Salveaza" onClick={saveData} />
                         </div>
+
+
                     </div>
+
                 </div>
             </div>
         </div >

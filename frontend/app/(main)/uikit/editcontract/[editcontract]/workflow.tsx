@@ -31,6 +31,7 @@ export default function Content() {
     const router = useRouter();
     const searchParams = useSearchParams()
     const [wfHistory, setWFHistory] = useState([]);
+    const Id = parseInt(searchParams.get("Id"));
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -133,23 +134,24 @@ export default function Content() {
             <div className="col-12">
                 <div className="card">
 
+                    {wfHistory.length > 0 ?
 
-                    <DataTable value={wfHistory} tableStyle={{ minWidth: '50rem' }}
-                        paginator rows={10} rowsPerPageOptions={[10, 20, 30, 50, 100]} sortMode="multiple"
-                        sortField="createdAt"
-                    >
-                        <Column field="workflowname" header="Denumire Flux"></Column>
-                        <Column field="approvalOrderNumber" header="Numarul de ordine aprobare"></Column>
-                        <Column field="stepname" header="Pas flux"></Column>
-                        <Column field="createdAt" sortable header="Data Generare" body={createdAt} ></Column>
-                        <Column field="duedates" sortable header="De rezolvat pana la" body={duedates} ></Column>
-                        <Column field="user" header="Utilizator curent"></Column>
-                        <Column field="status" header="Stare"></Column>
-                        <Column field="createdAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
+                        <DataTable value={wfHistory} tableStyle={{ minWidth: '50rem' }}
+                            paginator rows={10} rowsPerPageOptions={[10, 20, 30, 50, 100]} sortMode="multiple"
+                            sortField="createdAt"
+                        >
+                            <Column field="workflowname" header="Denumire Flux"></Column>
+                            <Column field="approvalOrderNumber" header="Numarul de ordine aprobare"></Column>
+                            <Column field="stepname" header="Pas flux"></Column>
+                            <Column field="createdAt" sortable header="Data Generare" body={createdAt} ></Column>
+                            <Column field="duedates" sortable header="De rezolvat pana la" body={duedates} ></Column>
+                            <Column field="user" header="Utilizator curent"></Column>
+                            <Column field="status" header="Stare"></Column>
+                            <Column field="createdAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
 
-                    </DataTable>
-
+                        </DataTable>
+                        : null}
                 </div>
             </div>
         </div >

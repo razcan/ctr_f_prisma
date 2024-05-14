@@ -8,13 +8,14 @@ import { Dropdown } from 'primereact/dropdown';
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { Toast } from 'primereact/toast';
 import axios from 'axios';
-import ReactQuill, { Quill } from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+// import ReactQuill, { Quill } from 'react-quill';
+// import "react-quill/dist/quill.snow.css";
 import { MyContext, MyProvider } from '../../../../../../layout/context/myUserContext'
 import { Card } from 'primereact/card';
 import { Divider } from 'primereact/divider';
 import { Messages } from 'primereact/messages';
 import { Tag } from 'primereact/tag';
+import { Editor } from 'primereact/editor';
 
 export default function Tasks() {
 
@@ -55,7 +56,7 @@ export default function Tasks() {
     const [reminders, setReminders] = useState([]);
     const [duedates, setDuedates] = useState([]);
     const [stepName, setStepName] = useState([]);
-
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const [conditions, setConditions] = useState([]);
     const [selectedTaskUsers, setSelectedTaskUsers] = useState([]);
@@ -745,13 +746,18 @@ export default function Tasks() {
                         <div className="field col-12 pb-6">
                             <label className="ml-2">Descriere Task</label>
                             <br></br>
-                            <ReactQuill
+                            {/* <ReactQuill
                                 style={{ height: '10vw' }}
                                 theme="snow"
                                 modules={modules}
                                 formats={formats}
                                 value={text}
                                 onChange={handleProcedureContentChange}
+                            /> */}
+                            <Editor value={text}
+                                key={refreshKey}
+                                style={{ height: '10vw' }}
+                                onTextChange={(e) => setText(e.htmlValue)}
                             />
                         </div>
 

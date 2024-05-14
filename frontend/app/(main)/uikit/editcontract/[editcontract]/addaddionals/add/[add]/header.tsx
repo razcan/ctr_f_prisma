@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -23,6 +23,8 @@ import {
     useQueryClient
 } from '@tanstack/react-query'
 import { useData } from './DataContext';
+import { Toast } from 'primereact/toast';
+import { MyContext, MyProvider } from '../../../../../../../../layout/context/myUserContext'
 
 const queryClient = new QueryClient();
 
@@ -74,6 +76,7 @@ interface DynamicInfo {
 
 export default function EditContract({ setAddContractId }: any) {
 
+    const toast = useRef(null);
     const { value, updateValue } = useData();
     const router = useRouter();
     const searchParams = useSearchParams()
@@ -95,10 +98,13 @@ export default function EditContract({ setAddContractId }: any) {
     const [selectedCategory, setSelectedCategory] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState([]);
+    const [contractWFStatus, setContractWFStatus] = useState([]);
+    const [statusWF, setStatusWF] = useState('');
 
 
     const [cashflows, setCashflow] = useState([]);
     const [selectedCashflow, setSelectedCashflow] = useState([]);
+
 
     const [costcenters, setCostCenter] = useState([]);
     const [selectedCostCenter, setSelectedCostCenter] = useState([]);
@@ -170,6 +176,14 @@ export default function EditContract({ setAddContractId }: any) {
 
     const [dffDate1, setdffDate1] = useState('');
     const [dffDate2, setdffDate2] = useState('');
+
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
 
     const getSourceOptions = (sourceName) => {
@@ -301,6 +315,7 @@ export default function EditContract({ setAddContractId }: any) {
                 setSelectedLocation(contractdetails.location)
                 setSelectedCostCenter(contractdetails.costcenter)
                 setSelectedCashflow(contractdetails.cashflow)
+
 
                 setSelectedEntity(contractdetails.entity)
                 setSelectedPartner(contractdetails.partner)
@@ -443,6 +458,15 @@ export default function EditContract({ setAddContractId }: any) {
             })
 
     }
+    const fetchWFStatusData = () => {
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractwfstatus`)
+            .then(response => {
+                return response.json()
+            })
+            .then(status => {
+                setContractWFStatus(status)
+            })
+    }
 
 
     const fetchCategoriesData = () => {
@@ -476,9 +500,8 @@ export default function EditContract({ setAddContractId }: any) {
             })
     }
 
-
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflow")
+        fetch(`${Backend_BASE_URL}/contracts/cashflownom`)
             .then(response => {
                 return response.json()
             })
@@ -531,8 +554,8 @@ export default function EditContract({ setAddContractId }: any) {
             fetchStatusData(),
             fetchDynamicFields(),
             fetchContractDynamicInfo(),
-            fetchLocationData()
-
+            fetchLocationData(),
+            fetchWFStatusData()
     }, [])
 
     const saveContract = async () => {
@@ -603,6 +626,7 @@ export default function EditContract({ setAddContractId }: any) {
 
     return (
         <div className="grid">
+            <Toast ref={toast} position="top-right" />
             {contractDetails ?
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
@@ -863,14 +887,19 @@ export default function EditContract({ setAddContractId }: any) {
                             <label htmlFor="state">Tip</label>
                             <Dropdown id="type" showClear filter value={type} onChange={(e) => setType(e.value)} options={contractType} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
                         <div className="field col-12 md:col-3">
-                            <label htmlFor="state">Stare</label>
+                            <label htmlFor="state">Stare Contract</label>
                             <Dropdown id="state" showClear filter value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
+
                         <div className="field col-12 md:col-3">
-                            <label htmlFor="category">Categorie</label>
-                            <Dropdown id="category" showClear filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                            <label htmlFor="state">Stare Flux</label>
+                            <Dropdown id="state" showClear filter value={statusWF} onChange={(e) => setStatusWF(e.value)} options={contractWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
+
                         <div className="field col-12 md:col-3">
                             <label className="font-bold block mb-2">
                                 Data Start
@@ -914,10 +943,17 @@ export default function EditContract({ setAddContractId }: any) {
                             <label htmlFor="costcenter">Centru de cost&profit</label>
                             <Dropdown id="costcenter" showClear filter value={selectedCostCenter} onChange={(e) => setSelectedCostCenter(e.value)} options={costcenters} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
+                        <div className="field col-12 md:col-3">
+                            <label htmlFor="category">Categorie</label>
+                            <Dropdown id="category" showClear filter value={selectedCategory} onChange={(e) => setSelectedCategory(e.value)} options={categories} optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
                         <div className="field col-12 md:col-3">
                             <label htmlFor="cashflow">CashFlow</label>
                             <Dropdown id="cashflow" showClear filter value={selectedCashflow} onChange={(e) => setSelectedCashflow(e.value)} options={cashflows} optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
+
                         <div className="field col-12 md:col-3">
                             <div className="field-checkbox">
                                 <Checkbox onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>
@@ -931,6 +967,10 @@ export default function EditContract({ setAddContractId }: any) {
                                     className='max-w-screen' style={{ height: '220px' }}
                                 />
                             </div> */}
+
+
+
+
                         <div className="field col-12 md:col-12">
                             <label htmlFor="cashflow">Scurta descriere a contractului</label>
                             <InputTextarea className='max-w-screen' value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />

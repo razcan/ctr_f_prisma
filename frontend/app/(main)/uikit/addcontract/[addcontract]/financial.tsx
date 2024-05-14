@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation'
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -18,12 +19,28 @@ import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { useData } from './DataContext';
 import { DataProvider } from './DataContext';
-
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 export default function Financial() {
 
     const [item, setItem] = useState([]);
     const { value, updateValue } = useData();
+    const router = useRouter();
+
+    const searchParams = useSearchParams()
+    const Id = parseInt(searchParams.get("Id"));
+
+
+    const toast = useRef(null);
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
+
+
+    const { userId, setUserId } = useMyContext();
+    const { actualContractId, setactualContractId } = useMyContext();
+
 
     const fetchTypeData = () => {
         fetch(`http://localhost:3000/contracts/contractItems/${value}`)
@@ -37,10 +54,10 @@ export default function Financial() {
 
 
     useEffect(() => {
-        fetchTypeData()
+        fetchTypeData(),
+            setactualContractId(Id)
     }, [])
 
-    const router = useRouter();
 
     const goToDetails = () => {
         router.push('/uikit/addcontract/addcontract/financialdetails');

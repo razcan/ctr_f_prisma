@@ -11,7 +11,6 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Editor } from 'primereact/editor';
 import axios from 'axios';
-import 'quill/dist/quill.snow.css'; // Import Quill CSS
 import { MyContext, MyProvider } from '../../../../../../../../layout/context/myUserContext'
 
 

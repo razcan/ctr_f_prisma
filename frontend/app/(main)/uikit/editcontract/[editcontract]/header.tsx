@@ -96,7 +96,7 @@ export default function EditContract() {
     const [contractDetails, setContractDetails] = useState([]);
     const [contractStatus, setContractStatus] = useState([]);
     const [contractWFStatus, setContractWFStatus] = useState([]);
-
+    const [statusWF, setStatusWF] = useState('');
     const [number, setNumber] = useState('');
     const [type, setType] = useState('');
     const [contractType, setContractType] = useState([]);
@@ -107,7 +107,7 @@ export default function EditContract() {
     const [remarks, setRemarks] = useState('');
 
     const [status, setStatus] = useState('');
-    const [statusWF, setStatusWF] = useState('');
+
 
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
@@ -482,7 +482,6 @@ export default function EditContract() {
                 return response.json()
             })
             .then(status => {
-                console.log(status);
                 setContractWFStatus(status)
             })
     }

@@ -31,13 +31,11 @@ const Content = () => {
     } = useMyContext();
 
 
-    console.log(userId, "userId")
-    console.log(Id, "Id")
     useEffect(() => {
 
-        // if (!userId) {
-        //     router.push(`${Frontend_BASE_URL}/auth/login`)
-        // }
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
 
     }, [])
 
