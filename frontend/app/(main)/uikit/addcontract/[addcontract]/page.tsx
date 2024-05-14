@@ -9,7 +9,6 @@ import Additional from './additional'
 import Financial from './financial'
 import Content from './content'
 import History from './history'
-import Alerts from './alerts';
 import Tasks from './tasks'
 import Submenu from './submenu'
 import { useSearchParams } from 'next/navigation'

@@ -25,7 +25,6 @@ export default function History() {
 
     const [logs, setLogs] = useState('');
     const { value, updateValue } = useData();
-    console.log(value, "din history")
 
     // const fetchContent = async () => {
     //     const response = await fetch(`http://localhost:3000/nomenclatures/executeAuditPartner/${4}`).then(res => res.json())

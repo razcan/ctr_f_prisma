@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -20,6 +20,7 @@ import axios from 'axios';
 import { Toast } from 'primereact/toast';
 import { RadioButton } from 'primereact/radiobutton';
 import { Dialog } from 'primereact/dialog';
+import { MyContext, MyProvider } from '../../../../../../../../../../../layout/context/myUserContext';
 
 export default function Financial() {
 
@@ -89,6 +90,14 @@ export default function Financial() {
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
 
     interface financialDetail {
         itemid?: number,
@@ -155,7 +164,7 @@ export default function Financial() {
     const [editingCell, setEditingCell] = useState(null);
 
     const fetchContractData = () => {
-        fetch(`http://localhost:3000/contracts/onlycontract/${Id}`).then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/onlycontract/${Id}`).then(response => { return response.json() })
             .then(contract => {
                 setContract(contract)
                 setStartContractDate(contract.start)
@@ -165,32 +174,32 @@ export default function Financial() {
     }
 
     const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/item`).then(response => { return response.json() })
             .then(item => { setItems(item) })
     }
 
     const fetchAllBanks = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allbanks`).then(res => res.json())
         setAllBanks(response);
     }
 
     const fetchAllCurrencies = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
         setAllCurrency(response);
     }
 
     const fetchAllBillingFrequency = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/billingfrequency`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/billingfrequency`).then(res => res.json())
         setAllBillingFrequency(response);
     }
 
     const fetchAllPaymentType = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/paymenttype`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/paymenttype`).then(res => res.json())
         setAllPaymentType(response);
     }
 
     const fetchAllMeasuringUnit = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/measuringunit`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/measuringunit`).then(res => res.json())
         setAllMeasuringUnit(response);
     }
 
@@ -756,7 +765,7 @@ export default function Financial() {
                 active: active,
             }
             try {
-                const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
+                const responseitem = await axios.post(`${Backend_BASE_URL}/contracts/contractItems`,
                     [financialContractItem, addedfinancialDetail, ResultSchedule]
                 );
                 console.log('Contract details added:', responseitem.data

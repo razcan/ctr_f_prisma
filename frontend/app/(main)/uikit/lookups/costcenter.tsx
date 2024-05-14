@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
+import { MyContext } from '../../../../layout/context/myUserContext';
 
 
 const CostCenter = ({ executeFunction }: any) => {
@@ -18,6 +19,14 @@ const CostCenter = ({ executeFunction }: any) => {
     const [CostCenterSelected, setCostCenterSelected] = useState('');
     const [visible, setVisible] = useState(false);
     const toast = useRef<undefined | null | any>(null);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
 
     const showSuccess = (message: any) => {
         if (toast.current) {
@@ -34,7 +43,7 @@ const CostCenter = ({ executeFunction }: any) => {
 
     const deleteCostCenterSelected = async (event: any) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/contracts/costcenter/${event.id}`);
+            const response = await axios.delete(`${Backend_BASE_URL}/contracts/costcenter/${event.id}`);
             console.log('costcenter deleted:', response.data);
             executeFunction((prevKey: number) => prevKey + 1)
             showSuccess(`Centrul de cost/profit ${event.name} a fost sters`)
@@ -54,7 +63,7 @@ const CostCenter = ({ executeFunction }: any) => {
     const { isLoading, error, data } = useQuery({
         queryKey: ['contractsData'],
         queryFn: () =>
-            fetch('http://localhost:3000/contracts/costcenter').then(res => res.json()),
+            fetch(`${Backend_BASE_URL}/contracts/costcenter`).then(res => res.json()),
     });
 
     if (isLoading) return (

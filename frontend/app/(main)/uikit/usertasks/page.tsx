@@ -87,7 +87,7 @@ export default function Tasks() {
     };
 
     const fetchPriority = () => {
-        fetch("http://localhost:3000/contracts/priority")
+        fetch(`${Backend_BASE_URL}/contracts/priority`)
             .then(response => {
                 return response.json()
             })
@@ -98,7 +98,7 @@ export default function Tasks() {
 
 
     const fetchTasksData = () => {
-        fetch(`http://localhost:3000/contracts/usertask/${userId}`)
+        fetch(`${Backend_BASE_URL}/contracts/usertask/${userId}`)
             .then(response => {
                 return response.json()
             })
@@ -108,7 +108,7 @@ export default function Tasks() {
     }
 
     const fetchTasksStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/taskStatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/taskStatus`)
             .then(response => {
                 return response.json()
             })

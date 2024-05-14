@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
+import { MyContext } from '../../../../layout/context/myUserContext';
 
 
 const Location = ({ executeFunction }: any) => {
@@ -19,6 +20,14 @@ const Location = ({ executeFunction }: any) => {
     const [visible, setVisible] = useState(false);
     const toast = useRef<undefined | null | any>(null);
     const [rowClick, setRowClick] = useState(true);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
 
     const showSuccess = (message: any) => {
         if (toast.current) {
@@ -35,7 +44,7 @@ const Location = ({ executeFunction }: any) => {
 
     const deleteSelectedLocation = async (event: any) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/contracts/location/${event.id}`);
+            const response = await axios.delete(`${Backend_BASE_URL}/contracts/location/${event.id}`);
             executeFunction((prevKey: number) => prevKey + 1)
             showSuccess(`Locatia ${event.name} a fost stearsa`)
 
@@ -54,7 +63,7 @@ const Location = ({ executeFunction }: any) => {
     const { isLoading, error, data } = useQuery({
         queryKey: ['locationData'],
         queryFn: () =>
-            fetch('http://localhost:3000/contracts/location').then(res => res.json()),
+            fetch(`${Backend_BASE_URL}/contracts/location`).then(res => res.json()),
     });
 
     if (isLoading) return (
@@ -111,8 +120,6 @@ const Location = ({ executeFunction }: any) => {
                 <Column field="name" header="Nume" sortable></Column>
                 <Column selectionMode="single" header="Sterge" headerStyle={{ width: '3rem' }}></Column>
             </DataTable>
-
-
 
         </div >
     );

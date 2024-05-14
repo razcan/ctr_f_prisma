@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
+import { MyContext } from '../../../../layout/context/myUserContext';
 
 
 const CashFlow = ({ executeFunction }: any) => {
@@ -18,6 +19,14 @@ const CashFlow = ({ executeFunction }: any) => {
     const [CashFlowSelected, setCashFlowSelected] = useState('');
     const [visible, setVisible] = useState(false);
     const toast = useRef<undefined | null | any>(null);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
 
     const showSuccess = (message: any) => {
         if (toast.current) {
@@ -34,7 +43,7 @@ const CashFlow = ({ executeFunction }: any) => {
 
     const deleteCashFlowSelected = async (event: any) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/contracts/cashflow/${event.id}`);
+            const response = await axios.delete(`${Backend_BASE_URL}/contracts/cashflow/${event.id}`);
             console.log('Cashflow line was deleted:', response.data);
             executeFunction((prevKey: number) => prevKey + 1)
             showSuccess(`Linia de Cashflow ${event.name} a fost stearsa`)
@@ -54,7 +63,7 @@ const CashFlow = ({ executeFunction }: any) => {
     const { isLoading, error, data } = useQuery({
         queryKey: ['contractsData'],
         queryFn: () =>
-            fetch('http://localhost:3000/contracts/cashflownom').then(res => res.json()),
+            fetch(`${Backend_BASE_URL}/contracts/cashflownom`).then(res => res.json()),
     });
 
     if (isLoading) return (

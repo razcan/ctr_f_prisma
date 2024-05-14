@@ -230,7 +230,7 @@ export default function HeaderContract({ setContractId }: any) {
 
 
     const fetchLocationData = () => {
-        fetch("http://localhost:3000/nomenclatures/location")
+        fetch(`${Backend_BASE_URL}/nomenclatures/location`)
             .then(response => {
                 return response.json()
             })
@@ -241,7 +241,7 @@ export default function HeaderContract({ setContractId }: any) {
 
 
     const fetchTypeData = () => {
-        fetch("http://localhost:3000/nomenclatures/contracttype")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contracttype`)
             .then(response => {
                 return response.json()
             })
@@ -250,7 +250,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/contractstatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractstatus`)
             .then(response => {
                 return response.json()
             })
@@ -271,7 +271,7 @@ export default function HeaderContract({ setContractId }: any) {
 
 
     const fetchCategoriesData = () => {
-        fetch("http://localhost:3000/contracts/category")
+        fetch(`${Backend_BASE_URL}/contracts/category`)
             .then(response => {
                 return response.json()
             })
@@ -280,7 +280,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchEntity = () => {
-        fetch("http://localhost:3000/nomenclatures/entity")
+        fetch(`${Backend_BASE_URL}/nomenclatures/entity`)
             .then(response => {
                 return response.json()
             })
@@ -289,7 +289,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchPartners = () => {
-        fetch("http://localhost:3000/nomenclatures/partners")
+        fetch(`${Backend_BASE_URL}/nomenclatures/partners`)
             .then(response => {
                 return response.json()
             })
@@ -298,7 +298,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchPartnersDetailsData = (partnerId: number) => {
-        fetch(`http://localhost:3000/nomenclatures/partnersdetails/${partnerId}`)
+        fetch(`${Backend_BASE_URL}/nomenclatures/partnersdetails/${partnerId}`)
             .then(response => {
                 return response.json()
             })
@@ -307,7 +307,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchEntityDetailsData = (entityId: number) => {
-        fetch(`http://localhost:3000/nomenclatures/entitydetails/${entityId}`)
+        fetch(`${Backend_BASE_URL}/nomenclatures/entitydetails/${entityId}`)
             .then(response => {
                 return response.json()
             })
@@ -316,7 +316,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item")
+        fetch(`${Backend_BASE_URL}/contracts/item`)
             .then(response => {
                 return response.json()
             })
@@ -325,7 +325,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflownom")
+        fetch(`${Backend_BASE_URL}/contracts/cashflownom`)
             .then(response => {
                 return response.json()
             })
@@ -335,7 +335,7 @@ export default function HeaderContract({ setContractId }: any) {
     }
 
     const fetchCostCenter = () => {
-        fetch("http://localhost:3000/contracts/costcenter")
+        fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
                 return response.json()
             })
@@ -344,7 +344,7 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
     const fetchDepartmentsData = () => {
-        fetch("http://localhost:3000/contracts/department")
+        fetch(`${Backend_BASE_URL}/contracts/department`)
             .then(response => {
                 return response.json()
             })
@@ -354,7 +354,7 @@ export default function HeaderContract({ setContractId }: any) {
     }
 
     const fetchDynamicFields = () => {
-        fetch("http://localhost:3000/nomenclatures/dynamicfield")
+        fetch(`${Backend_BASE_URL}/nomenclatures/dynamicfield`)
             .then(response => {
                 return response.json()
             })

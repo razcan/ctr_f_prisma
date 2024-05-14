@@ -25,6 +25,7 @@ import { useSearchParams } from 'next/navigation'
 import PartnerAddress from './address'
 import PartnerBank from './bank'
 import Person from './person'
+import { MyContext } from '../../../../../../layout/context/myUserContext';
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,13 @@ const Partner = () => {
     const [addressIndex, setAddressIndex] = useState<number>(0);
     const [bankIndex, setBankIndex] = useState<number>(0);
     const [isVatPayer, setIsVatPayer] = useState(false);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
 
     const [persons, setPersons] = useState('');
@@ -80,7 +88,7 @@ const Partner = () => {
 
 
     const fetchPartnerDetails = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/partners/${partnerid}`).then(res => res.json().then(res => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`).then(res => res.json().then(res => {
             setName(res.name);
             setFiscalCode(res.fiscal_code);
             setCommercialReg(res.commercial_reg);
@@ -97,7 +105,7 @@ const Partner = () => {
         console.log('id', partnerid)
 
         try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/partners/${partnerid}`,
+            const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`,
             );
             console.log(response);
         } catch (error) {
@@ -134,7 +142,7 @@ const Partner = () => {
 
         try {
             // const response = await axios.post('http://localhost:3000/nomenclatures/partners',
-            const response = await axios.patch(`http://localhost:3000/nomenclatures/partners/${partnerid}`,
+            const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`,
                 addPartner
             );
             console.log('Partner edited:', response.data);

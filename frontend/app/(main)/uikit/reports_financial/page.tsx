@@ -230,7 +230,7 @@ function Report() {
 
 
     const fetchStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/contractstatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractstatus`)
             .then(response => {
                 return response.json()
             })
@@ -241,7 +241,7 @@ function Report() {
     }
 
     const fetchEntity = () => {
-        fetch("http://localhost:3000/nomenclatures/entity")
+        fetch(`${Backend_BASE_URL}/nomenclatures/entity`)
             .then(response => {
                 return response.json()
             })
@@ -251,7 +251,7 @@ function Report() {
     }
 
     const fetchPartners = () => {
-        fetch("http://localhost:3000/nomenclatures/partners")
+        fetch(`${Backend_BASE_URL}/nomenclatures/partners`)
             .then(response => {
                 return response.json()
             })
@@ -261,7 +261,7 @@ function Report() {
     }
 
     const fetchCurrencies = () => {
-        fetch("http://localhost:3000/nomenclatures/allcurrencies")
+        fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`)
             .then(response => {
                 return response.json()
             })
@@ -274,7 +274,7 @@ function Report() {
 
 
     const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item")
+        fetch(`${Backend_BASE_URL}/contracts/item`)
             .then(response => {
                 return response.json()
             })
@@ -285,7 +285,7 @@ function Report() {
 
 
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflow")
+        fetch(`${Backend_BASE_URL}/contracts/cashflow`)
             .then(response => {
                 return response.json()
             })
@@ -295,7 +295,7 @@ function Report() {
     }
 
     const fetchCostCenter = () => {
-        fetch("http://localhost:3000/contracts/costcenter")
+        fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
                 return response.json()
             })

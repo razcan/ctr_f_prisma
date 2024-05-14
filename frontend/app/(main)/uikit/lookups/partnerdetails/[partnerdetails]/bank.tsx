@@ -24,6 +24,7 @@ import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
 import { get } from 'http';
+import { MyContext } from '../../../../../../layout/context/myUserContext';
 
 const PartnerBank = ({ params, setBankIndex }: any) => {
     const partnerid = params
@@ -41,6 +42,13 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
 
     const [Currency, setCurrency] = useState<any>([]);
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
     const getCurrency = (CurrencyToFind: string) => {
         return Currency.find((obj: { code: string; }) => obj.code === CurrencyToFind);
     };
@@ -50,17 +58,17 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     };
 
     const fetchPartnerBanks = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/bank/${partnerid}`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${partnerid}`).then(res => res.json())
         setAllBanks(response);
     }
 
     const fetchAllBanks = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allbanks`).then(res => res.json())
         setBank(response);
     }
 
     const fetchAllCurrencies = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
         setCurrency(response);
     }
 
@@ -74,7 +82,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const deleteBankAccount = async () => {
 
         try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/bank/${sBank.id}`,
+            const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/bank/${sBank.id}`,
             );
             setBankIndex((prevKey: number) => prevKey + 1),
                 setVisibleBank(false)
@@ -110,7 +118,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                 }
             }
             try {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/bank/${sBank.id}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/bank/${sBank.id}`,
                     addBank
                 );
                 setBankIndex((prevKey: number) => prevKey + 1),
@@ -136,7 +144,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                 }
             }
             try {
-                const response = await axios.post('http://localhost:3000/nomenclatures/bank',
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/bank`,
                     addBank
                 );
                 setBankIndex((prevKey: number) => prevKey + 1),

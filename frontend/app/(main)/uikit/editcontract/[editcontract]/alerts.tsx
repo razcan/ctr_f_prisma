@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -22,6 +22,7 @@ import axios from 'axios';
 // import ReactQuill, { Quill } from 'react-quill';
 // import "react-quill/dist/quill.snow.css";
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 export default function Alerts() {
 
@@ -30,9 +31,17 @@ export default function Alerts() {
     const Id = parseInt(searchParams.get("Id"));
     const [alerts, setAlerts] = useState([]);
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
     //it should replace with ctrid 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/alerts/contractId/${Id}`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/alerts/contractId/${Id}`).then(res => res.json())
         setAlerts(response);
 
     }

@@ -183,7 +183,7 @@ export default function Alerts() {
     ]
 
     const fetchTypeData = () => {
-        fetch("http://localhost:3000/nomenclatures/contracttype")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contracttype`)
             .then(response => {
                 return response.json()
             })
@@ -194,7 +194,7 @@ export default function Alerts() {
 
 
     const fetchTemplatesData = () => {
-        fetch("http://localhost:3000/nomenclatures/contracttemplates")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contracttemplates`)
             .then(response => {
                 return response.json()
             })
@@ -214,7 +214,7 @@ export default function Alerts() {
 
     const deleteContracttemplate = async () => {
 
-        const response = await axios.delete(`http://localhost:3000/nomenclatures/contracttemplates/${selectedTemplate.id}`);
+        const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/contracttemplates/${selectedTemplate.id}`);
         setVisible(false)
         setSelectedTemplate([])
         fetchTemplatesData()
@@ -242,13 +242,13 @@ export default function Alerts() {
         try {
 
             if (selectedTemplate.id > 0) {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/contracttemplates/${selectedTemplate.id}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/contracttemplates/${selectedTemplate.id}`,
                     template
                 );
 
             }
             else {
-                const response = await axios.post(`http://localhost:3000/nomenclatures/contracttemplates`,
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/contracttemplates`,
                     template
                 );
                 console.log('Alert edited:', response.data);

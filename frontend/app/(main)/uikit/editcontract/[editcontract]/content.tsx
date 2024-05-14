@@ -90,7 +90,7 @@ const Content = () => {
     }
 
     const fetchTemplatesData = () => {
-        fetch("http://localhost:3000/nomenclatures/contracttemplates")
+        fetch(`${Backend_BASE_URL}nomenclatures/contracttemplates`)
             .then(response => {
 
                 return response.json()
@@ -102,7 +102,7 @@ const Content = () => {
     }
 
     const fetchAllContractData = () => {
-        fetch(`http://localhost:3000/contracts/details/${Id}`)
+        fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -134,7 +134,7 @@ const Content = () => {
             }
 
 
-            const response_update = await axios.patch(`http://localhost:3000/contracts/content/${Id}`,
+            const response_update = await axios.patch(`${Backend_BASE_URL}/contracts/content/${Id}`,
                 createContent
             );
             console.log('Content added:', response_update.data);

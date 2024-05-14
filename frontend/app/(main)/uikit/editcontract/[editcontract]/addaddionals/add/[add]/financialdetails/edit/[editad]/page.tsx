@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
@@ -19,6 +19,7 @@ import { Tag } from 'primereact/tag';
 import axios from 'axios';
 import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
+import { MyContext, MyProvider } from '../../../../../../../../../../../layout/context/myUserContext';
 
 export default function Financial() {
 
@@ -94,7 +95,14 @@ export default function Financial() {
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
     const ctrId = searchParams.get("ctrId");
-    console.log("kk mk")
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
 
     interface financialDetail {
         itemid?: number,
@@ -162,7 +170,7 @@ export default function Financial() {
     //la nivel de partener trebuie adaugata o bifa, daca este sau nu platitor TVA
 
     const fetchContractItemData = () => {
-        fetch(`http://localhost:3000/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
             .then(contractItem => {
                 // setContractItem(contractItem)
                 console.log(contractItem)
@@ -230,32 +238,32 @@ export default function Financial() {
     };
 
     const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/item`).then(response => { return response.json() })
             .then(item => { setItems(item) })
     }
 
     const fetchAllCurrencies = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
         setAllCurrency(response);
     }
 
     const fetchAllBanks = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allbanks`).then(res => res.json())
         setAllBanks(response);
     }
 
     const fetchAllBillingFrequency = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/billingfrequency`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/billingfrequency`).then(res => res.json())
         setAllBillingFrequency(response);
     }
 
     const fetchAllPaymentType = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/paymenttype`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/paymenttype`).then(res => res.json())
         setAllPaymentType(response);
     }
 
     const fetchAllMeasuringUnit = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/measuringunit`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/measuringunit`).then(res => res.json())
         setAllMeasuringUnit(response);
     }
 
@@ -567,7 +575,7 @@ export default function Financial() {
         )
         console.log(ResultSchedule)
         try {
-            const responseitem = await axios.delete(`http://localhost:3000/contracts/financialDetailSchedule/${Id}`
+            const responseitem = await axios.delete(`${Backend_BASE_URL}/contracts/financialDetailSchedule/${Id}`
             );
             console.log('Contract details added:', contractfinancialItemId
             );
@@ -793,7 +801,7 @@ export default function Financial() {
 
             try {
 
-                const responseitem = await axios.patch(`http://localhost:3000/contracts/updatecontractItems/${Id}/${ctrId}/${contractfinancialItemId}`,
+                const responseitem = await axios.patch(`${Backend_BASE_URL}/contracts/updatecontractItems/${Id}/${ctrId}/${contractfinancialItemId}`,
                     [financialContractItem, addedfinancialDetail, ResultSchedule]
                 );
 
@@ -850,6 +858,24 @@ export default function Financial() {
 
     const editSchTemplate = (product) => {
         return <Tag value="Edit"></Tag>;
+    }
+
+    const deleteSchLine = (id: number) => {
+        const result = scadentar.filter(item => item.id !== id);
+        setScadentar(result);
+        setVisible(false)
+    }
+
+    const saveSchLine = (line: any) => {
+        console.log("line", line)
+        //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
+        //stearsa linia existenta, si salvata noua linie
+        line.billingQtty = selectedSchLineQtty;
+        line.pret = selectedSchLineValue;
+        line.billingValue = selectedSchLineValue / selectedSchLineQtty;
+        line.date = selectedSchLineDate;
+        line.totalContractValue = selectedSchLineValue;
+        setVisible(false)
     }
 
     const formatDate = (dateString: Date) => {

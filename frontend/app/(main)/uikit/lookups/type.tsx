@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
+import { MyContext } from '../../../../layout/context/myUserContext';
 
 
 const Type = ({ executeFunction }: any) => {
@@ -18,6 +19,15 @@ const Type = ({ executeFunction }: any) => {
     const [typeSelected, settypeSelected] = useState('');
     const [visible, setVisible] = useState(false);
     const toast = useRef<undefined | null | any>(null);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
 
     const showSuccess = (message: any) => {
         if (toast.current) {
@@ -34,7 +44,7 @@ const Type = ({ executeFunction }: any) => {
 
     const deletetypeSelected = async (event: any) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/contracts/type/${event.id}`);
+            const response = await axios.delete(`${Backend_BASE_URL}/contracts/type/${event.id}`);
             console.log('contract type deleted:', response.data);
             executeFunction((prevKey: number) => prevKey + 1)
             showSuccess(`Tipul de contract ${event.name} a fost sters`)
@@ -54,7 +64,7 @@ const Type = ({ executeFunction }: any) => {
     const { isLoading, error, data } = useQuery({
         queryKey: ['contractsData'],
         queryFn: () =>
-            fetch('http://localhost:3000/contracts/type').then(res => res.json()),
+            fetch(`${Backend_BASE_URL}/contracts/type`).then(res => res.json()),
     });
 
     if (isLoading) return (

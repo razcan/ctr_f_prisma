@@ -24,6 +24,7 @@ import { usePathname } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import PartnerAddress from './address'
 import PartnerBank from './bank'
+import { MyContext } from '../../../../../../layout/context/myUserContext';
 
 const Person = ({ params, setPersonIndex }: any) => {
     const partnerid = params;
@@ -38,9 +39,15 @@ const Person = ({ params, setPersonIndex }: any) => {
     const [selectedPerson, setSelectedPerson] = useState<any>([]);
     const [selectedDefault, setSelectedDefault] = useState<any>(true);
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
     const fetchPersons = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/persons/${partnerid}`).then(res => res.json().then(res => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${partnerid}`).then(res => res.json().then(res => {
             setPersons(res);
             setPerson_name(res.name)
             setPerson_phone(res.phone);
@@ -92,7 +99,7 @@ const Person = ({ params, setPersonIndex }: any) => {
                 }
             }
             try {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/persons/${selectedPerson.id}`,
                     addPerson
                 );
                 setPersonIndex((prevKey: number) => prevKey + 1);
@@ -122,7 +129,7 @@ const Person = ({ params, setPersonIndex }: any) => {
             }
 
             try {
-                const response = await axios.post('http://localhost:3000/nomenclatures/persons',
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/persons`,
                     addPerson
                 );
                 console.log('Partner added:', response.data);
@@ -145,7 +152,7 @@ const Person = ({ params, setPersonIndex }: any) => {
     const deletePersonData = async () => {
 
         try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/persons/${selectedPerson.id}`,
+            const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/persons/${selectedPerson.id}`,
                 setPersonIndex((prevKey: number) => prevKey + 1)
             );
         } catch (error) {

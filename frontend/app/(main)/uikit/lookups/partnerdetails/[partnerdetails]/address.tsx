@@ -25,6 +25,8 @@ import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
 import countries from "./country.json"
 import { Judete } from './judete'
+import { MyContext } from '../../../../../../layout/context/myUserContext';
+
 
 const PartnerAddress = ({ params, setAddressIndex }: any) => {
     // console.log("params", params)
@@ -58,6 +60,13 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
         setListajudete(judeteAll)
 
     }
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
     const filterbycounty = () => {
 
@@ -101,7 +110,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
     ];
 
     const fetchPartnerAddress = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/address/${partnerid}`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${partnerid}`).then(res => res.json())
         setReceivedAddress(response);
         console.log(response);
     }
@@ -154,7 +163,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                 }
             }
             try {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/address/${selectedAddress.id}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/address/${selectedAddress.id}`,
                     updateAddress
                 );
                 setAddressIndex((prevKey: number) => prevKey + 1),
@@ -189,7 +198,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
             }
 
             try {
-                const response = await axios.post('http://localhost:3000/nomenclatures/address',
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/address`,
                     addAddress
                 );
                 setAddressIndex((prevKey: number) => prevKey + 1),
@@ -216,7 +225,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
     const deleteAddress = async () => {
 
         try {
-            const response = await axios.delete(`http://localhost:3000/nomenclatures/address/${selectedAddress.id}`,
+            const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/address/${selectedAddress.id}`,
             );
             setAddressIndex((prevKey: number) => prevKey + 1),
                 setVisibleAddress(false)

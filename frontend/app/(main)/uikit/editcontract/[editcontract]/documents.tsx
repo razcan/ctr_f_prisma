@@ -343,7 +343,7 @@ export default function Documents() {
             //         })
             // }
 
-            const response = await fetch(`http://localhost:3000/contracts/download/${file}`, {
+            const response = await fetch(`${Backend_BASE_URL}/contracts/download/${file}`, {
                 method: 'GET',
             });
 

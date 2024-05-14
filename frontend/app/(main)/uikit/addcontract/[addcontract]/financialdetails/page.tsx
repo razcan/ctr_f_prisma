@@ -168,7 +168,7 @@ export default function Financial() {
     const [editingCell, setEditingCell] = useState(null);
 
     const fetchContractData = () => {
-        fetch(`http://localhost:3000/contracts/onlycontract/${actualContractId}`).then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/onlycontract/${actualContractId}`).then(response => { return response.json() })
             .then(contract => {
                 setContract(contract)
                 setStartContractDate(contract.start)
@@ -178,37 +178,37 @@ export default function Financial() {
     }
 
     const fetchItemsData = () => {
-        fetch("http://localhost:3000/contracts/item").then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/item`).then(response => { return response.json() })
             .then(item => { setItems(item) })
     }
 
     const fetchAllBanks = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allbanks`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allbanks`).then(res => res.json())
         setAllBanks(response);
     }
 
     const fetchAllCurrencies = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/allcurrencies`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
         setAllCurrency(response);
     }
 
     const fetchAllBillingFrequency = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/billingfrequency`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/billingfrequency`).then(res => res.json())
         setAllBillingFrequency(response);
     }
 
     const fetchAllPaymentType = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/paymenttype`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/paymenttype`).then(res => res.json())
         setAllPaymentType(response);
     }
 
     const fetchAllMeasuringUnit = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/measuringunit`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/measuringunit`).then(res => res.json())
         setAllMeasuringUnit(response);
     }
 
     const contractData = () => {
-        fetch(`http://localhost:3000/contracts/details/${actualContractId}`).then(response => { return response.json() })
+        fetch(`${Backend_BASE_URL}/contracts/details/${actualContractId}`).then(response => { return response.json() })
             .then(ctr => {
                 setParentId(ctr.parentId)
             })
@@ -742,7 +742,7 @@ export default function Financial() {
                 active: active,
             }
             try {
-                const responseitem = await axios.post('http://localhost:3000/contracts/contractItems',
+                const responseitem = await axios.post(`${Backend_BASE_URL}/contracts/contractItems`,
                     [financialContractItem, addedfinancialDetail, ResultSchedule]
                 );
                 console.log('Contract details added:', responseitem.data

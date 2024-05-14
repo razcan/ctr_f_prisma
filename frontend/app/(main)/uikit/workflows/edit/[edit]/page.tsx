@@ -95,7 +95,7 @@ export default function Tasks() {
 
 
     const fetchWFbyId = async () => {
-        fetch(`http://localhost:3000/contracts/workflow/${Id}`)
+        fetch(`${Backend_BASE_URL}/contracts/workflow/${Id}`)
             .then(response => {
                 return response.json()
             })
@@ -121,7 +121,7 @@ export default function Tasks() {
                 for (let i = 0; i < raspuns.length; i++) {
 
                     // (raspuns[i].userId, "useri")
-                    const apiUrl = `http://localhost:3000/nomenclatures/susers/${raspuns[i].userId}`;
+                    const apiUrl = `${Backend_BASE_URL}/nomenclatures/susers/${raspuns[i].userId}`;
                     const result = fetchData(apiUrl);
 
                     myArray[i] = {
@@ -183,7 +183,7 @@ export default function Tasks() {
     }
 
     const fetchPriority = () => {
-        fetch("http://localhost:3000/contracts/priority")
+        fetch(`${Backend_BASE_URL}/contracts/priority`)
             .then(response => {
                 return response.json()
             })
@@ -196,7 +196,7 @@ export default function Tasks() {
 
 
     const fetchReminders = () => {
-        fetch("http://localhost:3000/contracts/reminders")
+        fetch(`${Backend_BASE_URL}/contracts/reminders`)
             .then(response => {
                 return response.json()
             })
@@ -206,7 +206,7 @@ export default function Tasks() {
     }
 
     const fetchDueDates = () => {
-        fetch("http://localhost:3000/contracts/duedates")
+        fetch(`${Backend_BASE_URL}/contracts/duedates`)
             .then(response => {
                 return response.json()
             })
@@ -217,7 +217,7 @@ export default function Tasks() {
     }
 
     const fetchCategoriesData = () => {
-        fetch("http://localhost:3000/contracts/category")
+        fetch(`${Backend_BASE_URL}/contracts/category`)
             .then(response => {
                 return response.json()
             })
@@ -227,7 +227,7 @@ export default function Tasks() {
     }
 
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflownom")
+        fetch(`${Backend_BASE_URL}/contracts/cashflownom`)
             .then(response => {
                 return response.json()
             })
@@ -237,7 +237,7 @@ export default function Tasks() {
     }
 
     const fetchCostCenter = () => {
-        fetch("http://localhost:3000/contracts/costcenter")
+        fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
                 return response.json()
             })
@@ -247,7 +247,7 @@ export default function Tasks() {
     }
 
     const fetchDepartmentsData = () => {
-        fetch("http://localhost:3000/contracts/department")
+        fetch(`${Backend_BASE_URL}/contracts/department`)
             .then(response => {
                 return response.json()
             })
@@ -600,7 +600,7 @@ export default function Tasks() {
             if (Id) {
 
                 // console.log("Validation passed.");
-                const response = await axios.patch(`http://localhost:3000/contracts/workflow/${Id}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/contracts/workflow/${Id}`,
                     wff
                 );
 
@@ -952,7 +952,7 @@ export default function Tasks() {
                                 key={refreshKey}
                                 style={{ height: '10vw' }}
                                 onTextChange={(e) => setText(e.htmlValue)}
-                                />
+                            />
                         </div>
                         {/* <br></br> */}
                         {/* <Divider /> */}

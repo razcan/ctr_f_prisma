@@ -176,7 +176,7 @@ function Contracts() {
                     // if (response.status === 401) {
                     // }
                     setData([]);
-                    router.push('http://localhost:5500/auth/login')
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
 
                     console.log(error);
                 });

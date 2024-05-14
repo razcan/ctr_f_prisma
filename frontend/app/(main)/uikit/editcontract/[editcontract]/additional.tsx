@@ -39,7 +39,7 @@ export default function AddContract() {
 
     const fetchContent = async () => {
         setIsAdditional(true);
-        const response = await fetch(`http://localhost:3000/contracts/additionals/${Id}`).
+        const response = await fetch(`${Backend_BASE_URL}/contracts/additionals/${Id}`).
             then(res => res.json())
         setAdditionals(response);
 

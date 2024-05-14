@@ -12,15 +12,17 @@ import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import router from 'next/router';
+import { MyContext } from '../../../../layout/context/myUserContext';
 
 const Category = ({ executeFunction }: any) => {
 
-    // const appContext = useContext(AppContext);
-    // console.log('appContext:', appContext)
-    // const { activeMenu, setActiveMenu } = useContext(AppContext);
-    // const x = MyContextProvider();
-    // const themeContext = useContext(ThemeContext);
-    // console.log('themeContext:', themeContext)
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
 
     const showErrorLogin = () => {
         toast.current.show({ severity: 'error', summary: 'You are not logged in!', detail: 'You are not logged in!', life: 3000 });
@@ -32,7 +34,7 @@ const Category = ({ executeFunction }: any) => {
 
         if (jwtToken) {
             const jwtTokenf = jwtToken.access_token;
-            const response = await fetch(`http://localhost:3000/contracts/category/${event.id}`, {
+            const response = await fetch(`${Backend_BASE_URL}/contracts/category/${event.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${jwtTokenf}`,
@@ -87,7 +89,7 @@ const Category = ({ executeFunction }: any) => {
 
     const deleteCategorySelected = async (event: any) => {
         try {
-            const response = await axios.delete(`http://localhost:3000/contracts/category/${event.id}`);
+            const response = await axios.delete(`${Backend_BASE_URL}/contracts/category/${event.id}`);
             console.log('category deleted:', response.data);
             executeFunction((prevKey: number) => prevKey + 1)
             showSuccess(`Categoria ${event.name} a fost stearsa`)
@@ -107,7 +109,7 @@ const Category = ({ executeFunction }: any) => {
     const { isLoading, error, data } = useQuery({
         queryKey: ['contractsData'],
         queryFn: () =>
-            fetch('http://localhost:3000/contracts/category').then(res => res.json()),
+            fetch('${Backend_BASE_URL}/contracts/category').then(res => res.json()),
     });
 
     if (isLoading) return (
@@ -148,23 +150,6 @@ const Category = ({ executeFunction }: any) => {
                     </div>
                 </div>
             </Dialog>
-            {/* 
-            <div className="card">
-
-                <DataTable value={data} cellSelection selectionMode="single" selection={selectedCell}
-                    size="small" stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={5} rowsPerPageOptions={[5, 10, 15]} sortMode="multiple"
-                    onSelectionChange={(e) => setSelectedCell(e.value)} >
-                    <Column field="id" header="Code"></Column>
-                    <Column field="name" header="Name"></Column>
-                    <Column header="Sterge" body={statusBodyTemplate}></Column>
-                </DataTable>
-            </div> */}
-            {/* <DataTable value={products} cellSelection selectionMode="single" selection={selectedCell}
-                onSelectionChange={(e) => setSelectedCell(e.value)} metaKeySelection={metaKey} tableStyle={{ minWidth: '50rem' }}> */}
-            {/* <div>Active Menu {activeMenu}</div> */}
-
-            {/* <Button label="Modifica context" icon="pi pi-check" size="small" onClick={activeza} /> */}
-            {/* concluzia este ca acest context trebuie folosit pentru pasarea datelor de la o componenta catre totii copii componente - de anaizat daca poate fi folosit ca variabila globala */}
 
             <DataTable value={data} size="small" stripedRows tableStyle={{ minWidth: '50rem' }} paginator rows={5} rowsPerPageOptions={[5, 10, 15]} sortMode="multiple"
                 selectionMode="radiobutton"

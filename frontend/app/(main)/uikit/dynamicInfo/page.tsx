@@ -191,7 +191,7 @@ export default function Alerts() {
     }
 
     const fetchDynamicFields = async () => {
-        const response = await fetch(`http://localhost:3000/nomenclatures/dynamicfield`).then(res => res.json())
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/dynamicfield`).then(res => res.json())
         setFields(response);
 
     }
@@ -224,7 +224,7 @@ export default function Alerts() {
 
 
         try {
-            const response = await axios.post(`http://localhost:3000/nomenclatures/dynamicfield`,
+            const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/dynamicfield`,
                 ToAdd
             );
             console.log('Field edited:', response.data);

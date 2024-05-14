@@ -85,7 +85,7 @@ export default function Tasks() {
     }
 
     const fetchPriority = () => {
-        fetch("http://localhost:3000/contracts/priority")
+        fetch(`${Backend_BASE_URL}/contracts/priority`)
             .then(response => {
                 return response.json()
             })
@@ -96,7 +96,7 @@ export default function Tasks() {
 
 
     const fetchReminders = () => {
-        fetch("http://localhost:3000/contracts/reminders")
+        fetch(`${Backend_BASE_URL}/contracts/reminders`)
             .then(response => {
                 return response.json()
             })
@@ -106,7 +106,7 @@ export default function Tasks() {
     }
 
     const fetchDueDates = () => {
-        fetch("http://localhost:3000/contracts/duedates")
+        fetch(`${Backend_BASE_URL}/contracts/duedates`)
             .then(response => {
                 return response.json()
             })
@@ -116,7 +116,7 @@ export default function Tasks() {
     }
 
     const fetchCategoriesData = () => {
-        fetch("http://localhost:3000/contracts/category")
+        fetch(`${Backend_BASE_URL}/contracts/category`)
             .then(response => {
                 return response.json()
             })
@@ -126,7 +126,7 @@ export default function Tasks() {
     }
 
     const fetchCashFlow = () => {
-        fetch("http://localhost:3000/contracts/cashflownom")
+        fetch(`${Backend_BASE_URL}/contracts/cashflownom`)
             .then(response => {
                 return response.json()
             })
@@ -136,7 +136,7 @@ export default function Tasks() {
     }
 
     const fetchCostCenter = () => {
-        fetch("http://localhost:3000/contracts/costcenter")
+        fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
                 return response.json()
             })
@@ -146,7 +146,7 @@ export default function Tasks() {
     }
 
     const fetchDepartmentsData = () => {
-        fetch("http://localhost:3000/contracts/department")
+        fetch(`${Backend_BASE_URL}/contracts/department`)
             .then(response => {
                 return response.json()
             })
