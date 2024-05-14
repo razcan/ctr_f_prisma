@@ -12,6 +12,7 @@ import { useSearchParams } from 'next/navigation'
 import { Toast } from 'primereact/toast';
 import { DataProvider, useData } from './DataContext';
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../../../../../layout/context/myUserContext'
 
 export default function Submenu() {
 
@@ -22,6 +23,16 @@ export default function Submenu() {
     const [addContractId, setAddContractId] = useState<number>(0);
     const { value, updateValue } = useData();
     const [renderCount, setRenderCount] = useState(0);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const { isAdditional, setIsAdditional } = useMyContext();
+
 
     const items = [
         {
@@ -82,10 +93,13 @@ export default function Submenu() {
                         <div className="card">
                             <div className="field lg:col-12 xs:col-3 md:col-12">
                                 <Toast ref={toast} />
+                                {isAdditional ? <Tag severity="warning" className='text-base w-1' value="Act Aditional"></Tag>
+                                    : null}
+
                                 <TabMenu model={items} activeIndex={activeIndex}
                                     onTabChange={(e) => changeTab(e.index)} />
                             </div>
-                            <Tag severity="warning" value="Adaugare Act Aditional"></Tag>
+
 
                             {activeIndex === 0 ?
 

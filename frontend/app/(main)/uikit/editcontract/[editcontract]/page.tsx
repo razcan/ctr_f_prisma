@@ -43,6 +43,8 @@ export default function AddContract() {
         Frontend_BASE_URL, isPurchasing, setIsPurchasing
         , isLoggedIn, login, userId
     } = useMyContext();
+    const { isAdditional, setIsAdditional } = useMyContext();
+
 
     const router = useRouter()
 
@@ -74,7 +76,7 @@ export default function AddContract() {
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: `${Backend_BASE_URL}/contracts/false`,
+                url: `${Backend_BASE_URL}/contracts/details/${Id}`,
                 headers: {
                     'user-role': `${roles}`,
                     'entity': `${entity}`,
@@ -150,6 +152,11 @@ export default function AddContract() {
                         <Tag severity="warning" className='text-base w-1' value="Act Aditional"></Tag>
                         : null
                     }
+
+
+                    {/* {isAdditional ? <Tag severity="warning" value="Adaugare Act Aditional"></Tag>
+                        : null} */}
+
                     <div className="field lg:col-12 xs:col-3 md:col-12">
                         <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
                     </div>

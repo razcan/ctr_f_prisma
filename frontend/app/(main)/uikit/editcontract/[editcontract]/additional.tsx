@@ -1,13 +1,13 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { Button } from 'primereact/button';
 import { OrganizationChart } from 'primereact/organizationchart';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import router from 'next/router';
-
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 // numar versiune, tip act aditional, nr act aditional, data act ad, 
 
@@ -20,10 +20,25 @@ export default function AddContract() {
     const searchParams = useSearchParams()
     const Id = parseInt(searchParams.get("Id"));
 
+
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+    const { isAdditional, setIsAdditional } = useMyContext();
+
+
     const gotoAddAddtionalAct = () => {
+        setIsAdditional(true);
         router.push(`/uikit/editcontract/editcontract/addaddionals/add/ctr?Id=${Id}&addId=${0}`);
     }
+
     const fetchContent = async () => {
+        setIsAdditional(true);
         const response = await fetch(`http://localhost:3000/contracts/additionals/${Id}`).
             then(res => res.json())
         setAdditionals(response);
@@ -31,6 +46,7 @@ export default function AddContract() {
     }
 
     const editContract = (id: any) => {
+        setIsAdditional(true);
         router.push(`/uikit/editcontract/aa?Id=${id}`);
     }
 

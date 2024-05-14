@@ -195,6 +195,7 @@ export default function Financial() {
 
                 setCurrencyValue(contractItem[0].ContractFinancialDetail[0].currencyValue);
                 setCurrencyPercent(contractItem[0].ContractFinancialDetail[0].currencyPercent);
+                setAdvancePercent(contractItem[0].ContractFinancialDetail[0].advancePercent);
 
                 setBillingDay(contractItem[0].ContractFinancialDetail[0].billingDay);
                 setBillingDueDays(contractItem[0].ContractFinancialDetail[0].billingDueDays);

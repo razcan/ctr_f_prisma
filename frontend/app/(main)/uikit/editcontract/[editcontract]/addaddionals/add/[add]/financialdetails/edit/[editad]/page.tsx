@@ -94,6 +94,7 @@ export default function Financial() {
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
     const ctrId = searchParams.get("ctrId");
+    console.log("kk mk")
 
     interface financialDetail {
         itemid?: number,
@@ -193,6 +194,7 @@ export default function Financial() {
 
                 setCurrencyValue(contractItem[0].ContractFinancialDetail[0].currencyValue);
                 setCurrencyPercent(contractItem[0].ContractFinancialDetail[0].currencyPercent);
+                setAdvancePercent(contractItem[0].ContractFinancialDetail[0].advancePercent)
 
                 setBillingDay(contractItem[0].ContractFinancialDetail[0].billingDay);
                 setBillingDueDays(contractItem[0].ContractFinancialDetail[0].billingDueDays);
