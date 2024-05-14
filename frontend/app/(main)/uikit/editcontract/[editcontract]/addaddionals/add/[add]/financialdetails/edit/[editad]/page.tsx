@@ -685,13 +685,15 @@ export default function Financial() {
             errors.push("Trebuie sa selectati intervalul de facturare!");
         }
 
-        if (!fields.billingPenaltyPercent) {
+
+        if (fields.billingPenaltyPercent === undefined || fields.billingPenaltyPercent === null || fields.billingPenaltyPercent === '') {
             errors.push("Trebuie sa setati procentul de penalizare!");
         }
-
         if (!fields.billingDueDays) {
             errors.push("Trebuie sa selectati numarul de zile scadenta!");
         }
+
+        console.log(fields)
 
         const isValid = errors.length === 0;
 

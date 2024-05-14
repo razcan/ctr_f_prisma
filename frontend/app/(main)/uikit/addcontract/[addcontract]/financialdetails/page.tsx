@@ -640,7 +640,8 @@ export default function Financial() {
             errors.push("Trebuie sa selectati intervalul de facturare!");
         }
 
-        if (!fields.billingPenaltyPercent) {
+
+        if (fields.billingPenaltyPercent === undefined || fields.billingPenaltyPercent === null || fields.billingPenaltyPercent === '') {
             errors.push("Trebuie sa setati procentul de penalizare!");
         }
 
