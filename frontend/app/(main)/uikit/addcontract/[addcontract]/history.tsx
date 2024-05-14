@@ -70,18 +70,20 @@ export default function History() {
                 <div className="card">
                     Istoric
                     <DataTable value={logs} tableStyle={{ minWidth: '50rem' }}
-                        paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                        paginator rows={10} rowsPerPageOptions={[10, 20, 30, 50, 100]} sortMode="multiple"
                         sortField="data_modificare"
                     >
                         <Column field="contract_id" header="contract_id"></Column>
                         <Column field="tip_modificare" sortable header="tip_modificare"></Column>
-                        <Column field="data_modificare" sortable header="data_modificare"></Column>
+                        <Column field="data_modificare" sortable header="data_modificare" body={data_modificareTemplate}></Column>
                         <Column field="contract_number" header="contract_number"></Column>
                         <Column field="nume_partener" header="nume_partener"></Column>
                         <Column field="nume_entitate" header="nume_entitate"></Column>
                         <Column field="stare" sortable header="stare"></Column>
+                        <Column field="starewf" sortable header="stare wf"></Column>
                         <Column field="nume_categorie" sortable header="nume_categorie"></Column>
                         <Column field="departament" header="departament"></Column>
+                        <Column field="locatie" sortable header="locatie"></Column>
                         <Column field="start_date" sortable header="start_date" body={StartBodyTemplate} ></Column>
                         <Column field="sign_date" sortable header="sign_date" body={SignBodyTemplate} ></Column>
                         <Column field="end_date" sortable header="end_date" body={EndBodyTemplate} ></Column>
@@ -89,7 +91,7 @@ export default function History() {
                         <Column field="cashflow" header="cashflow"></Column>
                         <Column field="tip_contract" header="tip_contract"></Column>
                         <Column field="centru_cost" header="centru_cost"></Column>
-
+                        <Column field="utilizator" header="utilizator"></Column>
                     </DataTable>
 
                 </div>

@@ -53,7 +53,7 @@ export default function History() {
             const roles = jwtToken.roles;
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
-                method: 'get',
+                method: 'GET',
                 url: `${Backend_BASE_URL}/nomenclatures/executeAuditPartner/${Id}`,
                 headers: {
                     'user-role': `${roles}`,
@@ -185,8 +185,10 @@ export default function History() {
                         <Column field="nume_partener" header="nume_partener"></Column>
                         <Column field="nume_entitate" header="nume_entitate"></Column>
                         <Column field="stare" sortable header="stare"></Column>
+                        <Column field="starewf" sortable header="stare wf"></Column>
                         <Column field="nume_categorie" sortable header="nume_categorie"></Column>
                         <Column field="departament" header="departament"></Column>
+                        <Column field="locatie" sortable header="locatie"></Column>
                         <Column field="start_date" sortable header="start_date" body={StartBodyTemplate} ></Column>
                         <Column field="sign_date" sortable header="sign_date" body={SignBodyTemplate} ></Column>
                         <Column field="end_date" sortable header="end_date" body={EndBodyTemplate} ></Column>
