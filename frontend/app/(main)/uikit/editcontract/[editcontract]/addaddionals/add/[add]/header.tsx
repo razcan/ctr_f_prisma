@@ -586,7 +586,8 @@ export default function EditContract({ setAddContractId }: any) {
             // partnerbankId: party_iban.id,
             entitybankId: entitybankId,
             partnerbankId: partnerbankId,
-            parentId: parseInt(Id)
+            parentId: parseInt(Id),
+            isPurchasing: isPurchasing
         }
         let addDynamicInfo: DynamicInfo = {
             contractId: parseInt(Id),
