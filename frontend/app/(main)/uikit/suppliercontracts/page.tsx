@@ -262,7 +262,7 @@ function Contracts() {
                         'costcenter.name', 'cashflow.name'
                     ]} header={header}
                     stripedRows tableStyle={{ minWidth: '50rem' }}
-                    paginator rows={8} rowsPerPageOptions={[8, 20, 30, 40, 100]} sortMode="multiple"
+                    paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
                     selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
                         setselectedContract(e.value),
                             editContract(e.value.id)

@@ -90,7 +90,7 @@ const Content = () => {
     }
 
     const fetchTemplatesData = () => {
-        fetch(`${Backend_BASE_URL}nomenclatures/contracttemplates`)
+        fetch(`${Backend_BASE_URL}/nomenclatures/contracttemplates`)
             .then(response => {
 
                 return response.json()

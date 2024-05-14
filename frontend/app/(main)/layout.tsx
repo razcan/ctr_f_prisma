@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import Layout from '../../layout/layout';
 import React, { useContext, useEffect, useState } from 'react';
 import { useData, DataProvider } from '../../AppContext'
+import Head from 'next/head';
 
 
 interface AppLayoutProps {
@@ -11,28 +12,36 @@ interface AppLayoutProps {
 }
 
 export const metadata: Metadata = {
-    title: 'Contracts',
+    title: 'ContractsHub',
     description: 'SHB',
     robots: { index: false, follow: false },
     viewport: { initialScale: 1, width: 'device-width' },
     openGraph: {
         type: 'website',
-        title: 'Contracts',
+        title: 'ContractHub',
         description: 'SHB',
         ttl: 604800
     },
     icons: {
-        // icon: '/favicon.ico'
-        icon: '../shb.ico'
+        icon: '/favicon.ico'
     }
 };
 
-// /Users/razvanmustata / Projects / contracts / frontend / public / layout / images / shb.ico
 
 export default function AppLayout({ children }: AppLayoutProps) {
 
     // const { value, updateValue } = useData();
 
 
-    return <Layout>{children}</Layout>;
+    return (
+        <>
+            <Head>
+                <title>My Page</title>
+                <link rel="icon" href="/public/layout/images/banner-primeblocks-dark.png" />
+            </Head>
+            <Layout>{children}</Layout>
+        </>
+    );
+
+    // return <Layout>{children}</Layout>;
 }
