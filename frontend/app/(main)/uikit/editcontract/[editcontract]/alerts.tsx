@@ -51,21 +51,31 @@ export default function Alerts() {
     }, [])
 
 
-    const datetoBeSentTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.datetoBeSent);
-        return <span>{formattedDate}</span>;
-    };
+
 
     const nrofdaysTemplate = (rowData: any) => {
         const result = `Inainte cu ${rowData.nrofdays} zile de Data Final`
         return <span>{result}</span>;
     };
 
+
+
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
         const date = new Date(dateString);
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return date.toLocaleDateString('ro-Ro', options);
+    };
+
+    function subtractDays(date: Date, days: number): Date {
+        const result = new Date(date);
+        result.setDate(result.getDate() - days);
+        return result;
+    }
+
+    const datetoBeSentTemplate = (rowData: any) => {
+        const formattedDate = formatDate(new Date(subtractDays(rowData.datetoBeSent, 1)));
+        return <span>{formattedDate}</span>;
     };
 
     const statusTemplate = (item) => {

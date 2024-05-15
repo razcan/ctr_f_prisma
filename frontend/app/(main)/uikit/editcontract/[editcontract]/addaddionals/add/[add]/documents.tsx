@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { Button } from 'primereact/button';
 import { FileUpload } from 'primereact/fileupload';
 import { useRef } from 'react';
@@ -15,6 +15,7 @@ import { Dialog } from 'primereact/dialog';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useData } from './DataContext';
 import { useSearchParams } from 'next/navigation'
+import { MyContext, MyProvider } from '../../../../../../../../layout/context/myUserContext'
 
 export default function Documents() {
 
@@ -36,6 +37,15 @@ export default function Documents() {
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
     const ctrId = searchParams.get("ctrId");
+
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
 
     const onTemplateSelect = (e) => {
         let _totalSize = totalSize;
@@ -132,7 +142,7 @@ export default function Documents() {
 
 
     const fetchAttachmentsData = () => {
-        fetch(`http://localhost:3000/contracts/file/${value}`)
+        fetch(`${Backend_BASE_URL}/contracts/file/${value}`)
             .then(response => {
                 return response.json()
             })
@@ -183,7 +193,7 @@ export default function Documents() {
 
     const deleteFile = async (file: string): Promise<void> => {
         try {
-            const response = await fetch(`http://localhost:3000/contracts/delete/${file}`, {
+            const response = await fetch(`${Backend_BASE_URL}/contracts/delete/${file}`, {
                 method: 'DELETE',
             });
 
@@ -204,7 +214,7 @@ export default function Documents() {
         // console.log("originalname", originalname)
 
         try {
-            const response = await fetch(`http://localhost:3000/contracts/download/${file}`, {
+            const response = await fetch(`${Backend_BASE_URL}/contracts/download/${file}`, {
                 method: 'GET',
             });
 
@@ -275,7 +285,7 @@ export default function Documents() {
         return <div>Doriti stergerea fisierului {selectedoriginalname}?</div>
     }
 
-    const url_link = `http://localhost:3000/contracts/file/${value}`
+    const url_link = `${Backend_BASE_URL}/contracts/file/${value}`
 
 
     return (

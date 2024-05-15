@@ -173,7 +173,7 @@ export default function Tasks() {
     }
 
     const fetchTasksStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/taskStatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/taskStatus`)
             .then(response => {
                 return response.json()
             })

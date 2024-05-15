@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
@@ -19,6 +19,7 @@ import router from 'next/router';
 import { useData } from './DataContext';
 import { useSearchParams } from 'next/navigation'
 import { Tag } from 'primereact/tag';
+import { MyContext, MyProvider } from '../../../../../../../../layout/context/myUserContext'
 
 export default function Financial() {
 
@@ -31,8 +32,17 @@ export default function Financial() {
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
 
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
     const fetchTypeData = () => {
-        fetch(`http://localhost:3000/contracts/contractItems/${value}`)
+        fetch(`${Backend_BASE_URL}/contracts/contractItems/${value}`)
             .then(response => {
                 return response.json()
             })

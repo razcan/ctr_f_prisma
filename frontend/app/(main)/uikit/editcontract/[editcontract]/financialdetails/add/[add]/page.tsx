@@ -775,7 +775,7 @@ export default function Financial() {
                 active: active,
             }
             try {
-                const responseitem = await axios.post('${Backend_BASE_URL}/contracts/contractItems',
+                const responseitem = await axios.post(`${Backend_BASE_URL}/contracts/contractItems`,
                     [financialContractItem, addedfinancialDetail, ResultSchedule]
                 );
                 console.log('Contract details added:', responseitem.data

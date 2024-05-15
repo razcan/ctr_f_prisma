@@ -65,6 +65,7 @@ export default function History() {
             axios(config)
                 .then(function (response) {
                     setLogs(response.data);
+                    console.log(response.data)
                 })
                 .catch(function (error) {
                     // if (response.status === 401) {
@@ -90,32 +91,40 @@ export default function History() {
         fetchContent()
     }, [])
 
-    const StartBodyTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.start_date);
-        return <span>{formattedDate}</span>;
-    };
-
-    const EndBodyTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.end_date);
-        return <span>{formattedDate}</span>;
-    };
-
-    const SignBodyTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.sign_date);
-        return <span>{formattedDate}</span>;
-    };
-
-    const CompletionBodyTemplate = (rowData: any) => {
-        const formattedDate = formatDate(rowData.completion_date);
-        return <span>{formattedDate}</span>;
-    };
-
     const formatDate = (dateString: Date) => {
         // Implement your date formatting logic here
         const date = new Date(dateString);
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return date.toLocaleDateString('ro-Ro', options);
     };
+
+    function subtractDays(date: Date, days: number): Date {
+        const result = new Date(date);
+        result.setDate(result.getDate() - days);
+        return result;
+    }
+
+    const StartBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(new Date(subtractDays(rowData.start_date, 1)));
+        return <span>{formattedDate}</span>;
+    };
+
+    const EndBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(new Date(subtractDays(rowData.end_date, 1)));
+        return <span>{formattedDate}</span>;
+    };
+
+    const SignBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(new Date(subtractDays(rowData.sign_date, 1)));
+        return <span>{formattedDate}</span>;
+    };
+
+    const CompletionBodyTemplate = (rowData: any) => {
+        const formattedDate = formatDate(new Date(subtractDays(rowData.completion_date, 1)));
+        return <span>{formattedDate}</span>;
+    };
+
+
 
 
     const exportExcel = () => {
@@ -165,6 +174,8 @@ export default function History() {
 
         return date.toLocaleDateString('ro-Ro', options);
     };
+
+
 
 
     return (

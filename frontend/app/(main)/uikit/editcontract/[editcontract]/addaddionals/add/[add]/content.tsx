@@ -34,7 +34,7 @@ const Content = () => {
     } = useMyContext();
 
     const fetchContent = async () => {
-        const response = await fetch(`http://localhost:3000/contracts/content/${addId}`).then(res => res.json().then(res => {
+        const response = await fetch(`${Backend_BASE_URL}/contracts/content/${addId}`).then(res => res.json().then(res => {
             if (res.length > 0) {
                 if (res[0].content !== null && res[0].content !== undefined) {
                     setText(res[0].content);
@@ -45,7 +45,7 @@ const Content = () => {
     }
 
     const fetchTemplatesData = () => {
-        fetch("http://localhost:3000/nomenclatures/contracttemplates")
+        fetch(`${Backend_BASE_URL}/nomenclatures/contracttemplates`)
             .then(response => {
 
                 return response.json()
@@ -57,7 +57,7 @@ const Content = () => {
     }
 
     const fetchAllContractData = () => {
-        fetch(`http://localhost:3000/contracts/details/${addId}`)
+        fetch(`${Backend_BASE_URL}/contracts/details/${addId}`)
             .then(response => {
                 return response.json()
             })
@@ -89,7 +89,7 @@ const Content = () => {
             }
 
 
-            const response_update = await axios.patch(`http://localhost:3000/contracts/content/${addId}`,
+            const response_update = await axios.patch(`${Backend_BASE_URL}/contracts/content/${addId}`,
                 createContent
             );
             console.log('Content added:', response_update.data);

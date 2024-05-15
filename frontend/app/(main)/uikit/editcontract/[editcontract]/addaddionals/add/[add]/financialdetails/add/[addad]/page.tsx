@@ -599,7 +599,7 @@ export default function Financial() {
         )
         // console.log(ResultSchedule)
         try {
-            const responseitem = await axios.delete(`http://localhost:3000/contracts/financialDetailSchedule/${Id}`
+            const responseitem = await axios.delete(`${Backend_BASE_URL}/contracts/financialDetailSchedule/${Id}`
             );
             console.log('Contract details added:'
             );

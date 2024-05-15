@@ -110,7 +110,7 @@ export default function HeaderContract({ setContractId }: any) {
     const [completion, setCompletionDate] = useState();
     const [remarks, setRemarks] = useState();
     const [status, setStatus] = useState();
-    const [statusWF, setStatusWF] = useState('');
+    const [statusWF, setStatusWF] = useState();
 
 
     const [categories, setCategories] = useState([]);
@@ -525,7 +525,7 @@ export default function HeaderContract({ setContractId }: any) {
 
 
             try {
-                const response = await axios.post('http://localhost:3000/contracts',
+                const response = await axios.post(`${Backend_BASE_URL}/contracts`,
                     toSend
                 );
 
@@ -838,11 +838,13 @@ export default function HeaderContract({ setContractId }: any) {
 
                     <div className="field col-12 md:col-3">
                         <label htmlFor="status">Stare Contract</label>
-                        <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="status" filter showClear value={status}
+                            onChange={(e) => setStatus(e.value)} options={contractStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
                     <div className="field col-12 md:col-3">
                         <label htmlFor="state">Stare Flux</label>
-                        <Dropdown id="state" showClear filter value={statusWF} onChange={(e) => setStatusWF(e.value)} options={contractWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                        <Dropdown id="state" showClear filter value={statusWF}
+                            onChange={(e) => setStatusWF(e.value)} options={contractWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                     </div>
 
 

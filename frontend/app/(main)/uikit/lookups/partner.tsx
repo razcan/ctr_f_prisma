@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation'
 import { Toolbar } from 'primereact/toolbar';
 import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
 import { SelectButton } from 'primereact/selectbutton';
+import { MyContext } from '../../../../layout/context/myUserContext';
 
 
 const Partner = ({ executeFunction }: any) => {
@@ -32,8 +33,19 @@ const Partner = ({ executeFunction }: any) => {
     const [partners, setPartners] = useState(false);
     const [checked, setChecked] = useState(false);
 
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
+
+
+
     const fetchPartnersData = () => {
-        fetch("http://localhost:3000/nomenclatures/allparties")
+        fetch(`${Backend_BASE_URL}/nomenclatures/allparties`
+        )
             .then(response => {
                 return response.json()
             })

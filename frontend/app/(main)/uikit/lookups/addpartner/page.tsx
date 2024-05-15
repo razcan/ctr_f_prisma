@@ -26,6 +26,7 @@ import { useSearchParams } from 'next/navigation'
 import PartnerAddress from './address'
 import PartnerBank from './bank'
 import Person from './person'
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,13 @@ const Partner = () => {
     const [bankIndex, setBankIndex] = useState<number>(0);
     const [dbPartnerId, setdbPartnerId] = useState<number>(-1);
     const [isVatPayer, setIsVatPayer] = useState(false);
+
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId
+    } = useMyContext();
 
 
     interface DropdownItem {
@@ -128,7 +136,7 @@ const Partner = () => {
 
         try {
             if (dbPartnerId === -1) {
-                const response = await axios.post('http://localhost:3000/nomenclatures/partners',
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/partners`,
                     addPartner
                 );
                 setdbPartnerId(response.data.id)
@@ -136,7 +144,7 @@ const Partner = () => {
                 console.log("db id", response.data.id)
             }
             else {
-                const response = await axios.patch(`http://localhost:3000/nomenclatures/partners/${dbPartnerId}`,
+                const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/partners/${dbPartnerId}`,
                     addPartner
                 );
                 console.log('Partner edited:', response.data);

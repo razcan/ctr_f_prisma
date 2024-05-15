@@ -75,7 +75,7 @@ export default function Tasks() {
     ];
 
     const fetchTasksStatusData = () => {
-        fetch("http://localhost:3000/nomenclatures/taskStatus")
+        fetch(`${Backend_BASE_URL}/nomenclatures/taskStatus`)
             .then(response => {
                 return response.json()
             })
@@ -430,6 +430,10 @@ export default function Tasks() {
     }
 
 
+    const showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
+    };
+
 
     const saveWF = async () => {
 
@@ -512,10 +516,26 @@ export default function Tasks() {
             // console.log(validationResult.errors);
             showWarn(validationResult.errors)
         } else {
-            console.log("Validation passed.");
-            const response = await axios.post(`http://localhost:3000/contracts/workflow`,
+
+            // console.log("Validation passed.");
+
+            const response = await axios.post(`${Backend_BASE_URL}/contracts/workflow`,
                 wff
             );
+
+            if (response.status == 200 || response.status == 201) {
+                showMessage('success', 'Salvat cu succes!', 'Ok');
+
+                // console.log(response, "res")
+
+                router.push(`${Frontend_BASE_URL}/uikit/workflows/edit/edit?Id=${response.data.id}`);
+
+                // http://localhost:5500/uikit/workflows/edit/edit?Id=2
+
+            }
+            else {
+                showMessage('error', 'Eroare', response.statusText)
+            }
         }
     }
 

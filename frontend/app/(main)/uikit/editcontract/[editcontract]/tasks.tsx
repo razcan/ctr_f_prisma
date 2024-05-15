@@ -479,45 +479,45 @@ export default function Tasks() {
 
                     <Button label="Adauga Task" onClick={addtask} />
 
+                    {tasks.length > 1 ?
+                        <DataTable
+                            dataKey={tasks.id}
+                            className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
-                    <DataTable
-                        dataKey={tasks.id}
-                        className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
+                            selectionMode="single"
+                            //selection={selectedTask} 
 
-                        selectionMode="single"
-                        //selection={selectedTask} 
+                            onSelectionChange={(e) => {
+                                setselectedRequestor(e.value.requestorId),
+                                    setselectedAssigned(e.value.assignedId),
+                                    setselectedTask(e.value),
+                                    setselectedTaskName(e.value.taskName),
+                                    setselectedDue(e.value.due),
+                                    setselectedNotes(e.value.notes),
+                                    setselectedtaskId(e.value.id),
+                                    setSelectedRejectedReason(e.value.rejected_reason),
+                                    setSelectedPriority(e.value.taskPriorityId),
+                                    setselectedStatus(e.value.statusId),
+                                    setVisible(true)
 
-                        onSelectionChange={(e) => {
-                            setselectedRequestor(e.value.requestorId),
-                                setselectedAssigned(e.value.assignedId),
-                                setselectedTask(e.value),
-                                setselectedTaskName(e.value.taskName),
-                                setselectedDue(e.value.due),
-                                setselectedNotes(e.value.notes),
-                                setselectedtaskId(e.value.id),
-                                setSelectedRejectedReason(e.value.rejected_reason),
-                                setSelectedPriority(e.value.taskPriorityId),
-                                setselectedStatus(e.value.statusId),
-                                setVisible(true)
+                            }}
+                            stripedRows
+                            sortMode="multiple"
+                            sortField="data"
+                            sortOrder={1}
+                        >
+                            <Column hidden field="id" header="id"></Column>
+                            <Column hidden field="rejected_reason" header="rejected_reason"></Column>
+                            <Column field="requestor.name" header="Solicitant" ></Column>
+                            <Column field="assigned.name" header="Responsabil"></Column>
+                            <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
+                            <Column field="taskName" header="Denumire"></Column>
+                            <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
+                            <Column field="status.name" header="Stare"></Column>
+                            <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
-                        }}
-                        stripedRows
-                        sortMode="multiple"
-                        sortField="data"
-                        sortOrder={1}
-                    >
-                        <Column hidden field="id" header="id"></Column>
-                        <Column hidden field="rejected_reason" header="rejected_reason"></Column>
-                        <Column field="requestor.name" header="Solicitant" ></Column>
-                        <Column field="assigned.name" header="Responsabil"></Column>
-                        <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
-                        <Column field="taskName" header="Denumire"></Column>
-                        <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
-                        <Column field="status.name" header="Stare"></Column>
-                        <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
-
-                    </DataTable>
-
+                        </DataTable>
+                        : null}
 
                 </div>
             </div>

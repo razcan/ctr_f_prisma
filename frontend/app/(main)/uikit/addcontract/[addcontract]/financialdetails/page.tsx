@@ -523,11 +523,7 @@ export default function Financial() {
         </div>
     );
 
-    const deleteSchLine = (id: number) => {
-        const result = scadentar.filter(item => item.id !== id);
-        setScadentar(result);
-        setVisible(false)
-    }
+
 
     const calculateMultiplication = () => {
         const multiplicationResult = selectedSchLinePrice * selectedSchLineQtty;
@@ -538,7 +534,11 @@ export default function Financial() {
         calculateMultiplication();
     }, [selectedSchLinePrice, selectedSchLineQtty]);
 
-
+    const deleteSchLine = (id: number) => {
+        const result = scadentar.filter(item => item.id !== id);
+        setScadentar(result);
+        setVisible(false)
+    }
 
     const saveSchLine = (line: any) => {
         console.log("line", line)

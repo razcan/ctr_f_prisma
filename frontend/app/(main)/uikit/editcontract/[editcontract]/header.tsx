@@ -310,6 +310,10 @@ export default function EditContract() {
 
                 setEndDate(formated_end_date)
 
+                setCompletionDate(formated_completion_date)
+
+                setSignDate(formated_sign_date)
+
                 if (formated_completion_date < referenceDate) {
                     setCompletionDate('')
                 }
@@ -668,6 +672,7 @@ export default function EditContract() {
             typeId: type.id,
             // partner: partner,
             statusId: status.id,
+            statusWFId: statusWF.id,
             start: (start ? addOneDay(start) : null),
             end: (end ? addOneDay(end) : null),
             sign: (sign ? addOneDay(sign) : null),

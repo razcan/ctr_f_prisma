@@ -35,7 +35,6 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { Backend_BASE_URL, Frontend_BASE_URL, login } = useMyContext();
 
 
-
     useImperativeHandle(ref, () => ({
         menubutton: menubuttonRef.current,
         topbarmenu: topbarmenuRef.current,
@@ -98,7 +97,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
                     <Link href="/auth/login">
                         <Avatar className="p-overlay-badge"
-                            image={`http://localhost:3000/nomenclatures/download/${picture}`}
+                            image={`${Backend_BASE_URL}/nomenclatures/download/${picture}`}
                             size="large"
                             shape="circle"
 
