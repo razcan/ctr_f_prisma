@@ -107,9 +107,9 @@ export default function Tasks() {
                 console.log(tasks)
                 setTasks(tasks)
                 setselectedRequestor(tasks.requestorId)
-                if (tasks.length !== 0) {
-                    setUUID(tasks[0].uuid);
-                }
+                // if (tasks.length !== 0) {
+                //     setUUID(tasks[0].uuid);
+                // }
 
             })
     }
@@ -483,7 +483,7 @@ export default function Tasks() {
                                             <div className="p-fluid formgrid grid pt-2">
 
                                                 <div className="field col-12  md:col-12">
-                                                    <label htmlFor="taskName">Nume Task</label>
+                                                    <label htmlFor="taskName">Nume Task{uuid}</label>
                                                     <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
                                                 </div>
 
@@ -667,7 +667,7 @@ export default function Tasks() {
                                         setselectedStatus(e.value.statusId),
                                         setSelectedWFStatus(e.value.statusWFId),
                                         setTaskType(e.value.type),
-                                        setUUID(uuid),
+                                        setUUID(e.value.uuid),
                                         setVisible(true)
                                 }}
                                 stripedRows
@@ -682,6 +682,9 @@ export default function Tasks() {
                                 <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
                                 <Column field="taskName" header="Denumire"></Column>
                                 <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
+                                <Column field="uuid" header="uuid" ></Column>
+
+                                {/* setUUID(tasks[0].uuid); */}
 
 
                                 {/* <Column field="status.name" header="Stare"></Column>
