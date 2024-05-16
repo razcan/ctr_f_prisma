@@ -257,44 +257,81 @@ const Content = () => {
         setText(e.htmlValue)
     };
 
+    // const handlePrint = () => {
+    //     // const printWindow = window.open('', '_blank');
+    //     //     printWindow.document.write(`
+    //     //   <!DOCTYPE html>
+    //     //   <html>
+    //     //     <head>
+    //     //       <title>Print</title>
+    //     //     </head>
+    //     //     <body>
+    //     //       <div style="height: 100%; width: 100%;">${text}</div>
+    //     //     </body>
+    //     //   </html>
+    //     // `);
+    //     //     printWindow.document.close();
+    //     //     printWindow.print();
+    //     const iframe = iframeRef.current;
+    //     const iframeContent = `
+    //   <!DOCTYPE html>
+    //   <html>
+    //     <head>
+    //       <title></title>
+    //       <style>
+    //         body { margin: 0; }
+    //        .print-content { height: 100%; width: 100%; font-size:16px; color: black }
+    //       </style>
+    //     </head>
+    //     <body>
+    //       <div class="print-content">${text}</div>
+    //     </body>
+    //   </html>
+    // `;
+    //     const iframeDoc = iframe.contentWindow.document;
+    //     iframeDoc.open();
+    //     iframeDoc.write(iframeContent);
+    //     iframeDoc.close();
+    //     iframe.contentWindow.print();
+
+    // };
+
+
     const handlePrint = () => {
-        // const printWindow = window.open('', '_blank');
-        //     printWindow.document.write(`
-        //   <!DOCTYPE html>
-        //   <html>
-        //     <head>
-        //       <title>Print</title>
-        //     </head>
-        //     <body>
-        //       <div style="height: 100%; width: 100%;">${text}</div>
-        //     </body>
-        //   </html>
-        // `);
-        //     printWindow.document.close();
-        //     printWindow.print();
         const iframe = iframeRef.current;
         const iframeContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title></title>
-          <style>
-            body { margin: 0; }
-           .print-content { height: 100%; width: 100%; font-size:16px; color: black }
-          </style>
-        </head>
-        <body>
-          <div class="print-content">${text}</div>
-        </body>
-      </html>
-    `;
+                    <!DOCTYPE html>
+                    <html>
+                        <head>
+                        <title></title>
+                        <style>
+                            body { margin: 0; }
+                            .print-content { height: 100%; width: 100%; font-size:16px; color: black; }
+                            @page {
+                             margin-top: 0;
+                             margin-left: 1;
+                            margin-bottom: 1;
+                            }
+                            @media print {
+                            body {
+                                margin-top: 0;
+                                margin-left: 1;
+                                margin-bottom: 1;
+                            }
+                            }
+                        </style>
+                        </head>
+                        <body>
+                        <div class="print-content">${text}</div>
+                        </body>
+                    </html>
+                    `;
         const iframeDoc = iframe.contentWindow.document;
         iframeDoc.open();
         iframeDoc.write(iframeContent);
         iframeDoc.close();
         iframe.contentWindow.print();
-
-    };
+    }
 
     return (
 

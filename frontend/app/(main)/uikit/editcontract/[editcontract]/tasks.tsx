@@ -15,9 +15,10 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import router from 'next/router';
 import { Editor } from 'primereact/editor';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { ProgressBar } from 'primereact/progressbar';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import { setuid } from 'process';
 
 
 export default function Tasks() {
@@ -36,7 +37,16 @@ export default function Tasks() {
     const [visible, setVisible] = useState(false);
 
     const [taskName, setTaskName] = useState('');
+
     const [status, setStatus] = useState([]);
+    const [selectedstatus, setselectedStatus] = useState([]);
+    const [allStatus, setAllStatus] = useState([])
+
+    const [wfstatus, setWFStatus] = useState([]);
+    const [selectedWFstatus, setSelectedWFStatus] = useState([]);
+    const [allWFStatus, setAllWFStatus] = useState([])
+
+
     const [requestor, setRequestor] = useState(0);
     const [assigned, setAssigned] = useState(0);
     const [due, setDue] = useState(new Date());
@@ -47,7 +57,7 @@ export default function Tasks() {
     const [rejectionReason, setRejectionReason] = useState('');
 
     const [selectedtaskName, setselectedTaskName] = useState('');
-    const [selectedstatus, setselectedStatus] = useState([]);
+
     const [selectedrequestor, setselectedRequestor] = useState();
     const [selectedassigned, setselectedAssigned] = useState();
     const [selecteddue, setselectedDue] = useState(new Date());
@@ -55,11 +65,17 @@ export default function Tasks() {
     const [selectedtaskId, setselectedtaskId] = useState('');
     const [selectedRejectedReason, setSelectedRejectedReason] = useState('');
     const [priority, setPriority] = useState([]);
+    const [taskType, setTaskType] = useState('');
+    const [uuid, setUUID] = useState('');
+
+
+    // type
+    // :
+    // "approval_task"
 
     const [tasks, setTasks] = useState([]);
     const [persons, setPersons] = useState([]);
     const [selectedTask, setselectedTask] = useState();
-    const [allStatus, setAllStatus] = useState([])
 
 
     const [users, setUsers] = useState([]);
@@ -73,6 +89,10 @@ export default function Tasks() {
         return allStatus.find((obj) => obj.id === id);
     };
 
+    const getWFStatusJson = (id: InputNumber) => {
+        return allWFStatus.find((obj) => obj.id === id);
+    };
+
     const getPriorityJson = (id) => {
         return priority.find((obj) => obj.id === id);
 
@@ -84,11 +104,17 @@ export default function Tasks() {
                 return response.json()
             })
             .then(tasks => {
-
+                console.log(tasks)
                 setTasks(tasks)
                 setselectedRequestor(tasks.requestorId)
+                if (tasks.length !== 0) {
+                    setUUID(tasks[0].uuid);
+                }
+
             })
     }
+
+    console.log(uuid, "uuid")
 
     const fetchPriority = () => {
         fetch(`${Backend_BASE_URL}/contracts/priority`)
@@ -111,6 +137,15 @@ export default function Tasks() {
             })
     }
 
+    const fetchWFStatusData = () => {
+        fetch(`${Backend_BASE_URL}/nomenclatures/contractwfstatus`)
+            .then(response => {
+                return response.json()
+            })
+            .then(statusWF => {
+                setAllWFStatus(statusWF)
+            })
+    }
 
     const fetchUsers = async () => {
         try {
@@ -149,7 +184,8 @@ export default function Tasks() {
             fetchTasksStatusData(),
             fetchUsers(),
             fetchRequestor(),
-            fetchPriority()
+            fetchPriority(),
+            fetchWFStatusData()
     }, [])
 
 
@@ -256,6 +292,15 @@ export default function Tasks() {
 
 
     const addtask = () => {
+
+        setselectedTaskName('');
+        setselectedStatus([]);
+        setselectedAssigned('');
+        setselectedDue(new Date());
+        setselectedNotes('');
+        setSelectedRejectedReason('');
+        setSelectedPriority([]);
+        setTaskType('add_action_task_manual')
         setVisible(true)
     }
 
@@ -301,6 +346,45 @@ export default function Tasks() {
     //de adaugat drop down cu mai multi catre care se asigneaza
     //de modifcat campul de text cu un quill
 
+    const approveTask = () => {
+
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'GET',
+                url: `${Backend_BASE_URL}/contracts/approveTask/${uuid}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            console.log(config.url);
+            axios(config)
+                .then(function (response) {
+                    if (response.data) {
+
+                        console.log(response.data);
+                    }
+                })
+                .catch(function (error) {
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
+    }
+
+    const rejectTask = () => {
+
+    }
 
     return (
         <div className="grid">
@@ -318,38 +402,197 @@ export default function Tasks() {
                         <div className='card'>
                             <div className="grid">
                                 <div className="col-12">
-                                    {selectedTask ?
+                                    {
+                                        taskType === 'action_task' ?
+                                            <div className="p-fluid formgrid grid pt-2">
+
+                                                <div className="field col-12  md:col-12">
+                                                    <label htmlFor="taskName">Nume Task</label>
+                                                    <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                                                </div>
+
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label htmlFor="status">Stare</label>
+                                                    <Dropdown id="status" filter showClear value={getStatusJson(selectedstatus)} onChange={(e) => setselectedStatus(e.value.id)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                </div>
+
+                                                <div className="field col-12  md:col-9">
+                                                    <label htmlFor="taskName">Motiv</label>
+                                                    <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
+                                                </div>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label className="font-bold block mb-2">
+                                                        De rezolvat pana la
+                                                    </label>
+                                                    <Calendar id="due" value={new Date(selecteddue)} onChange={(e) => setselectedDue(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                                </div>
+
+
+                                                <span className="field col-12 md:col-3">
+                                                    <label htmlFor="selectedPriority">Prioritate</label>
+                                                    <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
+                                                        filter showClear
+                                                        onChange={(e) => setSelectedPriority(e.value.id)}
+                                                        options={priority} optionLabel="name"
+                                                        placeholder="Select One" className="w-full" />
+                                                </span>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label htmlFor="requestor">Solicitant</label>
+                                                    <Dropdown id="requestor" filter showClear
+                                                        value={getRequestor(selectedrequestor)}
+                                                        disabled
+                                                        onChange={(e) => {
+                                                            setRequestor(e.value)
+                                                        }} options={users} optionLabel="name"
+                                                        placeholder="Select One"></Dropdown>
+                                                </div>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label htmlFor="assigned">Asignat catre</label>
+                                                    <Dropdown id="assigned" filter showClear
+                                                        value={getRequestor(selectedassigned)}
+                                                        onChange={(e) => setselectedAssigned(e.value.id)}
+                                                        options={users} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                </div>
+
+
+
+                                                <div className="field col-12  md:col-12">
+                                                    <label className="ml-2">Descriere Task</label>
+                                                </div>
+
+
+
+                                                <div className="field col-12  md:col-12">
+                                                    <Editor value={selectednotes}
+                                                        onChange={(e) => setselectedNotes(e.htmlValue)}
+                                                        style={{ height: '320px' }} />
+                                                </div>
+
+                                                <div className="field-checkbox col-12 md:col-3">
+                                                    <Button label="Salveaza" onClick={EditTask} />
+                                                </div>
+                                            </div>
+                                            : null}
+
+                                    {
+                                        taskType === 'approval_task' ?
+                                            <div className="p-fluid formgrid grid pt-2">
+
+                                                <div className="field col-12  md:col-12">
+                                                    <label htmlFor="taskName">Nume Task</label>
+                                                    <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                                                </div>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label htmlFor="status">Stare</label>
+                                                    <Dropdown disabled id="status" filter showClear value={getWFStatusJson(selectedWFstatus)} onChange={(e) => setSelectedWFStatus(e.value.id)} options={allWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                </div>
+
+                                                <div className="field col-12  md:col-9">
+                                                    <label htmlFor="taskName">Motiv</label>
+                                                    <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
+                                                </div>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label className="font-bold block mb-2">
+                                                        De rezolvat pana la
+                                                    </label>
+                                                    <Calendar id="due" value={new Date(selecteddue)} onChange={(e) => setselectedDue(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                                </div>
+
+
+                                                <span className="field col-12 md:col-3">
+                                                    <label htmlFor="selectedPriority">Prioritate</label>
+                                                    <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
+                                                        filter showClear
+                                                        onChange={(e) => setSelectedPriority(e.value.id)}
+                                                        options={priority} optionLabel="name"
+                                                        placeholder="Select One" className="w-full" />
+                                                </span>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label htmlFor="requestor">Solicitant</label>
+                                                    <Dropdown id="requestor" filter showClear
+                                                        value={getRequestor(selectedrequestor)}
+                                                        disabled
+                                                        onChange={(e) => {
+                                                            setRequestor(e.value)
+                                                        }} options={users} optionLabel="name"
+                                                        placeholder="Select One"></Dropdown>
+                                                </div>
+
+                                                <div className="field col-12 md:col-3">
+                                                    <label htmlFor="assigned">Asignat catre</label>
+                                                    <Dropdown id="assigned" filter showClear
+                                                        value={getRequestor(selectedassigned)}
+                                                        onChange={(e) => setselectedAssigned(e.value.id)}
+                                                        options={users} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                </div>
+
+
+
+                                                <div className="field col-12  md:col-12">
+                                                    <label className="ml-2">Descriere Task</label>
+                                                </div>
+
+
+
+                                                <div className="field col-12  md:col-12">
+                                                    <Editor value={selectednotes}
+                                                        style={{ height: '320px' }} />
+                                                </div>
+
+                                                <div className="field-checkbox col-12 md:col-3">
+                                                    {/* <Button label="Salveaza" onClick={EditTask} /> */}
+                                                    <Button label="Aproba" severity="success" onClick={approveTask} />
+                                                    <Button label="Respinge" severity="danger" onClick={rejectTask} />
+
+                                                    {/*rejectTask/:uuid , get , approveTask/:uuid */}
+                                                </div>
+
+
+                                            </div>
+                                            : null}
+
+
+
+                                    {taskType === 'add_action_task_manual' ?
                                         <div className="p-fluid formgrid grid pt-2">
 
                                             <div className="field col-12  md:col-12">
                                                 <label htmlFor="taskName">Nume Task</label>
-                                                <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
+                                                <InputText id="taskName" type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
                                             </div>
-
 
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="status">Stare</label>
-                                                <Dropdown id="status" filter showClear value={getStatusJson(selectedstatus)} onChange={(e) => setselectedStatus(e.value.id)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
+                                                <Dropdown id="status" filter showClear value={status}
+                                                    onChange={(e) => setStatus(e.value)} options={allStatus}
+                                                    optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
                                             <div className="field col-12  md:col-9">
                                                 <label htmlFor="taskName">Motiv</label>
-                                                <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
+                                                <InputText id="taskName" type="text" value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
                                             </div>
 
                                             <div className="field col-12 md:col-3">
                                                 <label className="font-bold block mb-2">
                                                     De rezolvat pana la
                                                 </label>
-                                                <Calendar id="due" value={new Date(selecteddue)} onChange={(e) => setselectedDue(e.value)} showIcon dateFormat="dd/mm/yy" />
+                                                <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
                                             </div>
 
 
                                             <span className="field col-12 md:col-3">
                                                 <label htmlFor="selectedPriority">Prioritate</label>
-                                                <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
+                                                <Dropdown id="selectedPriority" value={selectedPriority}
                                                     filter showClear
-                                                    onChange={(e) => setSelectedPriority(e.value.id)}
+                                                    onChange={(e) => setSelectedPriority(e.value)}
                                                     options={priority} optionLabel="name"
                                                     placeholder="Select One" className="w-full" />
                                             </span>
@@ -357,8 +600,9 @@ export default function Tasks() {
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="requestor">Solicitant</label>
                                                 <Dropdown id="requestor" filter showClear
-                                                    value={getRequestor(selectedrequestor)}
+                                                    value={requestor}
                                                     disabled
+                                                    // value={getRequestor(requestor)}
                                                     onChange={(e) => {
                                                         setRequestor(e.value)
                                                     }} options={users} optionLabel="name"
@@ -368,8 +612,7 @@ export default function Tasks() {
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="assigned">Asignat catre</label>
                                                 <Dropdown id="assigned" filter showClear
-                                                    value={getRequestor(selectedassigned)}
-                                                    onChange={(e) => setselectedAssigned(e.value.id)}
+                                                    value={assigned} onChange={(e) => setAssigned(e.value)}
                                                     options={users} optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
 
@@ -382,142 +625,75 @@ export default function Tasks() {
 
 
                                             <div className="field col-12  md:col-12">
-                                                <Editor value={selectednotes}
-                                                    onChange={(e) => setselectedNotes(e.htmlValue)}
+
+                                                <Editor value={notes}
+                                                    onTextChange={(e) => setNotes(e.htmlValue)}
                                                     style={{ height: '320px' }} />
                                             </div>
 
                                             <div className="field-checkbox col-12 md:col-3">
-                                                <Button label="Salveaza" onClick={EditTask} />
+                                                <Button label="Salveaza" onClick={SaveTask} />
                                             </div>
                                         </div>
-                                        :
-
-                                        <div>
-                                            {requestor ?
-                                                <div className="p-fluid formgrid grid pt-2">
-
-                                                    <div className="field col-12  md:col-12">
-                                                        <label htmlFor="taskName">Nume Task</label>
-                                                        <InputText id="taskName" type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
-                                                    </div>
-
-                                                    <div className="field col-12 md:col-3">
-                                                        <label htmlFor="status">Stare</label>
-                                                        <Dropdown id="status" filter showClear value={status}
-                                                            onChange={(e) => setStatus(e.value)} options={allStatus}
-                                                            optionLabel="name" placeholder="Select One"></Dropdown>
-                                                    </div>
-
-                                                    <div className="field col-12  md:col-9">
-                                                        <label htmlFor="taskName">Motiv</label>
-                                                        <InputText id="taskName" type="text" value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
-                                                    </div>
-
-                                                    <div className="field col-12 md:col-3">
-                                                        <label className="font-bold block mb-2">
-                                                            De rezolvat pana la
-                                                        </label>
-                                                        <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                                    </div>
-
-
-                                                    <span className="field col-12 md:col-3">
-                                                        <label htmlFor="selectedPriority">Prioritate</label>
-                                                        <Dropdown id="selectedPriority" value={selectedPriority}
-                                                            filter showClear
-                                                            onChange={(e) => setSelectedPriority(e.value)}
-                                                            options={priority} optionLabel="name"
-                                                            placeholder="Select One" className="w-full" />
-                                                    </span>
-
-                                                    <div className="field col-12 md:col-3">
-                                                        <label htmlFor="requestor">Solicitant</label>
-                                                        <Dropdown id="requestor" filter showClear
-                                                            value={requestor}
-                                                            disabled
-                                                            // value={getRequestor(requestor)}
-                                                            onChange={(e) => {
-                                                                setRequestor(e.value)
-                                                            }} options={users} optionLabel="name"
-                                                            placeholder="Select One"></Dropdown>
-                                                    </div>
-
-                                                    <div className="field col-12 md:col-3">
-                                                        <label htmlFor="assigned">Asignat catre</label>
-                                                        <Dropdown id="assigned" filter showClear
-                                                            value={assigned} onChange={(e) => setAssigned(e.value)}
-                                                            options={users} optionLabel="name" placeholder="Select One"></Dropdown>
-                                                    </div>
-
-
-
-                                                    <div className="field col-12  md:col-12">
-                                                        <label className="ml-2">Descriere Task</label>
-                                                    </div>
-
-
-
-                                                    <div className="field col-12  md:col-12">
-
-                                                        <Editor value={notes}
-                                                            onTextChange={(e) => setNotes(e.htmlValue)}
-                                                            style={{ height: '320px' }} />
-                                                    </div>
-
-                                                    <div className="field-checkbox col-12 md:col-3">
-                                                        <Button label="Salveaza" onClick={SaveTask} />
-                                                    </div>
-                                                </div>
-                                                : null}
-                                        </div>
-                                    }
+                                        : null}
                                 </div>
+
                             </div>
                         </div>
+
                     </Dialog>
 
                     <Button label="Adauga Task" onClick={addtask} />
 
-                    {tasks.length > 1 ?
-                        <DataTable
-                            dataKey={tasks.id}
-                            className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
+                    {
+                        tasks.length !== 0 ?
+                            <DataTable
+                                dataKey={tasks.id}
+                                className='pt-2' value={tasks} tableStyle={{ minWidth: '50rem' }}
 
-                            selectionMode="single"
-                            //selection={selectedTask} 
+                                selectionMode="single"
+                                //selection={selectedTask} 
 
-                            onSelectionChange={(e) => {
-                                setselectedRequestor(e.value.requestorId),
-                                    setselectedAssigned(e.value.assignedId),
-                                    setselectedTask(e.value),
-                                    setselectedTaskName(e.value.taskName),
-                                    setselectedDue(e.value.due),
-                                    setselectedNotes(e.value.notes),
-                                    setselectedtaskId(e.value.id),
-                                    setSelectedRejectedReason(e.value.rejected_reason),
-                                    setSelectedPriority(e.value.taskPriorityId),
-                                    setselectedStatus(e.value.statusId),
-                                    setVisible(true)
+                                onSelectionChange={(e) => {
+                                    setselectedRequestor(e.value.requestorId),
+                                        setselectedAssigned(e.value.assignedId),
+                                        setselectedTask(e.value),
+                                        setselectedTaskName(e.value.taskName),
+                                        setselectedDue(e.value.due),
+                                        setselectedNotes(e.value.notes),
+                                        setselectedtaskId(e.value.id),
+                                        setSelectedRejectedReason(e.value.rejected_reason),
+                                        setSelectedPriority(e.value.taskPriorityId),
+                                        setselectedStatus(e.value.statusId),
+                                        setSelectedWFStatus(e.value.statusWFId),
+                                        setTaskType(e.value.type),
+                                        setUUID(uuid),
+                                        setVisible(true)
+                                }}
+                                stripedRows
+                                sortMode="multiple"
+                                sortField="data"
+                                sortOrder={1}
+                            >
+                                <Column hidden field="id" header="id"></Column>
+                                <Column hidden field="rejected_reason" header="rejected_reason"></Column>
+                                <Column field="requestor.name" header="Solicitant" ></Column>
+                                <Column field="assigned.name" header="Responsabil"></Column>
+                                <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
+                                <Column field="taskName" header="Denumire"></Column>
+                                <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
 
-                            }}
-                            stripedRows
-                            sortMode="multiple"
-                            sortField="data"
-                            sortOrder={1}
-                        >
-                            <Column hidden field="id" header="id"></Column>
-                            <Column hidden field="rejected_reason" header="rejected_reason"></Column>
-                            <Column field="requestor.name" header="Solicitant" ></Column>
-                            <Column field="assigned.name" header="Responsabil"></Column>
-                            <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
-                            <Column field="taskName" header="Denumire"></Column>
-                            <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
-                            <Column field="status.name" header="Stare"></Column>
-                            <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
-                        </DataTable>
-                        : null}
+                                {/* <Column field="status.name" header="Stare"></Column>
+
+                                <Column field="statusWF.name" header="Stare"></Column> */}
+
+
+                                <Column field="type" header="Tip"></Column>
+                                <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
+
+                            </DataTable>
+                            : null}
 
                 </div>
             </div>

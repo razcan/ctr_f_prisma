@@ -80,24 +80,24 @@ export default function AddContract() {
                         <Button label="Adauga act aditional" onClick={gotoAddAddtionalAct} />
                     </div>
 
-                    {
-                        additionals.length > 0 ?
-                            <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}
-                                stripedRows paginator rows={10}
-                                rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
-                                selectionMode="single"
-                                selection={selectedContract} onSelectionChange={(e) => {
-                                    editContract(e.value.id)
-                                }}
-                            >
-                                <Column hidden field="id" header="Id"></Column>
-                                <Column field="number" header="Numar"></Column>
-                                <Column field="status.name" header="Stare"></Column>
-                                <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
-                                <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
-                                <Column field="remarks" header="Detalii Contract"></Column>
-                            </DataTable>
-                            : null}
+                    {additionals.length !== 0 ?
+
+                        <DataTable value={additionals} tableStyle={{ minWidth: '50rem' }}
+                            stripedRows paginator rows={10}
+                            rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                            selectionMode="single"
+                            selection={selectedContract} onSelectionChange={(e) => {
+                                editContract(e.value.id)
+                            }}
+                        >
+                            <Column hidden field="id" header="Id"></Column>
+                            <Column field="number" header="Numar"></Column>
+                            <Column field="status.name" header="Stare"></Column>
+                            <Column field="start" header="Start" dataType='date' sortable body={StartBodyTemplate} ></Column>
+                            <Column field="end" header="Final" dataType='date' sortable body={EndBodyTemplate}></Column>
+                            <Column field="remarks" header="Detalii Contract"></Column>
+                        </DataTable>
+                        : null}
 
                 </div>
 

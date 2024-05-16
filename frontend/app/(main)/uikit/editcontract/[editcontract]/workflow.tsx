@@ -73,7 +73,6 @@ export default function Content() {
             axios(config)
                 .then(function (response) {
                     if (response.data) {
-                        console.log(response.data, "rez")
                         setWFHistory(response.data);
                     }
                 })

@@ -130,29 +130,29 @@ export default function Financial() {
 
                     <Button label="Adauga" icon="pi pi-external-link"
                         onClick={() => addContractItem()} />
-                    {
-                        item.length > 0 ?
-                            < DataTable
-                                className='pt-2'
-                                key="id"
-                                value={item} tableStyle={{ minWidth: '50rem' }}
-                                stripedRows
-                                sortMode="multiple"
-                                selectionMode="single"
-                                selection={selectedContractItem}
-                                onSelectionChange={(e) => {
-                                    setSelectedContractItem(e.value),
-                                        editContractItem(e.value.id)
-                                }}
-                            >
-                                <Column hidden field="id" header="id"></Column>
-                                <Column field="item.name" header="Articol"></Column>
-                                <Column field="frequency.name" header="Perioada"></Column>
-                                <Column field="currency.code" header="Valuta"></Column>
-                                <Column field="currencyValue" header="Pret"></Column>
-                                <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
-                            </DataTable>
-                            : null}
+                    {item.length !== 0 ?
+
+                        < DataTable
+                            className='pt-2'
+                            key="id"
+                            value={item} tableStyle={{ minWidth: '50rem' }}
+                            stripedRows
+                            sortMode="multiple"
+                            selectionMode="single"
+                            selection={selectedContractItem}
+                            onSelectionChange={(e) => {
+                                setSelectedContractItem(e.value),
+                                    editContractItem(e.value.id)
+                            }}
+                        >
+                            <Column hidden field="id" header="id"></Column>
+                            <Column field="item.name" header="Articol"></Column>
+                            <Column field="frequency.name" header="Perioada"></Column>
+                            <Column field="currency.code" header="Valuta"></Column>
+                            <Column field="currencyValue" header="Pret"></Column>
+                            <Column field="active" header="Activ" body={statusTemplate} style={{ width: '5vh' }} ></Column>
+                        </DataTable>
+                        : null}
                 </div>
             </div>
         </div >

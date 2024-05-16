@@ -421,29 +421,29 @@ export default function Documents() {
 
                     <Toast ref={toast} />
 
-                    {
-                        calattachmentsfiles.length > 0 ?
-                            <DataTable value={calattachmentsfiles} tableStyle={{ minWidth: '50rem' }}
-                                cellSelection selectionMode="single" selection={selectedCell}
-                                onSelectionChange={(e) => setSelectedCell(e.value)}
-                                onCellSelect={onCellSelect}
-                                //onCellUnselect={onCellUnselect}
-                                metaKeySelection={false}
-                                stripedRows
-                                // paginator rows={5} rowsPerPageOptions={[5, 10, 20, 40, 100]} 
-                                sortMode="multiple"
-                                dataKey="id">
-                                <Column hidden field="id" header="id" ></Column>
-                                <Column field="originalname" header="Nume Fisier" style={{ textAlign: 'left' }} ></Column>
-                                <Column hidden field="filename" header="filename" ></Column>
-                                <Column hidden field="path" header="path"></Column>
-                                <Column field="size" header="Marime Fisier(MB)" ></Column>
-                                <Column field="id" header="Sterge" body={deleteTemplate} style={{ width: '5vh' }} ></Column>
-                                <Column field="id" header="Salveaza" body={downloadTemplate} style={{ width: '5vh' }} ></Column>
-                                {/* <Column selectionMode="single" headerStyle={{ width: '3rem' }}></Column> */}
+                    {calattachmentsfiles.length !== 0 ?
 
-                            </DataTable>
-                            : null}
+                        <DataTable value={calattachmentsfiles} tableStyle={{ minWidth: '50rem' }}
+                            cellSelection selectionMode="single" selection={selectedCell}
+                            onSelectionChange={(e) => setSelectedCell(e.value)}
+                            onCellSelect={onCellSelect}
+                            //onCellUnselect={onCellUnselect}
+                            metaKeySelection={false}
+                            stripedRows
+                            // paginator rows={5} rowsPerPageOptions={[5, 10, 20, 40, 100]} 
+                            sortMode="multiple"
+                            dataKey="id">
+                            <Column hidden field="id" header="id" ></Column>
+                            <Column field="originalname" header="Nume Fisier" style={{ textAlign: 'left' }} ></Column>
+                            <Column hidden field="filename" header="filename" ></Column>
+                            <Column hidden field="path" header="path"></Column>
+                            <Column field="size" header="Marime Fisier(MB)" ></Column>
+                            <Column field="id" header="Sterge" body={deleteTemplate} style={{ width: '5vh' }} ></Column>
+                            <Column field="id" header="Salveaza" body={downloadTemplate} style={{ width: '5vh' }} ></Column>
+                            {/* <Column selectionMode="single" headerStyle={{ width: '3rem' }}></Column> */}
+
+                        </DataTable>
+                        : null}
 
                     <div className='pt-3'>
                         <Button label="Incarca Fisiere" icon="pi pi-external-link" onClick={() => setVisible(true)} />

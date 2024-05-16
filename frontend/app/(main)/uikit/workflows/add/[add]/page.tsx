@@ -384,7 +384,6 @@ export default function Tasks() {
             errors.push("Trebuie sa setati minim un utilizator!");
         }
 
-        console.log(fields[2])
         if (!fields[2].taskDueDateId) {
             errors.push("Trebuie sa setati data pana la care trebuie rezolvat task-ul!");
         }
@@ -526,12 +525,7 @@ export default function Tasks() {
             if (response.status == 200 || response.status == 201) {
                 showMessage('success', 'Salvat cu succes!', 'Ok');
 
-                // console.log(response, "res")
-
                 router.push(`${Frontend_BASE_URL}/uikit/workflows/edit/edit?Id=${response.data.id}`);
-
-                // http://localhost:5500/uikit/workflows/edit/edit?Id=2
-
             }
             else {
                 showMessage('error', 'Eroare', response.statusText)
