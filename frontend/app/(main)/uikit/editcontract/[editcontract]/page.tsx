@@ -1,7 +1,7 @@
 'use client';
 
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
@@ -35,7 +35,8 @@ import { Tag } from 'primereact/tag';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 
-export default function AddContract() {
+// export default function EditContract({ initialIndex : any }) 
+const EditContract = () => {
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -47,6 +48,19 @@ export default function AddContract() {
 
 
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const pathname = usePathname()
+
+
+
+    const Id = searchParams.get("Id");
+    const idxp = searchParams.get("idxp");
+
+    const urlsearchparams = new URLSearchParams(searchParams.toString())
+
+    const useparams = useParams()
+
+    // console.log(pathname, urlsearchparams, useparams)
 
 
 
@@ -59,8 +73,8 @@ export default function AddContract() {
     }, [])
 
 
-    const searchParams = useSearchParams()
-    const Id = searchParams.get("Id");
+
+
 
     const [IsAdditionalContract, setIsAdditionalContract] = useState(false);
 
@@ -96,18 +110,6 @@ export default function AddContract() {
                     console.log(error);
                 });
         }
-
-        // await fetch(`http://localhost:3000/contracts/details/${Id}`)
-        //     .then(response => {
-        //         return response.json()
-        //     })
-        //     .then(contractdetails => {
-        //         if (contractdetails.parentId > 0) {
-        //             setIsAdditionalContract(true)
-        //         }
-        //     })
-
-
     }
 
     useEffect(() => {
@@ -115,15 +117,31 @@ export default function AddContract() {
     }, [])
 
     const [number, setNumber] = useState();
-    const [activeIndex, setActiveIndex] = useState(0);
+    // const [activeIndex, setActiveIndex] = useState(initialIndex);
+
+
+    const [activeIndex, setActiveIndex] = useState(idxp);
+
+
+
+    useEffect(() => {
+        setActiveIndex(idxp);
+    }, [idxp]);
+
+    useEffect(() => {
+
+        router.push(`/uikit/editcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
+
+    }, [activeIndex]);
+
+
+    // console.log("idxp page", idxp, activeIndex)
+
+
 
     const items = [
         {
             label: 'Informatii generale', icon: 'pi pi-home'
-            // ,
-            // command: () => {
-            //     router.push('/uikit/addcontract');
-            // }
         },
         {
             label: 'Documente Atasate', icon: 'pi pi-inbox'
@@ -135,7 +153,6 @@ export default function AddContract() {
         {
             label: 'Acte Aditionale', icon: 'pi pi-clone'
         },
-
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
         { label: 'Flux aprobare', icon: 'pi pi-list' },
@@ -162,7 +179,7 @@ export default function AddContract() {
                     </div>
                     {/* <div className="p-fluid formgrid grid pt-2"> */}
 
-                    {activeIndex === 0 ?
+                    {activeIndex == 0 ?
 
                         <div>
                             <div className='pt-4'>
@@ -172,7 +189,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 1 ?
+                    {activeIndex == 1 ?
 
                         <div>
                             <div className='pt-4'>
@@ -183,7 +200,7 @@ export default function AddContract() {
                         : null
                     }
 
-                    {activeIndex === 2 && !IsAdditionalContract && (
+                    {activeIndex == 2 && !IsAdditionalContract && (
                         <div>
                             <div className='pt-4'>
                                 <Additional />
@@ -191,7 +208,7 @@ export default function AddContract() {
                         </div>
                     )}
 
-                    {activeIndex === 3 ?
+                    {activeIndex == 3 ?
 
                         <div>
                             <div className='pt-4'>
@@ -201,7 +218,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 4 ?
+                    {activeIndex == 4 ?
 
                         <div>
                             <div className='pt-4'>
@@ -211,7 +228,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 5 ?
+                    {activeIndex == 5 ?
 
                         <div>
                             <div className='pt-4'>
@@ -221,7 +238,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 6 ?
+                    {activeIndex == 6 ?
 
                         <div>
                             <div className='pt-4'>
@@ -231,7 +248,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 7 ?
+                    {activeIndex == 7 ?
 
                         <div>
                             <div className='pt-4'>
@@ -241,7 +258,7 @@ export default function AddContract() {
 
                         : null
                     }
-                    {activeIndex === 8 ?
+                    {activeIndex == 8 ?
 
                         <div>
                             <div className='pt-4'>
@@ -262,3 +279,5 @@ export default function AddContract() {
 
     );
 }
+
+export default EditContract;

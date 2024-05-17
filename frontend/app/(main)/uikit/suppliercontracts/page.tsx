@@ -218,12 +218,12 @@ function Contracts() {
 
     const editContract = (id: any) => {
         setIsPurchasing(true)
-        router.push(`/uikit/editcontract/ctr?Id=${id}`);
+        router.push(`/uikit/editcontract/ctr?Id=${id}&idxp=${0}`);
     }
 
     const addContract = () => {
         setIsPurchasing(true)
-        router.push(`/uikit/addcontract/ctr?Id=${0}`)
+        router.push(`/uikit/addcontract/ctr?Id=${0}&idxp=${0}`)
     }
 
     const [filters, setFilters] = useState({

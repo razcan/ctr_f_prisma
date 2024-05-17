@@ -113,9 +113,6 @@ export default function Tasks() {
                         // console.log(element.status.name)
                         tasks[index].statusWF = tasks[index].status
                     }
-                    // else {
-                    //     console.log(element.statusWF.name)
-                    // }
                 });
             })
     }

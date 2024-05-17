@@ -73,28 +73,6 @@ export default function Tasks() {
     const [users, setUsers] = useState([]);
 
 
-    const getRequestor = (id: number) => {
-        return users.find((obj) => obj.id === id);
-    };
-
-    const getStatusJson = (id: InputNumber) => {
-        return allStatus.find((obj) => obj.id === id);
-    };
-
-    const getPriorityJson = (id) => {
-        return priority.find((obj) => obj.id === id);
-
-    };
-
-    const fetchPriority = () => {
-        fetch(`${Backend_BASE_URL}/contracts/priority`)
-            .then(response => {
-                return response.json()
-            })
-            .then(priority => {
-                setPriority(priority)
-            })
-    }
 
 
     const fetchTasksData = () => {
@@ -104,144 +82,20 @@ export default function Tasks() {
             })
             .then(tasks => {
                 setTasks(tasks)
+
+                tasks.forEach((element: any, index: any) => {
+                    if (!element.uuid) {
+                        // console.log(element.status.name)
+                        tasks[index].statusWF = tasks[index].status
+                    }
+                });
             })
     }
-
-    const fetchTasksStatusData = () => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/taskStatus`)
-            .then(response => {
-                return response.json()
-            })
-            .then(allStatus => {
-                setAllStatus(allStatus)
-            })
-    }
-
-
-    const fetchUsers = async () => {
-        try {
-            const data = await fetchWithToken('nomenclatures/susers', { method: 'GET' });
-            setUsers(data)
-
-        } catch (error) {
-            if (error.message === 'No token found.') {
-                router.push(`${Backend_BASE_URL}/auth/login`);
-            } else {
-                console.error(error.message);
-            }
-        }
-    };
-
-    // http://localhost:3000/nomenclatures/users
-
-    //trebuie adusi utilizatorii in loc de persoane, in functie de entitatea cu care suntem logati
-    //in ui trebuie scos solicitantul pt ca se paote determina automat din context - campul ramande disabled
-    //de adugat o ruta si un view pentru lista taskurilor unui user cu link catre ctr
 
     useEffect(() => {
-        fetchTasksData(),
-            fetchTasksStatusData(),
-            fetchUsers(),
-            fetchPriority()
+        fetchTasksData()
     }, [])
 
-
-    // useEffect(() => {
-    //     fetchPersonsData(entityId)
-    // }, [entityId])
-
-
-    interface Task {
-        taskName: String,
-        contractId: Number,
-        progress: Number,
-        statusId: Number,
-        statusDate: Date,
-        requestorId: Number,
-        assignedId: Number,
-        due: Date,
-        notes: String
-    }
-
-    // const EditTask = async () => {
-
-    //     interface TaskId {
-    //         taskName: String,
-    //         progress: Number,
-    //         statusId: Number,
-    //         statusDate: Date,
-    //         requestorId: Number,
-    //         assignedId: Number,
-    //         due: Date,
-    //         notes: String
-    //     }
-
-    //     let TaskR: TaskId = {
-    //         taskName: selectedtaskName,
-    //         // contractId: contractId,
-    //         progress: Number.parseInt(selectedprogress, 10),
-    //         statusId: selectedstatus.id,
-    //         statusDate: selectedstatusDate,
-    //         requestorId: selectedrequestor,
-    //         assignedId: selectedassigned,
-    //         due: selecteddue,
-    //         notes: selectednotes
-
-    //     }
-
-    //     try {
-    //         const response = await axios.patch(`http://localhost:3000/contracts/task/${selectedtaskId}`,
-    //             TaskR
-    //         );
-    //         setVisible(false)
-    //         fetchTasksData()
-
-    //         console.log('Task added:', response.data);
-    //     } catch (error) {
-    //         console.error('Error adding task:', error);
-    //     }
-
-    // }
-
-    // const SaveTask = async () => {
-
-
-
-    //     let Task: Task = {
-    //         taskName: taskName,
-    //         contractId: Id,
-    //         progress: Number.parseInt(progress, 10),
-    //         statusId: status.id,
-    //         statusDate: statusDate,
-    //         requestorId: requestor.id,
-    //         assignedId: assigned.id,
-    //         due: due,
-    //         notes: notes
-    //     }
-
-    //     //console.log(Task)
-    //     try {
-    //         const response = await axios.post('http://localhost:3000/contracts/task',
-    //             Task
-    //         );
-    //         setVisible(false)
-    //         fetchTasksData()
-    //         setselectedTask(undefined)
-    //         setProgress(0)
-    //         setVisible(false)
-    //         setTaskName('')
-    //         setNotes('')
-
-    //         console.log('Task added:', response.data);
-    //     } catch (error) {
-    //         console.error('Error adding task:', error);
-    //     }
-
-    // }
-
-    const addtask = () => {
-        setVisible(true)
-    }
 
     const StatusDateTemplate = (rowData: any) => {
         const formattedDate = formatDate(rowData.statusDate);
@@ -268,158 +122,16 @@ export default function Tasks() {
     };
 
 
+    const goToContract = (contractId: any) => {
+        // router.push(`${Frontend_BASE_URL}/uikit/editcontract/ctr?Id=${contractId}`);
+        router.push(`/uikit/editcontract/ctr?Id=${contractId}&idxp=${6}`);
+    }
+
 
     return (
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
-
-                    <Dialog header="Task" visible={visible} style={{ width: '60vw' }} onHide={() => {
-                        setselectedTask(undefined)
-                        setProgress(0)
-                        setVisible(false)
-                        setTaskName('')
-                        setNotes('')
-
-                    }}>
-                        <div className='card'>
-                            <div className="grid">
-                                <div className="col-12">
-                                    {selectedTask ?
-                                        <div className="p-fluid formgrid grid pt-2">
-
-                                            <div className="field col-12  md:col-12">
-                                                <label htmlFor="taskName">Nume Task</label>
-                                                <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
-                                            </div>
-
-
-                                            <div className="field col-12 md:col-3">
-                                                <label htmlFor="status">Stare</label>
-                                                <Dropdown id="status" filter showClear value={getStatusJson(selectedstatus)} onChange={(e) => setselectedStatus(e.value.id)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
-                                            </div>
-
-                                            <div className="field col-12  md:col-9">
-                                                <label htmlFor="taskName">Motiv</label>
-                                                <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
-                                            </div>
-
-                                            <div className="field col-12 md:col-3">
-                                                <label className="font-bold block mb-2">
-                                                    De rezolvat pana la
-                                                </label>
-                                                <Calendar id="due" value={new Date(selecteddue)} onChange={(e) => setselectedDue(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                            </div>
-
-
-                                            <span className="field col-12 md:col-3">
-                                                <label htmlFor="selectedPriority">Prioritate</label>
-                                                <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
-                                                    filter showClear
-                                                    onChange={(e) => setSelectedPriority(e.value.id)}
-                                                    options={priority} optionLabel="name"
-                                                    placeholder="Select One" className="w-full" />
-                                            </span>
-
-                                            <div className="field col-12 md:col-3">
-                                                <label htmlFor="requestor">Solicitant</label>
-                                                <Dropdown id="requestor" filter showClear
-                                                    value={getRequestor(selectedrequestor)}
-
-                                                    disabled
-
-                                                    onChange={(e) => {
-                                                        setRequestor(e.value)
-                                                    }} options={users} optionLabel="name"
-                                                    placeholder="Select One"></Dropdown>
-                                            </div>
-
-                                            <div className="field col-12 md:col-3">
-                                                <label htmlFor="assigned">Asignat catre</label>
-                                                <Dropdown id="assigned" filter showClear
-                                                    value={getRequestor(selectedassigned)}
-                                                    onChange={(e) => setselectedAssigned(e.value.id)}
-                                                    options={users} optionLabel="name" placeholder="Select One"></Dropdown>
-                                            </div>
-
-
-
-                                            <div className="field col-12  md:col-12">
-                                                <label className="ml-2">Descriere Task</label>
-                                            </div>
-
-                                            <div className="field col-12  md:col-12">
-                                                <Editor value={selectednotes}
-                                                    style={{ height: '320px' }} />
-                                            </div>
-
-
-                                        </div>
-                                        :
-
-                                        <div>
-
-                                            <div className="p-fluid formgrid grid pt-2">
-
-
-                                                <div className="field col-12  md:col-6">
-                                                    <label htmlFor="taskName">Nume Task</label>
-                                                    <InputText id="taskName" type="text" value={taskName} onChange={(e) => setTaskName(e.target.value)} />
-
-                                                </div>
-
-                                                <div className="field col-12 md:col-3">
-                                                    <label htmlFor="status">Stare</label>
-                                                    <Dropdown id="status" filter showClear value={status} onChange={(e) => setStatus(e.value)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
-                                                </div>
-
-                                                <div className="field col-12 md:col-3">
-                                                    <label className="font-bold block mb-2">
-                                                        De rezolvat pana la data
-                                                    </label>
-                                                    <Calendar id="due" value={due} onChange={(e) => setDue(e.value)} showIcon dateFormat="dd/mm/yy" />
-                                                </div>
-
-
-                                                <div className="field col-12 md:col-3">
-                                                    <label htmlFor="requestor">Solicitant</label>
-                                                    <Dropdown id="requestor" filter showClear
-                                                        value={requestor}
-                                                        // value={getRequestor(requestor)}
-                                                        onChange={(e) => {
-                                                            setRequestor(e.value)
-
-                                                        }} options={users} optionLabel="name"
-                                                        placeholder="Select One"></Dropdown>
-                                                </div>
-
-                                                <div className="field col-12 md:col-3">
-                                                    <label htmlFor="">Asignat catre</label>
-                                                    <Dropdown id="assigned" filter showClear
-                                                        value={assigned} onChange={(e) => setAssigned(e.value)}
-                                                        options={users} optionLabel="name" placeholder="Select One"></Dropdown>
-                                                </div>
-
-
-
-                                                <div className="field col-12  md:col-12">
-                                                    <label className="ml-2">Descriere Task</label>
-                                                </div>
-
-                                                <div className="field-checkbox col-12 md:col-12">
-                                                    <InputTextarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} cols={60} />
-                                                </div>
-                                                {/* <div className="field-checkbox col-12 md:col-3">
-                                                    <Button label="Salveaza" onClick={SaveTask} />
-                                                </div> */}
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </Dialog>
-
 
                     {tasks.length > 0 ?
                         <DataTable
@@ -430,25 +142,17 @@ export default function Tasks() {
                             //selection={selectedTask} 
 
                             onSelectionChange={(e) => {
-                                setselectedRequestor(e.value.requestorId),
-                                    setselectedAssigned(e.value.assignedId),
-                                    setselectedTask(e.value), setselectedTaskName(e.value.taskName),
-                                    setselectedStatus(e.value.statusId),
-                                    setselectedDue(e.value.due),
-                                    setselectedNotes(e.value.notes),
-                                    setselectedtaskId(e.value.id),
-                                    setSelectedRejectedReason(e.value.rejected_reason),
-                                    setSelectedPriority(e.value.taskPriorityId),
-                                    setVisible(true)
-
+                                goToContract(e.value.contractId)
                             }}
                             stripedRows
                             sortMode="multiple"
-                            sortField="data"
+                            sortField="contract.number"
                             sortOrder={1}
                         >
-                            <Column hidden field="id" header="id"></Column>
-                            <Column field="status.name" header="Stare"></Column>
+                            <Column sortable field="id" header="id"></Column>
+                            <Column hidden field="contractId" header="contractId"></Column>
+                            <Column sortable field="contract.number" header="Nr. Contract"></Column>
+                            <Column sortable field="statusWF.name" header="Stare"></Column>
                             <Column field="requestor.name" header="Solicitant" ></Column>
                             <Column field="assigned.name" header="Responsabil"></Column>
                             <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
