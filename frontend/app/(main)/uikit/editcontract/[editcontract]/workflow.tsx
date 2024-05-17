@@ -74,6 +74,7 @@ export default function Content() {
                 .then(function (response) {
                     if (response.data) {
                         setWFHistory(response.data);
+
                     }
                 })
                 .catch(function (error) {
@@ -136,8 +137,10 @@ export default function Content() {
                     {wfHistory.length > 0 ?
 
                         <DataTable value={wfHistory} tableStyle={{ minWidth: '50rem' }}
-                            paginator rows={10} rowsPerPageOptions={[10, 20, 30, 50, 100]} sortMode="multiple"
+                            paginator rows={10} rowsPerPageOptions={[10, 20, 30, 50, 100]}
+                            sortMode="multiple"
                             sortField="createdAt"
+                        // sortOrder={8}
                         >
                             <Column field="workflowname" header="Denumire Flux"></Column>
                             <Column field="approvalOrderNumber" header="Numarul de ordine aprobare"></Column>
@@ -147,8 +150,6 @@ export default function Content() {
                             <Column field="user" header="Utilizator curent"></Column>
                             <Column field="status" header="Stare"></Column>
                             <Column field="createdAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
-
-
                         </DataTable>
                         : null}
                 </div>

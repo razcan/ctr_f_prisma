@@ -35,6 +35,7 @@ export default function Tasks() {
     const Id = parseInt(searchParams.get("Id"));
 
     const [visible, setVisible] = useState(false);
+    const [rejectVisible, setRejectVisible] = useState(false);
 
     const [taskName, setTaskName] = useState('');
 
@@ -104,17 +105,20 @@ export default function Tasks() {
                 return response.json()
             })
             .then(tasks => {
-                console.log(tasks)
+                // console.log(tasks)
                 setTasks(tasks)
-                setselectedRequestor(tasks.requestorId)
-                // if (tasks.length !== 0) {
-                //     setUUID(tasks[0].uuid);
-                // }
 
+                tasks.forEach((element: any, index: any) => {
+                    if (!element.uuid) {
+                        // console.log(element.status.name)
+                        tasks[index].statusWF = tasks[index].status
+                    }
+                    // else {
+                    //     console.log(element.statusWF.name)
+                    // }
+                });
             })
     }
-
-    console.log(uuid, "uuid")
 
     const fetchPriority = () => {
         fetch(`${Backend_BASE_URL}/contracts/priority`)
@@ -370,7 +374,7 @@ export default function Tasks() {
             axios(config)
                 .then(function (response) {
                     if (response.data) {
-
+                        setVisible(false);
                         console.log(response.data);
                     }
                 })
@@ -382,9 +386,55 @@ export default function Tasks() {
         }
     }
 
+    const rejectTaskVisible = () => {
+        setRejectVisible(true);
+    }
+
     const rejectTask = () => {
 
+        const session = sessionStorage.getItem('token');
+        const jwtToken = JSON.parse(session);
+
+        if (jwtToken && jwtToken.access_token) {
+            const jwtTokenf = jwtToken.access_token;
+
+            const roles = jwtToken.roles;
+            const entity = jwtToken.entity;
+            const config: AxiosRequestConfig = {
+                method: 'GET',
+                url: `${Backend_BASE_URL}/contracts/rejectTask/${uuid}`,
+                headers: {
+                    'user-role': `${roles}`,
+                    'entity': `${entity}`,
+                    'Authorization': `Bearer ${jwtTokenf}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            axios(config)
+                .then(function (response) {
+                    if (response.data) {
+
+                        console.log(response.data);
+                        setVisible(false);
+                        setRejectVisible(false);
+
+                    }
+                })
+                .catch(function (error) {
+                    router.push(`${Frontend_BASE_URL}/auth/login`)
+
+                    console.log(error);
+                });
+        }
     }
+
+    const cancelRejectTask = () => {
+        setRejectVisible(false);
+    }
+
+
+
 
     return (
         <div className="grid">
@@ -412,17 +462,14 @@ export default function Tasks() {
                                                 </div>
 
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label htmlFor="status">Stare</label>
                                                     <Dropdown id="status" filter showClear value={getStatusJson(selectedstatus)} onChange={(e) => setselectedStatus(e.value.id)} options={allStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
 
-                                                <div className="field col-12  md:col-9">
-                                                    <label htmlFor="taskName">Motiv</label>
-                                                    <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
-                                                </div>
 
-                                                <div className="field col-12 md:col-3">
+
+                                                <div className="field col-12 md:col-4">
                                                     <label className="font-bold block mb-2">
                                                         De rezolvat pana la
                                                     </label>
@@ -430,7 +477,7 @@ export default function Tasks() {
                                                 </div>
 
 
-                                                <span className="field col-12 md:col-3">
+                                                <span className="field col-12 md:col-4">
                                                     <label htmlFor="selectedPriority">Prioritate</label>
                                                     <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
                                                         filter showClear
@@ -439,7 +486,7 @@ export default function Tasks() {
                                                         placeholder="Select One" className="w-full" />
                                                 </span>
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label htmlFor="requestor">Solicitant</label>
                                                     <Dropdown id="requestor" filter showClear
                                                         value={getRequestor(selectedrequestor)}
@@ -450,7 +497,7 @@ export default function Tasks() {
                                                         placeholder="Select One"></Dropdown>
                                                 </div>
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label htmlFor="assigned">Asignat catre</label>
                                                     <Dropdown id="assigned" filter showClear
                                                         value={getRequestor(selectedassigned)}
@@ -483,21 +530,21 @@ export default function Tasks() {
                                             <div className="p-fluid formgrid grid pt-2">
 
                                                 <div className="field col-12  md:col-12">
-                                                    <label htmlFor="taskName">Nume Task{uuid}</label>
+                                                    <label htmlFor="taskName">Nume Task</label>
                                                     <InputText id="taskName" type="text" value={selectedtaskName} onChange={(e) => setselectedTaskName(e.target.value)} />
                                                 </div>
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label htmlFor="status">Stare</label>
                                                     <Dropdown disabled id="status" filter showClear value={getWFStatusJson(selectedWFstatus)} onChange={(e) => setSelectedWFStatus(e.value.id)} options={allWFStatus} optionLabel="name" placeholder="Select One"></Dropdown>
                                                 </div>
 
-                                                <div className="field col-12  md:col-9">
+                                                {/* <div className="field col-12  md:col-9">
                                                     <label htmlFor="taskName">Motiv</label>
                                                     <InputText id="taskName" type="text" value={selectedRejectedReason} onChange={(e) => setSelectedRejectedReason(e.target.value)} />
-                                                </div>
+                                                </div> */}
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label className="font-bold block mb-2">
                                                         De rezolvat pana la
                                                     </label>
@@ -505,7 +552,7 @@ export default function Tasks() {
                                                 </div>
 
 
-                                                <span className="field col-12 md:col-3">
+                                                <span className="field col-12 md:col-4">
                                                     <label htmlFor="selectedPriority">Prioritate</label>
                                                     <Dropdown id="selectedPriority" value={getPriorityJson(selectedPriority)}
                                                         filter showClear
@@ -514,7 +561,7 @@ export default function Tasks() {
                                                         placeholder="Select One" className="w-full" />
                                                 </span>
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label htmlFor="requestor">Solicitant</label>
                                                     <Dropdown id="requestor" filter showClear
                                                         value={getRequestor(selectedrequestor)}
@@ -525,7 +572,7 @@ export default function Tasks() {
                                                         placeholder="Select One"></Dropdown>
                                                 </div>
 
-                                                <div className="field col-12 md:col-3">
+                                                <div className="field col-12 md:col-4">
                                                     <label htmlFor="assigned">Asignat catre</label>
                                                     <Dropdown id="assigned" filter showClear
                                                         value={getRequestor(selectedassigned)}
@@ -546,12 +593,34 @@ export default function Tasks() {
                                                         style={{ height: '320px' }} />
                                                 </div>
 
-                                                <div className="field-checkbox col-12 md:col-3">
-                                                    {/* <Button label="Salveaza" onClick={EditTask} /> */}
-                                                    <Button label="Aproba" severity="success" onClick={approveTask} />
-                                                    <Button label="Respinge" severity="danger" onClick={rejectTask} />
 
-                                                    {/*rejectTask/:uuid , get , approveTask/:uuid */}
+
+                                                <div className="field col-12  md:col-12">
+                                                    <Dialog header="Motiv Respingere"
+                                                        visible={rejectVisible} style={{ width: '40vw' }}
+                                                        onHide={() => {
+                                                            setRejectVisible(false);
+
+                                                        }}>
+                                                        <div className="flex flex-row flex-wrap">
+                                                            <div className="flex align-items-center justify-content-center">
+                                                                <label htmlFor="taskName">Motiv</label>
+                                                                <InputText id="taskName" type="text" value={selectedRejectedReason}
+                                                                    onChange={(e) => setSelectedRejectedReason(e.target.value)} />
+                                                            </div>
+
+                                                            <div className="flex align-items-center justify-content-center">
+
+                                                                <Button label="Respinge" severity="danger" onClick={rejectTask} />
+                                                                <Button label="Renunta" severity="info" onClick={cancelRejectTask} />
+                                                            </div>
+                                                        </div>
+                                                    </Dialog>
+                                                </div>
+
+                                                <div className="field-checkbox col-12 md:col-3">
+                                                    <Button label="Aproba" severity="success" onClick={approveTask} />
+                                                    <Button label="Respinge" severity="danger" onClick={rejectTaskVisible} />
                                                 </div>
 
 
@@ -672,8 +741,8 @@ export default function Tasks() {
                                 }}
                                 stripedRows
                                 sortMode="multiple"
-                                sortField="data"
-                                sortOrder={1}
+                                sortField="updateadAt"
+                            // sortOrder={10}
                             >
                                 <Column hidden field="id" header="id"></Column>
                                 <Column hidden field="rejected_reason" header="rejected_reason"></Column>
@@ -682,16 +751,7 @@ export default function Tasks() {
                                 <Column field="due" header="Data Limita" body={DueDateTemplate} ></Column>
                                 <Column field="taskName" header="Denumire"></Column>
                                 <Column field="createdAt" header="Adaugat" body={CreatedDateTemplate} ></Column>
-                                <Column field="uuid" header="uuid" ></Column>
-
-                                {/* setUUID(tasks[0].uuid); */}
-
-
-                                {/* <Column field="status.name" header="Stare"></Column>
-
-                                <Column field="statusWF.name" header="Stare"></Column> */}
-
-
+                                <Column field="statusWF.name" header="Stare"></Column>
                                 <Column field="type" header="Tip"></Column>
                                 <Column field="updateadAt" header="Ultima Modificare" body={LastChangeTemplate}></Column>
 
