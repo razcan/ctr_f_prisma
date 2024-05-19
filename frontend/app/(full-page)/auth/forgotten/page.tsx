@@ -18,45 +18,44 @@ import { useEventListener } from 'primereact/hooks';
 const LogoutPage = () => {
 
     const useMyContext = () => useContext(MyContext);
-    const { userName, setUserName } = useMyContext();
-    const { userId, setUserId } = useMyContext();
-    const { picture, setPicture } = useMyContext();
-    const { userRoles, setUserRoles } = useMyContext();
-    const { isLoggedIn, setIsLoggedIn } = useMyContext();
+    const { Backend_BASE_URL } = useMyContext();
 
-    const [pressed, setPressed] = useState(false);
-    const [value, setValue] = useState('');
-
-
-    // console.log("roles: ", userRoles)
-
-    const [checked, setChecked] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
 
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
 
     const toast = useRef<any>(null);
-    const [visible, setVisible] = useState(true);
+    const [email, setEmail] = useState(true);
 
     const showSuccess = () => {
         toast.current.show(
-            { severity: 'success', summary: 'Success', detail: 'You are now disconnected', life: 1000 }
+            { severity: 'success', summary: 'Success', detail: 'Emailul de resetare a fost transmis!', life: 2000 }
         );
-        setTimeout(() => {
-            // setVisible(false)
-            router.push('/auth/login');
-        }, 2000);
     }
 
-    const Logout = async () => {
 
+    const showError = () => {
+        toast.current.show(
+            { severity: 'error', summary: 'Error', detail: 'Adresa de email nu este definita pentru niciun utilizator!', life: 2000 }
+        );
+
+    }
+
+    const checkUser = async () => {
         try {
-            sessionStorage.removeItem("token");
-            showSuccess()
+            const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/checkuser`,
+                { email });
+
+            if (response.data === 'Exist') {
+                showSuccess();
+            } else {
+                showError();
+            }
 
         } catch (error) {
-            localStorage.removeItem("token");
+
+            console.error('Error submitting :', error);
         }
     }
 
@@ -75,14 +74,28 @@ const LogoutPage = () => {
                         <Toast ref={toast} />
                         <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
                             <div className="text-center mb-5">
-                                <div className="text-900 text-3xl font-medium mb-3">Deconectare</div>
+                                <div className="text-900 text-3xl font-medium mb-3">Recuperare parola</div>
                             </div>
                             <div>
+
+                                <div className="pl-3">
+                                    <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
+                                        Utilizator
+                                    </label>
+                                    <InputText id="email1" type="text"
+                                        placeholder="Adresa de email utilizator"
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full md:w-30rem mb-5"
+                                        style={{ padding: '1rem' }}
+                                    />
+
+
+                                </div>
 
                                 <div className="flex align-items-center justify-content-between mb-5 gap-5">
 
                                 </div>
-                                <Button label="Logout" className="w-full p-3 text-xl" onClick={Logout}></Button>
+                                <Button label="Trimite" className="w-full p-3 text-xl" onClick={checkUser}></Button>
                             </div>
                         </div>
                     </div>

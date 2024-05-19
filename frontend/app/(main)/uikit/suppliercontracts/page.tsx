@@ -176,7 +176,8 @@ function Contracts() {
                     // if (response.status === 401) {
                     // }
                     setData([]);
-                    router.push(`${Frontend_BASE_URL}/auth/login`)
+                    router.push(`/auth/access`);
+                    // router.push(`${Frontend_BASE_URL}/auth/login`)
 
                     console.log(error);
                 });

@@ -25,7 +25,8 @@ const Charts = () => {
   useEffect(() => {
 
     if (!userId) {
-      router.push(`${Frontend_BASE_URL}/auth/login`)
+      // router.push(`${Frontend_BASE_URL}/auth/login`)
+      router.push(`/auth/access`);
     }
 
     setBreadCrumbItems(
