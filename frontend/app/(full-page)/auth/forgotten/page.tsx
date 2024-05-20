@@ -32,6 +32,10 @@ const LogoutPage = () => {
         toast.current.show(
             { severity: 'success', summary: 'Success', detail: 'Emailul de resetare a fost transmis!', life: 2000 }
         );
+        setTimeout(() => {
+            router.push('/auth/login');
+            // console.log("Delayed for 1 second.");
+        }, 1000);
     }
 
 
@@ -49,6 +53,12 @@ const LogoutPage = () => {
 
             if (response.data === 'Exist') {
                 showSuccess();
+
+                const add_request = await axios.post(`${Backend_BASE_URL}/nomenclatures/forgotpass`,
+                    { email });
+
+                console.log(add_request);
+
             } else {
                 showError();
             }
