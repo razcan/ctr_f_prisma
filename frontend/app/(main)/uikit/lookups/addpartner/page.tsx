@@ -10,7 +10,7 @@ import {
     QueryClientProvider,
     useQuery,
 } from '@tanstack/react-query'
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
@@ -27,15 +27,11 @@ import PartnerAddress from './address'
 import PartnerBank from './bank'
 import Person from './person'
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import dotenv from 'dotenv';
 
 const queryClient = new QueryClient();
 
 const Partner = () => {
-
-
-    // console.log("id ruta : ", params)
-    //const pathname = usePathname()
-    //const partnerid = useSearchParams().get("partnerid")
 
     const partnerid = 0;
 
@@ -56,6 +52,75 @@ const Partner = () => {
     const [bankIndex, setBankIndex] = useState<number>(0);
     const [dbPartnerId, setdbPartnerId] = useState<number>(-1);
     const [isVatPayer, setIsVatPayer] = useState(false);
+    const [API_KEY_Ac, setAPI_KEY] = useState();
+
+
+    useEffect(() => {
+
+        const API_KEY = process.env.NEXT_PUBLIC_API_KEY
+
+        setAPI_KEY(API_KEY)
+
+    }, [])
+
+
+    const url: string = `https://api.openapi.ro/api/companies/${fiscal_code}`;
+
+    const headers = {
+        'x-api-key': API_KEY_Ac
+    };
+
+
+    // Create the Axios request configuration
+    const config: AxiosRequestConfig = {
+        headers: headers
+    };
+
+    // Function to make the GET request
+    const getCompanyData = async () => {
+        if (fiscal_code !== null && fiscal_code !== 'undefined') {
+            try {
+                const response: AxiosResponse = await axios.get(url, config);
+                console.log('Status:', response.status);
+                console.log('Response:', response.data);
+
+                setName(response.data.denumire);
+                setCommercialReg(response.data.numar_reg_com);
+                setRemarks(response.data.adresa)
+                if (response.data.radiata == false) {
+                    setStatusType({ name: "Activ", code: "01" })
+                }
+
+                if (response.data.tva !== null || response.data.tva !== 'undifined') {
+                    setIsVatPayer(true)
+                }
+
+                setType({ name: "Furnizor", code: "02" });
+
+
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    if (error.response) {
+                        // The request was made and the server responded with a status code
+                        // that falls out of the range of 2xx
+                        console.log('Status:', error.response.status);
+                        console.log('Response:', error.response.data);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.log('Error Request:', error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log('Error Message:', error.message);
+                    }
+                } else {
+                    console.log('Unexpected Error:', error);
+                }
+            }
+        }
+
+    };
+
+
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -223,6 +288,9 @@ const Partner = () => {
                             ></Checkbox>
                             <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
                         </div>
+                        <div>
+                            <Button label="Preia Data ANAF" onClick={getCompanyData} />
+                        </div>
                     </div>
                 </div>
                 <div className="card">
@@ -265,3 +333,4 @@ const Partner = () => {
 }
 
 export default Partner;
+

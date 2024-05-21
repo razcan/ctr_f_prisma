@@ -134,11 +134,11 @@ const LoginPage = () => {
             setToken(response.data)
             setUserId(response.data.userid);
 
-            const initialsUN = getInitials(username)
+            const initialsUN = getInitials(username);
 
-            setUserName(initialsUN)
-            GetPicture(response.data.userid)
-            GetUserTasks(response.data.userid)
+            setUserName(initialsUN);
+            GetPicture(response.data.userid);
+            GetUserTasks(response.data.userid);
 
             // Remove the item from local storage
             sessionStorage.removeItem("token");

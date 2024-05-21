@@ -20,6 +20,7 @@
     "babel-polyfill": "^6.26.0",
     "chart.js": "4.2.1",
     "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.5",
     "draft-js": "^0.11.7",
     "file-saver": "^2.0.5",
     "html-pdf": "^3.0.1",

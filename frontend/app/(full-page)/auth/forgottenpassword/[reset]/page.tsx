@@ -36,10 +36,11 @@ export default function ForgottenPassword() {
     const searchParams = useSearchParams()
     const uuid = searchParams.get("uuid");
 
-    const toast = useRef(null);
+    const toast = useRef();
     const [password, setPassword] = useState('**');
     const [repassword, setRePassword] = useState('**');
     const [userData, setUserData] = useState('**');
+
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -50,24 +51,45 @@ export default function ForgottenPassword() {
 
 
 
-    const saveNewPass = async () => {
-        try {
-            const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/forgotpass/${uuid}`,
-                password
-            );
-            console.log('Password changed:', response.data);
-        } catch (error) {
-            console.error('Error password changing:', error);
-        }
+    const showSuccess = () => {
+        toast.current.show(
+            { severity: 'success', summary: 'Success', detail: 'Parola a fost moodificata.', life: 2000 }
+        );
+
+        setTimeout(() => {
+            router.push('/auth/login');
+        }, 2000);
     }
 
-    useEffect(() => {
-    }, [])
+    const showError = () => {
+        toast.current.show(
+            { severity: 'error', summary: 'Error', detail: 'Parola nu a putut fi confirmata! Reintroduceti aceeasi parola in ambele campuri.', life: 2000 }
+        );
+
+    }
 
 
-    useEffect(() => {
-    }, [])
+    const saveNewPass = async () => {
 
+
+        if (password !== repassword) {
+            showError()
+        }
+        else {
+            const add = { password: password }
+            try {
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/forgotpass/${uuid}`,
+                    add
+                );
+                showSuccess()
+                console.log('Password changed:', response.data);
+            } catch (error) {
+                console.error('Error password changing:', error);
+            }
+        }
+
+
+    }
 
 
     return (
@@ -78,8 +100,8 @@ export default function ForgottenPassword() {
                     <div className="col-12">
                         <div className="p-fluid formgrid grid pt-2">
 
-                            <Toast ref={toast}></Toast>
 
+                            <Toast ref={toast} />
 
 
                             <div className="field col-12  md:col-4">
