@@ -54,6 +54,7 @@ const Partner = () => {
     const [isVatPayer, setIsVatPayer] = useState(false);
     const [API_KEY_Ac, setAPI_KEY] = useState();
 
+    const toast = useRef<undefined | null | any>(null);
 
     useEffect(() => {
 
@@ -95,7 +96,7 @@ const Partner = () => {
                     setIsVatPayer(true)
                 }
 
-                setType({ name: "Furnizor", code: "02" });
+                // setType({ name: "Furnizor", code: "02" });
 
 
             } catch (error) {
@@ -166,6 +167,19 @@ const Partner = () => {
         isVatPayer?: any
     }
 
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
+
+
     const sendPartnerData = async () => {
         // console.log("nume", addressChild)
         //dupa ce se salveaza partenerul, se returneaza id-ul din bd si se stocheaza local ai toate apelurile ulterioare, sa contina partnerid
@@ -205,17 +219,19 @@ const Partner = () => {
                     addPartner
                 );
                 setdbPartnerId(response.data.id)
-                console.log('Partner added:', response.data);
-                console.log("db id", response.data.id)
+                // console.log('Partner added:', response.data);
+                showSuccess(`Partener adaugat cu succes!`)
             }
             else {
                 const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/partners/${dbPartnerId}`,
                     addPartner
                 );
+                showSuccess(`Partener editat cu succes!`)
                 console.log('Partner edited:', response.data);
             }
 
         } catch (error) {
+            showError('Eroare adaugare partener')
             console.error('Error creating partner:', error);
         }
     }

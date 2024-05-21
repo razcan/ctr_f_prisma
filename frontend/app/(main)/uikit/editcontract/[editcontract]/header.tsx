@@ -281,6 +281,7 @@ export default function EditContract() {
     const fetchContractData = async () => {
         await fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
             .then(response => {
+                console.log(response, "response")
                 return response.json()
             })
             .then(contractdetails => {

@@ -32,7 +32,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
     // console.log("params", params)
     const partnerid = params;
     const [visibleAddress, setVisibleAddress] = useState<any>('');
-
+    const toast = useRef<undefined | null | any>(null);
     const [addressName, setAddressName] = useState<any>('');
     const [selectedaddressType, setSelectedAddressType] = useState<any>('');
     const [Country, setCountry] = useState<any>({ "code": "RO", "name": "Romania" });
@@ -67,6 +67,20 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
         Frontend_BASE_URL, isPurchasing, setIsPurchasing
         , isLoggedIn, login, userId
     } = useMyContext();
+
+
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
+
 
     const filterbycounty = () => {
 
@@ -112,7 +126,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
     const fetchPartnerAddress = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${partnerid}`).then(res => res.json())
         setReceivedAddress(response);
-        console.log(response);
+        // console.log(response);
     }
 
     // console.log("partnerid", partnerid)
@@ -144,10 +158,10 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
         if (selectedAddress.id) {
             let updateAddress: Address = {
                 addressName: addressName,
-                addressType: selectedaddressType.name,
-                Country: Country.name,
-                County: County.judet,
-                City: City.localitate,
+                addressType: ((selectedaddressType) ? selectedaddressType.name : undefined),
+                Country: ((Country) ? Country.name : undefined),
+                County: ((County) ? County.judet : undefined),
+                City: ((City) ? City.localitate : undefined),
                 Street: Street,
                 Number: Number,
                 postalCode: postalCode,
@@ -178,10 +192,10 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
         else {
             let addAddress: Address = {
                 addressName: addressName,
-                addressType: selectedaddressType.name,
-                Country: Country.name,
-                County: County.judet,
-                City: City.localitate,
+                addressType: ((selectedaddressType) ? selectedaddressType.name : undefined),
+                Country: ((Country) ? Country.name : undefined),
+                County: ((County) ? County.judet : undefined),
+                City: ((City) ? City.localitate : undefined),
                 Street: Street,
                 Number: Number,
                 postalCode: postalCode,

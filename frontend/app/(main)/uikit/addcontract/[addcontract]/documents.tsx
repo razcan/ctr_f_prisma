@@ -22,6 +22,9 @@ import axios, { AxiosRequestConfig } from 'axios';
 export default function Documents() {
 
     const router = useRouter();
+    const searchParams = useSearchParams()
+    const Id = searchParams.get("Id");
+
     const [selectedFile, setSelectedFile] = useState<any>([]);
     const [selectedoriginalname, setSelecteoriginalname] = useState<any>([]);
     const [attachmentsfiles, setAttachmentsfiles] = useState<any>([]);
@@ -161,7 +164,7 @@ export default function Documents() {
             const entity = jwtToken.entity;
             const config: AxiosRequestConfig = {
                 method: 'get',
-                url: `${Backend_BASE_URL}/contracts/file/${value}`,
+                url: `${Backend_BASE_URL}/contracts/file/${Id}`,
                 headers: {
                     'user-role': `${roles}`,
                     'entity': `${entity}`,
@@ -418,7 +421,7 @@ export default function Documents() {
         return <div>Doriti stergerea fisierului {selectedoriginalname}?</div>
     }
 
-    const url_link = `${Backend_BASE_URL}/contracts/file/${value}`
+    const url_link = `${Backend_BASE_URL}/contracts/file/${Id}`
 
 
     return (

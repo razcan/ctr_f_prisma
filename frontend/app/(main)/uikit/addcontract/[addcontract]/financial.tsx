@@ -43,7 +43,7 @@ export default function Financial() {
 
 
     const fetchTypeData = () => {
-        fetch(`${Backend_BASE_URL}/contracts/contractItems/${value}`)
+        fetch(`${Backend_BASE_URL}/contracts/contractItems/${Id}`)
             .then(response => {
                 return response.json()
             })

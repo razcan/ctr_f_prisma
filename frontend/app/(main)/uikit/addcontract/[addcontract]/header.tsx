@@ -239,7 +239,6 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
 
-
     const fetchTypeData = () => {
         fetch(`${Backend_BASE_URL}/nomenclatures/contracttype`)
             .then(response => {
@@ -268,7 +267,6 @@ export default function HeaderContract({ setContractId }: any) {
                 setContractWFStatus(status)
             })
     }
-
 
     const fetchCategoriesData = () => {
         fetch(`${Backend_BASE_URL}/contracts/category`)
@@ -363,6 +361,199 @@ export default function HeaderContract({ setContractId }: any) {
             })
     }
 
+    function subtractDays(date: Date, days: number): Date {
+        const result = new Date(date);
+        result.setDate(result.getDate() - days);
+        return result;
+    }
+    const [contractDetails, setContractDetails] = useState([]);
+    const [partnerbankId, setPartnerbankId] = useState('');
+    const [partneraddressId, setPartneraddressId] = useState('');
+    const [entitybankId, setEntitybankId] = useState('');
+    const [entityaddressId, setEntityaddressId] = useState('');
+    const [ent_person, setEnt_person] = useState([]);
+    const [ent_selected_person, setEnt_selected_person] = useState();
+    const [party_person, setParty_person] = useState<any>([]);
+    const [entityPersons, setEntityPersons] = useState([]);
+    const [entityBanks, setEntityBanks] = useState([]);
+    const [entityAddress, setEntityAddress] = useState([]);
+    const [partnerPersons, setPartnerPersons] = useState([]);
+    const [partnerBanks, setPartnerBanks] = useState([]);
+    const [partnerAddress, setPartnerAddress] = useState([]);
+
+    const getPersonJson = (name: string) => {
+        return entityPersons.find((obj) => obj.name === name);
+    };
+    const getPartnerPersonJson = (name: string) => {
+        return partnerPersons.find((obj) => obj.name === name);
+    };
+    const getBankJson = (iban: string) => {
+        return entityBanks.find((obj) => obj.iban === iban);
+    };
+    const getPartnerBankJson = (iban: string) => {
+        return partnerBanks.find((obj) => obj.iban === iban);
+    };
+    const getAddressJson = (id: string) => {
+        return entityAddress.find((obj) => obj.id === id);
+    };
+    const getPartnerAddressJson = (id: string) => {
+        return partnerAddress.find((obj) => obj.id === id);
+    };
+
+    const fetchContractData = async () => {
+        await fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
+            .then(response => {
+                console.log(response, "response")
+                return response.json()
+            })
+            .then(contractdetails => {
+                setContractDetails(contractdetails)
+
+
+                if (contractdetails.PartnerBank !== null && contractdetails.PartnerBank !== undefined) {
+                    setPartnerbankId(contractdetails.PartnerBank.id)
+                }
+
+                if (contractdetails.PartnerAddress !== null && contractdetails.PartnerAddress !== undefined) {
+                    setPartneraddressId(contractdetails.PartnerAddress.id)
+                }
+
+
+                const referenceDate = new Date('2024-01-01T00:00:00+00:00');
+
+                setEntitybankId(contractdetails.EntityBank.id)
+                setEntityaddressId(contractdetails.EntityAddress.id)
+
+                const formated_start_date = new Date(subtractDays(contractdetails.start, 1));
+                const formated_end_date = new Date(subtractDays(contractdetails.end, 1));
+                const formated_completion_date = new Date(subtractDays(contractdetails.completion, 1));
+                const formated_sign_date = new Date(subtractDays(contractdetails.sign, 1));
+
+                setStartDate(formated_start_date)
+
+                setEndDate(formated_end_date)
+
+                setCompletionDate(formated_completion_date)
+
+                setSignDate(formated_sign_date)
+
+                if (formated_completion_date < referenceDate) {
+                    setCompletionDate('')
+                }
+                else setCompletionDate(formated_completion_date)
+
+                if (formated_sign_date < referenceDate) {
+                    setSignDate('')
+                }
+                else setSignDate(formated_sign_date)
+
+
+
+
+                setNumber(contractdetails.number)
+                setAutomaticRenewal(contractdetails.automaticRenewal)
+
+                setType(contractdetails.type)
+                setStatus(contractdetails.status)
+                setStatusWF(contractdetails.statusWF)
+                setSelectedCategory(contractdetails.Category)
+                setSelectedDepartment(contractdetails.departament)
+                setSelectedLocation(contractdetails.location)
+                setSelectedCostCenter(contractdetails.costcenter)
+                setSelectedCashflow(contractdetails.cashflow)
+
+                setSelectedEntity(contractdetails.entity)
+                setSelectedPartner(contractdetails.partner)
+
+                if (contractdetails.EntityPerson !== null && contractdetails.EntityPerson !== undefined) {
+                    setEnt_person(contractdetails.EntityPerson.name)
+                }
+
+                if (contractdetails.PartnerPerson !== null && contractdetails.PartnerPerson !== undefined) {
+                    setParty_person(contractdetails.PartnerPerson.name)
+                }
+
+
+
+                const fetchEntityPersons = async () => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.entity.id}`).then(res => res.json().then(res => {
+                        setEntityPersons(res);
+                        console.log(res, "rex")
+                    })
+                    )
+                }
+                fetchEntityPersons()
+
+                const fetchEntityBanks = async () => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${contractdetails.entity.id}`).then(res => res.json())
+                    setEntityBanks(response);
+                }
+                fetchEntityBanks()
+                const fetchEntityAddress = async () => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${contractdetails.entity.id}`).then(res => res.json())
+                    setEntityAddress(response);
+                }
+                fetchEntityAddress()
+
+                setEnt_id(contractdetails.EntityPerson.id)
+                setEnt_name(contractdetails.EntityPerson.name)
+                setEnt_email(contractdetails.EntityPerson.email)
+                setEnt_phone(contractdetails.EntityPerson.phone)
+                setEnt_legal_person(contractdetails.EntityPerson.legalrepresent)
+                setEnt_role(contractdetails.EntityPerson.role)
+                setEnt_IBAN(contractdetails.EntityBank.iban)
+                setEnt_bank(contractdetails.EntityBank.bank)
+                setEnt_Address(contractdetails.EntityAddress.id)
+
+                const fetchPartnerPersons = async () => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.partner.id}`).then(res => res.json().then(res => {
+                        setPartnerPersons(res);
+                        // console.log(res)
+
+                        if (contractdetails.PartnerPerson !== null && contractdetails.PartnerPerson !== undefined) {
+
+                            setParty_id(contractdetails.PartnerPerson.id)
+                            setParty_name(contractdetails.PartnerPerson.name)
+                            setParty_email(contractdetails.PartnerPerson.email)
+                            setParty_phone(contractdetails.PartnerPerson.phone)
+                            setParty_legal_person(contractdetails.PartnerPerson.legalrepresent)
+                            setParty_role(contractdetails.PartnerPerson.role)
+                        }
+                    })
+                    )
+                }
+                fetchPartnerPersons()
+
+                const fetchPartnerBanks = async () => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${contractdetails.partner.id}`).then(res => res.json())
+                    setPartnerBanks(response);
+                }
+                fetchPartnerBanks()
+                const fetchPartnerAddress = async () => {
+                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${contractdetails.partner.id}`).then(res => res.json())
+                    setPartnerAddress(response);
+                }
+                fetchPartnerAddress()
+
+                if (contractdetails.partner !== null && contractdetails.partner !== undefined) {
+                    setParty_id(contractdetails.partner.id)
+                    setParty_name(contractdetails.partner.name)
+                    setParty_email(contractdetails.partner.email)
+                    setParty_phone(contractdetails.partner.phone)
+                    setParty_legal_person(contractdetails.partner.legalrepresent)
+                    setParty_role(contractdetails.partner.role)
+                }
+
+                if (contractdetails.PartnerBank !== null && contractdetails.PartnerBank !== undefined) {
+                    setParty_IBAN(contractdetails.PartnerBank.iban)
+                    setParty_bank(contractdetails.PartnerBank.bank)
+                }
+                setParty_Address(contractdetails.partneraddressId)
+
+                setRemarks(contractdetails.remarks)
+            })
+    }
+
     useEffect(() => {
         fetchCategoriesData(),
             fetchDepartmentsData(),
@@ -377,6 +568,16 @@ export default function HeaderContract({ setContractId }: any) {
             fetchLocationData(),
             fetchWFStatusData()
     }, [])
+
+
+    useEffect(() => {
+        if (Id > 0) {
+            fetchContractData()
+        }
+
+    }, [Id])
+
+
     interface ValidationResult {
         isValid: boolean;
         errors: string[];
@@ -536,7 +737,7 @@ export default function HeaderContract({ setContractId }: any) {
 
                 if (response.status == 200 || response.status == 201) {
                     showMessage('success', 'Salvat cu succes!', 'Ok');
-                    router.push(`/uikit/addcontract/ctr?Id=${response.data.id}`)
+                    router.push(`/uikit/addcontract/ctr?Id=${response.data.id}&idxp=${0}`)
                 }
                 else {
                     showMessage('error', 'Eroare', response.statusText)
@@ -593,7 +794,8 @@ export default function HeaderContract({ setContractId }: any) {
                                             <Dropdown id="entity"
                                                 filter
                                                 showClear
-                                                value={ent_name}
+                                                // value={ent_name}
+                                                value={getPersonJson(ent_person)}
                                                 onChange={(e) => {
                                                     setEnt_id(e.target.value.id)
                                                     setEnt_name(e.target.value)

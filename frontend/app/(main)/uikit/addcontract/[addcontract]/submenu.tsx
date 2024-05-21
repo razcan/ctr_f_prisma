@@ -1,44 +1,26 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { permanentRedirect } from 'next/navigation'
-import { revalidateTag } from 'next/cache'
-import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
-import { PrimeReactProvider, PrimeReactContext, PrimeIcons } from 'primereact/api';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
+import React, { useState, useEffect, useRef } from 'react';
 import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { Editor } from 'primereact/editor';
-import axios from 'axios';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-    useMutation,
-    useQueryClient
-} from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
 import Documents from './documents'
 import HeaderContract from './header';
-import Additional from './additional'
 import Financial from './financial'
 import Content from './content'
-import History from './history'
-import Alerts from './alerts';
 import Tasks from './tasks'
 import { useSearchParams } from 'next/navigation'
 import { Toast } from 'primereact/toast';
 import { DataProvider, useData } from './DataContext';
-import { Tag } from 'primereact/tag';
 
 export default function Submenu() {
 
-    const router = useRouter();
+
+
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const idxp = searchParams.get("idxp");
+    const Id = searchParams.get("Id");
+
     const [activeIndex, setActiveIndex] = useState(0);
     const [paramId, setParamId] = useState(0);
     const toast = useRef(null);
@@ -65,6 +47,7 @@ export default function Submenu() {
         // { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
     ];
 
+    console.log(Id, "Id", activeIndex, "activeIndex")
     const showError = () => {
         toast.current.show({
             severity: 'error', summary: 'Error',
@@ -72,7 +55,6 @@ export default function Submenu() {
         });
     }
 
-    const searchParams = useSearchParams()
 
     const changeTab = (e) => {
         setParamId(parseInt(searchParams.get("Id")));
@@ -81,12 +63,28 @@ export default function Submenu() {
         }
         else if (paramId != 0) {
             setActiveIndex(e)
+            router.push(`/uikit/addcontract/ctr?Id=${Id}&idxp=${e}`)
         }
     }
 
     useEffect(() => {
         setParamId(parseInt(searchParams.get("Id")));
     }, [])
+
+
+
+
+    // useEffect(() => {
+    //     setActiveIndex(idxp);
+    // }, [idxp]);
+
+    useEffect(() => {
+
+        // router.push(`/uikit/editcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
+        router.push(`/uikit/addcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
+
+    }, [activeIndex]);
+
 
 
     useEffect(() => {
@@ -111,7 +109,7 @@ export default function Submenu() {
 
                             {/* <div className="p-fluid formgrid grid pt-2"> */}
 
-                            {activeIndex === 0 ?
+                            {activeIndex == 0 ?
 
                                 <div>
                                     <div className='pt-4'>
@@ -123,7 +121,7 @@ export default function Submenu() {
 
                                 : null
                             }
-                            {activeIndex === 1 ?
+                            {activeIndex == 1 ?
 
                                 <div>
                                     <div className='pt-4'>
@@ -143,7 +141,7 @@ export default function Submenu() {
 
                                 : null
                             } */}
-                            {activeIndex === 2 ?
+                            {activeIndex == 2 ?
 
                                 <div>
                                     <div className='pt-4'>
@@ -153,7 +151,7 @@ export default function Submenu() {
 
                                 : null
                             }
-                            {activeIndex === 3 ?
+                            {activeIndex == 3 ?
 
                                 <div>
                                     <div className='pt-4'>
@@ -163,7 +161,7 @@ export default function Submenu() {
 
                                 : null
                             }
-                            {activeIndex === 4 ?
+                            {activeIndex == 4 ?
 
                                 <div>
                                     <div className='pt-4'>

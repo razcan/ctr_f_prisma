@@ -17,12 +17,14 @@ import { DataProvider, useData } from './DataContext';
 
 export default function AddContract() {
 
+
     const router = useRouter();
     const [number, setNumber] = useState();
     const [activeIndex, setActiveIndex] = useState(0);
     const [paramId, setParamId] = useState(0);
     const toast = useRef(null);
-
+    const searchParams = useSearchParams()
+    const idxp = searchParams.get("idxp");
 
     return (
         <DataProvider >
