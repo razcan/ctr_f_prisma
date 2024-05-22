@@ -98,7 +98,6 @@ export default function Tasks() {
             })
             .then(tasks => {
                 setTasks(tasks)
-                console.log(tasks, "tasks")
                 setselectedRequestor(tasks.requestorId)
             })
     }

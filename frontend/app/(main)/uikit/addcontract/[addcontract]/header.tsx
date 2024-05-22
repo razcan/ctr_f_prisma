@@ -1,32 +1,21 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { permanentRedirect } from 'next/navigation'
-import { revalidateTag } from 'next/cache'
-import React, { useState, useEffect, useMemo, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
+import { Checkbox } from "primereact/checkbox";
 import { Calendar } from 'primereact/calendar';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { InputTextarea } from "primereact/inputtextarea";
-import { Editor } from 'primereact/editor';
 import axios from 'axios';
 import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-    useMutation,
-    useQueryClient
+    QueryClient
 } from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
-import Documents from './documents';
 import { useSearchParams } from 'next/navigation'
 import { useData } from './DataContext';
-import { DataProvider } from './DataContext';
-import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import { MyContext } from '../../../../../layout/context/myUserContext'
 import { Toast } from 'primereact/toast';
 
 
@@ -92,7 +81,10 @@ export default function HeaderContract({ setContractId }: any) {
     const useMyContext = () => useContext(MyContext);
     const {
         fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing,
+    } = useMyContext();
+
+    const { actualContractId, setactualContractId } = useMyContext();
 
 
     const { userId, setUserId } = useMyContext();
@@ -139,8 +131,6 @@ export default function HeaderContract({ setContractId }: any) {
     const [partnerdetails, setPartnerdetails] = useState([]);
     const [entitydetails, setEntitydetails] = useState([]);
 
-    // const [selectedCostCenter, setSelectedCostCenter] = useState([]);
-
     const [automaticRenewalValue, setAutomaticRenewal] = useState<any>(false);
 
     const [ent_name, setEnt_name] = useState();
@@ -169,7 +159,6 @@ export default function HeaderContract({ setContractId }: any) {
 
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
-    const [paramId, setParamId] = useState(0);
     const [dynamicFields, setDynamicFields] = useState([]);
 
     const [dffInt1, setdffInt1] = useState('');
@@ -403,11 +392,12 @@ export default function HeaderContract({ setContractId }: any) {
     const fetchContractData = async () => {
         await fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
             .then(response => {
-                console.log(response, "response")
+
                 return response.json()
             })
             .then(contractdetails => {
                 setContractDetails(contractdetails)
+                console.log(contractdetails, "contractdetails")
 
 
                 if (contractdetails.PartnerBank !== null && contractdetails.PartnerBank !== undefined) {
@@ -478,7 +468,7 @@ export default function HeaderContract({ setContractId }: any) {
                 const fetchEntityPersons = async () => {
                     const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.entity.id}`).then(res => res.json().then(res => {
                         setEntityPersons(res);
-                        console.log(res, "rex")
+
                     })
                     )
                 }
@@ -496,7 +486,8 @@ export default function HeaderContract({ setContractId }: any) {
                 fetchEntityAddress()
 
                 setEnt_id(contractdetails.EntityPerson.id)
-                setEnt_name(contractdetails.EntityPerson.name)
+                // setEnt_name(contractdetails.EntityPerson.name)
+                setEnt_name(getPersonJson(contractdetails.EntityPerson.name))
                 setEnt_email(contractdetails.EntityPerson.email)
                 setEnt_phone(contractdetails.EntityPerson.phone)
                 setEnt_legal_person(contractdetails.EntityPerson.legalrepresent)
@@ -504,6 +495,7 @@ export default function HeaderContract({ setContractId }: any) {
                 setEnt_IBAN(contractdetails.EntityBank.iban)
                 setEnt_bank(contractdetails.EntityBank.bank)
                 setEnt_Address(contractdetails.EntityAddress.id)
+
 
                 const fetchPartnerPersons = async () => {
                     const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.partner.id}`).then(res => res.json().then(res => {
@@ -729,8 +721,7 @@ export default function HeaderContract({ setContractId }: any) {
                 const response = await axios.post(`${Backend_BASE_URL}/contracts`,
                     toSend
                 );
-
-                setParamId(response.data.id)
+                setactualContractId(response.data.id)
                 setContractId(response.data.id)
                 updateValue(response.data.id)
 
@@ -742,8 +733,6 @@ export default function HeaderContract({ setContractId }: any) {
                 else {
                     showMessage('error', 'Eroare', response.statusText)
                 }
-
-                // console.log('Contract added:', response.data);
             } catch (error) {
                 console.error('Error creating contract:', error);
             }
@@ -752,7 +741,8 @@ export default function HeaderContract({ setContractId }: any) {
 
 
     }
-
+    console.log(ent_name, "ent_name")
+    console.log(getPersonJson(ent_name), "functie")
     return (
         <div className="grid">
             <Toast ref={toast} position="top-right" />
@@ -782,31 +772,29 @@ export default function HeaderContract({ setContractId }: any) {
                                                 value={selectedEntity}
                                                 onChange={(e) => {
                                                     setSelectedEntity(e.value)
-                                                    // fetchPartnersDetailsData(e.value.id)
                                                     fetchEntityDetailsData(e.value.id)
 
                                                 }}
                                                 options={entity}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
+
                                         <div className="field col-12 md:col-3">
-                                            <label htmlFor="entity">Nume Responsabil</label>
-                                            <Dropdown id="entity"
-                                                filter
-                                                showClear
-                                                // value={ent_name}
+                                            <label htmlFor="entity_person">Nume Responsabil</label>
+                                            <Dropdown id="entity_person"
                                                 value={getPersonJson(ent_person)}
+                                                filter
                                                 onChange={(e) => {
                                                     setEnt_id(e.target.value.id)
-                                                    setEnt_name(e.target.value)
+                                                    setEnt_name(e.target.value.name)
+                                                    setEnt_person(e.target.value.name)
                                                     setEnt_email(e.target.value.email)
                                                     setEnt_phone(e.target.value.phone)
                                                     setEnt_legal_person(e.target.value.legalrepresent)
                                                     setEnt_role(e.target.value.role)
-
                                                 }
                                                 }
-                                                options={entitydetails.Persons}
+                                                options={entityPersons}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
                                         <div className="field col-12  md:col-3">
@@ -832,24 +820,24 @@ export default function HeaderContract({ setContractId }: any) {
                                         </div>
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="ent_iban">IBAN</label>
-                                            <Dropdown id="entity" showClear value={ent_iban}
-                                                filter
+                                            <Dropdown id="iban" filter value={getBankJson(ent_iban)}
                                                 onChange={(e) => {
-                                                    setEnt_IBAN(e.target.value)
+                                                    setEnt_IBAN(e.target.value.iban)
                                                     setEnt_bank(e.target.value.bank)
-                                                }
-                                                }
-                                                options={entitydetails.Banks}
+                                                    setEntitybankId(e.target.value.id)
+                                                }}
+                                                options={entityBanks}
                                                 optionLabel="iban" placeholder="Select One"></Dropdown>
                                         </div>
+
                                         <div className="field col-12  md:col-12">
-                                            <label htmlFor="number">Adresa</label>
-                                            <Dropdown id="entity" showClear value={ent_address}
+                                            <label htmlFor="ent_address">Adresa</label>
+                                            <Dropdown id="ent_address" filter value={getAddressJson(ent_address)}
                                                 onChange={(e) => {
-                                                    setEnt_Address(e.target.value)
-                                                }
-                                                }
-                                                options={entitydetails.Address}
+                                                    // console.log("adresa", e.target.value)
+                                                    setEnt_Address(e.target.value.id)
+                                                }}
+                                                options={entityAddress}
                                                 optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                         </div>
@@ -880,10 +868,10 @@ export default function HeaderContract({ setContractId }: any) {
                                                 options={partner}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
+
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="party_name">Nume Responsabil</label>
-                                            <Dropdown id="entity" showClear value={party_name}
-                                                filter
+                                            <Dropdown id="party_name" value={getPartnerPersonJson(party_name)} filter
                                                 onChange={(e) => {
                                                     setParty_id(e.target.value.id)
                                                     setParty_name(e.target.value)
@@ -891,9 +879,8 @@ export default function HeaderContract({ setContractId }: any) {
                                                     setParty_phone(e.target.value.phone)
                                                     setParty_legal_person(e.target.value.legalrepresent)
                                                     setParty_role(e.target.value.role)
-                                                }
-                                                }
-                                                options={partnerdetails.Persons}
+                                                }}
+                                                options={partnerPersons}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
                                         <div className="field col-12  md:col-3">
@@ -917,27 +904,27 @@ export default function HeaderContract({ setContractId }: any) {
                                             <label htmlFor="ent_legal_person">Banca</label>
                                             <InputText disabled id="ent_legal_person" type="text" value={party_bank} />
                                         </div>
+
                                         <div className="field col-12  md:col-3">
-                                            <label htmlFor="ent_iban">IBAN</label>
-                                            <Dropdown id="party" showClear value={party_iban}
-                                                filter
+                                            <label htmlFor="party_iban">IBAN</label>
+                                            <Dropdown id="party_iban" value={getPartnerBankJson(party_iban)} filter
                                                 onChange={(e) => {
-                                                    setParty_IBAN(e.target.value)
+                                                    setParty_IBAN(e.target.value.iban)
                                                     setParty_bank(e.target.value.bank)
-                                                }
-                                                }
-                                                options={partnerdetails.Banks}
+                                                    setPartnerbankId(e.target.value.id)
+                                                    //console.log(e.target.value)
+                                                }}
+                                                options={partnerBanks}
                                                 optionLabel="iban" placeholder="Select One"></Dropdown>
                                         </div>
+
                                         <div className="field col-12  md:col-12">
-                                            <label htmlFor="number">Adresa</label>
-                                            <Dropdown id="entity" showClear value={party_address}
-                                                filter
+                                            <label htmlFor="party_address">Adresa</label>
+                                            <Dropdown id="party_address" value={getPartnerAddressJson(party_address)} filter
                                                 onChange={(e) => {
                                                     setParty_Address(e.target.value)
-                                                }
-                                                }
-                                                options={partnerdetails.Address}
+                                                }}
+                                                options={partnerAddress}
                                                 optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                         </div>

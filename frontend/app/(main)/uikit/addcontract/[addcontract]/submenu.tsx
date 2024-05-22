@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { TabMenu } from 'primereact/tabmenu';
 import Documents from './documents'
 import HeaderContract from './header';
@@ -11,22 +11,33 @@ import Tasks from './tasks'
 import { useSearchParams } from 'next/navigation'
 import { Toast } from 'primereact/toast';
 import { DataProvider, useData } from './DataContext';
+import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 export default function Submenu() {
 
+    const useMyContext = () => useContext(MyContext);
+    const {
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
 
+
+    const { actualContractId, setactualContractId } = useMyContext();
 
     const router = useRouter()
     const searchParams = useSearchParams()
     const idxp = searchParams.get("idxp");
     const Id = searchParams.get("Id");
 
+    setactualContractId(parseInt(searchParams.get("Id")));
+
+
     const [activeIndex, setActiveIndex] = useState(0);
-    const [paramId, setParamId] = useState(0);
+    // const [paramId, setParamId] = useState(parseInt(searchParams.get("Id")));
     const toast = useRef(null);
-    const [contractId, setContractId] = useState<number>(0);
+    const [contractId, setContractId] = useState<number>(parseInt(searchParams.get("Id")));
     const { value, updateValue } = useData();
     const [renderCount, setRenderCount] = useState(0);
+
 
     const items = [
         {
@@ -35,19 +46,11 @@ export default function Submenu() {
         {
             label: 'Documente Atasate', icon: 'pi pi-inbox'
         },
-        // {
-        //     label: 'Acte Aditionale', icon: 'pi pi-chart-line'
-        // },
-
         { label: 'Date Financiare', icon: 'pi pi-chart-line' },
         { label: 'Continut Contract', icon: 'pi pi-list' },
-        // { label: 'Flux aprobare', icon: 'pi pi-list' },
         { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' }
-        // { label: 'Istoric', icon: 'pi pi-fw pi-table' },
-        // { label: 'Alerte', icon: 'pi pi-fw pi-mobile' }
     ];
 
-    console.log(Id, "Id", activeIndex, "activeIndex")
     const showError = () => {
         toast.current.show({
             severity: 'error', summary: 'Error',
@@ -55,42 +58,27 @@ export default function Submenu() {
         });
     }
 
-
     const changeTab = (e) => {
-        setParamId(parseInt(searchParams.get("Id")));
-        if (paramId == 0) {
+        setactualContractId(parseInt(searchParams.get("Id")));
+
+        if (parseInt(searchParams.get("Id")) == 0) {
             showError()
         }
-        else if (paramId != 0) {
+        else if (parseInt(searchParams.get("Id")) != 0) {
             setActiveIndex(e)
             router.push(`/uikit/addcontract/ctr?Id=${Id}&idxp=${e}`)
         }
     }
 
-    useEffect(() => {
-        setParamId(parseInt(searchParams.get("Id")));
-    }, [])
-
-
-
-
-    // useEffect(() => {
-    //     setActiveIndex(idxp);
-    // }, [idxp]);
 
     useEffect(() => {
-
-        // router.push(`/uikit/editcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
         router.push(`/uikit/addcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
-
     }, [activeIndex]);
 
 
 
     useEffect(() => {
         setRenderCount(prevCount => prevCount + 1);
-        //updateValue(personIndex);
-        setParamId(contractId);
     }, [contractId]);
 
 
@@ -131,16 +119,6 @@ export default function Submenu() {
 
                                 : null
                             }
-                            {/* {activeIndex === 2 ?
-
-                                <div>
-                                    <div className='pt-4'>
-                                        <Additional />
-                                    </div>
-                                </div>
-
-                                : null
-                            } */}
                             {activeIndex == 2 ?
 
                                 <div>
