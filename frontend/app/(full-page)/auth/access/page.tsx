@@ -1,95 +1,35 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Checkbox } from 'primereact/checkbox';
+import React from 'react';
 import { Button } from 'primereact/button';
-import { Password } from 'primereact/password';
-import { LayoutContext } from '../../../../layout/context/layoutcontext';
-import { InputText } from 'primereact/inputtext';
-import { classNames } from 'primereact/utils';
-import { Toast } from 'primereact/toast';
-import axios from 'axios';
-import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
-import { useEventListener } from 'primereact/hooks';
 
-
-
-const LogoutPage = () => {
-
-    const useMyContext = () => useContext(MyContext);
-    const { userName, setUserName } = useMyContext();
-    const { userId, setUserId } = useMyContext();
-    const { picture, setPicture } = useMyContext();
-    const { userRoles, setUserRoles } = useMyContext();
-    const { isLoggedIn, setIsLoggedIn } = useMyContext();
-
-    const [pressed, setPressed] = useState(false);
-    const [value, setValue] = useState('');
-
-
-    // console.log("roles: ", userRoles)
-
-    const [checked, setChecked] = useState(false);
-    const { layoutConfig } = useContext(LayoutContext);
-
+const AccessDeniedPage = () => {
     const router = useRouter();
-    const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
-
-    const toast = useRef<any>(null);
-    const [visible, setVisible] = useState(true);
-
-    const showSuccess = () => {
-        toast.current.show(
-            { severity: 'success', summary: 'Success', detail: 'You are now disconnected', life: 1000 }
-        );
-        setTimeout(() => {
-            // setVisible(false)
-            router.push('/auth/login');
-        }, 2000);
-    }
-
-    const Logout = async () => {
-
-        try {
-            sessionStorage.removeItem("token");
-            showSuccess()
-
-        } catch (error) {
-            localStorage.removeItem("token");
-        }
-    }
 
     return (
-        <MyProvider>
-            <div className={containerClassName}>
-                <div className="flex flex-column align-items-center justify-content-center">
-                    <div
-                        style={{
-                            borderRadius: '56px',
-                            padding: '0.3rem',
-                            background: 'linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)'
-                        }}
-                    >
-
-                        <Toast ref={toast} />
-                        <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
-                            <div className="text-center mb-5">
-                                <div className="text-900 text-3xl font-medium mb-3">Deconectare</div>
-                            </div>
-                            <div>
-
-                                <div className="flex align-items-center justify-content-between mb-5 gap-5">
-
-                                </div>
-                                <Button label="Logout" className="w-full p-3 text-xl" onClick={Logout}></Button>
-                            </div>
+        <div className="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+            <div className="flex flex-column align-items-center justify-content-center">
+                <div
+                    style={{
+                        borderRadius: '56px',
+                        padding: '0.3rem',
+                        background: 'linear-gradient(180deg, rgba(247, 149, 48, 0.4) 10%, rgba(247, 149, 48, 0) 30%)'
+                    }}
+                >
+                    <div className="w-full surface-card py-8 px-5 sm:px-8 flex flex-column align-items-center" style={{ borderRadius: '53px' }}>
+                        <div className="flex justify-content-center align-items-center bg-pink-500 border-circle" style={{ height: '3.2rem', width: '3.2rem' }}>
+                            <i className="pi pi-fw pi-exclamation-circle text-2xl text-white"></i>
                         </div>
+                        <h1 className="text-900 font-bold text-5xl mb-2">Acces interzis</h1>
+                        <div className="text-600 mb-5">Nu aveti permisiunile necesare.</div>
+                        <img src="/demo/images/access/asset-access.svg" alt="Error" className="mb-5" width="80%" />
+                        <Button icon="pi pi-arrow-left" label="Go to Login" text onClick={() => router.push('/auth/login')} />
                     </div>
                 </div>
             </div>
-        </MyProvider>
+        </div>
     );
 };
 
-export default LogoutPage;
+export default AccessDeniedPage;

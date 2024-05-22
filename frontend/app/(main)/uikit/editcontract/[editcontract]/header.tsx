@@ -281,7 +281,6 @@ export default function EditContract() {
     const fetchContractData = async () => {
         await fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
             .then(response => {
-                console.log(response, "response")
                 return response.json()
             })
             .then(contractdetails => {
@@ -793,7 +792,8 @@ export default function EditContract() {
                                             </div>
                                             <div className="field col-12 md:col-3">
                                                 <label htmlFor="entity_person">Nume Responsabil</label>
-                                                <Dropdown id="entity_person" value={getPersonJson(ent_person)}
+                                                <Dropdown id="entity_person"
+                                                    value={getPersonJson(ent_person)}
                                                     filter
                                                     onChange={(e) => {
                                                         setEnt_id(e.target.value.id)
@@ -946,8 +946,8 @@ export default function EditContract() {
                                                     case 'String':
                                                         return (
 
-                                                            <div className="field col-12 md:col-3">
-                                                                <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                            <div key={field.fieldname} className="field col-12 md:col-3">
+                                                                <label key={field.fieldname} htmlFor="party_bank">{field.fieldlabel}</label>
                                                                 <InputText
                                                                     key={field.fieldname}
                                                                     value={getSourceOptions(field.fieldname)}

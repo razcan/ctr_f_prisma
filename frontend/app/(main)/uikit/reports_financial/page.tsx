@@ -99,7 +99,6 @@ function Report() {
     }, [])
 
 
-    const [cashflows, setCashflow] = useState([]);
     const [costcenters, setCostCenter] = useState([]);
     const [item, setItems] = useState([]);
     const [entity, setEntity] = useState([]);
@@ -284,16 +283,6 @@ function Report() {
     }
 
 
-    const fetchCashFlow = () => {
-        fetch(`${Backend_BASE_URL}/contracts/cashflow`)
-            .then(response => {
-                return response.json()
-            })
-            .then(cashflow => {
-                setCashflow(cashflow)
-            })
-    }
-
     const fetchCostCenter = () => {
         fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
@@ -312,7 +301,6 @@ function Report() {
             fetchCurrencies(),
             fetchItemsData(),
             fetchCostCenter(),
-            fetchCashFlow(),
             fetchPartners(),
             fetchEntity(),
             fetchStatusData()

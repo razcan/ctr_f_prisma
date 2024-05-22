@@ -27,11 +27,6 @@ import { MultiSelect } from 'primereact/multiselect';
 import * as XLSX from 'xlsx';
 import Link from 'next/link';
 
-interface Car {
-    make: string;
-    model: string;
-    price: number;
-}
 
 interface Infos {
     tipcontract: string;
@@ -66,7 +61,6 @@ interface Infos {
     entity_iban: string;
 }
 
-const queryClient = new QueryClient();
 
 
 
@@ -74,12 +68,11 @@ function Report() {
 
     const useMyContext = () => useContext(MyContext);
     const {
-        fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, isPurchasing, setIsPurchasing
-        , isLoggedIn, login, userId
+        Backend_BASE_URL,
+        Frontend_BASE_URL, userId
     } = useMyContext();
 
-    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+    const { setBreadCrumbItems } = useContext(MyContext);
 
 
     const router = useRouter()
@@ -110,8 +103,6 @@ function Report() {
 
     }, [])
 
-
-    const [cashflows, setCashflow] = useState([]);
     const [costcenters, setCostCenter] = useState([]);
     const [item, setItems] = useState([]);
     const [entity, setEntity] = useState([]);
@@ -321,16 +312,6 @@ function Report() {
     }
 
 
-    const fetchCashFlow = () => {
-        fetch(`${Backend_BASE_URL}/contracts/cashflow`)
-            .then(response => {
-                return response.json()
-            })
-            .then(cashflow => {
-                setCashflow(cashflow)
-            })
-    }
-
     const fetchCostCenter = () => {
         fetch(`${Backend_BASE_URL}/contracts/costcenter`)
             .then(response => {
@@ -360,7 +341,6 @@ function Report() {
             fetchDepartmentsData(),
             fetchItemsData(),
             fetchCostCenter(),
-            fetchCashFlow(),
             fetchPartners(),
             fetchEntity(),
             fetchTypeData(),
@@ -395,17 +375,6 @@ function Report() {
         });
     };
 
-    const clearAllFilters = () => {
-        setSelMultiselect([])
-        setSelMultiselectDepartment([])
-        setselMultiselectPartner([])
-        setselMultiselectCostcenter([])
-        setselMultiselectCategory([])
-        setselMultiselectStatus([])
-        setselMultiselectModel([])
-        setTipContractFilter('')
-        setNumarFilter('')
-    }
 
     return (
         <MyProvider>
