@@ -3,14 +3,14 @@
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { TabMenu } from 'primereact/tabmenu';
-import Documents from './documents'
+// import Documents from './documents'
 import HeaderContract from './header';
-import Financial from './financial'
-import Content from './content'
-import Tasks from './tasks'
+// import Financial from './financial'
+// import Content from './content'
+// import Tasks from './tasks'
 import { useSearchParams } from 'next/navigation'
 import { Toast } from 'primereact/toast';
-import { DataProvider, useData } from './DataContext';
+// import { DataProvider, useData } from './DataContext';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 
 export default function Submenu() {
@@ -21,11 +21,10 @@ export default function Submenu() {
         Frontend_BASE_URL, isPurchasing, setIsPurchasing } = useMyContext();
 
 
-    const { actualContractId, setactualContractId } = useMyContext();
+    const { setactualContractId } = useMyContext();
 
     const router = useRouter()
     const searchParams = useSearchParams()
-    const idxp = searchParams.get("idxp");
     const Id = searchParams.get("Id");
 
     setactualContractId(parseInt(searchParams.get("Id")));
@@ -35,7 +34,6 @@ export default function Submenu() {
     // const [paramId, setParamId] = useState(parseInt(searchParams.get("Id")));
     const toast = useRef(null);
     const [contractId, setContractId] = useState<number>(parseInt(searchParams.get("Id")));
-    const { value, updateValue } = useData();
     const [renderCount, setRenderCount] = useState(0);
 
 
@@ -43,12 +41,12 @@ export default function Submenu() {
         {
             label: 'Informatii generale', icon: 'pi pi-home'
         },
-        {
-            label: 'Documente Atasate', icon: 'pi pi-inbox'
-        },
-        { label: 'Date Financiare', icon: 'pi pi-chart-line' },
-        { label: 'Continut Contract', icon: 'pi pi-list' },
-        { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' }
+        // {
+        //     label: 'Documente Atasate', icon: 'pi pi-inbox'
+        // },
+        // { label: 'Date Financiare', icon: 'pi pi-chart-line' },
+        // { label: 'Continut Contract', icon: 'pi pi-list' },
+        // { label: 'Actiuni', icon: 'pi pi-fw  pi-exclamation-circle' }
     ];
 
     const showError = () => {
@@ -85,31 +83,31 @@ export default function Submenu() {
 
     return (
         <>
-            <DataProvider >
-                <div className="grid">
-                    <div className="col-12">
-                        <div className="card">
-                            <div className="field lg:col-12 xs:col-3 md:col-12">
-                                <Toast ref={toast} />
-                                <TabMenu model={items} activeIndex={activeIndex}
-                                    onTabChange={(e) => changeTab(e.index)} />
+            {/* <DataProvider > */}
+            <div className="grid">
+                <div className="col-12">
+                    <div className="card">
+                        <div className="field lg:col-12 xs:col-3 md:col-12">
+                            <Toast ref={toast} />
+                            <TabMenu model={items} activeIndex={activeIndex}
+                                onTabChange={(e) => changeTab(e.index)} />
+                        </div>
+
+                        {/* <div className="p-fluid formgrid grid pt-2"> */}
+
+                        {activeIndex == 0 ?
+
+                            <div>
+                                <div className='pt-4'>
+                                    <HeaderContract
+                                        setContractId={setContractId}
+                                    />
+                                </div>
                             </div>
 
-                            {/* <div className="p-fluid formgrid grid pt-2"> */}
-
-                            {activeIndex == 0 ?
-
-                                <div>
-                                    <div className='pt-4'>
-                                        <HeaderContract
-                                            setContractId={setContractId}
-                                        />
-                                    </div>
-                                </div>
-
-                                : null
-                            }
-                            {activeIndex == 1 ?
+                            : null
+                        }
+                        {/* {activeIndex == 1 ?
 
                                 <div>
                                     <div className='pt-4'>
@@ -148,11 +146,11 @@ export default function Submenu() {
                                 </div>
 
                                 : null
-                            }
-                        </div>
+                            } */}
                     </div>
                 </div>
-            </DataProvider>
+            </div>
+            {/* </DataProvider> */}
         </>
 
     );
