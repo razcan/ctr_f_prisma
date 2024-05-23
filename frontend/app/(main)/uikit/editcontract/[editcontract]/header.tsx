@@ -88,7 +88,7 @@ export default function EditContract() {
         , isLoggedIn, login, userId
     } = useMyContext();
 
-
+    const activeIndex = [0, 1]
     const router = useRouter();
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
@@ -769,7 +769,9 @@ export default function EditContract() {
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
                         <Accordion className="field lg:col-12 xs:col-3 md:col-12" multiple
-                            activeIndex={[0, 1]}>
+                            // activeIndex={[0, 1]}
+                            activeIndex={activeIndex}
+                        >
                             <AccordionTab
                                 header={
                                     <span className="flex align-items-center gap-2 w-full">
@@ -891,8 +893,8 @@ export default function EditContract() {
                                                     optionLabel="name" placeholder="Select One"></Dropdown>
                                             </div>
                                             <div className="field col-12  md:col-3">
-                                                <label htmlFor="ent_email">Rol</label>
-                                                <InputText disabled id="ent_email" type="text" value={party_role} />
+                                                <label htmlFor="party_role">Rol</label>
+                                                <InputText disabled id="party_role" type="text" value={party_role} />
                                             </div>
                                             <div className="field col-12  md:col-3">
                                                 <label htmlFor="party_email">Email Responsabil</label>
@@ -967,9 +969,9 @@ export default function EditContract() {
                                                     case 'Date':
                                                         return (
 
-                                                            <div className="field col-12 md:col-3">
-                                                                <label className="font-bold block mb-2">
-                                                                    {field.fieldlabel}
+                                                            <div key={field.fieldname} className="field col-12 md:col-3">
+                                                                <label key={field.fieldname} className="font-bold block mb-2">
+                                                                    {field.fieldname}
                                                                 </label>
                                                                 <Calendar
                                                                     key={field.fieldname}
@@ -988,8 +990,8 @@ export default function EditContract() {
                                                         );
                                                     case 'Int':
                                                         return (
-                                                            <div className="field col-12 md:col-3">
-                                                                <label htmlFor="party_bank">{field.fieldlabel}</label>
+                                                            <div key={field.fieldname} className="field col-12 md:col-3">
+                                                                <label key={field.fieldname} htmlFor="party_bank">{field.fieldlabel}</label>
                                                                 <InputText
                                                                     keyfilter="int"
                                                                     key={field.fieldname}
@@ -1008,7 +1010,7 @@ export default function EditContract() {
                                                             </div>
                                                         );
                                                     default:
-                                                        return null;
+                                                        return <div></div>;
                                                 }
                                             })}
 
@@ -1040,7 +1042,7 @@ export default function EditContract() {
 
 
                         <div className="field col-12 md:col-3">
-                            <label className="font-bold block mb-2">
+                            <label htmlFor="start" className="font-bold block mb-2">
                                 Data Start
                             </label>
                             <Calendar id="start" value={start} onChange={(e) => {
@@ -1050,19 +1052,19 @@ export default function EditContract() {
                             } showIcon dateFormat="dd/mm/yy" />
                         </div>
                         <div className="field col-12 md:col-3">
-                            <label className="font-bold block mb-2">
+                            <label htmlFor="end" className="font-bold block mb-2">
                                 Data Final
                             </label>
                             <Calendar id="end" value={end} onChange={(e) => setEndDate(e.value)} showIcon dateFormat="dd/mm/yy" />
                         </div>
                         <div className="field col-12 md:col-3">
-                            <label className="font-bold block mb-2">
+                            <label htmlFor="sign" className="font-bold block mb-2">
                                 Data Semnare
                             </label>
                             <Calendar id="sign" value={sign} onChange={(e) => setSignDate(e.value)} showIcon dateFormat="dd/mm/yy" />
                         </div>
                         <div className="field col-12 md:col-3">
-                            <label className="font-bold block mb-2">
+                            <label htmlFor="completion" className="font-bold block mb-2">
                                 Inchis la data
                             </label>
                             <Calendar id="completion" value={completion} onChange={(e) => setCompletionDate(e.value)} showIcon dateFormat="dd/mm/yy" />
@@ -1095,7 +1097,7 @@ export default function EditContract() {
 
                         <div className="field col-12 md:col-3">
                             <div className="field-checkbox">
-                                <Checkbox name="auto_renewal" onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>
+                                <Checkbox id="auto_renewal" name="auto_renewal" onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>
                                 <label htmlFor="auto_renewal">Prelungire Automata</label>
                             </div>
 

@@ -53,7 +53,8 @@ function Contracts() {
 
     const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
 
-
+    const rows = 10;
+    const rowsPerPageOptions = [10, 20, 30, 40, 100]
     const router = useRouter()
 
 
@@ -227,7 +228,7 @@ function Contracts() {
             <div className="flex justify-content-end">
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
-                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                    <InputText id="Keyword" value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
                 </span>
             </div>
         );
@@ -239,15 +240,16 @@ function Contracts() {
     return (
         <MyProvider>
             <div>
-                <div className='p-1'><Button label="Adauga" onClick={addContract} /></div>
+                <div className='p-1'><Button id="add" label="Adauga" onClick={addContract} /></div>
                 <DataTable value={data}
+                    id="table"
                     filters={filters}
                     globalFilterFields={['number', 'partner.name', 'entity.name',
                         'type.name', 'status.name', 'start', 'end', 'Category.name', 'location.name',
                         'costcenter.name', 'cashflow.name'
                     ]} header={header}
                     stripedRows tableStyle={{ minWidth: '50rem' }}
-                    paginator rows={10} rowsPerPageOptions={[10, 20, 30, 40, 100]} sortMode="multiple"
+                    paginator rows={rows} rowsPerPageOptions={rowsPerPageOptions} sortMode="multiple"
                     selectionMode="single" selection={selectedContract} onSelectionChange={(e) => {
                         setselectedContract(e.value),
                             editContract(e.value.id)
