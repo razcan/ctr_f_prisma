@@ -108,6 +108,7 @@ export default function EditContract() {
 
     const [status, setStatus] = useState('');
 
+    const [checked, setChecked2] = useState<boolean>(false);
 
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
@@ -866,7 +867,7 @@ export default function EditContract() {
                                     <div className="col-12">
                                         <div className="p-fluid formgrid grid pt-2">
                                             <div className="field col-12 md:col-3">
-                                                <label htmlFor="partner">Partner</label>
+                                                <label htmlFor="selectedPartner">Partner</label>
                                                 <Dropdown id="selectedPartner" value={selectedPartner} filter
                                                     onChange={(e) => {
                                                         setSelectedPartner(e.value.id)
@@ -1094,9 +1095,10 @@ export default function EditContract() {
 
                         <div className="field col-12 md:col-3">
                             <div className="field-checkbox">
-                                <Checkbox onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>
+                                <Checkbox name="auto_renewal" onChange={e => setAutomaticRenewal(e.checked)} checked={automaticRenewalValue}></Checkbox>
                                 <label htmlFor="auto_renewal">Prelungire Automata</label>
                             </div>
+
                         </div>
 
                         {/* <div className="field col-12 md:col-12">
@@ -1106,8 +1108,8 @@ export default function EditContract() {
                                 />
                             </div> */}
                         <div className="field col-12 md:col-12">
-                            <label htmlFor="cashflow">Scurta descriere a contractului</label>
-                            <InputTextarea className='max-w-screen' value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
+                            <label htmlFor="remarks">Scurta descriere a contractului</label>
+                            <InputTextarea id="remarks" className='max-w-screen' value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={5} cols={30} />
                         </div>
                     </div>
                     <Button label="Salveaza" onClick={saveContract} />

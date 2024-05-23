@@ -65,7 +65,6 @@ export default function History() {
             axios(config)
                 .then(function (response) {
                     setLogs(response.data);
-                    console.log(response.data)
                 })
                 .catch(function (error) {
                     // if (response.status === 401) {

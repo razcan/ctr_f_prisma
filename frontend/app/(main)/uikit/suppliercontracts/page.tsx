@@ -184,22 +184,6 @@ function Contracts() {
         }
     }
 
-    // const fetchContracts = async () => {
-    //     try {
-    //         const data = await fetchWithToken('contracts', { method: 'GET' });
-    //         setData(data);
-    //     } catch (error) {
-    //         if (error.message === 'No token found.') {
-    //             setData([]);
-    //             router.push('http://localhost:5500/auth/login');
-    //         } else {
-    //             console.error(error.message);
-    //         }
-    //     }
-    // };
-
-
-
 
     useEffect(() => {
         fetchContracts()

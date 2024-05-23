@@ -10,7 +10,8 @@ npm run dev
 bck
 npm start dev
 
-
+solved theme issue:
+https://github.com/primefaces/primereact/wiki/Migration-Guide-for-Templates
 
 
 Draft:
