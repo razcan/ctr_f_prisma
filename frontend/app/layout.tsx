@@ -53,7 +53,7 @@ export default function RootLayout({
         {/* <link id="theme-css" href={`/themes/lara-dark-indigo/theme.css`} rel="stylesheet"></link> */}
         {/* <link id="theme-css" href={`/themes/bootstrap4-dark-blue/theme.css`} rel="stylesheet"></link> */}
         {/* <link id="theme-css" href={`/themes/soho-dark/theme.css`} rel="stylesheet"></link> */}
-        <link id="theme-css" href={`/themes/bootstrap4/theme.css`} rel="stylesheet"></link>
+        <link id="theme-css" href={`/themes/bootstrap4/green/theme.css`} rel="stylesheet"></link>
 
       </head>
       <body>
