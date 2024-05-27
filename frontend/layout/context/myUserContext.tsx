@@ -3,6 +3,8 @@ import router from 'next/router';
 import React, { createContext, useContext, useState } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link';
+import { LayoutContext } from './layoutcontext';
+import { PrimeReactContext } from 'primereact/api';
 
 // Step 1: Create the context
 export const MyContext = createContext(null);
@@ -18,6 +20,12 @@ export const MyProvider = ({ children }: any) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
+    const [theme, setTheme] = useState("/themes/new/lara_green/theme.css");
+
+
+    const { layoutConfig, setLayoutConfig } = useContext(LayoutContext);
+
+    // console.log(layoutConfig, theme)
 
     const [BreadCrumbItems, setBreadCrumbItems] = useState([
         {
@@ -268,7 +276,9 @@ export const MyProvider = ({ children }: any) => {
         actualContractId,
         setactualContractId,
         isAdditional,
-        setIsAdditional
+        setIsAdditional,
+        theme,
+        setTheme
     };
 
 

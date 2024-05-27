@@ -46,7 +46,7 @@ export default function Financial() {
     const [billingQtty, setBillingQtty] = useState(1);
     const [billingDay, setBillingDay] = useState(1);
     const [billingDueDays, setBillingDueDays] = useState(10);
-    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState(1);
+    const [billingPenaltyPercent, setBillingPenaltyPercent] = useState();
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
     const [scadentar, setScadentar] = useState([]);
@@ -293,6 +293,7 @@ export default function Financial() {
         setIndextable(indexTable + 1)
         // console.log(scadentar)
     }, [scadentar])
+
 
 
 
@@ -632,11 +633,16 @@ export default function Financial() {
 
         if (event.cellIndex == 11) {
             let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
-            setSelectedSchLine(event.rowData);
+            console.log(event.rowData, "s")
+            setSelectedSchLine(event.rowData.item.name);
+
+            console.log(event.rowData.item.name);
+            console.log(selectedSchLine);
+            // selectedSchLine
             setSelectedSchLineDate(event.rowData.date);
             setSelectedSchLineQtty(event.rowData.billingQtty);
-            setSelectedSchLinePrice(event.rowData.pret);
-            const amount = (event.rowData.billingQtty * event.rowData.pret)
+            setSelectedSchLinePrice(event.rowData.billingValue);
+            const amount = (event.rowData.billingQtty * event.rowData.billingValue)
             setSelectedSchLineValue(amount);
 
             setVisible(true)
@@ -648,6 +654,11 @@ export default function Financial() {
         // console.log(event.cellIndex)
         // console.log(event.rowData)
     };
+
+
+    useEffect(() => {
+
+    }, [selectedSchLine])
 
 
 
@@ -831,19 +842,23 @@ export default function Financial() {
 
     const deleteSchLine = (id: number) => {
         const result = scadentar.filter(item => item.id !== id);
+        console.log(result, "result")
         setScadentar(result);
         setVisible(false)
     }
 
-    const saveSchLine = (line: any) => {
-        console.log("line", line)
+    const saveSchLine = (id: number) => {
+        // console.log("line", line)
+        // console.log("line", selectedSchLine, selectedSchLineDate, selectedSchLineQtty, selectedSchLinePrice, selectedSchLineQtty * selectedSchLinePrice, selectedSchLineValue);
         //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
         //stearsa linia existenta, si salvata noua linie
-        line.billingQtty = selectedSchLineQtty;
-        line.pret = selectedSchLineValue;
-        line.billingValue = selectedSchLineValue / selectedSchLineQtty;
-        line.date = selectedSchLineDate;
-        line.totalContractValue = selectedSchLineValue;
+        const result = scadentar.find(item => item.id !== id);
+        result.totalContractValue = selectedSchLineValue;
+        result.billingQtty = selectedSchLineQtty;
+        result.billingValue = selectedSchLinePrice;
+        result.date = selectedSchLineDate;
+        // setScadentar(result);
+        console.log(result, "result");
         setVisible(false)
     }
 
@@ -863,7 +878,6 @@ export default function Financial() {
                 return null;
         }
     };
-
 
     const statusPayedTemplate = (product) => {
         return <Tag value={product.isPayed} severity={getSeverity2(product)}></Tag>;
@@ -1101,8 +1115,9 @@ export default function Financial() {
 
                                     <div className="field col-12  md:col-3">
                                         <label htmlFor="selectedItem">Articol</label>
-                                        <InputText disabled id="selectedItem" type="text" value={selectedSchLine.articol} />
+                                        <InputText disabled id="selectedItem" type="text" value={selectedSchLine} />
                                     </div>
+
 
 
                                     <div className="field col-12  md:col-2">
@@ -1116,13 +1131,20 @@ export default function Financial() {
 
                                     <div className="field col-12  md:col-2">
                                         <label htmlFor="goodexecutionInfo">Cantitate</label>
-                                        <InputText id="goodexecutionInfo" type="text" value={selectedSchLineQtty} onChange={(e) => setSelectedSchLineQtty(e.target.value)} />
+                                        <InputText id="goodexecutionInfo" keyfilter="int" type="text" value={selectedSchLineQtty}
+                                            onChange={(e) => {
+                                                setSelectedSchLineQtty(e.target.value)
+                                                setSelectedSchLineValue(e.target.value * selectedSchLinePrice)
+                                            }} />
                                         {/* <InputText id="goodexecutionInfo" type="text" value={selectedSchLine.billingQtty} onChange={(e) => setGoodexecutionInfo(e.target.value)} /> */}
                                     </div>
 
                                     <div className="field col-12  md:col-2">
                                         <label htmlFor="goodexecutionInfo">Pret</label>
-                                        <InputText id="goodexecutionInfo" type="text" value={selectedSchLinePrice} onChange={(e) => setSelectedSchLinePrice(e.target.value)} />
+                                        <InputText id="goodexecutionInfo" keyfilter="int" type="text" value={selectedSchLinePrice} onChange={(e) => {
+                                            setSelectedSchLinePrice(e.target.value)
+                                            setSelectedSchLineValue(e.target.value * selectedSchLineQtty)
+                                        }} />
                                     </div>
 
                                     <div className="field col-12  md:col-2">
@@ -1161,7 +1183,7 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-12 pt-4">
 
-                            <DataTable key={indexTable} ref={dt} className='pt-2' value={scadentar}
+                            <DataTable key={scadentar.id} ref={dt} className='pt-2' value={scadentar}
                                 tableStyle={{ minWidth: '50rem' }} header={header}
                                 cellSelection selectionMode="single" selection={selectedSchedule}
                                 onCellSelect={onCellSelect}

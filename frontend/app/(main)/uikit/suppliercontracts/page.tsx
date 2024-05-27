@@ -51,10 +51,14 @@ function Contracts() {
         , isLoggedIn, login, userId
     } = useMyContext();
 
+
+
+
+
     const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
 
-    const rows = 10;
-    const rowsPerPageOptions = [10, 20, 30, 40, 100]
+    const rows = 12;
+    const rowsPerPageOptions = [12, 20, 30, 40, 100]
     const router = useRouter()
 
 
@@ -228,7 +232,9 @@ function Contracts() {
             <div className="flex justify-content-end">
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
-                    <InputText id="Keyword" value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                    <InputText id="Keyword" value={globalFilterValue} onChange={onGlobalFilterChange}
+                    // placeholder="Keyword Search" 
+                    />
                 </span>
             </div>
         );

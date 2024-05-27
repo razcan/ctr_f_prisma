@@ -79,6 +79,27 @@ const AppMenu = () => {
             ]
         },
         {
+            label: 'Facturi',
+            items: [
+                {
+                    label: 'Facturi furnizori', icon: 'pi pi-fw pi-stop',
+                    to: '/a'
+                },
+                {
+                    label: 'Facturi clienti', icon: 'pi pi-fw pi-stop-circle',
+                    to: '/b'
+                },
+                {
+                    label: 'Emitere in masa', icon: 'pi pi-fw pi-box',
+                    to: '/c'
+                },
+                {
+                    label: 'Adauga factura', icon: 'pi pi-fw pi-arrow-right-arrow-left',
+                    to: '/d'
+                },
+            ]
+        },
+        {
             label: 'Rapoarte',
             items: [
                 { label: 'Raport general', icon: 'pi pi-fw pi-chart-line', to: '/uikit/reports' },

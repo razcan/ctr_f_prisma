@@ -22,8 +22,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 import Link from 'next/link';
 
-
-
 export default function Content() {
 
     const [text, setText] = useState([]);
@@ -133,7 +131,6 @@ export default function Content() {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-
                     {wfHistory.length > 0 ?
 
                         <DataTable value={wfHistory} tableStyle={{ minWidth: '50rem' }}

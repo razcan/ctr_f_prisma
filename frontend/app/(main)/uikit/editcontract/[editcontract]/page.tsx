@@ -2,25 +2,9 @@
 
 
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useContext, useState, useEffect, useMemo } from 'react';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
+import React, { useContext, useState, useEffect } from 'react';
 import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { Editor } from 'primereact/editor';
 import axios, { AxiosRequestConfig } from 'axios';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-    useMutation,
-    useQueryClient
-} from '@tanstack/react-query'
-import { ProgressSpinner } from 'primereact/progressspinner';
 
 import HeaderContract from './header';
 import Documents from './documents'
@@ -32,7 +16,7 @@ import Alerts from './alerts';
 import Tasks from './tasks'
 import WorkFlow from './workflow'
 import { Tag } from 'primereact/tag';
-import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
+import { MyContext } from '../../../../../layout/context/myUserContext'
 
 
 // export default function EditContract({ initialIndex : any }) 

@@ -5,14 +5,17 @@ export const LayoutContext = createContext({} as LayoutContextProps);
 
 export const LayoutProvider = ({ children }: ChildContainerProps) => {
     const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>({
-        ripple: false,
-        inputStyle: 'outlined',
+        ripple: true,
+        // inputStyle: 'outlined',
+        inputStyle: 'filled',
         menuMode: 'static',
-        colorScheme: 'light',
+        // colorScheme: 'light',
+        colorScheme: 'dark',
         theme: 'lara-light-indigo',
         scale: 14
     });
 
+    // console.log(layoutConfig.theme, layoutConfig.colorScheme)
     const [layoutState, setLayoutState] = useState<LayoutState>({
         staticMenuDesktopInactive: false,
         overlayMenuActive: false,

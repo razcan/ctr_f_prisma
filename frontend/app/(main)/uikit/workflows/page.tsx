@@ -26,7 +26,7 @@ import { Slider } from 'primereact/slider';
 import { Tag } from 'primereact/tag';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
 import Link from 'next/link';
-
+import DynamicHead from '../DynamicHead'
 
 export default function Tasks() {
 
@@ -125,6 +125,7 @@ export default function Tasks() {
                 <div className='card'>
                     <div className="card">
                         <Button label="Adauga flux aprobare" onClick={addFlow} />
+                        <DynamicHead />
 
                         {wflist.length > 0 ?
                             <DataTable className='pt-2'

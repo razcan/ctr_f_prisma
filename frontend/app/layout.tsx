@@ -1,14 +1,15 @@
 
-import { LayoutProvider } from '../layout/context/layoutcontext';
+// import { LayoutContext, LayoutProvider } from '../layout/context/layoutcontext';
+
+// "use client"
+
 import React, { useContext } from 'react';
 import { UserContext, UserContextProvider } from '../layout/context/appcontext'
 import { MyContext, MyProvider } from '../layout/context/myUserContext'
-
-
-
+import { LayoutContext, LayoutProvider } from '../layout/context/layoutcontext'
+// import { DynamicHead } from './(main)/uikit/DynamicHead'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-
 import { FilterMatchMode, PrimeReactProvider } from 'primereact/api';
 import { PrimeReactContext } from 'primereact/api';
 import 'primereact/resources/primereact.css';
@@ -16,45 +17,49 @@ import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
 import '../styles/layout/layout.scss'
 import '../styles/demo/Demos.scss';
+import { LayoutState, ChildContainerProps, LayoutConfig, LayoutContextProps } from '@/types';
 
 interface RootLayoutProps {
   children: React.ReactNode;
 }
 
 const inter = Inter({ subsets: ['latin'] })
-const useMyContext = () => useContext(MyContext);
 
-// const { userId, updateUser } = useData();
-// const { value, updateValue } = useData();
+
+
+// const { layoutConfig, setLayoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
+// const { setRipple, changeTheme } = useContext(PrimeReactContext);
 
 export const metadata: Metadata = {
   title: 'CONTRACTS',
   description: 'SHB',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
+// const useMyContext = () => useContext(MyContext);
+// const {
+//   theme, setTheme
+// } = useMyContext();
 
-}) {
+// console.log(theme, "them from layout")
 
-  // const valuex = {
-  //   filterMatchMode: {
-  //     text: [FilterMatchMode.STARTS_WITH, FilterMatchMode.CONTAINS, FilterMatchMode.NOT_CONTAINS, FilterMatchMode.ENDS_WITH, FilterMatchMode.EQUALS, FilterMatchMode.NOT_EQUALS],
-  //     numeric: [FilterMatchMode.EQUALS, FilterMatchMode.NOT_EQUALS, FilterMatchMode.LESS_THAN, FilterMatchMode.LESS_THAN_OR_EQUAL_TO, FilterMatchMode.GREATER_THAN, FilterMatchMode.GREATER_THAN_OR_EQUAL_TO],
-  //     date: [FilterMatchMode.DATE_IS, FilterMatchMode.DATE_IS_NOT, FilterMatchMode.DATE_BEFORE, FilterMatchMode.DATE_AFTER]
-  //   },
-  // };
+
+
+export default function RootLayout(
+  { children, }: {
+    children: React.ReactNode
+  }) {
+
+  // const { theme } = useContext(MyContext);
 
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* <DynamicHead /> */}
       <head>
-        {/* <link id="theme-css" href={`/themes/lara-dark-indigo/theme.css`} rel="stylesheet"></link> */}
-        {/* <link id="theme-css" href={`/themes/bootstrap4-dark-blue/theme.css`} rel="stylesheet"></link> */}
-        {/* <link id="theme-css" href={`/themes/soho-dark/theme.css`} rel="stylesheet"></link> */}
-        <link id="theme-css" href={`/themes/bootstrap4/green/theme.css`} rel="stylesheet"></link>
-
+        {/* <link id="theme-css" href={`/themes/new/bootstrap_blue/theme.css`} rel="stylesheet"></link> */}
+        {/* <link id="theme-css" href={`/themes/new/bootstrap_purple/theme.css`} rel="stylesheet"></link> */}
+        <link id="theme-css" href={`/themes/new/lara_green/theme.css`} rel="stylesheet"></link>
+        {/* <link id="theme-css" href={`/themes/new/lara_indigo/theme.css`} rel="stylesheet"></link> */}
+        {/* <link id="theme-css" href={`/themes/new/lara_purple/theme.css`} rel="stylesheet"></link> */}
       </head>
       <body>
         <MyProvider>

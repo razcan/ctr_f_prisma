@@ -490,8 +490,8 @@ function Report() {
                                     tableStyle={{ minWidth: '50rem' }}
                                     style={tableStyle}
                                     size='small'
-                                    paginator rows={10}
-                                    rowsPerPageOptions={[20, 50, 100]} sortMode="multiple"
+                                    paginator rows={11}
+                                    rowsPerPageOptions={[11, 24, 48, 100]} sortMode="multiple"
                                     selectionMode="single">
 
                                     <Column field="tipcontract" header="TipContract"></Column>

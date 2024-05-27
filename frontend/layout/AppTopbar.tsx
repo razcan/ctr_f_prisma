@@ -12,7 +12,7 @@ import { Chip } from 'primereact/chip';
 import { Button } from 'primereact/button';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { BreadCrumb } from 'primereact/breadcrumb';
-
+import AppConfig from './AppConfig';
 
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
@@ -43,7 +43,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
 
     return (
-        <MyProvider>
+        <MyProvider >
             <div className="layout-topbar">
                 <Link href="/" className="layout-topbar-logo">
                     <img src={`/layout/images/image.svg`} width="25px" height={'25px'} alt="profile" />
@@ -106,6 +106,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                         </Avatar>
                     </Link>
 
+
                     <Link href="/uikit/usertasks">
                         <Avatar className="p-link p-overlay-badge" icon="pi pi-bell" size="large">
                             <Badge value={nrOfTasks} />
@@ -125,6 +126,9 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                                 <Badge value="login" />
                             </Avatar>
                         </Link>}
+                    <div className="pt-2">
+                        <AppConfig />
+                    </div>
 
 
                     {/* <Link href="/auth/login">
