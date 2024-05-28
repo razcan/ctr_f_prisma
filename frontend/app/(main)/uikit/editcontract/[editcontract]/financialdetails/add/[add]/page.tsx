@@ -33,6 +33,10 @@ export default function Financial() {
     const [contractValue, setContractValue] = useState();
     const [price, setPrice] = useState(0);
     const [currency, setCurrency] = useState([]);
+
+    const [vat, setVAT] = useState([]);
+    const [allVAT, setAllVAT] = useState<any>([]);
+
     const [allCurrency, setAllCurrency] = useState([]);
     const [currencyPercent, setCurrencyPercent] = useState(0);
     const [currencyValue, setCurrencyValue] = useState([]);
@@ -67,6 +71,7 @@ export default function Financial() {
     const [goodexecutionSelectedCurrency, setGoodexecutionSelectedCurrency] = useState<any>([]);
 
     const [allBanks, setAllBanks] = useState<any>([]);
+
 
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
@@ -185,6 +190,11 @@ export default function Financial() {
         setAllBanks(response);
     }
 
+    const fetchAllVAT = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/vatquota`).then(res => res.json())
+        setAllVAT(response);
+    }
+
     const fetchAllCurrencies = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
         setAllCurrency(response);
@@ -221,6 +231,7 @@ export default function Financial() {
             fetchAllPaymentType(),
             fetchAllMeasuringUnit(),
             fetchAllBanks(),
+            fetchAllVAT(),
             contractData()
     }, [])
 
@@ -587,6 +598,7 @@ export default function Financial() {
 
     const saveDataScadentar = async () => {
 
+
         const ResultSchedule: financialDetailSchedule[] = []
         scadentar.forEach(
             scadenta => {
@@ -726,9 +738,12 @@ export default function Financial() {
             goodexecutionLetterValue: goodexecutionValue ? parseFloat(goodexecutionValue) : null,
             goodexecutionLetterInfo: goodexecutionInfo,
             goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
-            advancePercent: parseFloat(advancePercent)
+            advancePercent: parseFloat(advancePercent),
+            vatId: vat ? parseInt(vat.id) : null
             // contractfinancialItemId: 0
         }
+
+        console.log(addedfinancialDetail)
 
         // console.log(addedfinancialDetail)
 
@@ -864,12 +879,22 @@ export default function Financial() {
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="billingQtty">Cantitate facturata</label>
-                            <InputText keyfilter="int" id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
+                            <InputText keyfilter="money" id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
                         </div>
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="price">Pret</label>
-                            <InputText keyfilter="int" id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+                            <InputText keyfilter="money" id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="vatquota">TVA</label>
+                            <Dropdown id="vatquota" filter showClear value={vat} onChange={(e) => {
+                                setVAT(e.value)
+                                console.log(e.value)
+                            }
+
+                            } options={allVAT} optionLabel="VatCode" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12 md:col-2">
@@ -894,7 +919,7 @@ export default function Financial() {
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Procent Avans(%)</label>
-                            <InputText keyfilter="int" id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
+                            <InputText keyfilter="money" id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
                         </div>
 
                         <div className="field col-12 md:col-2">
@@ -904,18 +929,18 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
-                            <InputText keyfilter="int" id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
+                            <InputText keyfilter="money" id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
                         </div>
 
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Curs referinta</label>
-                            <InputText keyfilter="int" id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
+                            <InputText keyfilter="money" id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
                         </div>
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
-                            <InputText keyfilter="int" id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
+                            <InputText keyfilter="money" id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
                         </div>
 
                         <div className="field-checkbox col-12 md:col-2">

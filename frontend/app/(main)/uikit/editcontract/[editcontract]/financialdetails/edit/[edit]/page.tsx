@@ -56,6 +56,8 @@ export default function Financial() {
     const [isPayed, setIsPayed] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState();
     const [contractfinancialItemId, setContractfinancialItemId] = useState(0);
+    const [vat, setVAT] = useState([]);
+    const [allVAT, setAllVAT] = useState<any>([]);
 
     const [advancePercent, setAdvancePercent] = useState(0);
     const [visible, setVisible] = useState(false);
@@ -82,6 +84,7 @@ export default function Financial() {
     const [selectedSchLineQtty, setSelectedSchLineQtty] = useState(0);
     const [selectedSchLinePrice, setSelectedSchLinePrice] = useState(0);
     const [selectedSchLineValue, setSelectedSchLineValue] = useState(0);
+    const [selectedSchLineId, setSelectedSchLineId] = useState('');
     const [selectedSchLine, setSelectedSchLine] = useState([]);
     const [isPurchasing, setIsPurchasing] = useState('');
 
@@ -176,7 +179,7 @@ export default function Financial() {
         fetch(`${Backend_BASE_URL}/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
             .then(contractItem => {
                 // setContractItem(contractItem)
-                // console.log(contractItem)
+                console.log(contractItem)
                 setSelectedItem(contractItem[0].item);
                 setCurrency(contractItem[0].currency);
 
@@ -220,16 +223,19 @@ export default function Financial() {
                 setContractItem(contractItem[0].ContractFinancialDetail[0].contractItemId);
 
                 setScadentar(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule);
+                setVAT(contractItem[0].ContractFinancialDetail[0].vat)
 
                 setStartContractDate(contractItem[0].contract.start);
                 setEndContractDate(contractItem[0].contract.end);
 
 
-                setContractItem(contractItem[0].ContractFinancialDetail[0].items.id);
+                // setContractItem(contractItem[0].ContractFinancialDetail[0].items.id);
 
                 if (contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0] !== undefined) {
                     setContractfinancialItemId(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
                 }
+
+                // setContractfinancialItemId(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
 
                 // console.log(contractItem)
                 // console.log(contractItem[0].ContractFinancialDetail[0].ContractFinancialDetailSchedule[0].contractfinancialItemId)
@@ -250,6 +256,11 @@ export default function Financial() {
             .then(ctr => {
                 setParentId(ctr.parentId)
             })
+    }
+
+    const fetchAllVAT = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/vatquota`).then(res => res.json())
+        setAllVAT(response);
     }
 
     const fetchAllCurrencies = async () => {
@@ -286,7 +297,8 @@ export default function Financial() {
             fetchAllPaymentType(),
             fetchAllMeasuringUnit(),
             fetchAllBanks(),
-            contractData()
+            contractData(),
+            fetchAllVAT()
     }, [])
 
     useEffect(() => {
@@ -633,7 +645,9 @@ export default function Financial() {
 
         if (event.cellIndex == 11) {
             let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
-            console.log(event.rowData, "s")
+
+            setSelectedSchLineId(event.rowData.id);
+            console.log(event.rowData, "s");
             setSelectedSchLine(event.rowData.item.name);
 
             console.log(event.rowData.item.name);
@@ -760,7 +774,7 @@ export default function Financial() {
             guaranteeLetterValue: guaranteeLetterValue ? parseFloat(guaranteeLetterValue) : 0,
             guaranteeLetterInfo: guaranteeLetterInfo,
             guaranteeLetterBankId: guaranteeSelectedBank ? parseInt(guaranteeSelectedBank.id) : null,
-            contractItemId: 0,
+            contractItemId: contractItem,
             active: active,
             goodexecutionLetter: goodexecutionLetter,
             goodexecutionLetterCurrencyId: goodexecutionSelectedCurrency ? goodexecutionSelectedCurrency.id : null,
@@ -769,8 +783,11 @@ export default function Financial() {
             goodexecutionLetterInfo: goodexecutionInfo,
             goodexecutionLetterBankId: goodexecutionSelectedBank ? goodexecutionSelectedBank.id : null,
             advancePercent: parseFloat(advancePercent),
-            contractfinancialItemId: parseInt(contractfinancialItemId)
+            contractfinancialItemId: parseInt(contractfinancialItemId),
+            vatId: vat ? parseInt(vat.id) : null
         }
+
+        console.log(addedfinancialDetail)
 
         const validationResult = validateForm(addedfinancialDetail);
 
@@ -841,22 +858,26 @@ export default function Financial() {
     }
 
     const deleteSchLine = (id: number) => {
-        const result = scadentar.filter(item => item.id !== id);
+        const result = scadentar.filter(item => item.id !== selectedSchLineId);
         console.log(result, "result")
         setScadentar(result);
         setVisible(false)
     }
 
     const saveSchLine = (id: number) => {
-        // console.log("line", line)
+        console.log(selectedSchLineId, "id linie");
+        // setSelectedSchLineId
+        // console.log("line", id)
         // console.log("line", selectedSchLine, selectedSchLineDate, selectedSchLineQtty, selectedSchLinePrice, selectedSchLineQtty * selectedSchLinePrice, selectedSchLineValue);
         //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
         //stearsa linia existenta, si salvata noua linie
-        const result = scadentar.find(item => item.id !== id);
+        const result = scadentar.find(item => item.id == selectedSchLineId);
+        console.log("line", result);
         result.totalContractValue = selectedSchLineValue;
         result.billingQtty = selectedSchLineQtty;
         result.billingValue = selectedSchLinePrice;
         result.date = selectedSchLineDate;
+        result.id = selectedSchLineId;
         // setScadentar(result);
         console.log(result, "result");
         setVisible(false)
@@ -939,12 +960,22 @@ export default function Financial() {
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="billingQtty">Cantitate facturata</label>
-                            <InputText keyfilter="int" id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
+                            <InputText keyfilter="money" id="billingQtty" type="text" value={billingQtty} onChange={(e) => setBillingQtty(e.target.value)} />
                         </div>
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="price">Pret</label>
-                            <InputText keyfilter="int" id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+                            <InputText keyfilter="money" id="price" type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="vatquota">TVA</label>
+                            <Dropdown id="vatquota" filter showClear value={vat} onChange={(e) => {
+                                setVAT(e.value)
+                                console.log(e.value)
+                            }
+
+                            } options={allVAT} optionLabel="VatCode" placeholder="Select One"></Dropdown>
                         </div>
 
                         <div className="field col-12 md:col-2">
@@ -969,7 +1000,7 @@ export default function Financial() {
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Procent Avans(%)</label>
-                            <InputText keyfilter="int" id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
+                            <InputText keyfilter="money" id="currencyValue" type="text" value={advancePercent} onChange={(e) => setAdvancePercent(e.target.value)} />
                         </div>
 
                         <div className="field col-12 md:col-2">
@@ -979,18 +1010,18 @@ export default function Financial() {
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="billingPenaltyPercent">Procent penalizare(%/zi)</label>
-                            <InputText keyfilter="int" id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
+                            <InputText keyfilter="money" id="billingPenaltyPercent" value={billingPenaltyPercent} onChange={(e) => setBillingPenaltyPercent(e.target.value)} placeholder="Select One" />
                         </div>
 
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyValue">Curs referinta</label>
-                            <InputText keyfilter="int" id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
+                            <InputText keyfilter="money" id="currencyValue" type="text" value={currencyValue} onChange={(e) => setCurrencyValue(e.target.value)} />
                         </div>
 
                         <div className="field col-12  md:col-2">
                             <label htmlFor="currencyPercent">Curs BNR plus Procent</label>
-                            <InputText keyfilter="int" id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
+                            <InputText keyfilter="money" id="currencyPercent" type="text" value={currencyPercent} onChange={(e) => setCurrencyPercent(e.target.value)} />
                         </div>
 
                         <div className="field-checkbox col-12 md:col-2">

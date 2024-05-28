@@ -41,6 +41,8 @@ export default function Alerts() {
     const [isActivePerson, setIsActivePerson] = useState(false);
     const [alerts, setAlerts] = useState([]);
     const [selectedAlert, setSelectedAlert] = useState([]);
+    const dataRef = useRef(null);
+
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -240,6 +242,12 @@ export default function Alerts() {
             );
             setVisible(false)
             setSelectedAlert([])
+            fetchAlertsData()
+
+            if (dataRef.current) {
+                dataRef.current.textContent = response;
+            }
+
             console.log('Alert edited:', response.data);
         } catch (error) {
             console.error('Error editing alert:', error);
@@ -264,11 +272,13 @@ export default function Alerts() {
         }
     };
 
+
+
     return (
         <div className="grid">
             <div className="col-12">
                 <div className='card'>
-                    <div className="card">
+                    <div className="card" >
                         <DataTable value={alerts} tableStyle={{ minWidth: '50rem' }}
                             selectionMode="single" selection={selectedAlert} onSelectionChange={(e) => {
                                 setSelectedAlert(e.value),

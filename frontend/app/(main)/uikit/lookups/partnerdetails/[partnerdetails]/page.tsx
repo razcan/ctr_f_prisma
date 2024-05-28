@@ -197,7 +197,7 @@ const Partner = () => {
                         </div>
 
                         <div className="field col-12  md:col-6">
-                            <label htmlFor="remarks">Note</label>
+                            <label htmlFor="remarks">Adresa Sociala</label>
                             <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={1} cols={30} />
                         </div>
 

@@ -86,7 +86,7 @@ const AppConfig = (props: AppConfigProps) => {
             <Sidebar visible={layoutState.configSidebarVisible} onHide={onConfigSidebarHide} position="right" className="layout-config-sidebar w-20rem">
                 {!props.simple && (
                     <>
-                        <h5>Font</h5>
+                        <h5>Font Size</h5>
                         <div className="flex align-items-center">
                             <Button icon="pi pi-minus" type="button" onClick={decrementScale} rounded text className="w-2rem h-2rem mr-2" disabled={layoutConfig.scale === scales[0]}></Button>
                             <div className="flex gap-2 align-items-center">
@@ -125,13 +125,13 @@ const AppConfig = (props: AppConfigProps) => {
                         <InputSwitch checked={layoutConfig.ripple as boolean} onChange={(e) => changeRipple(e)}></InputSwitch>
                     </>
                 )}
-                <h5>Theme</h5>
-                <div className="grid">
-                    <div className="col-3">
-                        {/* <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('lara-light-indigo', 'dark')}>Lara Indigo
+                {/* <h5>Theme</h5> */}
+                {/* <div className="grid"> */}
+                {/* <div className="col-3"> */}
+                {/* <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('lara-light-indigo', 'dark')}>Lara Indigo
                             <img src="/layout/images/themes/lara-light-indigo.png" className="w-2rem h-2rem" alt="Lara Light Indigo" />
                         </button> */}
-
+                {/* 
                         <button className="p-link w-2rem h-2rem" onClick={() => setTheme('/themes/new/lara_green/theme.css')}>Lara Green
 
                         </button>
@@ -142,8 +142,8 @@ const AppConfig = (props: AppConfigProps) => {
                         <button className="p-link w-2rem h-2rem" onClick={() => setTheme('/themes/new/lara_indigo/theme.css')}>Lara Indigo
 
                         </button>
-                    </div>
-                    {/* <div className="col-3">
+                    </div> */}
+                {/* <div className="col-3">
                         <button className="p-link w-2rem h-2rem" onClick={() => _changeTheme('lara-light-purple', 'light')}>
                             <img src="/layout/images/themes/lara-light-purple.png" className="w-2rem h-2rem" alt="Lara Light Purple" />
                         </button>
@@ -153,7 +153,7 @@ const AppConfig = (props: AppConfigProps) => {
                             <img src="/layout/images/themes/viva-dark.svg" className="w-2rem h-2rem" alt="Viva Dark" />
                         </button>
                     </div>  */}
-                </div>
+                {/* </div> */}
                 {/* 
                 <h5>Bootstrap</h5>
                 <div className="grid">
