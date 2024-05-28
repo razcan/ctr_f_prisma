@@ -130,25 +130,28 @@ const LoginPage = () => {
         try {
             const response = await axios.post(`${Backend_BASE_URL}/auth/login`, { username, password });
 
-            setToken(response.data)
-            setUserId(response.data.userid);
+            if (response.data.userid > 0) {
+                setToken(response.data)
+                setUserId(response.data.userid);
 
-            const initialsUN = getInitials(username);
+                const initialsUN = getInitials(username);
 
-            setUserName(initialsUN);
-            GetPicture(response.data.userid);
-            GetUserTasks(response.data.userid);
+                setUserName(initialsUN);
+                GetPicture(response.data.userid);
+                GetUserTasks(response.data.userid);
 
-            // Remove the item from local storage
-            sessionStorage.removeItem("token");
-            // Store token in local storage
-            sessionStorage.setItem("token", JSON.stringify(response.data));
-            // Read token from local storage
-            const myStoredItem: any = sessionStorage.getItem('token');
-            const rez = JSON.parse(myStoredItem);
-            setIsLoggedIn(true)
-            showSuccess();
-            router.push('/')
+                // Remove the item from local storage
+                sessionStorage.removeItem("token");
+                // Store token in local storage
+                sessionStorage.setItem("token", JSON.stringify(response.data));
+                // Read token from local storage
+                const myStoredItem: any = sessionStorage.getItem('token');
+                const rez = JSON.parse(myStoredItem);
+                setIsLoggedIn(true)
+                showSuccess();
+                router.push('/')
+            }
+
 
             //data la care expira token
             //  console.log(rez.expire_date_token)

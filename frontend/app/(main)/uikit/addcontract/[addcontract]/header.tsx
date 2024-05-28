@@ -800,24 +800,6 @@ export default function HeaderContract({ setContractId }: any) {
                                                 options={entitydetails.Persons}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
-                                        {/* <div className="field col-12 md:col-3">
-                                            <label htmlFor="entity_person">Nume Responsabil</label>
-                                            <Dropdown id="entity_person"
-                                                value={getPersonJson(ent_person)}
-                                                filter
-                                                onChange={(e) => {
-                                                    setEnt_id(e.target.value.id)
-                                                    setEnt_name(e.target.value.name)
-                                                    setEnt_person(e.target.value.name)
-                                                    setEnt_email(e.target.value.email)
-                                                    setEnt_phone(e.target.value.phone)
-                                                    setEnt_legal_person(e.target.value.legalrepresent)
-                                                    setEnt_role(e.target.value.role)
-                                                }
-                                                }
-                                                options={entityPersons}
-                                                optionLabel="name" placeholder="Select One"></Dropdown>
-                                        </div> */}
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="ent_email">Rol</label>
                                             <InputText disabled id="ent_email" type="text" value={ent_role} />
@@ -851,18 +833,6 @@ export default function HeaderContract({ setContractId }: any) {
                                                 options={entitydetails.Banks}
                                                 optionLabel="iban" placeholder="Select One"></Dropdown>
                                         </div>
-                                        {/* <div className="field col-12  md:col-3">
-                                            <label htmlFor="ent_iban">IBAN</label>
-                                            <Dropdown id="iban" filter value={getBankJson(ent_iban)}
-                                                onChange={(e) => {
-                                                    setEnt_IBAN(e.target.value.iban)
-                                                    setEnt_bank(e.target.value.bank)
-                                                    setEntitybankId(e.target.value.id)
-                                                }}
-                                                options={entityBanks}
-                                                optionLabel="iban" placeholder="Select One"></Dropdown>
-                                        </div> */}
-
                                         <div className="field col-12  md:col-12">
                                             <label htmlFor="number">Adresa</label>
                                             <Dropdown id="entity" showClear value={ent_address}
@@ -874,17 +844,6 @@ export default function HeaderContract({ setContractId }: any) {
                                                 optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                         </div>
-                                        {/* <div className="field col-12  md:col-12">
-                                            <label htmlFor="ent_address">Adresa</label>
-                                            <Dropdown id="ent_address" filter value={getAddressJson(ent_address)}
-                                                onChange={(e) => {
-                                                    // console.log("adresa", e.target.value)
-                                                    setEnt_Address(e.target.value.id)
-                                                }}
-                                                options={entityAddress}
-                                                optionLabel="completeAddress" placeholder="Select One"></Dropdown>
-
-                                        </div> */}
                                     </div>
                                 </div>
                             </div>
@@ -928,20 +887,6 @@ export default function HeaderContract({ setContractId }: any) {
                                                 options={partnerdetails.Persons}
                                                 optionLabel="name" placeholder="Select One"></Dropdown>
                                         </div>
-                                        {/* <div className="field col-12  md:col-3">
-                                            <label htmlFor="party_name">Nume Responsabil</label>
-                                            <Dropdown id="party_name" value={getPartnerPersonJson(party_name)} filter
-                                                onChange={(e) => {
-                                                    setParty_id(e.target.value.id)
-                                                    setParty_name(e.target.value)
-                                                    setParty_email(e.target.value.email)
-                                                    setParty_phone(e.target.value.phone)
-                                                    setParty_legal_person(e.target.value.legalrepresent)
-                                                    setParty_role(e.target.value.role)
-                                                }}
-                                                options={partnerPersons}
-                                                optionLabel="name" placeholder="Select One"></Dropdown>
-                                        </div> */}
                                         <div className="field col-12  md:col-3">
                                             <label htmlFor="ent_email">Rol</label>
                                             <InputText disabled id="ent_email" type="text" value={party_role} />
@@ -975,18 +920,6 @@ export default function HeaderContract({ setContractId }: any) {
                                                 options={partnerdetails.Banks}
                                                 optionLabel="iban" placeholder="Select One"></Dropdown>
                                         </div>
-                                        {/* <div className="field col-12  md:col-3">
-                                            <label htmlFor="party_iban">IBAN</label>
-                                            <Dropdown id="party_iban" value={getPartnerBankJson(party_iban)} filter
-                                                onChange={(e) => {
-                                                    setParty_IBAN(e.target.value.iban)
-                                                    setParty_bank(e.target.value.bank)
-                                                    setPartnerbankId(e.target.value.id)
-                                                    //console.log(e.target.value)
-                                                }}
-                                                options={partnerBanks}
-                                                optionLabel="iban" placeholder="Select One"></Dropdown>
-                                        </div> */}
                                         <div className="field col-12  md:col-12">
                                             <label htmlFor="number">Adresa</label>
                                             <Dropdown id="entity" showClear value={party_address}
@@ -999,16 +932,6 @@ export default function HeaderContract({ setContractId }: any) {
                                                 optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
                                         </div>
-                                        {/* <div className="field col-12  md:col-12">
-                                            <label htmlFor="party_address">Adresa</label>
-                                            <Dropdown id="party_address" value={getPartnerAddressJson(party_address)} filter
-                                                onChange={(e) => {
-                                                    setParty_Address(e.target.value)
-                                                }}
-                                                options={partnerAddress}
-                                                optionLabel="completeAddress" placeholder="Select One"></Dropdown>
-
-                                        </div> */}
                                     </div>
                                 </div>
                             </div>

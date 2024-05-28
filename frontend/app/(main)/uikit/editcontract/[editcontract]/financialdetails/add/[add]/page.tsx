@@ -90,6 +90,7 @@ export default function Financial() {
     const [selectedSchLineValue, setSelectedSchLineValue] = useState(0);
     const [selectedSchLine, setSelectedSchLine] = useState([]);
     const [isPurchasing, setIsPurchasing] = useState('');
+    const [resultSchedule, setResultSchedule] = useState([]);
 
     const toast = useRef(null);
     const router = useRouter();
@@ -97,6 +98,8 @@ export default function Financial() {
     const Id = searchParams.get("Id");
     const ctrId = searchParams.get("ctrId");
     const [parentId, setParentId] = useState(0);
+
+
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -596,41 +599,6 @@ export default function Financial() {
     };
 
 
-    const saveDataScadentar = async () => {
-
-
-        const ResultSchedule: financialDetailSchedule[] = []
-        scadentar.forEach(
-            scadenta => {
-                const add: financialDetailSchedule = {
-                    itemid: scadenta.itemid,
-                    currencyid: scadenta.currencyid,
-                    date: new Date(scadenta.date),
-                    measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: parseFloat(scadenta.cantitate),
-                    totalContractValue: scadenta.valoare,
-                    billingValue: parseFloat(scadenta.pret),
-                    isInvoiced: scadenta.isInvoiced,
-                    isPayed: scadenta.isPayed,
-                    active: active,
-                    contractfinancialItemId: 0
-
-                }
-                ResultSchedule.push(add)
-            }
-        )
-        // console.log(ResultSchedule)
-        try {
-            const responseitem = await axios.delete(`${Backend_BASE_URL}/contracts/financialDetailSchedule/${Id}`
-            );
-            console.log('Contract details added:'
-            );
-        } catch (error) {
-            console.error('Error creating contract details:', error);
-        }
-
-    }
-
     interface ValidationResult {
         isValid: boolean;
         errors: string[];
@@ -640,6 +608,12 @@ export default function Financial() {
         const errors: string[] = [];
 
         // console.log(fields, "fields")
+
+        // console.log(resultSchedule, "resultSchedule")
+
+        if (resultSchedule.length == 0) {
+            errors.push("Trebuie sa aveti minimi o linie de scadentar!");
+        }
 
         if (!fields.itemid) {
             errors.push("Trebuie sa setati un articol!");
@@ -770,7 +744,8 @@ export default function Financial() {
                         contractfinancialItemId: 0
 
                     }
-                    ResultSchedule.push(add)
+                    ResultSchedule.push(add);
+                    setResultSchedule(ResultSchedule);
                 }
             )
             interface financialContractItem {

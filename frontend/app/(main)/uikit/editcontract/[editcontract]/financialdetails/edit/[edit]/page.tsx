@@ -101,6 +101,7 @@ export default function Financial() {
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
     const ctrId = searchParams.get("ctrId");
+    const [resultSchedule, setResultSchedule] = useState([]);
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -179,7 +180,7 @@ export default function Financial() {
         fetch(`${Backend_BASE_URL}/contracts/contractItemsEditDetails/${Id}`).then(response => { return response.json() })
             .then(contractItem => {
                 // setContractItem(contractItem)
-                console.log(contractItem)
+                // console.log(contractItem)
                 setSelectedItem(contractItem[0].item);
                 setCurrency(contractItem[0].currency);
 
@@ -436,8 +437,9 @@ export default function Financial() {
                         'currency.code': currency.code,
                         currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
-                    console.log(selectedItem, "selectedItem", scadentar, "scadentar", array, "array")
-                    setScadentar(array)
+
+                    setScadentar(array);
+                    setResultSchedule(array);
                 }
             }
         }
@@ -480,7 +482,8 @@ export default function Financial() {
                         currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
 
-                    setScadentar(array)
+                    setScadentar(array);
+                    setResultSchedule(array);
                 }
             }
         }
@@ -524,7 +527,8 @@ export default function Financial() {
                         currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
 
-                    setScadentar(array)
+                    setScadentar(array);
+                    setResultSchedule(array);
                 }
             }
         }
@@ -568,7 +572,8 @@ export default function Financial() {
                         currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
 
-                    setScadentar(array)
+                    setScadentar(array);
+                    setResultSchedule(array);
 
                 }
             }
@@ -653,7 +658,7 @@ export default function Financial() {
             let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
 
             setSelectedSchLineId(event.rowData.id);
-            setSelectedSchLine(event.rowData.item.name);
+            // setSelectedSchLine(event.rowData.item.name);
             setSelectedSchLineDate(event.rowData.date);
             setSelectedSchLineQtty(event.rowData.billingQtty);
             setSelectedSchLinePrice(event.rowData.billingValue);
@@ -686,6 +691,10 @@ export default function Financial() {
         const errors: string[] = [];
 
         // console.log(fields, "fields")
+
+        if (resultSchedule.length == 0) {
+            errors.push("Trebuie sa aveti minimi o linie de scadentar!");
+        }
 
         if (!fields.itemid) {
             errors.push("Trebuie sa setati un articol!");
@@ -813,6 +822,7 @@ export default function Financial() {
 
                     }
                     ResultSchedule.push(add)
+                    setResultSchedule(ResultSchedule);
                 }
             )
 

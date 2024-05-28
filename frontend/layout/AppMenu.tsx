@@ -83,19 +83,15 @@ const AppMenu = () => {
             items: [
                 {
                     label: 'Facturi furnizori', icon: 'pi pi-fw pi-stop',
-                    to: '/a'
+                    to: '/uikit/supplierinvoices'
                 },
                 {
                     label: 'Facturi clienti', icon: 'pi pi-fw pi-stop-circle',
-                    to: '/b'
+                    to: '/uikit/customerinvoices'
                 },
                 {
                     label: 'Emitere in masa', icon: 'pi pi-fw pi-box',
-                    to: '/c'
-                },
-                {
-                    label: 'Adauga factura', icon: 'pi pi-fw pi-arrow-right-arrow-left',
-                    to: '/d'
+                    to: '/uikit/massinvoicegenerate'
                 },
             ]
         },
