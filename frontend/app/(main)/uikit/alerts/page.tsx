@@ -46,12 +46,11 @@ export default function Alerts() {
 
     const useMyContext = () => useContext(MyContext);
     const {
-        fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, isPurchasing, setIsPurchasing
-        , isLoggedIn, login, userId
+        Backend_BASE_URL,
+        Frontend_BASE_URL, userId
     } = useMyContext();
 
-    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+    const { setBreadCrumbItems } = useContext(MyContext);
 
     useEffect(() => {
 

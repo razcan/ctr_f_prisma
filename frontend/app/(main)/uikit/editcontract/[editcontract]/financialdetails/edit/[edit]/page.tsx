@@ -423,9 +423,11 @@ export default function Financial() {
                     const day = String(billingDay).padStart(2, '0');
                     const formattedDate = `${year}-${month}-${day}`;
 
+
+
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, 'Articol': selectedItem.name,
+                        itemid: selectedItem.id, 'item.name': selectedItem.name,
                         date: formattedDate, 'measuringUnit.name': measuringUnit.name,
                         measuringunitid: measuringUnit.id,
                         billingQtty: billingQtty, pret: price,
@@ -434,7 +436,7 @@ export default function Financial() {
                         'currency.code': currency.code,
                         currencyid: currency.id, isPayed: isPayed, isInvoiced: isInvoiced
                     })
-
+                    console.log(selectedItem, "selectedItem", scadentar, "scadentar", array, "array")
                     setScadentar(array)
                 }
             }
@@ -468,7 +470,7 @@ export default function Financial() {
 
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, 'Articol': selectedItem.name,
+                        itemid: selectedItem.id, 'item.name': selectedItem.name,
                         date: formattedDate, 'measuringUnit.name': measuringUnit.name,
                         measuringunitid: measuringUnit.id,
                         billingQtty: billingQtty, pret: price,
@@ -512,7 +514,7 @@ export default function Financial() {
 
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, 'articol': selectedItem.name,
+                        itemid: selectedItem.id, 'item.name': selectedItem.name,
                         date: formattedDate, 'measuringUnit.name': measuringUnit.name,
                         measuringunitid: measuringUnit.id,
                         billingQtty: billingQtty, pret: price,
@@ -556,7 +558,7 @@ export default function Financial() {
 
                     array.push({
                         id: i,
-                        itemid: selectedItem.id, 'Articol': selectedItem.name,
+                        itemid: selectedItem.id, 'item.name': selectedItem.name,
                         date: formattedDate, 'measuringUnit.name': measuringUnit.name,
                         measuringunitid: measuringUnit.id,
                         billingQtty: billingQtty, pret: price,
@@ -575,35 +577,39 @@ export default function Financial() {
     }
     const deleteDataScadentar = async () => {
 
-        const ResultSchedule: financialDetailSchedule[] = []
-        scadentar.forEach(
-            scadenta => {
-                const add: financialDetailSchedule = {
-                    itemid: scadenta.itemid,
-                    currencyid: scadenta.currencyid,
-                    date: new Date(scadenta.date),
-                    measuringUnitid: scadenta.measuringunitid,
-                    billingQtty: parseFloat(scadenta.cantitate),
-                    totalContractValue: scadenta.valoare,
-                    billingValue: parseFloat(scadenta.cantitate * scadenta.valoare),
-                    isInvoiced: scadenta.isInvoiced,
-                    isPayed: scadenta.isPayed,
-                    active: active,
-                    contractfinancialItemId: contractfinancialItemId
+        // console.log(scadentar, "scadentar")
 
-                }
-                ResultSchedule.push(add)
-            }
-        )
-        console.log(ResultSchedule)
-        try {
-            const responseitem = await axios.delete(`${Backend_BASE_URL}/contracts/financialDetailSchedule/${Id}`
-            );
-            console.log('Contract details added:', contractfinancialItemId
-            );
-        } catch (error) {
-            console.error('Error creating contract details:', error);
-        }
+        setScadentar([]);
+
+        // const ResultSchedule: financialDetailSchedule[] = []
+        // scadentar.forEach(
+        //     scadenta => {
+        //         const add: financialDetailSchedule = {
+        //             itemid: scadenta.itemid,
+        //             currencyid: scadenta.currencyid,
+        //             date: new Date(scadenta.date),
+        //             measuringUnitid: scadenta.measuringunitid,
+        //             billingQtty: parseFloat(scadenta.cantitate),
+        //             totalContractValue: scadenta.valoare,
+        //             billingValue: parseFloat(scadenta.cantitate * scadenta.valoare),
+        //             isInvoiced: scadenta.isInvoiced,
+        //             isPayed: scadenta.isPayed,
+        //             active: active,
+        //             contractfinancialItemId: contractfinancialItemId
+
+        //         }
+        //         ResultSchedule.push(add)
+        //     }
+        // )
+        // // console.log(ResultSchedule)
+        // try {
+        //     const responseitem = await axios.delete(`${Backend_BASE_URL}/contracts/financialDetailSchedule/${Id}`
+        //     );
+        //     console.log('Contract details added:', contractfinancialItemId
+        //     );
+        // } catch (error) {
+        //     console.error('Error creating contract details:', error);
+        // }
 
     }
 
@@ -647,12 +653,7 @@ export default function Financial() {
             let schIndex: number = scadentar.findIndex(id => id.id === event.rowData.id);
 
             setSelectedSchLineId(event.rowData.id);
-            console.log(event.rowData, "s");
             setSelectedSchLine(event.rowData.item.name);
-
-            console.log(event.rowData.item.name);
-            console.log(selectedSchLine);
-            // selectedSchLine
             setSelectedSchLineDate(event.rowData.date);
             setSelectedSchLineQtty(event.rowData.billingQtty);
             setSelectedSchLinePrice(event.rowData.billingValue);
@@ -736,7 +737,7 @@ export default function Financial() {
             errors.push("Trebuie sa selectati numarul de zile scadenta!");
         }
 
-        console.log(fields);
+        // console.log(fields);
 
         const isValid = errors.length === 0;
 
@@ -787,7 +788,7 @@ export default function Financial() {
             vatId: vat ? parseInt(vat.id) : null
         }
 
-        console.log(addedfinancialDetail)
+        // console.log(addedfinancialDetail)
 
         const validationResult = validateForm(addedfinancialDetail);
 
@@ -859,27 +860,19 @@ export default function Financial() {
 
     const deleteSchLine = (id: number) => {
         const result = scadentar.filter(item => item.id !== selectedSchLineId);
-        console.log(result, "result")
+        // console.log(result, "result")
         setScadentar(result);
         setVisible(false)
     }
 
     const saveSchLine = (id: number) => {
-        console.log(selectedSchLineId, "id linie");
-        // setSelectedSchLineId
-        // console.log("line", id)
-        // console.log("line", selectedSchLine, selectedSchLineDate, selectedSchLineQtty, selectedSchLinePrice, selectedSchLineQtty * selectedSchLinePrice, selectedSchLineValue);
-        //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
-        //stearsa linia existenta, si salvata noua linie
         const result = scadentar.find(item => item.id == selectedSchLineId);
-        console.log("line", result);
         result.totalContractValue = selectedSchLineValue;
         result.billingQtty = selectedSchLineQtty;
         result.billingValue = selectedSchLinePrice;
         result.date = selectedSchLineDate;
         result.id = selectedSchLineId;
         // setScadentar(result);
-        console.log(result, "result");
         setVisible(false)
     }
 
@@ -972,7 +965,6 @@ export default function Financial() {
                             <label htmlFor="vatquota">TVA</label>
                             <Dropdown id="vatquota" filter showClear value={vat} onChange={(e) => {
                                 setVAT(e.value)
-                                console.log(e.value)
                             }
 
                             } options={allVAT} optionLabel="VatCode" placeholder="Select One"></Dropdown>

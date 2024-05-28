@@ -65,22 +65,7 @@ function Contracts() {
             router.push(`${Frontend_BASE_URL}/auth/login`)
         }
 
-        setBreadCrumbItems(
-            [{
-                label: 'Home',
-                template: () => <Link href="/">Home</Link>
-            },
-            {
-                label: 'Contracte clienti',
-                template: () => {
-                    const url = `${Frontend_BASE_URL}/uikit/customercontracts`
-                    return (
-                        <Link href={url}>Contracte clienti</Link>
-                    )
 
-                }
-            }]
-        )
 
     }, [])
 
@@ -177,23 +162,6 @@ function Contracts() {
         }
     }
 
-    // const fetchContracts = async () => {
-    //     try {
-    //         const data = await fetchWithToken('contracts', { method: 'GET' });
-    //         setData(data);
-    //     } catch (error) {
-    //         if (error.message === 'No token found.') {
-    //             setData([]);
-    //             router.push('http://localhost:5500/auth/login');
-    //         } else {
-    //             console.error(error.message);
-    //         }
-    //     }
-    // };
-
-
-
-
     useEffect(() => {
         fetchContracts()
     }, [])
@@ -217,7 +185,9 @@ function Contracts() {
 
     const editContract = (id: any) => {
         setIsPurchasing(false)
+
         router.push(`/uikit/editcontract/ctr?Id=${id}&idxp=0`);
+
 
     }
 

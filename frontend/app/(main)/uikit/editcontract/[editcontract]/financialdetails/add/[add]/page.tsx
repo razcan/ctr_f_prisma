@@ -550,7 +550,7 @@ export default function Financial() {
 
 
     const saveSchLine = (line: any) => {
-        console.log("line", line)
+        // console.log("line", line)
         //la salvare trebuie preluate valorile din campurile editabile , inlocuite in line,
         //stearsa linia existenta, si salvata noua linie
         line.billingQtty = selectedSchLineQtty;
@@ -743,7 +743,7 @@ export default function Financial() {
             // contractfinancialItemId: 0
         }
 
-        console.log(addedfinancialDetail)
+        // console.log(addedfinancialDetail)
 
         // console.log(addedfinancialDetail)
 
@@ -891,7 +891,6 @@ export default function Financial() {
                             <label htmlFor="vatquota">TVA</label>
                             <Dropdown id="vatquota" filter showClear value={vat} onChange={(e) => {
                                 setVAT(e.value)
-                                console.log(e.value)
                             }
 
                             } options={allVAT} optionLabel="VatCode" placeholder="Select One"></Dropdown>

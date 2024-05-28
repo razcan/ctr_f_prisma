@@ -27,6 +27,7 @@ import PartnerBank from '../../lookups/partnerdetails/[partnerdetails]/bank';
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 import { InputNumber } from 'primereact/inputnumber';
 import { Toast } from 'primereact/toast';
+import Link from 'next/link';
 
 
 const queryClient = new QueryClient();
@@ -187,6 +188,8 @@ export default function EditContract() {
     const [dffDate1, setdffDate1] = useState('');
     const [dffDate2, setdffDate2] = useState('');
 
+    const { BreadCrumbItems, setBreadCrumbItems } = useContext(MyContext);
+
 
     useEffect(() => {
 
@@ -326,7 +329,23 @@ export default function EditContract() {
                 else setSignDate(formated_sign_date)
 
 
+                setBreadCrumbItems(
+                    [{
+                        label: 'Home',
+                        template: () => <Link href="/">Home</Link>
+                    },
+                    {
+                        label: 'Contracte clienti',
+                        template: () => {
+                            const url = `${Frontend_BASE_URL}/uikit/customercontracts`
+                            return (
+                                <Link href={url}>Contracte clienti
+                                    {" ( Nr. Ctr:" + contractdetails.number + " Partener: " + contractdetails.partner.name + ")"}</Link>
+                            )
 
+                        }
+                    }]
+                )
 
                 setNumber(contractdetails.number)
                 setAutomaticRenewal(contractdetails.automaticRenewal)
