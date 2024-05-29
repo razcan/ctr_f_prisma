@@ -30,59 +30,23 @@ const AppMenu = () => {
             command: () => {
                 router.push(`/`);
             }
-            // items: [{
-            //     label: 'Panou de bord', icon: 'pi pi-fw pi-home', to: '/'
-            //     //     ,command: () => setBreadCrumbItems(
-            //     //         [{
-            //     //             label: 'Home',
-            //     //             template: () => <Link href="/">Home</Link>
-            //     //         }]
-            //     //     )
-            // },
-            // ]
         },
         {
             label: 'Contracte',
             items: [
                 {
                     label: 'Contracte furnizori', icon: 'pi pi-fw pi-id-card',
-                    to: '/uikit/suppliercontracts'
-                    // command: () => setBreadCrumbItems(
-                    //     [{
-                    //         label: 'Home',
-                    //         template: () => <Link href="/">Home</Link>
-                    //     },
-                    //     {
-                    //         label: 'Contracte furnizori',
-                    //         template: () => {
-                    //             const url = `${Frontend_BASE_URL}/uikit/suppliercontracts`
-                    //             return (
-                    //                 <Link href={url}>Contracte Furnizare</Link>
-                    //             )
-
-                    //         }
-                    //     }]
-                    // )
+                    // to: '/uikit/suppliercontracts'
+                    command: () => {
+                        router.push(`/uikit/suppliercontracts`);
+                    }
                 },
                 {
                     label: 'Contracte clienti', icon: 'pi pi-fw pi-bookmark',
-                    to: '/uikit/customercontracts'
-                    // command: () => setBreadCrumbItems(
-                    //     [{
-                    //         label: 'Home',
-                    //         template: () => <Link href="/">Home</Link>
-                    //     },
-                    //     {
-                    //         label: 'Contracte clienti',
-                    //         template: () => {
-                    //             const url = `${Frontend_BASE_URL}/uikit/customercontracts`
-                    //             return (
-                    //                 <Link href={url}>Contracte clienti</Link>
-                    //             )
-
-                    //         }
-                    //     }]
-                    // )
+                    // to: '/uikit/customercontracts'
+                    command: () => {
+                        router.push(`/uikit/customercontracts`);
+                    }
                 },
             ]
         },
@@ -115,24 +79,22 @@ const AppMenu = () => {
         {
             label: 'Rapoarte',
             items: [
-                { label: 'Raport general', icon: 'pi pi-fw pi-chart-line', to: '/uikit/reports' },
-                { label: 'Raport financiar', icon: 'pi pi-fw pi-chart-bar', to: '/uikit/reports_financial' },
+                {
+                    label: 'Raport general', icon: 'pi pi-fw pi-chart-line',
+                    // to: '/uikit/reports' 
+                    command: () => {
+                        router.push(`/uikit/reports`);
+                    }
+                },
+                {
+                    label: 'Raport financiar', icon: 'pi pi-fw pi-chart-bar',
+                    // to: '/uikit/reports_financial' 
+                    command: () => {
+                        router.push(`/uikit/reports_financial`);
+                    }
+                },
             ]
         },
-
-        //         const items = [
-        //     { label: 'Parteneri', icon: 'pi pi-fw pi-mobile' },
-        //     { label: 'Departamente', icon: 'pi pi-list' },
-        //     { label: 'CashFlow', icon: 'pi pi-inbox' },
-        //     { label: 'Obiecte de contract', icon: 'pi pi-fw  pi-exclamation-circle' },
-        //     { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-clone' },
-        //     { label: 'Categorii', icon: 'pi pi-chart-line' },
-        //     { label: 'Tip Contracte', icon: 'pi pi-fw pi-table' },
-        //     { label: 'Locatii', icon: 'pi pi-fw pi-box' },
-
-        // ];
-
-
         {
             label: 'Nomenclatoare',
             items: [
@@ -206,37 +168,58 @@ const AppMenu = () => {
                 {
                     label: 'Informatii Dinamice',
                     icon: 'pi pi-fw pi-pencil',
-                    to: '/uikit/dynamicInfo'
+                    // to: '/uikit/dynamicInfo'
+                    command: () => {
+                        router.push(`/uikit/dynamicInfo`);
+                    }
                 },
                 {
                     label: 'Modele Contracte',
                     icon: 'pi pi-fw pi-book',
-                    to: '/uikit/contractTemplates'
+                    // to: '/uikit/contractTemplates'
+                    command: () => {
+                        router.push(`/uikit/contractTemplates`);
+                    }
                 },
                 {
                     label: 'Fluxuri de aprobare',
                     icon: 'pi pi-fw pi-calendar',
-                    to: '/uikit/workflows'
+                    // to: '/uikit/workflows'
+                    command: () => {
+                        router.push(`/uikit/workflows`);
+                    }
                 },
                 {
                     label: 'Alerte',
                     icon: 'pi pi-fw pi-mobile',
-                    to: '/uikit/alerts',
+                    // to: '/uikit/alerts',
+                    command: () => {
+                        router.push(`/uikit/alerts`);
+                    }
                 },
                 {
                     label: 'Grupuri Utilizatori',
                     icon: 'pi pi-fw pi-clone',
-                    to: '/uikit/usergroups',
+                    // to: '/uikit/usergroups',
+                    command: () => {
+                        router.push(`/uikit/usergroups`);
+                    }
                 },
                 {
                     label: 'Utilizatori',
                     icon: 'pi pi-fw pi-check-square',
-                    to: '/uikit/users',
+                    // to: '/uikit/users',
+                    command: () => {
+                        router.push(`/uikit/users`);
+                    }
                 },
                 {
                     label: 'Cursuri Valutare',
                     icon: 'pi pi-fw pi-dollar',
-                    to: '/uikit/exchagerates',
+                    // to: '/uikit/exchagerates',
+                    command: () => {
+                        router.push(`/uikit/exchagerates`);
+                    }
                 },
 
                 // {
@@ -247,70 +230,9 @@ const AppMenu = () => {
                 // },
             ]
         }
-        // {
-        //     label: 'Pages',
-        //     icon: 'pi pi-fw pi-briefcase',
-        //     to: '/pages',
-        //     items: [
-        //         {
-        //             label: 'Landing',
-        //             icon: 'pi pi-fw pi-globe',
-        //             to: '/landing'
-        //         },
-        //         {
-        //             label: 'Auth',
-        //             icon: 'pi pi-fw pi-user',
-        //             items: [
-        //                 {
-        //                     label: 'Login',
-        //                     icon: 'pi pi-fw pi-sign-in',
-        //                     to: '/auth/login'
-        //                 },
-        //                 {
-        //                     label: 'Error',
-        //                     icon: 'pi pi-fw pi-times-circle',
-        //                     to: '/auth/error'
-        //                 },
-        //                 {
-        //                     label: 'Access Denied',
-        //                     icon: 'pi pi-fw pi-lock',
-        //                     to: '/auth/access'
-        //                 }
-        //             ]
-        //         },
-        //         {
-        //             label: 'Crud',
-        //             icon: 'pi pi-fw pi-pencil',
-        //             to: '/pages/crud'
-        //         },
-        //         {
-        //             label: 'Timeline',
-        //             icon: 'pi pi-fw pi-calendar',
-        //             to: '/pages/timeline'
-        //         },
-        //         {
-        //             label: 'Not Found',
-        //             icon: 'pi pi-fw pi-exclamation-circle',
-        //             to: '/pages/notfound'
-        //         },
-        //         {
-        //             label: 'Empty',
-        //             icon: 'pi pi-fw pi-circle-off',
-        //             to: '/pages/empty'
-        //         }
-        //     ]
-        // },
-
     ];
 
     return (
-
-        // <>
-
-        //     <div className="card flex justify-content-center">
-        //         <PanelMenu model={model} className="w-full md:w-20rem" />
-        //     </div>
-        // </>
         <MenuProvider>
             {/* <ul className="layout-menu">
                 {model.map((item, i) => {
@@ -326,7 +248,7 @@ const AppMenu = () => {
             </ul> */}
 
             <div className="card flex justify-content-center">
-                <PanelMenu model={model} className="w-full md:w-20rem" />
+                <PanelMenu model={model} className="w-full md:w-20rem" multiple />
             </div>
 
         </MenuProvider>
