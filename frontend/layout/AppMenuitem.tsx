@@ -76,7 +76,7 @@ const AppMenuitem = (props: AppMenuItemProps) => {
                 </Link>
             ) : null}
 
-            {subMenu}
+            {/* {subMenu} */}
         </li>
     );
 };

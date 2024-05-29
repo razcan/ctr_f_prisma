@@ -156,7 +156,6 @@ const Item = ({ executeFunction }: any) => {
             })
             .then(data => {
                 setData(data)
-                console.log(data)
             })
     }
 
@@ -174,7 +173,6 @@ const Item = ({ executeFunction }: any) => {
 
     const editItem = async () => {
 
-        console.log(setToEdit);
 
         let toAdd = {
             name: selectedName,
@@ -402,7 +400,7 @@ const Item = ({ executeFunction }: any) => {
                                     <Dropdown id="measuringUnit" filter showClear value={measuringUnit}
                                         onChange={(e) => {
                                             setMeasuringUnit(e.value);
-                                            console.log(e.value);
+
                                         }
 
                                         } options={allMeasuringUnit} optionLabel="name" placeholder="Select One"></Dropdown>
@@ -439,7 +437,7 @@ const Item = ({ executeFunction }: any) => {
                 // cellSelection selectionMode="single"
                 onSelectionChange={
                     (e) => {
-                        console.log(e.value[0])
+
                         setToEdit(e.value[0].id)
                         setVisible(true)
                         setSelectedName(e.value[0].name);
