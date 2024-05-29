@@ -842,7 +842,8 @@ export default function Financial() {
                 contractId: parseInt(ctrId),
                 itemid: selectedItem.id,
                 currencyid: currency.id,
-                currencyValue: parseFloat(totalContractValue),
+                currencyValue: parseFloat(price),
+                // parseFloat(totalContractValue),
                 billingFrequencyid: billingFrequency.id,
                 active: active,
 

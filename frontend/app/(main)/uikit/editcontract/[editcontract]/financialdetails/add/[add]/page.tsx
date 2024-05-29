@@ -611,9 +611,9 @@ export default function Financial() {
 
         // console.log(resultSchedule, "resultSchedule")
 
-        if (resultSchedule.length == 0) {
-            errors.push("Trebuie sa aveti minimi o linie de scadentar!");
-        }
+        // if (resultSchedule.length == 0) {
+        //     errors.push("Trebuie sa aveti minimi o linie de scadentar!");
+        // }
 
         if (!fields.itemid) {
             errors.push("Trebuie sa setati un articol!");

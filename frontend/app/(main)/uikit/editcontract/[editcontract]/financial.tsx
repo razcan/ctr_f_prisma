@@ -74,6 +74,7 @@ export default function Financial() {
             axios(config)
                 .then(function (response) {
                     setItem(response.data)
+
                 })
                 .catch(function (error) {
                     router.push(`${Frontend_BASE_URL}/auth/login`)

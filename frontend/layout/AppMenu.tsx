@@ -7,6 +7,9 @@ import { MenuProvider } from './context/menucontext';
 import Link from 'next/link';
 import { AppMenuItem } from '@/types';
 import { MyContext, MyProvider } from '../layout/context/myUserContext'
+import { PanelMenu } from 'primereact/panelmenu';
+import router from 'next/router';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 
 const AppMenu = () => {
     const { layoutConfig } = useContext(LayoutContext);
@@ -18,20 +21,25 @@ const AppMenu = () => {
     useEffect(() => {
     }, [BreadCrumbItems])
 
+    const router = useRouter()
 
     const model: AppMenuItem[] = [
         {
             label: 'Acasa',
-            items: [{
-                label: 'Panou de bord', icon: 'pi pi-fw pi-home', to: '/'
-                //     ,command: () => setBreadCrumbItems(
-                //         [{
-                //             label: 'Home',
-                //             template: () => <Link href="/">Home</Link>
-                //         }]
-                //     )
-            },
-            ]
+            icon: 'pi pi-fw pi-home',
+            command: () => {
+                router.push(`/`);
+            }
+            // items: [{
+            //     label: 'Panou de bord', icon: 'pi pi-fw pi-home', to: '/'
+            //     //     ,command: () => setBreadCrumbItems(
+            //     //         [{
+            //     //             label: 'Home',
+            //     //             template: () => <Link href="/">Home</Link>
+            //     //         }]
+            //     //     )
+            // },
+            // ]
         },
         {
             label: 'Contracte',
@@ -83,15 +91,24 @@ const AppMenu = () => {
             items: [
                 {
                     label: 'Facturi furnizori', icon: 'pi pi-fw pi-stop',
-                    to: '/uikit/supplierinvoices'
+                    // to: '/uikit/supplierinvoices',
+                    command: () => {
+                        router.push(`/uikit/supplierinvoices`);
+                    }
                 },
                 {
                     label: 'Facturi clienti', icon: 'pi pi-fw pi-stop-circle',
-                    to: '/uikit/customerinvoices'
+                    // to: '/uikit/customerinvoices'
+                    command: () => {
+                        router.push(`/uikit/customerinvoices`);
+                    }
                 },
                 {
                     label: 'Emitere in masa', icon: 'pi pi-fw pi-box',
-                    to: '/uikit/massinvoicegenerate'
+                    // to: '/uikit/massinvoicegenerate'
+                    command: () => {
+                        router.push(`/uikit/massinvoicegenerate`);
+                    }
                 },
             ]
         },
@@ -102,15 +119,90 @@ const AppMenu = () => {
                 { label: 'Raport financiar', icon: 'pi pi-fw pi-chart-bar', to: '/uikit/reports_financial' },
             ]
         },
+
+        //         const items = [
+        //     { label: 'Parteneri', icon: 'pi pi-fw pi-mobile' },
+        //     { label: 'Departamente', icon: 'pi pi-list' },
+        //     { label: 'CashFlow', icon: 'pi pi-inbox' },
+        //     { label: 'Obiecte de contract', icon: 'pi pi-fw  pi-exclamation-circle' },
+        //     { label: 'Centre Cost/Profit', icon: 'pi pi-fw  pi-clone' },
+        //     { label: 'Categorii', icon: 'pi pi-chart-line' },
+        //     { label: 'Tip Contracte', icon: 'pi pi-fw pi-table' },
+        //     { label: 'Locatii', icon: 'pi pi-fw pi-box' },
+
+        // ];
+
+
         {
-            label: 'Administrare',
-            icon: 'pi pi-fw pi-briefcase',
+            label: 'Nomenclatoare',
             items: [
                 {
-                    label: 'Nomenclatoare',
-                    icon: 'pi pi-fw pi-globe',
-                    to: '/uikit/lookups'
+                    label: 'Parteneri', icon: 'pi pi-fw pi-mobile',
+                    command: () => {
+                        router.push(`/uikit/lookups/partner`);
+                    }
                 },
+                {
+                    label: 'CashFlow', icon: 'pi pi-list',
+                    command: () => {
+                        router.push(`/uikit/lookups/cashflow`);
+                    }
+                },
+                {
+                    label: 'Articole', icon: 'pi pi-inbox',
+                    command: () => {
+                        router.push(`/uikit/lookups/item`);
+                    }
+                },
+                {
+                    label: 'Departamente', icon: 'pi pi-fw  pi-exclamation-circle',
+                    command: () => {
+                        router.push(`/uikit/lookups/department`);
+                    }
+                },
+                {
+                    label: 'Centre de Cost', icon: 'pi pi-fw  pi-clone',
+                    command: () => {
+                        router.push(`/uikit/lookups/costcenter`);
+                    }
+                },
+                {
+                    label: 'Categorii Contracte', icon: 'pi pi-chart-line',
+                    command: () => {
+                        router.push(`/uikit/lookups/category`);
+                    }
+                },
+                {
+                    label: 'Tipuri Contracte', icon: 'pi pi-fw pi-box',
+                    command: () => {
+                        router.push(`/uikit/lookups/type`);
+                    }
+                },
+                {
+                    label: 'Locatii', icon: 'pi pi-fw pi-table',
+                    command: () => {
+                        router.push(`/uikit/lookups/location`);
+                    }
+                },
+                {
+                    label: 'Tranzactii', icon: 'pi pi-fw pi-box',
+                    command: () => {
+                        router.push(`/uikit/lookups`);
+                    }
+                },
+                {
+                    label: 'Clasificari', icon: 'pi pi-fw pi-chart-line',
+                    command: () => {
+                        router.push(`/uikit/lookups`);
+                    }
+                },
+
+            ]
+        },
+        {
+            label: 'Administrare',
+            // icon: 'pi pi-fw pi-briefcase',
+            items: [
                 {
                     label: 'Informatii Dinamice',
                     icon: 'pi pi-fw pi-pencil',
@@ -212,16 +304,31 @@ const AppMenu = () => {
     ];
 
     return (
+
+        // <>
+
+        //     <div className="card flex justify-content-center">
+        //         <PanelMenu model={model} className="w-full md:w-20rem" />
+        //     </div>
+        // </>
         <MenuProvider>
-            <ul className="layout-menu">
+            {/* <ul className="layout-menu">
                 {model.map((item, i) => {
-                    return !item?.seperator ? <AppMenuitem item={item} root={true} index={i} key={item.label} /> : <li className="menu-separator"></li>;
+                    return !item?.seperator ? 
+                    <AppMenuitem item={item} root={true} 
+                    index={i} key={item.label} /> : 
+                    <li className="menu-separator"></li>;
                 })}
 
-                {/* <Link href="https://blocks.primereact.org" target="_blank" style={{ cursor: 'pointer' }}>
+                <Link href="https://blocks.primereact.org" target="_blank" style={{ cursor: 'pointer' }}>
                     <img alt="Prime Blocks" className="w-full mt-3" src={`/layout/images/banner-primeblocks${layoutConfig.colorScheme === 'light' ? '' : '-dark'}.png`} />
-                </Link> */}
-            </ul>
+                </Link>
+            </ul> */}
+
+            <div className="card flex justify-content-center">
+                <PanelMenu model={model} className="w-full md:w-20rem" />
+            </div>
+
         </MenuProvider>
     );
 };
