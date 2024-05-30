@@ -55,6 +55,8 @@ export default function CustomerInvoice() {
     const [status, setStatus] = useState();
     const [statusWF, setStatusWF] = useState();
 
+    const [allCurrency, setAllCurrency] = useState([]);
+    const [currency, setCurrency] = useState([]);
 
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
@@ -112,6 +114,7 @@ export default function CustomerInvoice() {
     const Id = searchParams.get("Id");
 
 
+
     const fetchLocationData = () => {
         fetch(`${Backend_BASE_URL}/nomenclatures/location`)
             .then(response => {
@@ -121,6 +124,12 @@ export default function CustomerInvoice() {
                 setLocations(location)
             })
     }
+
+    const fetchAllCurrencies = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
+        setAllCurrency(response);
+    }
+
 
     const fetchTypeData = () => {
         fetch(`${Backend_BASE_URL}/nomenclatures/contracttype`)
@@ -233,6 +242,7 @@ export default function CustomerInvoice() {
                 setDepartments(departments)
             })
     }
+
 
 
     function subtractDays(date: Date, days: number): Date {
@@ -442,7 +452,8 @@ export default function CustomerInvoice() {
             fetchTypeData(),
             fetchStatusData(),
             fetchLocationData(),
-            fetchWFStatusData()
+            fetchWFStatusData(),
+            fetchAllCurrencies()
     }, [])
 
 
@@ -634,20 +645,95 @@ export default function CustomerInvoice() {
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
 
-                        <div className="field col-12 md:col-3">
-                            <label htmlFor="entity">Entitate</label>
-                            <Dropdown id="entity"
-                                showClear
-                                filter
-                                value={selectedEntity}
-                                onChange={(e) => {
-                                    setSelectedEntity(e.value)
-                                    // fetchPartnersDetailsData(e.value.id)
-                                    fetchEntityDetailsData(e.value.id)
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="remarks" >Date Entitate</label>
+                            <InputText disabled id="remarks" className='max-w-screen'
+                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            />
+                        </div>
 
+
+                        <div className="field col-12 md:col-3">
+                            <label htmlFor="selectedPartner">Partner</label>
+                            <Dropdown id="selectedPartner" value={selectedPartner} filter
+                                onChange={(e) => {
+                                    setSelectedPartner(e.value.id)
+                                    // fetchPartnersDetailsData(e.value.id)
                                 }}
-                                options={entity}
+                                options={partner}
                                 optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="currency">Moneda factura</label>
+                            <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                        </div>
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="remarks" >Curs</label>
+                            <InputText disabled id="remarks" className='max-w-screen'
+                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            />
+                        </div>
+
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="number">Serie si numar</label>
+                            <InputText id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+                        </div>
+
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="remarks" >Stare</label>
+                            <InputText disabled id="remarks" className='max-w-screen'
+                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            />
+                        </div>
+
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="start" className="font-bold block mb-2">
+                                Data Emiterii
+                            </label>
+                            <Calendar id="start" value={start} onChange={(e) => {
+                                setStartDate(e.value)
+                            }
+
+                            } showIcon dateFormat="dd/mm/yy" />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="remarks" >Zile Scadenta</label>
+                            <InputText disabled id="remarks" className='max-w-screen'
+                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="field col-12 md:col-2">
+                            <label htmlFor="start" className="font-bold block mb-2">
+                                Data Scadentei
+                            </label>
+                            <Calendar id="start" value={start} onChange={(e) => {
+                                setStartDate(e.value)
+                            }
+
+                            } showIcon dateFormat="dd/mm/yy" />
+                        </div>
+
+                        <div className="field col-12  md:col-4">
+                            <label htmlFor="party_address">Adresa</label>
+                            <Dropdown id="party_address" value={getPartnerAddressJson(party_address)} filter
+                                onChange={(e) => {
+                                    setParty_Address(e.target.value)
+                                }}
+                                options={partnerAddress}
+                                optionLabel="completeAddress" placeholder="Select One"></Dropdown>
+
+                        </div>
+                        <div className="field col-12 md:col-4">
+                            <label htmlFor="remarks">Scurta descriere</label>
+                            <InputText id="remarks" className='max-w-screen'
+                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            />
                         </div>
                     </div>
                 </div>

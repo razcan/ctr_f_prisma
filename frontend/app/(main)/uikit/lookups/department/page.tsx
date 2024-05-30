@@ -5,23 +5,21 @@ import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-} from '@tanstack/react-query'
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import { MyContext } from '../../../../../layout/context/myUserContext';
 import { InputText } from 'primereact/inputtext';
 import Link from 'next/link';
-
+import { Paginator } from 'primereact/paginator';
+import { FilterMatchMode } from 'primereact/api';
 
 const Department = ({ executeFunction }: any) => {
 
-    const [departmentSelected, setDepartmentSelected] = useState('');
+    const [departmentSelected, setDepartmentSelected] = useState(0);
     const [visible, setVisible] = useState(false);
+    const [add_visible, setAdd_visible] = useState(false);
+
     const toast = useRef<undefined | null | any>(null);
     const [data, setData] = useState([]);
     const [departament, setDepartament] = useState('');
@@ -61,13 +59,31 @@ const Department = ({ executeFunction }: any) => {
         if (toAdd.name.length > 2) {
             try {
 
-                const response = await axios.post(`${Backend_BASE_URL}/contracts/department`,
-                    toAdd
-                );
-                showSuccess(`Departmentul ${toAdd.name} a fost adaugat!`)
-                setDepartament('');
-                fetchDepData();
-                // console.log('category added:', response.data);
+                if (departmentSelected.id > 0) {
+                    const response = await axios.patch(`${Backend_BASE_URL}/contracts/department/${departmentSelected.id}`,
+                        toAdd
+                    );
+                    showSuccess(`Departmentul ${toAdd.name} a fost adaugat!`)
+                    setDepartament('');
+                    fetchDepData();
+                    setAdd_visible(false);
+                    setVisible(false);
+                    setDepartmentSelected(0);
+                    console.log('departament added:', response.data);
+                }
+                else {
+                    const response = await axios.post(`${Backend_BASE_URL}/contracts/department`,
+                        toAdd
+                    );
+                    showSuccess(`Departmentul ${toAdd.name} a fost adaugat!`)
+                    setDepartament('');
+                    fetchDepData();
+                    setAdd_visible(false);
+                    setVisible(false);
+                    setDepartmentSelected(0);
+                    console.log('departament added:', response.data);
+                }
+
             } catch (error) {
                 showError(`Nu a putut fi adaugat departamentul! ${error}'`)
             }
@@ -95,6 +111,9 @@ const Department = ({ executeFunction }: any) => {
         setDepartmentSelected(departmentSelected);
     }, [departmentSelected]);
 
+    const [products, setProducts] = useState(data.slice(0, 12));
+    const [first, setFirst] = useState(0);
+    const [rows, setRows] = useState(12);
 
     const fetchDepData = () => {
         fetch(`${Backend_BASE_URL}/contracts/department`
@@ -104,8 +123,11 @@ const Department = ({ executeFunction }: any) => {
             })
             .then(data => {
                 setData(data)
+                setProducts(data.slice(0, 12));
             })
     }
+
+
 
     useEffect(() => {
         fetchDepData();
@@ -145,52 +167,176 @@ const Department = ({ executeFunction }: any) => {
         setDepartmentSelected(event)
     }
 
-    return (
-        <div className='card'>
-            <div>
-                <div className="field col-12  md:col-3">
-                    <span className="p-float-label">
-                        <InputText id="departament" type="text" value={departament} onChange={(e) => setDepartament(e.target.value)} />
-                        <label htmlFor="departament">Departament </label>
-                    </span>
-                </div>
-                <div className='p-2'><Button label="Adauga" onClick={addDepartment} /></div>
+
+
+    const onPageChange = (event) => {
+        setFirst(event.first);
+        setRows(event.rows);
+        const newProducts = data.slice(event.first, event.first + event.rows);
+        setProducts(newProducts);
+    };
+
+    const [filters, setFilters] = useState({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    });
+
+    const [globalFilterValue, setGlobalFilterValue] = useState('');
+
+    const onGlobalFilterChange = (e) => {
+        const value = e.target.value;
+        let _filters = { ...filters };
+        _filters['global'].value = value;
+        setGlobalFilterValue(value);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div className="flex justify-content-end">
+                <span className="p-input-icon-left">
+                    {/* <i className="pi pi-search" /> */}
+                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange}
+                        placeholder="Cautare"
+                    />
+                </span>
             </div>
+        );
+    };
 
-            {/* <ConfirmDialog /> */}
-            <Toast ref={toast} />
-            <Dialog visible={visible} modal style={{ width: '50rem' }} onHide={() => setVisible(false)}>
+    const header = renderHeader();
 
-                <span className="font-bold white-space-nowrap">Doriti sa stergeti departamentul ({departmentSelected.name}) ?</span>
-                <div className='pt-4'>
-                    <div className='grid'>
-                        <div className='col-1 '>
-                            <Button label="Da" severity="danger" onClick={() => {
-                                deleteDepartmentSelected(departmentSelected)
 
-                            }} />
-                        </div>
-                        <div className='col-1 pl-4'>
-                            <Button label="Nu" severity="success" onClick={() => setVisible(false)} autoFocus />
-                        </div>
+    return (
+
+        <div className="grid">
+            <Toast ref={toast} position="top-right" />
+            <div className="col-12">
+                <div className="card">
+                    <div className="p-d-flex p-flex-column" style={{ height: '80vh' }}>
+                        <header className="p-flex-none" style={{ height: '10%' }}>
+                            <div className="p-d-flex p-ai-center p-jc-center"
+                                style={{ height: '100%' }}>
+                                <div className='grid'>
+
+
+
+                                    <div className="field col-12  md:col-3">
+                                        <div className='p-2'><Button label="Adauga"
+                                            onClick={() => {
+                                                setDepartmentSelected(0);
+                                                setDepartament('');
+                                                setAdd_visible(true)
+
+                                            }} /></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                        <main className="p-flex-grow-1" style={{
+                            height: '80%', overflow: 'auto'
+                        }}>
+                            <div className="p-d-flex p-ai-center p-jc-center" style={{ minHeight: '100%' }}>
+
+
+                                <Dialog header="Adaugare Departament"
+                                    visible={add_visible}
+                                    modal style={{ width: '50rem' }}
+                                    onHide={() => {
+                                        setAdd_visible(false);
+                                        setDepartmentSelected(0);
+                                    }
+                                    }>
+
+                                    <div className="field col-12  md:col-3">
+                                        <span className="p-float-label">
+                                            <InputText id="departament" type="text" value={departament} onChange={(e) => setDepartament(e.target.value)} />
+                                            <label htmlFor="departament">Departament </label>
+                                        </span>
+                                    </div>
+
+                                    <div className='col-1'>
+                                        <Button label="Salveaza" severity="success" onClick={() => addDepartment()} />
+                                    </div>
+
+                                </Dialog>
+
+
+                                <Dialog header={`Editare Departament`} visible={visible} modal
+                                    style={{ width: '40rem' }}
+                                    onHide={() => {
+                                        setVisible(false)
+                                        setDepartmentSelected(0);
+                                        setAdd_visible(false);
+                                    }}>
+                                    <div className='grid'>
+                                        <div className="col-5 p-2">
+                                            <label htmlFor="number">Departament</label>
+                                            <InputText id="number" type="text" value={departament} onChange={(e) => {
+                                                setDepartament(e.target.value)
+
+                                            }} />
+                                        </div>
+
+                                        <div className='col-3 pt-4'>
+                                            <Button label="Salveaza" severity="success" onClick={() => {
+                                                setVisible(false)
+                                                addDepartment()
+                                            }
+                                            } autoFocus />
+                                        </div>
+
+                                        <div className='col-3 pt-4'>
+                                            <Button label="Sterge" severity="danger" onClick={() => {
+                                                deleteDepartmentSelected(departmentSelected)
+
+                                            }} />
+                                        </div>
+                                    </div>
+
+                                </Dialog>
+
+                                <DataTable value={products}
+
+
+                                    filters={filters}
+                                    globalFilterFields={['name', 'id', 'code'
+                                    ]} header={header}
+
+
+                                    onSelectionChange={
+                                        (e) => {
+                                            deleteDepartment(e.value[0])
+                                            setDepartmentSelected(e.value[0])
+
+                                            setVisible(true)
+                                            setDepartament(e.value[0].name)
+                                        }}
+                                    size="small" stripedRows
+                                    tableStyle={{ minWidth: '50rem' }}
+                                    sortMode="multiple"
+                                    selectionMode="radiobutton"
+                                >
+                                    <Column sortable field="id" header="Code"></Column>
+                                    <Column sortable field="name" header="Name"></Column>
+                                </DataTable>
+
+                            </div>
+                        </main>
+                        <footer className="p-flex-none" style={{ height: '10%' }}>
+                            <div className="p-d-flex p-ai-center p-jc-center" style={{ height: '100%' }}>
+                                <Paginator
+                                    first={first}
+                                    rows={rows}
+                                    totalRecords={data.length}
+                                    onPageChange={onPageChange}
+                                    rowsPerPageOptions={[12, 24, 50]}
+                                />
+                            </div>
+                        </footer>
                     </div>
+
                 </div>
-            </Dialog>
-            <DataTable value={data} size="small" stripedRows
-                tableStyle={{ minWidth: '50rem' }} paginator
-                rows={15} rowsPerPageOptions={[15, 30, 45]} sortMode="multiple"
-                selectionMode="radiobutton"
-                // cellSelection selectionMode="single"
-                onSelectionChange={
-                    (e) => {
-                        deleteDepartment(e.value)
-                        setVisible(true)
-                    }}>
-                <Column field="id" header="Cod" sortable></Column>
-                <Column field="name" header="Nume" sortable></Column>
-                <Column selectionMode="single" header="Sterge" headerStyle={{ width: '3rem' }}></Column>
-            </DataTable>
-        </div >
+            </div>
+        </div>
     );
 }
 

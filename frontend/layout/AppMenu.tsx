@@ -26,7 +26,7 @@ const AppMenu = () => {
     const model = [
         {
             key: '0',
-            label: 'Acasa',
+            label: 'Dashboard',
             icon: 'pi pi-fw pi-home',
             command: () => {
                 router.push(`/`);
