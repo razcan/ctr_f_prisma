@@ -66,6 +66,22 @@ function Contracts() {
         }
 
 
+        setBreadCrumbItems(
+            [{
+                label: 'Home',
+                template: () => <Link href="/">Home</Link>
+            },
+            {
+                label: 'Contracte Clienti',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/customercontracts`
+                    return (
+                        <Link href={url}>Contracte Clienti</Link>
+                    )
+
+                }
+            }]
+        )
 
     }, [])
 

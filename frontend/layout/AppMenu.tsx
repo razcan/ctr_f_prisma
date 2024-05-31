@@ -139,42 +139,42 @@ const AppMenu = () => {
                     }
                 },
                 {
-                    key: '0_4_4',
+                    key: '0_4_5',
                     label: 'Centre de Cost', icon: 'pi pi-fw  pi-clone',
                     command: () => {
                         router.push(`/uikit/lookups/costcenter`);
                     }
                 },
                 {
-                    key: '0_4_5',
+                    key: '0_4_6',
                     label: 'Categorii Contracte', icon: 'pi pi-chart-line',
                     command: () => {
                         router.push(`/uikit/lookups/category`);
                     }
                 },
                 {
-                    key: '0_4_6',
+                    key: '0_4_7',
                     label: 'Tipuri Contracte', icon: 'pi pi-fw pi-box',
                     command: () => {
                         router.push(`/uikit/lookups/type`);
                     }
                 },
                 {
-                    key: '0_4_7',
+                    key: '0_4_8',
                     label: 'Locatii', icon: 'pi pi-fw pi-table',
                     command: () => {
                         router.push(`/uikit/lookups/location`);
                     }
                 },
                 {
-                    key: '0_4_8',
+                    key: '0_4_9',
                     label: 'Tranzactii', icon: 'pi pi-fw pi-box',
                     command: () => {
                         router.push(`/uikit/lookups`);
                     }
                 },
                 {
-                    key: '0_4_9',
+                    key: '0_4_91',
                     label: 'Clasificari', icon: 'pi pi-fw pi-chart-line',
                     command: () => {
                         router.push(`/uikit/lookups`);

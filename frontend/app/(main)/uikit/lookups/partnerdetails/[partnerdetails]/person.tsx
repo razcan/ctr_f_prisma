@@ -223,7 +223,7 @@ const Person = ({ params, setPersonIndex }: any) => {
                     sortField="id"
                     //sortOrder={-1} //desc
                     sortOrder={1} //cres
-                    paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                    // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     selection={selectedPerson} onSelectionChange={(e) => {
                         setSelectedPerson(e.value)
                         setPerson_name(e.value.name)

@@ -41,6 +41,9 @@ export default function CustomerInvoice() {
     const { userId, setUserId } = useMyContext();
 
     // const { value, updateValue } = useData();
+
+    const [vatOnReceipt, setVatOnreceipt] = useState(false);
+
     const router = useRouter();
     const [contractStatus, setContractStatus] = useState([]);
     const [contractWFStatus, setContractWFStatus] = useState([]);
@@ -56,21 +59,7 @@ export default function CustomerInvoice() {
     const [statusWF, setStatusWF] = useState();
 
     const [allCurrency, setAllCurrency] = useState([]);
-    const [currency, setCurrency] = useState([]);
-
-    const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState([]);
-    const [departments, setDepartments] = useState([]);
-    const [selectedDepartment, setSelectedDepartment] = useState([]);
-
-    const [locations, setLocations] = useState([]);
-    const [selectedLocation, setSelectedLocation] = useState([]);
-
-    const [cashflows, setCashflow] = useState([]);
-    const [selectedCashflow, setSelectedCashflow] = useState([]);
-
-    const [costcenters, setCostCenter] = useState([]);
-    const [selectedCostCenter, setSelectedCostCenter] = useState([]);
+    const [currency, setCurrency] = useState(null);
 
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
@@ -87,9 +76,6 @@ export default function CustomerInvoice() {
     const [automaticRenewalValue, setAutomaticRenewal] = useState<any>(false);
 
     const [ent_name, setEnt_name] = useState();
-    const [ent_email, setEnt_email] = useState();
-    const [ent_phone, setEnt_phone] = useState();
-    const [ent_legal_person, setEnt_legal_person] = useState();
     const [ent_iban, setEnt_IBAN] = useState();
     const [ent_address, setEnt_Address] = useState();
     const [ent_bank, setEnt_bank] = useState();
@@ -108,22 +94,11 @@ export default function CustomerInvoice() {
     const [party_bank, setParty_bank] = useState();
     const [party_id, setParty_id] = useState();
 
-    const queryClient = new QueryClient();
 
     const searchParams = useSearchParams()
     const Id = searchParams.get("Id");
 
 
-
-    const fetchLocationData = () => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/location`)
-            .then(response => {
-                return response.json()
-            })
-            .then(location => {
-                setLocations(location)
-            })
-    }
 
     const fetchAllCurrencies = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
@@ -150,25 +125,6 @@ export default function CustomerInvoice() {
             })
     }
 
-    const fetchWFStatusData = () => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/contractwfstatus`)
-            .then(response => {
-                return response.json()
-            })
-            .then(status => {
-                setContractWFStatus(status)
-            })
-    }
-
-    const fetchCategoriesData = () => {
-        fetch(`${Backend_BASE_URL}/contracts/category`)
-            .then(response => {
-                return response.json()
-            })
-            .then(categories => {
-                setCategories(categories)
-            })
-    }
     const fetchEntity = () => {
         fetch(`${Backend_BASE_URL}/nomenclatures/entity`)
             .then(response => {
@@ -187,24 +143,7 @@ export default function CustomerInvoice() {
                 setPartner(partner)
             })
     }
-    const fetchPartnersDetailsData = (partnerId: number) => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/partnersdetails/${partnerId}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(partnerdetails => {
-                setPartnerdetails(partnerdetails[0])
-            })
-    }
-    const fetchEntityDetailsData = (entityId: number) => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/entitydetails/${entityId}`)
-            .then(response => {
-                return response.json()
-            })
-            .then(entitydetails => {
-                setEntitydetails(entitydetails[0])
-            })
-    }
+
     const fetchItemsData = () => {
         fetch(`${Backend_BASE_URL}/contracts/item`)
             .then(response => {
@@ -214,35 +153,16 @@ export default function CustomerInvoice() {
                 setItems(item)
             })
     }
-    const fetchCashFlow = () => {
-        fetch(`${Backend_BASE_URL}/contracts/cashflownom`)
-            .then(response => {
-                return response.json()
-            })
-            .then(cashflow => {
-                setCashflow(cashflow)
-            })
+
+    const fetchPartnerAddress = async (partnerId: Number) => {
+        const response =
+            await fetch(`${Backend_BASE_URL}/nomenclatures/address/${partnerId}`).
+                then(res => res.json())
+        setPartnerAddress(response);
+        console.log(response)
     }
 
-    const fetchCostCenter = () => {
-        fetch(`${Backend_BASE_URL}/contracts/costcenter`)
-            .then(response => {
-                return response.json()
-            })
-            .then(costcenter => {
-                setCostCenter(costcenter)
-            })
-    }
-    const fetchDepartmentsData = () => {
-        fetch(`${Backend_BASE_URL}/contracts/department`)
-            .then(response => {
-                return response.json()
-            })
-            .then(departments => {
-                setDepartments(departments)
-            })
-    }
-
+    // fetchPartnerAddress()
 
 
     function subtractDays(date: Date, days: number): Date {
@@ -280,179 +200,18 @@ export default function CustomerInvoice() {
     const getAddressJson = (id: string) => {
         return entityAddress.find((obj) => obj.id === id);
     };
-    const getPartnerAddressJson = (id: string) => {
-        return partnerAddress.find((obj) => obj.id === id);
-    };
-
-    const fetchContractData = async () => {
-        await fetch(`${Backend_BASE_URL}/contracts/details/${Id}`)
-            .then(response => {
-
-                return response.json()
-            })
-            .then(contractdetails => {
-                setContractDetails(contractdetails)
-                console.log(contractdetails, "contractdetails")
+    // const getPartnerAddressJson = (id: string) => {
+    //     return partnerAddress.find((obj) => obj.id === id);
+    // };
 
 
-                if (contractdetails.PartnerBank !== null && contractdetails.PartnerBank !== undefined) {
-                    setPartnerbankId(contractdetails.PartnerBank.id)
-                }
-
-                if (contractdetails.PartnerAddress !== null && contractdetails.PartnerAddress !== undefined) {
-                    setPartneraddressId(contractdetails.PartnerAddress.id)
-                }
-
-
-                const referenceDate = new Date('2024-01-01T00:00:00+00:00');
-
-                setEntitybankId(contractdetails.EntityBank.id)
-                setEntityaddressId(contractdetails.EntityAddress.id)
-
-                const formated_start_date = new Date(subtractDays(contractdetails.start, 1));
-                const formated_end_date = new Date(subtractDays(contractdetails.end, 1));
-                const formated_completion_date = new Date(subtractDays(contractdetails.completion, 1));
-                const formated_sign_date = new Date(subtractDays(contractdetails.sign, 1));
-
-                setStartDate(formated_start_date)
-
-                setEndDate(formated_end_date)
-
-                setCompletionDate(formated_completion_date)
-
-                setSignDate(formated_sign_date)
-
-                if (formated_completion_date < referenceDate) {
-                    setCompletionDate('')
-                }
-                else setCompletionDate(formated_completion_date)
-
-                if (formated_sign_date < referenceDate) {
-                    setSignDate('')
-                }
-                else setSignDate(formated_sign_date)
-
-
-
-
-                setNumber(contractdetails.number)
-                setAutomaticRenewal(contractdetails.automaticRenewal)
-
-                setType(contractdetails.type)
-                setStatus(contractdetails.status)
-                setStatusWF(contractdetails.statusWF)
-                setSelectedCategory(contractdetails.Category)
-                setSelectedDepartment(contractdetails.departament)
-                setSelectedLocation(contractdetails.location)
-                setSelectedCostCenter(contractdetails.costcenter)
-                setSelectedCashflow(contractdetails.cashflow)
-
-                setSelectedEntity(contractdetails.entity)
-                setSelectedPartner(contractdetails.partner)
-
-                if (contractdetails.EntityPerson !== null && contractdetails.EntityPerson !== undefined) {
-                    setEnt_person(contractdetails.EntityPerson.name)
-                }
-
-                if (contractdetails.PartnerPerson !== null && contractdetails.PartnerPerson !== undefined) {
-                    setParty_person(contractdetails.PartnerPerson.name)
-                }
-
-
-
-                const fetchEntityPersons = async () => {
-                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.entity.id}`).then(res => res.json().then(res => {
-                        setEntityPersons(res);
-
-                    })
-                    )
-                }
-                fetchEntityPersons()
-
-                const fetchEntityBanks = async () => {
-                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${contractdetails.entity.id}`).then(res => res.json())
-                    setEntityBanks(response);
-                }
-                fetchEntityBanks()
-                const fetchEntityAddress = async () => {
-                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${contractdetails.entity.id}`).then(res => res.json())
-                    setEntityAddress(response);
-                }
-                fetchEntityAddress()
-
-                setEnt_id(contractdetails.EntityPerson.id)
-                // setEnt_name(contractdetails.EntityPerson.name)
-                setEnt_name(getPersonJson(contractdetails.EntityPerson.name))
-                setEnt_email(contractdetails.EntityPerson.email)
-                setEnt_phone(contractdetails.EntityPerson.phone)
-                setEnt_legal_person(contractdetails.EntityPerson.legalrepresent)
-                setEnt_role(contractdetails.EntityPerson.role)
-                setEnt_IBAN(contractdetails.EntityBank.iban)
-                setEnt_bank(contractdetails.EntityBank.bank)
-                setEnt_Address(contractdetails.EntityAddress.id)
-
-
-                const fetchPartnerPersons = async () => {
-                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/persons/${contractdetails.partner.id}`).then(res => res.json().then(res => {
-                        setPartnerPersons(res);
-                        // console.log(res)
-
-                        if (contractdetails.PartnerPerson !== null && contractdetails.PartnerPerson !== undefined) {
-
-                            setParty_id(contractdetails.PartnerPerson.id)
-                            setParty_name(contractdetails.PartnerPerson.name)
-                            setParty_email(contractdetails.PartnerPerson.email)
-                            setParty_phone(contractdetails.PartnerPerson.phone)
-                            setParty_legal_person(contractdetails.PartnerPerson.legalrepresent)
-                            setParty_role(contractdetails.PartnerPerson.role)
-                        }
-                    })
-                    )
-                }
-                fetchPartnerPersons()
-
-                const fetchPartnerBanks = async () => {
-                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/bank/${contractdetails.partner.id}`).then(res => res.json())
-                    setPartnerBanks(response);
-                }
-                fetchPartnerBanks()
-                const fetchPartnerAddress = async () => {
-                    const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${contractdetails.partner.id}`).then(res => res.json())
-                    setPartnerAddress(response);
-                }
-                fetchPartnerAddress()
-
-                if (contractdetails.partner !== null && contractdetails.partner !== undefined) {
-                    setParty_id(contractdetails.partner.id)
-                    setParty_name(contractdetails.partner.name)
-                    setParty_email(contractdetails.partner.email)
-                    setParty_phone(contractdetails.partner.phone)
-                    setParty_legal_person(contractdetails.partner.legalrepresent)
-                    setParty_role(contractdetails.partner.role)
-                }
-
-                if (contractdetails.PartnerBank !== null && contractdetails.PartnerBank !== undefined) {
-                    setParty_IBAN(contractdetails.PartnerBank.iban)
-                    setParty_bank(contractdetails.PartnerBank.bank)
-                }
-                setParty_Address(contractdetails.partneraddressId)
-
-                setRemarks(contractdetails.remarks)
-            })
-    }
 
     useEffect(() => {
-        fetchCategoriesData(),
-            fetchDepartmentsData(),
-            fetchItemsData(),
-            fetchCostCenter(),
-            fetchCashFlow(),
+        fetchItemsData(),
             fetchPartners(),
             fetchEntity(),
             fetchTypeData(),
             fetchStatusData(),
-            fetchLocationData(),
-            fetchWFStatusData(),
             fetchAllCurrencies()
     }, [])
 
@@ -549,93 +308,6 @@ export default function CustomerInvoice() {
         toast.current.show({ severity: severity, summary: summary, detail: detail });
     };
 
-
-    // const saveContract = async () => {
-    //     // console.log(number, partner, start, end, completion, sign, type, remarks, status)
-
-    //     let addedContract: Contract = {
-    //         number: number,
-    //         typeId: type ? type.id : null,
-    //         // partner: partner,
-    //         statusId: status ? status.id : null,
-    //         statusWFId: statusWF ? statusWF.id : null,
-    //         start: (start ? addOneDay(start) : null),
-    //         end: (end ? addOneDay(end) : null),
-    //         sign: (sign ? addOneDay(sign) : null),
-    //         completion: (completion ? addOneDay(completion) : null),
-    //         remarks: remarks,
-    //         categoryId: selectedCategory ? selectedCategory.id : null,
-    //         departmentId: selectedDepartment ? selectedDepartment.id : null,
-    //         cashflowId: selectedCashflow ? selectedCashflow.id : null,
-    //         locationId: selectedLocation ? selectedLocation.id : null,
-    //         costcenterId: selectedCostCenter ? selectedCostCenter.id : null,
-    //         automaticRenewal: automaticRenewalValue,
-    //         // contract: selectedItem,
-    //         partnersId: selectedPartner ? selectedPartner.id : null,
-    //         entityId: selectedEntity ? selectedEntity.id : null,
-    //         partnerpersonsId: party_id,
-    //         entitypersonsId: ent_id,
-    //         entityaddressId: ent_address ? ent_address.id : null,
-    //         partneraddressId: party_address?.id ?? null,
-    //         entitybankId: ent_iban ? ent_iban.id : null,
-    //         partnerbankId: party_iban?.id ?? null,
-    //         userId: userId,
-    //         isPurchasing: isPurchasing
-    //     }
-
-    //     const validationResult = validateForm(addedContract);
-
-
-    //     if (!validationResult.isValid) {
-    //         showMessage('error', 'Eroare', validationResult.errors)
-    //     }
-    //     else {
-    //         let addDynamicInfo: DynamicInfo = {
-    //             contractId: 0,
-    //             dffInt1: parseInt(dffInt1),
-    //             dffInt2: parseInt(dffInt2),
-    //             dffInt3: parseInt(dffInt3),
-    //             dffInt4: parseInt(dffInt4),
-    //             dffString1: dffString1,
-    //             dffString2: dffString2,
-    //             dffString3: dffString3,
-    //             dffString4: dffString4,
-    //             dffDate1: (dffDate1 ? addOneDay(dffDate1) : null),
-    //             dffDate2: (dffDate2 ? addOneDay(dffDate2) : null),
-    //         }
-
-    //         const toSend = []
-    //         toSend.push(addedContract)
-    //         toSend.push(addDynamicInfo)
-
-
-    //         try {
-    //             const response = await axios.post(`${Backend_BASE_URL}/contracts`,
-    //                 toSend
-    //             );
-    //             setactualContractId(response.data.id)
-    //             setContractId(response.data.id)
-    //             // updateValue(response.data.id)
-
-
-    //             if (response.status == 200 || response.status == 201) {
-    //                 showMessage('success', 'Salvat cu succes!', 'Ok');
-    //                 // router.push(`/uikit/addcontract/ctr?Id=${response.data.id}&idxp=${0}`)
-
-    //                 router.push(`/uikit/editcontract/ctr?Id=${response.data.id}&idxp=${0}`)
-    //             }
-    //             else {
-    //                 showMessage('error', 'Eroare', response.statusText)
-    //             }
-    //         } catch (error) {
-    //             console.error('Error creating contract:', error);
-    //         }
-    //     }
-
-
-
-    // }
-
     return (
         <div className="card">
 
@@ -645,39 +317,81 @@ export default function CustomerInvoice() {
                 <div className="col-12">
                     <div className="p-fluid formgrid grid pt-2">
 
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="remarks" >Date Entitate</label>
-                            <InputText disabled id="remarks" className='max-w-screen'
-                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
-                            />
-                        </div>
-
 
                         <div className="field col-12 md:col-3">
                             <label htmlFor="selectedPartner">Partner</label>
-                            <Dropdown id="selectedPartner" value={selectedPartner} filter
-                                onChange={(e) => {
-                                    setSelectedPartner(e.value.id)
-                                    // fetchPartnersDetailsData(e.value.id)
-                                }}
+                            <Dropdown
+                                value={selectedPartner}
                                 options={partner}
-                                optionLabel="name" placeholder="Select One"></Dropdown>
+                                onChange={(e) => {
+                                    setSelectedPartner(e.value);
+                                    fetchPartnerAddress(e.value.id);
+                                }}
+                                optionLabel="name"
+                                filter
+                                filterBy="name,fiscal_code"
+                                filterInputAutoFocus
+                                showClear
+                                itemTemplate={(option) => (
+                                    <div>
+                                        {option.name} ({option.fiscal_code})
+                                    </div>
+                                )}
+                                placeholder="Select"
+                            // filterFunction={onSearch}
+                            />
+                        </div>
+
+                        <div className="field col-12 md:col-3">
+                            <div className="field col-12  md:col-12">
+                                <label htmlFor="ent_address">Adresa</label>
+                                <Dropdown id="ent_address" filter
+                                    value={party_address}
+                                    onChange={(e) => {
+                                        setParty_Address(e.target.value)
+                                    }}
+                                    options={partnerAddress}
+                                    optionLabel="completeAddress"
+                                    placeholder="Select One">
+
+                                </Dropdown>
+
+                            </div>
                         </div>
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="currency">Moneda factura</label>
-                            <Dropdown id="currency" filter showClear value={currency} onChange={(e) => setCurrency(e.value)} options={allCurrency} optionLabel="code" placeholder="Select One"></Dropdown>
+                            <Dropdown id="currency"
+                                filter
+                                filterBy="name,code"
+                                filterInputAutoFocus
+                                showClear
+                                value={currency}
+                                onChange={(e) => setCurrency(e.value)}
+                                options={allCurrency}
+                                optionLabel="code"
+                                itemTemplate={(option) => (
+                                    <div>
+                                        {option.name} ({option.code})
+                                    </div>
+                                )}
+                                placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-2">
                             <label htmlFor="remarks" >Curs</label>
-                            <InputText disabled id="remarks" className='max-w-screen'
+                            <InputText id="remarks" className='max-w-screen'
                                 value={remarks} onChange={(e) => setRemarks(e.target.value)}
                             />
                         </div>
 
 
                         <div className="field col-12  md:col-2">
-                            <label htmlFor="number">Serie si numar</label>
+                            <label htmlFor="number">Serie</label>
+                            <InputText id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+                        </div>
+
+                        <div className="field col-12  md:col-2">
+                            <label htmlFor="number">Numar</label>
                             <InputText id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
                         </div>
 
@@ -719,22 +433,22 @@ export default function CustomerInvoice() {
                             } showIcon dateFormat="dd/mm/yy" />
                         </div>
 
-                        <div className="field col-12  md:col-4">
-                            <label htmlFor="party_address">Adresa</label>
-                            <Dropdown id="party_address" value={getPartnerAddressJson(party_address)} filter
-                                onChange={(e) => {
-                                    setParty_Address(e.target.value)
-                                }}
-                                options={partnerAddress}
-                                optionLabel="completeAddress" placeholder="Select One"></Dropdown>
 
-                        </div>
                         <div className="field col-12 md:col-4">
-                            <label htmlFor="remarks">Scurta descriere</label>
+                            <label htmlFor="remarks">Note</label>
                             <InputText id="remarks" className='max-w-screen'
                                 value={remarks} onChange={(e) => setRemarks(e.target.value)}
                             />
                         </div>
+
+                        <div className="field-checkbox col-12 md:col-1">
+                            <Checkbox id="legalrepresent" onChange={e => setVatOnreceipt(e.checked)}
+                                checked={vatOnReceipt}
+                            // checked={person_legalrepresent === "false" ? false : true}
+                            ></Checkbox>
+                            <label htmlFor="legalrepresent" className="ml-2">TVA la incasare</label>
+                        </div>
+
                     </div>
                 </div>
             </div>

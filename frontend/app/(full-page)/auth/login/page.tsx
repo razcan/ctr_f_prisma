@@ -158,6 +158,14 @@ const LoginPage = () => {
             // router.push('/');
             //expire_date_token
 
+            // Storing an object
+            // const data = { name: 'John', age: 30 };
+            // localStorage.setItem('user', JSON.stringify(data));
+            // Retrieving an object
+            // const user = JSON.parse(localStorage.getItem('user'));
+            // Remove data
+            // localStorage.removeItem('key');
+
         } catch (error) {
             // Handle errors
             localStorage.removeItem("token");

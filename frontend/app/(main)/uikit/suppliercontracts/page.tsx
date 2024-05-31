@@ -79,7 +79,7 @@ function Contracts() {
                 template: () => {
                     const url = `${Frontend_BASE_URL}/uikit/suppliercontracts`
                     return (
-                        <Link href={url}>Contracte Furnizare</Link>
+                        <Link href={url}>Contracte Furnizori</Link>
                     )
 
                 }

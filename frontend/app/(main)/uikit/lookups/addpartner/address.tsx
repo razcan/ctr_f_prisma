@@ -472,36 +472,38 @@ const PartnerAddress = ({ params, setAddressIndex, setAddressChild }: any) => {
                         </div>
                     </div>
                 </Dialog>
-                <DataTable value={myAddressArray} selectionMode="single"
-                    paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-                    selection={selectedAddress} onSelectionChange={(e) => {
+                {myAddressArray.length > 0 ?
+                    <DataTable value={myAddressArray} selectionMode="single"
+                        // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                        selection={selectedAddress} onSelectionChange={(e) => {
 
-                        setselectedAddress(e.value)
-                        setAddressName(e.value.addressName)
-                        setCountry(getCountry(e.value.Country));
-                        setCounty(getCounty(e.value.County));
-                        setSelectedAddressType(getAddressType(e.value.addressType));
-                        setCity(e.value.City)
-                        setStreet(e.value.Street)
-                        setNumber(e.value.Number)
-                        setPostalCode(e.value.postalCode)
-                        setSelectedStatus(e.value.Status)
-                        setSelectedDefault(e.value.Default)
-                        setAggregate(e.value.aggregate)
-                        setVisibleAddress(true)
-                        setCompleteAddress(e.value.completeAddress)
-                    }}>
-                    {/* <div className="hidden"> */}
-                    <Column field="id" header="Cod"></Column>
-                    {/* </div> */}
+                            setselectedAddress(e.value)
+                            setAddressName(e.value.addressName)
+                            setCountry(getCountry(e.value.Country));
+                            setCounty(getCounty(e.value.County));
+                            setSelectedAddressType(getAddressType(e.value.addressType));
+                            setCity(e.value.City)
+                            setStreet(e.value.Street)
+                            setNumber(e.value.Number)
+                            setPostalCode(e.value.postalCode)
+                            setSelectedStatus(e.value.Status)
+                            setSelectedDefault(e.value.Default)
+                            setAggregate(e.value.aggregate)
+                            setVisibleAddress(true)
+                            setCompleteAddress(e.value.completeAddress)
+                        }}>
+                        {/* <div className="hidden"> */}
+                        <Column field="id" header="Cod"></Column>
+                        {/* </div> */}
 
-                    <Column field="addressName" header="Nume"></Column>
-                    <Column field="addressType" header="Tip"></Column>
-                    <Column field="completeAddress" header="Adresa Completa"></Column>
-                    <Column header="Activa" style={{ width: '10vh' }} body={statusTemplate} />
-                    <Column header="Implicita" style={{ width: '10vh' }} body={implicitTemplate} />
+                        <Column field="addressName" header="Nume"></Column>
+                        <Column field="addressType" header="Tip"></Column>
+                        <Column field="completeAddress" header="Adresa Completa"></Column>
+                        <Column header="Activa" style={{ width: '10vh' }} body={statusTemplate} />
+                        <Column header="Implicita" style={{ width: '10vh' }} body={implicitTemplate} />
 
-                </DataTable>
+                    </DataTable>
+                    : null}
             </div>
         </div>
     )

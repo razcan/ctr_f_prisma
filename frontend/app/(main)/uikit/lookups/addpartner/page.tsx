@@ -28,6 +28,8 @@ import PartnerBank from './bank'
 import Person from './person'
 import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
 import dotenv from 'dotenv';
+import { InputNumber } from 'primereact/inputnumber';
+import { Divider } from 'primereact/divider';
 
 const queryClient = new QueryClient();
 
@@ -52,6 +54,9 @@ const Partner = () => {
     const [bankIndex, setBankIndex] = useState<number>(0);
     const [dbPartnerId, setdbPartnerId] = useState<number>(-1);
     const [isVatPayer, setIsVatPayer] = useState(false);
+    const [partnersBanksExtraRatesChild, setPartnersBanksExtraRatesChild] = useState([]);
+    const [paymentTerm, setPaymentTerm] = useState(10);
+
     const [API_KEY_Ac, setAPI_KEY] = useState();
 
     const toast = useRef<undefined | null | any>(null);
@@ -79,7 +84,8 @@ const Partner = () => {
 
     // Function to make the GET request
     const getCompanyData = async () => {
-        if (fiscal_code !== null && fiscal_code !== 'undefined') {
+        console.log(fiscal_code, "fiscal_code")
+        if (fiscal_code !== null && fiscal_code !== 'undefined' && fiscal_code.length > 1) {
             try {
                 const response: AxiosResponse = await axios.get(url, config);
                 console.log('Status:', response.status);
@@ -161,9 +167,11 @@ const Partner = () => {
         type: string,
         email?: string,
         remarks?: string,
+        paymentTerm: number,
         Persons?: any,
         Address?: any,
         Banks?: any,
+        PartnerBanksExtraRates?: any,
         isVatPayer?: any
     }
 
@@ -180,6 +188,7 @@ const Partner = () => {
     }
 
 
+
     const sendPartnerData = async () => {
         // console.log("nume", addressChild)
         //dupa ce se salveaza partenerul, se returneaza id-ul din bd si se stocheaza local ai toate apelurile ulterioare, sa contina partnerid
@@ -192,6 +201,7 @@ const Partner = () => {
             type: selectedType.name,
             email: email,
             remarks: remarks,
+            paymentTerm: parseInt(paymentTerm),
             Persons: {
                 "createMany":
                 {
@@ -208,6 +218,12 @@ const Partner = () => {
                 "createMany":
                 {
                     data: bankChild
+                }
+            },
+            PartnerBanksExtraRates: {
+                "createMany":
+                {
+                    data: partnersBanksExtraRatesChild
                 }
             },
             isVatPayer: isVatPayer
@@ -245,6 +261,16 @@ const Partner = () => {
     useEffect(() => {
         // console.log("addressChild", addressChild)
     }, [addressChild])
+
+    useEffect(() => {
+    }, [paymentTerm])
+
+
+    useEffect(() => {
+        // console.log(partnersBanksExtraRatesChild, "partnersBanksExtraRatesChild")
+    }, [partnersBanksExtraRatesChild])
+
+
 
 
 
@@ -297,6 +323,10 @@ const Partner = () => {
                             <label htmlFor="remarks">Adresa Sociala</label>
                             <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={1} cols={30} />
                         </div>
+
+
+
+
                         <div className="field-checkbox col-12 md:col-1">
                             <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
                                 checked={isVatPayer}
@@ -304,10 +334,24 @@ const Partner = () => {
                             ></Checkbox>
                             <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
                         </div>
+
+                        <div className="field-checkbox col-12 md:col-12"> </div>
                         <div>
-                            <Button label="Preia Data ANAF" onClick={getCompanyData} />
+                            <Button label="Preluare Date" onClick={getCompanyData} />
                         </div>
                     </div>
+                </div>
+                <div className="card">
+                    Date Financiare
+                    <Divider />
+                    <PartnerBank
+                        params={partnerid}
+                        key={bankIndex}
+                        setBankIndex={setBankIndex}
+                        setBankChild={setBankChild}
+                        setPartnersBanksExtraRatesChild={setPartnersBanksExtraRatesChild}
+                        setPaymentTerm={setPaymentTerm}
+                    />
                 </div>
                 <div className="card">
                     Persoane
@@ -325,17 +369,12 @@ const Partner = () => {
                         key={addressIndex}
                         setAddressIndex={setAddressIndex}
                         setAddressChild={setAddressChild}
+                        setPartnersBanksExtraRatesChild={setPartnersBanksExtraRatesChild}
+                        setPaymentTerm={setPaymentTerm}
+
                     />
                 </div>
-                <div className="card">
-                    Conturi bancare
-                    <PartnerBank
-                        params={partnerid}
-                        key={bankIndex}
-                        setBankIndex={setBankIndex}
-                        setBankChild={setBankChild}
-                    />
-                </div>
+
                 <div className='card'>
                     <div className='flex flex-wrap justify-content-left gap-3'>
                         <Button label="Salveaza" severity="success" onClick={sendPartnerData} />

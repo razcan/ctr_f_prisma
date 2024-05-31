@@ -183,27 +183,29 @@ const Person = ({ params, setPersonIndex, setPersonChild }: any) => {
                         </div>
                     </div>
                 </Dialog>
-                <DataTable value={myPersonArray} selectionMode="single"
-                    sortField="id"
-                    //sortOrder={-1} //desc
-                    sortOrder={1} //cres
-                    paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-                    selection={selectedPerson} onSelectionChange={(e) => {
-                        setSelectedPerson(e.value)
-                        setPerson_name(e.value.name)
-                        setPerson_phone(e.value.phone)
-                        setPerson_email(e.value.email)
-                        setPerson_role(e.value.role)
-                        setPerson_legalrepresent(e.value.legalrepresent)
-                        setVisiblePerson(true)
-                    }}>
-                    <Column field="id" header="Cod"></Column>
-                    <Column field="name" header="Nume"></Column>
-                    <Column field="phone" header="Telefon"></Column>
-                    <Column field="email" header="Email"></Column>
-                    <Column field="role" header="Rol"></Column>
-                    <Column header="Reprezentant Legal" style={{ width: '10vh' }} body={LegalrepresentTemplate} />
-                </DataTable>
+                {myPersonArray.length > 0 ?
+                    <DataTable value={myPersonArray} selectionMode="single"
+                        sortField="id"
+                        //sortOrder={-1} //desc
+                        sortOrder={1} //cres
+                        // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                        selection={selectedPerson} onSelectionChange={(e) => {
+                            setSelectedPerson(e.value)
+                            setPerson_name(e.value.name)
+                            setPerson_phone(e.value.phone)
+                            setPerson_email(e.value.email)
+                            setPerson_role(e.value.role)
+                            setPerson_legalrepresent(e.value.legalrepresent)
+                            setVisiblePerson(true)
+                        }}>
+                        <Column field="id" header="Cod"></Column>
+                        <Column field="name" header="Nume"></Column>
+                        <Column field="phone" header="Telefon"></Column>
+                        <Column field="email" header="Email"></Column>
+                        <Column field="role" header="Rol"></Column>
+                        <Column header="Reprezentant Legal" style={{ width: '10vh' }} body={LegalrepresentTemplate} />
+                    </DataTable>
+                    : null}
             </div>
         </div>
     )

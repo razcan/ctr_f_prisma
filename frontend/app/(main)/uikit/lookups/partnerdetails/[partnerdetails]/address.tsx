@@ -126,7 +126,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
     const fetchPartnerAddress = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/address/${partnerid}`).then(res => res.json())
         setReceivedAddress(response);
-        // console.log(response);
+        console.log(response);
     }
 
     // console.log("partnerid", partnerid)
@@ -263,7 +263,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
         return (
             <div className="flex align-items-center gap-2">
                 {/* {rowData.Default === "true" ? <Checkbox id="default" checked={true}></Checkbox> : <Checkbox id="default" checked={false}></Checkbox>} */}
-                <Checkbox id="default" checked={selectedDefault}></Checkbox>
+                <Checkbox id="default" checked={rowData.Default}></Checkbox>
             </div>
         );
     };
@@ -460,7 +460,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                 </Dialog>
                 {receivedAddress ?
                     <DataTable value={receivedAddress} selectionMode="single"
-                        paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                        // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                         selection={selectedAddress} onSelectionChange={(e) => {
 
                             setselectedAddress(e.value)
@@ -483,7 +483,7 @@ const PartnerAddress = ({ params, setAddressIndex }: any) => {
                         <Column field="addressType" header="Tip"></Column>
                         <Column field="completeAddress" header="Adresa Completa"></Column>
                         <Column header="Status" style={{ width: '10vh' }} body={statusTemplate} />
-                        <Column header="Default" style={{ width: '10vh' }} body={activeTemplate} />
+                        <Column header="Implicita" style={{ width: '10vh' }} body={activeTemplate} />
 
                     </DataTable> : null}
             </div>

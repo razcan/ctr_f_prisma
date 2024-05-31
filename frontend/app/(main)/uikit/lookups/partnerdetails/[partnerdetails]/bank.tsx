@@ -235,7 +235,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                     </div>
                 </Dialog>
                 <DataTable value={allBanks} selectionMode="single"
-                    paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                    // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     selection={selectedBank} onSelectionChange={(e) => {
                         console.log(e.value)
 
