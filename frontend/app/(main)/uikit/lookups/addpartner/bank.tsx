@@ -2,35 +2,17 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-} from '@tanstack/react-query'
-import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
+import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext"
-import { usePathname } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
-import { InputSwitch } from "primereact/inputswitch";
-import { get } from 'http';
 import { InputNumber } from 'primereact/inputnumber';
 import { Divider } from 'primereact/divider';
-import { Card } from 'primereact/card';
-import { Tag } from 'primereact/tag';
 import { InputMask } from 'primereact/inputmask';
 import { MyContext } from '../../../../../layout/context/myUserContext'
-import { FloatLabel } from 'primereact/floatlabel';
 
 
 interface Bank {
@@ -61,13 +43,12 @@ const PartnerBank = (
     const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
 
-    const [currencyExchangeRates, setCurrencyExchangeRates] = useState([]);
-    const [selectedCurrencyExchangeRates, setSelectedCurrencyExchangeRates] = useState([]);
 
-    const [extraPercent, setExtraPercent] = useState(0);
     const [allCurrency, setAllCurrency] = useState([]);
     const [currency, setCurrency] = useState(null);
 
+    const [selectedCurrencyExchangeRates, setSelectedCurrencyExchangeRates] = useState([]);
+    const [extraPercent, setExtraPercent] = useState(0);
     const [myBankArray, setMyBankArray] = useState<Bank[]>([]);
     const [myExtraRatesArray, setMyExtraRatesArray] = useState<Bank[]>([]);
 
@@ -361,8 +342,7 @@ const PartnerBank = (
         setPaymentTerm(paymentTerm);
     }
 
-    //   iban  24 caractere:
-    // Cod IBAN în format tipărit	RO49 AAAA 1B31 0075 9384 0000
+
     return (
         <div className="p-fluid formgrid grid">
             <Toast ref={toast} position="top-right" />

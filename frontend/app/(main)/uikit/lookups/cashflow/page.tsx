@@ -103,7 +103,7 @@ const CashFlow = ({ executeFunction }: any) => {
             {
                 label: 'CashFlow',
                 template: () => {
-                    const url = `${Frontend_BASE_URL}/uikit/reports`
+                    const url = `${Frontend_BASE_URL}/uikit/cashflow`
                     return (
                         <Link href={url}>CashFlow</Link>
                     )

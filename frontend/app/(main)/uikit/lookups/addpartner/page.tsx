@@ -84,7 +84,7 @@ const Partner = () => {
 
     // Function to make the GET request
     const getCompanyData = async () => {
-        console.log(fiscal_code, "fiscal_code")
+
         if (fiscal_code !== null && fiscal_code !== 'undefined' && fiscal_code.length > 1) {
             try {
                 const response: AxiosResponse = await axios.get(url, config);

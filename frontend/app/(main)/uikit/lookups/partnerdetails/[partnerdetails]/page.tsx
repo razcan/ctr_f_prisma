@@ -198,16 +198,16 @@ const Partner = () => {
 
                         <div className="field col-12  md:col-6">
                             <label htmlFor="remarks">Adresa Sociala</label>
-                            <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={1} cols={30} />
+                            <InputTextarea value={remarks} onChange={(e) => setRemarks(e.target.value)} rows={2} cols={30} />
                         </div>
 
 
                         <div className="field-checkbox col-12 md:col-1">
-                            {/* <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
+                            <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
                                 checked={isVatPayer}
-                            ></Checkbox> */}
+                            ></Checkbox>
 
-                            <input style={{ width: '30px', height: '30px' }} type="checkbox" checked={isVatPayer} onChange={e => setIsVatPayer(e.checked)} />
+                            {/* <input style={{ width: '30px', height: '30px' }} type="checkbox" checked={isVatPayer} onChange={e => setIsVatPayer(e.checked)} /> */}
                             {/* <input type="checkbox" defaultChecked={true} />
                             <input type="checkbox" checked={isVatPayer} defaultChecked={true} />  */}
 
@@ -216,6 +216,16 @@ const Partner = () => {
 
                     </div>
                 </div>
+
+                <div className="card">
+                    Conturi bancare
+                    <PartnerBank
+                        params={partnerid}
+                        key={bankIndex}
+                        setBankIndex={setBankIndex}
+                    />
+                </div>
+
                 <div className="card">
                     Persoane
                     <Person
@@ -233,14 +243,7 @@ const Partner = () => {
                         setAddressIndex={setAddressIndex}
                     />
                 </div>
-                <div className="card">
-                    Conturi bancare
-                    <PartnerBank
-                        params={partnerid}
-                        key={bankIndex}
-                        setBankIndex={setBankIndex}
-                    />
-                </div>
+
                 <div className='card'>
                     <div className='flex flex-wrap justify-content-left gap-3'>
                         <Button label="Salveaza" severity="success" onClick={sendPartnerData} />

@@ -25,6 +25,7 @@ import { useSearchParams } from 'next/navigation'
 import { InputSwitch } from "primereact/inputswitch";
 import { get } from 'http';
 import { MyContext } from '../../../../../../layout/context/myUserContext';
+import { Divider } from 'primereact/divider';
 
 const PartnerBank = ({ params, setBankIndex }: any) => {
     const partnerid = params
@@ -37,10 +38,15 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const [selectedStatus, setSelectedStatus] = useState<any>(true);
     const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
+    const [allExtraRates, setAllExtraRates] = useState<any[]>([]);
+    const [currentPaymentTerm, setCurrentPaymentTerm] = useState('10');
+    const [paymentTerm, setPaymentTerm] = useState(10);
+
 
     const [Bank, setBank] = useState<any>([]);
-
     const [Currency, setCurrency] = useState<any>([]);
+
+    const toast = useRef(null);
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -73,10 +79,34 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     }
 
 
+    const fetchAllExtraRates = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/extrarates/${partnerid}`).then(res => res.json())
+        console.log(response, "response")
+        if (response.length == 0) {
+            // console.error('Network response was not ok:', response.statusText);
+            setAllExtraRates([]);
+            return;
+        }
+        else {
+            console.log(response, "response")
+            setAllExtraRates(response);
+        }
+    }
+
+    const fetchPartnerDetails = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`).then(res => res.json().then(res => {
+            setCurrentPaymentTerm(res.paymentTerm);
+        })
+        )
+    }
+
+
     useEffect(() => {
         fetchPartnerBanks(),
             fetchAllBanks(),
-            fetchAllCurrencies()
+            fetchAllCurrencies(),
+            fetchAllExtraRates(),
+            fetchPartnerDetails()
     }, [])
 
     const deleteBankAccount = async () => {
@@ -167,8 +197,24 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     };
 
 
+
     return (
         <div className="p-fluid formgrid grid pt-2">
+
+            <Toast ref={toast} position="top-right" />
+
+            <div className="field col-12  md:col-2">
+                <label htmlFor="paymentTerm">Termen Plata (Zile)</label>
+                <InputText id="paymentTerm"
+                    type="text"
+                    keyfilter="int"
+                    value={currentPaymentTerm}
+                    onChange={(e) => {
+                        setPaymentTerm(e.target.value);
+                    }} />
+            </div>
+            <Divider />
+
             <div className="field col-12 md:col-1 pt-4">
                 <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga"
                     onClick={() => {
@@ -234,11 +280,10 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                         </div>
                     </div>
                 </Dialog>
+
                 <DataTable value={allBanks} selectionMode="single"
                     // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                     selection={selectedBank} onSelectionChange={(e) => {
-                        console.log(e.value)
-
                         setSelectedBank(getBank(e.value.bank))
                         setSelectedCurrency(getCurrency(e.value.currency))
                         setBranch(e.value.branch)
@@ -257,6 +302,28 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
 
 
                 </DataTable>
+
+                {allExtraRates.length > 0 ?
+                    <div className="field col-12 md:col-12">
+                        <DataTable value={allExtraRates} selectionMode="single"
+                        // selection={selectedCurrencyExchangeRates}
+                        // onSelectionChange={(e) => {
+                        //     setSelectedCurrencyExchangeRates(getCurrencyRate(e.value.codeCurrency));
+                        //     setCurrency(getCurrencyRate(e.value.codeCurrency));
+                        //     setExtraPercent(e.value.percent);
+                        //     setVisibleExtraPercent(true);
+                        // }}
+                        >
+                            <Column field="id" header="Cod"></Column>
+                            <Column field="codeCurrency" header="Moneda"></Column>
+                            <Column hidden field="currency" header="IdValuta"></Column>
+                            <Column field="percent" header="Procent"></Column>
+
+
+                        </DataTable>
+                    </div>
+                    : null}
+
             </div>
         </div>
     )

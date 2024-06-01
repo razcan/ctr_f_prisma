@@ -2,29 +2,11 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-} from '@tanstack/react-query'
-import axios from 'axios';
-import { Dialog } from 'primereact/dialog';
-import { Toast } from 'primereact/toast';
-import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
-import { InputText } from "primereact/inputtext"
 import { useRouter } from 'next/navigation'
-import { Toolbar } from 'primereact/toolbar';
-import { MultiStateCheckbox } from 'primereact/multistatecheckbox';
-import { SelectButton } from 'primereact/selectbutton';
 import { MyContext } from '../../../../../layout/context/myUserContext';
+import Link from 'next/link';
 
 
 const Partner = ({ executeFunction }: any) => {
@@ -43,6 +25,8 @@ const Partner = ({ executeFunction }: any) => {
         , isLoggedIn, login, userId
     } = useMyContext();
 
+    const { setBreadCrumbItems } = useContext(MyContext);
+
 
 
     const fetchPartnersData = () => {
@@ -57,7 +41,38 @@ const Partner = ({ executeFunction }: any) => {
     }
 
     useEffect(() => {
-        fetchPartnersData()
+        fetchPartnersData();
+
+        setBreadCrumbItems(
+            [{
+                label: 'Acasa',
+                template: () => <Link href="/">Acasa</Link>
+            },
+            {
+                label: 'Nomenclatoare',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/lookups`
+                    return (
+                        <Link href={url}>Nomenclatoare</Link>
+                    )
+
+                }
+            },
+            {
+                label: 'Parteneri',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/lookups/partner`
+                    return (
+                        <Link href={url}>Parteneri</Link>
+                    )
+
+                }
+            },
+
+            ]
+        )
+
+
     }, [])
 
 

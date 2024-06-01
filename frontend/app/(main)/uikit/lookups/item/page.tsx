@@ -136,7 +136,7 @@ const Item = ({ executeFunction }: any) => {
             {
                 label: 'Articole',
                 template: () => {
-                    const url = `${Frontend_BASE_URL}/uikit/item`
+                    const url = `${Frontend_BASE_URL}/uikit/lookups/item`
                     return (
                         <Link href={url}>Articole</Link>
                     )
