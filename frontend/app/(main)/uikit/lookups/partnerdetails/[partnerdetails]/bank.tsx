@@ -26,6 +26,17 @@ import { InputSwitch } from "primereact/inputswitch";
 import { get } from 'http';
 import { MyContext } from '../../../../../../layout/context/myUserContext';
 import { Divider } from 'primereact/divider';
+import { InputNumber } from 'primereact/inputnumber';
+
+interface Bank {
+    id: number,
+    bank: String,
+    currency: String,
+    branch: String,
+    iban: String,
+    status: Boolean
+}
+
 
 const PartnerBank = ({ params, setBankIndex }: any) => {
     const partnerid = params
@@ -41,19 +52,27 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const [allExtraRates, setAllExtraRates] = useState<any[]>([]);
     const [currentPaymentTerm, setCurrentPaymentTerm] = useState('10');
     const [paymentTerm, setPaymentTerm] = useState(10);
-
-
+    const [myExtraRatesArray, setMyExtraRatesArray] = useState<Bank[]>([]);
+    const [myBankArray, setMyBankArray] = useState<Bank[]>([]);
+    const [selectedCurrencyExchangeRates, setSelectedCurrencyExchangeRates] = useState([]);
+    const [visibleExtraPercent, setVisibleExtraPercent] = useState<any>('');
+    const [extraPercent, setExtraPercent] = useState(0);
     const [Bank, setBank] = useState<any>([]);
+
     const [Currency, setCurrency] = useState<any>([]);
+    const [allCurrency, setAllCurrency] = useState<any>([]);
 
     const toast = useRef(null);
 
     const useMyContext = () => useContext(MyContext);
     const {
-        fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, isPurchasing, setIsPurchasing
-        , isLoggedIn, login, userId
-    } = useMyContext();
+        Backend_BASE_URL } = useMyContext();
+
+    const fetchAllCurrencies = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
+        setCurrency(response);
+    }
+
 
     const getCurrency = (CurrencyToFind: string) => {
         return Currency.find((obj: { code: string; }) => obj.code === CurrencyToFind);
@@ -68,36 +87,37 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         setAllBanks(response);
     }
 
+    const getCurrencyRate = (CurrencyToFind: string) => {
+        return allCurrency.find((obj: { code: string; }) => obj.code === CurrencyToFind);
+    };
+
     const fetchAllBanks = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allbanks`).then(res => res.json())
+
         setBank(response);
     }
 
-    const fetchAllCurrencies = async () => {
+
+
+    const fetchAllRCurrencies = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
-        setCurrency(response);
+        setAllCurrency(response);
     }
 
 
     const fetchAllExtraRates = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/extrarates/${partnerid}`).then(res => res.json())
-        console.log(response, "response")
         if (response.length == 0) {
             // console.error('Network response was not ok:', response.statusText);
-            setAllExtraRates([]);
+            setMyExtraRatesArray([]);
             return;
         }
         else {
-            console.log(response, "response")
-            setAllExtraRates(response);
+            setMyExtraRatesArray(response);
         }
     }
 
     const fetchPartnerDetails = async () => {
-        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`).then(res => res.json().then(res => {
-            setCurrentPaymentTerm(res.paymentTerm);
-        })
-        )
     }
 
 
@@ -106,14 +126,13 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
             fetchAllBanks(),
             fetchAllCurrencies(),
             fetchAllExtraRates(),
-            fetchPartnerDetails()
+            fetchPartnerDetails(),
+            fetchAllRCurrencies()
     }, [])
 
     const deleteBankAccount = async () => {
 
         try {
-            const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/bank/${sBank.id}`,
-            );
             setBankIndex((prevKey: number) => prevKey + 1),
                 setVisibleBank(false)
         } catch (error) {
@@ -122,7 +141,35 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
 
     }
 
+    const showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
+    };
 
+
+
+    function validateRates(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+
+        if (fields.codeCurrency == "undefined" || fields.codeCurrency.length < 2) {
+            errors.push("Trebuie sa setati o valuta!");
+        }
+
+        if (fields.percent == "undefined" || !fields.percent) {
+            errors.push("Trebuie sa selectati un procent!");
+        }
+
+        if (fields.percent) {
+            if (fields.percent > 100)
+                errors.push("Trebuie sa selectati un procent cu valoarea mai mica de 100%!");
+        }
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
     const sendAddressData = async () => {
 
         interface Bank {
@@ -186,6 +233,32 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         }
     }
 
+    const addExtraRates = () => {
+
+        let newExtraRate: any = {
+            id: myExtraRatesArray.length + 1,
+            currency: selectedCurrencyExchangeRates ? selectedCurrencyExchangeRates.id : null,
+            codeCurrency: selectedCurrencyExchangeRates ? selectedCurrencyExchangeRates.code : null,
+            percent: extraPercent
+
+        }
+
+        const validationResult = validateRates(newExtraRate);
+        if (!validationResult.isValid) {
+            showMessage('error', 'Eroare', validationResult.errors)
+        }
+        else {
+            setMyExtraRatesArray((prevArray) => [...prevArray, newExtraRate]);
+            setVisibleExtraPercent(false);
+
+            setCurrency(null);
+            setSelectedCurrency(null);
+            setExtraPercent(0);
+            setSelectedCurrencyExchangeRates([]);
+        }
+    }
+
+
 
     const statusTemplate = (rowData: any) => {
         // console.log('rand', rowData)
@@ -195,8 +268,6 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
             </div>
         );
     };
-
-
 
     return (
         <div className="p-fluid formgrid grid pt-2">
@@ -215,23 +286,74 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
             </div>
             <Divider />
 
+            <div className='pl-2'>Conturi Bancare</div>
+            <Divider />
+
             <div className="field col-12 md:col-1 pt-4">
-                <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga"
-                    onClick={() => {
-                        setSelectedBank('')
-                        setSelectedCurrency('')
-                        setBranch('')
-                        setIBAN('')
-                        setSelectedStatus('')
-                        setsBank('')
-                        setStatus('')
-
-                        setVisibleBank(true)
-                    }
-
-                    }
+                <Button icon="pi pi-plus" rounded outlined severity="success"
+                    size="small" aria-label="Adauga"
+                    onClick={() => setVisibleBank(true)}
                 />
             </div>
+            <Divider />
+            <div className="field col-12">
+                {allBanks.length > 0 ?
+                    <DataTable value={allBanks} selectionMode="single"
+                        // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                        selection={selectedBank} onSelectionChange={(e) => {
+                            setSelectedBank(getBank(e.value.bank))
+                            setSelectedCurrency(getCurrency(e.value.currency))
+                            setBranch(e.value.branch)
+                            setIBAN(e.value.iban)
+                            setSelectedStatus(e.value.status)
+                            setsBank(e.value)
+                            setStatus(e.value.status)
+                            setVisibleBank(true)
+                        }}>
+                        <Column field="id" header="Cod"></Column>
+                        <Column field="bank" header="Banca"></Column>
+                        <Column field="currency" header="Valuta"></Column>
+                        <Column field="branch" header="Filiala"></Column>
+                        <Column field="iban" header="IBAN"></Column>
+                        <Column header="Activ" style={{ width: '10vh' }} body={statusTemplate} />
+
+
+                    </DataTable>
+                    : null}
+                <div className='p-2'>Rate schimb valutar</div>
+                <Divider />
+            </div>
+
+            <div className="field col-12 md:col-1 pt-4">
+                <Button icon="pi pi-plus" rounded outlined severity="success" size="small" aria-label="Adauga"
+                    onClick={() => setVisibleExtraPercent(true)}
+                />
+            </div>
+            <Divider />
+
+            {myExtraRatesArray.length > 0 ?
+                <div className="field col-12 md:col-12">
+                    <DataTable value={myExtraRatesArray}
+                        selectionMode="single"
+                        // selection={selectedCurrencyExchangeRates}
+                        onSelectionChange={(e) => {
+                            setSelectedCurrencyExchangeRates(e.value.currency);
+                            setExtraPercent(e.value.percent);
+                            setVisibleExtraPercent(true);
+                        }}
+                    >
+                        <Column field="id" header="Cod"></Column>
+                        <Column field="currency.code" header="Moneda"></Column>
+                        <Column hidden field="currency" header="IdValuta"></Column>
+                        <Column field="percent" header="Procent"></Column>
+
+
+                    </DataTable>
+                </div>
+                : null}
+
+
+
             <div className="field col-12">
                 <Dialog header="Adresa" visible={visibleBank} style={{ width: '30vw' }} onHide={() => setVisibleBank(false)}>
                     <div className="card">
@@ -281,48 +403,54 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                     </div>
                 </Dialog>
 
-                <DataTable value={allBanks} selectionMode="single"
-                    // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
-                    selection={selectedBank} onSelectionChange={(e) => {
-                        setSelectedBank(getBank(e.value.bank))
-                        setSelectedCurrency(getCurrency(e.value.currency))
-                        setBranch(e.value.branch)
-                        setIBAN(e.value.iban)
-                        setSelectedStatus(e.value.status)
-                        setsBank(e.value)
-                        setStatus(e.value.status)
-                        setVisibleBank(true)
+
+
+
+                <Dialog header="Rate schimb valutar - procentul se aplica la curs BNR"
+                    visible={visibleExtraPercent} style={{ width: '30vw' }}
+                    onHide={() => {
+                        setVisibleExtraPercent(false);
+                        setCurrency(null);
+                        setSelectedCurrency(null);
+                        // setSelectedCurrencyExchangeRates(null);
+                        setExtraPercent(0);
                     }}>
-                    <Column field="id" header="Cod"></Column>
-                    <Column field="bank" header="Banca"></Column>
-                    <Column field="currency" header="Valuta"></Column>
-                    <Column field="branch" header="Filiala"></Column>
-                    <Column field="iban" header="IBAN"></Column>
-                    <Column header="Activ" style={{ width: '10vh' }} body={statusTemplate} />
+                    <div className="card">
+                        <div className="p-fluid formgrid grid pt-2">
+
+                            <div className="field col-12 md:col-12">
+                                <label htmlFor="currency">Moneda</label>
+
+                                <Dropdown id="type"
+                                    showClear
+                                    value={selectedCurrencyExchangeRates}
+                                    onChange={(e) => setSelectedCurrencyExchangeRates(e.value.currency)}
+                                    options={allCurrency}
+                                    optionLabel="code" placeholder="Select One"></Dropdown>
 
 
-                </DataTable>
+                            </div>
 
-                {allExtraRates.length > 0 ?
-                    <div className="field col-12 md:col-12">
-                        <DataTable value={allExtraRates} selectionMode="single"
-                        // selection={selectedCurrencyExchangeRates}
-                        // onSelectionChange={(e) => {
-                        //     setSelectedCurrencyExchangeRates(getCurrencyRate(e.value.codeCurrency));
-                        //     setCurrency(getCurrencyRate(e.value.codeCurrency));
-                        //     setExtraPercent(e.value.percent);
-                        //     setVisibleExtraPercent(true);
-                        // }}
-                        >
-                            <Column field="id" header="Cod"></Column>
-                            <Column field="codeCurrency" header="Moneda"></Column>
-                            <Column hidden field="currency" header="IdValuta"></Column>
-                            <Column field="percent" header="Procent"></Column>
+                            <div className="field col-12  md:col-12">
+                                <label htmlFor="extraPercent">Extra Procent</label>
+                                <InputNumber id="extraPercent" type="text" value={extraPercent} onValueChange={(e) => setExtraPercent(e.target.value)} />
+                            </div>
 
 
-                        </DataTable>
+                            <div className='p-3 field col-2 md:col-2'>
+                                <div className='grid'>
+                                    <div className='flex flex-wrap justify-content-left gap-3'>
+                                        <Button label="Salveaza" severity="success" onClick={addExtraRates} />
+                                        {/* <Button label="Sterge" severity="danger" onClick={deleteBank} /> */}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    : null}
+                </Dialog>
+
+
 
             </div>
         </div>

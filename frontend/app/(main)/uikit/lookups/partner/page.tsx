@@ -110,7 +110,7 @@ const Partner = ({ executeFunction }: any) => {
                     <div className="field col-12  md:col-12">
                         <div><Button label="Adauga" onClick={addPartner} /></div>
 
-                        <DataTable className='pt-2' value={partners} selectionMode="single" paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
+                        <DataTable className='pt-2' value={partners} selectionMode="single" paginator rows={25} rowsPerPageOptions={[25, 50]}
                             selection={selectedPartner} onSelectionChange={(e) => { gotoSelectedPartner(e.value) }}>
                             <Column field="name" header="Nume"></Column>
                             <Column field="fiscal_code" header="Cod Fiscal"></Column>

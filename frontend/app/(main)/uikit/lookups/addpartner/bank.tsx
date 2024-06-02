@@ -342,7 +342,8 @@ const PartnerBank = (
         setPaymentTerm(paymentTerm);
     }
 
-
+    //   iban  24 caractere:
+    // Cod IBAN în format tipărit	RO49 AAAA 1B31 0075 9384 0000
     return (
         <div className="p-fluid formgrid grid">
             <Toast ref={toast} position="top-right" />
