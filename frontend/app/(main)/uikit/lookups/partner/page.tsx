@@ -90,7 +90,7 @@ const Partner = ({ executeFunction }: any) => {
         }
     }
 
-    const gotoSelectedPartner = (partner: any) => {
+    const gotoSelectedPartner = async (partner: any) => {
         setSelectedPartner(partner)
         router.push(`/uikit/lookups/partnerdetails/page?partnerid=${partner.id}`);
     }

@@ -2,22 +2,12 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import {
     QueryClient,
-    QueryClientProvider,
-    useQuery,
 } from '@tanstack/react-query'
-import axios from 'axios';
-import { Dialog } from 'primereact/dialog';
-import { Toast } from 'primereact/toast';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
 import { usePathname } from 'next/navigation'
@@ -26,6 +16,12 @@ import PartnerAddress from './address'
 import PartnerBank from './bank'
 import Person from './person'
 import { MyContext } from '../../../../../../layout/context/myUserContext';
+import { Toast } from 'primereact/toast';
+import { FileUpload } from 'primereact/fileupload';
+import { Dialog } from 'primereact/dialog';
+import { Avatar } from 'primereact/avatar';
+import { Divider } from 'primereact/divider';
+import { Image } from 'primereact/image';
 
 const queryClient = new QueryClient();
 
@@ -35,6 +31,8 @@ const Partner = () => {
     const pathname = usePathname()
     const partnerid = useSearchParams().get("partnerid")
 
+
+    const toast = useRef<undefined | null | any>(null);
 
     const [name, setName] = useState<any>('');
     const [fiscal_code, setFiscalCode] = useState<any>('');
@@ -49,6 +47,8 @@ const Partner = () => {
     const [addressIndex, setAddressIndex] = useState<number>(0);
     const [bankIndex, setBankIndex] = useState<number>(0);
     const [isVatPayer, setIsVatPayer] = useState(false);
+    const [visibleLogo, setVisibleLogo] = useState(false);
+    const [currentLogo, setCurrentLogo] = useState('');
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -59,6 +59,18 @@ const Partner = () => {
 
 
     const [persons, setPersons] = useState('');
+
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
 
 
     interface DropdownItem {
@@ -96,13 +108,13 @@ const Partner = () => {
             setType(getType(res.type));
             setEmail(res.email);
             setRemarks(res.remarks);
-            setIsVatPayer(res.isVatPayer)
+            setIsVatPayer(res.isVatPayer);
+            setCurrentLogo(res.picture);
         })
         )
     }
 
     const deletePartner = async () => {
-        console.log('id', partnerid)
 
         try {
             const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`,
@@ -141,19 +153,152 @@ const Partner = () => {
         }
 
         try {
-            // const response = await axios.post('http://localhost:3000/nomenclatures/partners',
+
             const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/partners/${partnerid}`,
                 addPartner
             );
             console.log('Partner edited:', response.data);
+            showSuccess('Partener editat cu succes!');
         } catch (error) {
             console.error('Error edited partner:', error);
         }
     }
 
+    const [API_KEY_Ac, setAPI_KEY] = useState('');
+
+    useEffect(() => {
+
+        const API_KEY = process.env.NEXT_PUBLIC_API_KEY
+
+        setAPI_KEY(API_KEY)
+
+    }, [])
+
+
+    const url: string = `https://api.openapi.ro/api/companies/${fiscal_code}`;
+
+    const headers = {
+        'x-api-key': API_KEY_Ac
+    };
+
+
+    // Create the Axios request configuration
+    const config: AxiosRequestConfig = {
+        headers: headers
+    };
+
+    // Function to make the GET request
+    const getCompanyData = async () => {
+
+        if (fiscal_code !== null && fiscal_code !== 'undefined' && fiscal_code.length > 1) {
+            try {
+                const response: AxiosResponse = await axios.get(url, config);
+                console.log('Status:', response.status);
+                console.log('Response:', response.data);
+
+                setName(response.data.denumire);
+                setCommercialReg(response.data.numar_reg_com);
+                setRemarks(response.data.adresa)
+                if (response.data.radiata == false) {
+                    setStatusType({ name: "Activ", code: "01" })
+                }
+
+                if (response.data.tva !== null || response.data.tva !== 'undifined') {
+                    setIsVatPayer(true)
+                }
+
+                // setType({ name: "Furnizor", code: "02" });
+
+
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    if (error.response) {
+                        // The request was made and the server responded with a status code
+                        // that falls out of the range of 2xx
+                        console.log('Status:', error.response.status);
+                        console.log('Response:', error.response.data);
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        console.log('Error Request:', error.request);
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log('Error Message:', error.message);
+                    }
+                } else {
+                    console.log('Unexpected Error:', error);
+                }
+            }
+        }
+
+    };
+
+
+    const [picturefiles, setPicturefiles] = useState<any>();
+    var formdata = new FormData();
+
+    const onUpload = ({ files }: any) => {
+        console.log(files)
+        setPicturefiles(files);
+    }
+
+
+    const addLogo = () => {
+
+        var formdata = new FormData();
+
+        formdata.append('logo', picturefiles?.length > 0 ? picturefiles[0] : "default.jpeg");
+        formdata.append('picture', "");
+
+        var requestOptions: any = {
+            method: 'POST',
+            body: formdata,
+            redirect: 'follow'
+        };
+
+        fetch(`${Backend_BASE_URL}/nomenclatures/partnerlogo/${partnerid}`, requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                setVisibleLogo(false)
+            }
+            )
+            .catch(error => {
+                console.log('error', error)
+            });
+
+
+    }
+
+    const deleteLogo = () => {
+
+        var requestOptions: any = {
+            method: 'DELETE',
+            body: '',
+            redirect: 'follow'
+        };
+
+        fetch(`${Backend_BASE_URL}/nomenclatures/partnerlogo/${partnerid}`, requestOptions)
+            .then(response => response.text())
+            .then(result => {
+                setCurrentLogo('')
+                setVisibleLogo(false)
+
+            }
+            )
+            .catch(error => {
+                console.log('error', error)
+            });
+
+    }
+
+    useEffect(() => {
+
+    }, [currentLogo])
+
 
     return (
         <div className="grid">
+            <Toast ref={toast} />
+
             <div className="col-12">
                 <div className="card">
                     <div>Date Generale</div>
@@ -206,16 +351,87 @@ const Partner = () => {
                             <Checkbox id="legalrepresent" onChange={e => setIsVatPayer(e.checked)}
                                 checked={isVatPayer}
                             ></Checkbox>
-
-                            {/* <input style={{ width: '30px', height: '30px' }} type="checkbox" checked={isVatPayer} onChange={e => setIsVatPayer(e.checked)} /> */}
-                            {/* <input type="checkbox" defaultChecked={true} />
-                            <input type="checkbox" checked={isVatPayer} defaultChecked={true} />  */}
-
                             <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
+                        </div>
+                        <Divider />
+
+                        <div className="field-checkbox col-12 md:col-2">
+
+                            <Button label="Preluare Date(API - CodFiscal)" onClick={getCompanyData} />
+                        </div>
+
+                        <Divider />
+
+
+                        <div className="col-12 md:col-2">
+                            <Button label="Logo" onClick={() => setVisibleLogo(true)} />
+                        </div>
+
+                        <div className="field-checkbox col-12 md:col-1"></div>
+                        <div className="col-12 md:col-3">
+                            {currentLogo ?
+
+                                <div className="card flex justify-content-center">
+                                    <Image src={`${Backend_BASE_URL}/nomenclatures/download/${currentLogo}`} alt="Image" width="250" preview />
+                                </div>
+                                : null}
                         </div>
 
                     </div>
                 </div>
+
+                <Dialog header="Logo Companie" visible={visibleLogo} style={{ width: '40vw' }} onHide={
+                    () => {
+                        setVisibleLogo(false)
+                    }}>
+                    <div className='card'>
+                        <div className="grid flex justify-content-center flex-wrap">
+                            <div>
+                                {currentLogo ?
+                                    <span>
+                                        <Avatar image={`${Backend_BASE_URL}/nomenclatures/download/${currentLogo}`}
+                                            size="xlarge" style={{ width: '40vh', height: '16vh' }} />
+                                    </span>
+                                    : null}
+
+                            </div>
+
+                            <div className="col-12">
+                                <div className="p-fluid formgrid grid pt-2">
+                                    <div className="field col-12  md:col-12">
+
+                                        <FileUpload
+                                            accept="image/*"
+                                            multiple
+                                            mode="basic"
+                                            maxFileSize={100000000}
+                                            customUpload={true}
+                                            //uploadHandler={setPicturefiles(files)}
+                                            uploadHandler={onUpload}
+                                            auto
+                                            chooseLabel="Logo"
+                                        />
+                                    </div>
+                                    {/* : null} */}
+
+                                </div>
+
+                                <div className='pt-4'>
+                                    <div className='grid'>
+                                        <div className='col-3 '>
+                                            <Button label="Salveaza" severity="success" onClick={addLogo} />
+                                        </div>
+
+                                        <div className='col-3 '>
+                                            <Button label="Sterge" severity="danger" onClick={deleteLogo} />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Dialog>
 
                 <div className="card">
                     Conturi bancare

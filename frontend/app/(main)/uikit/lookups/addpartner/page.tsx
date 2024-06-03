@@ -2,34 +2,22 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import {
     QueryClient,
-    QueryClientProvider,
-    useQuery,
 } from '@tanstack/react-query'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Dialog } from 'primereact/dialog';
-import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Checkbox } from "primereact/checkbox";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext"
-import { usePathname } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
 // import PartnerAddress from '../partnerdetails/[partnerdetails]/address'
 import PartnerAddress from './address'
 import PartnerBank from './bank'
 import Person from './person'
-import { MyContext, MyProvider } from '../../../../../layout/context/myUserContext'
-import dotenv from 'dotenv';
-import { InputNumber } from 'primereact/inputnumber';
+import { MyContext } from '../../../../../layout/context/myUserContext'
 import { Divider } from 'primereact/divider';
+import { Toast } from 'primereact/toast';
+// import a from '../../../../../public/layout/images'
 
 const queryClient = new QueryClient();
 
@@ -56,8 +44,9 @@ const Partner = () => {
     const [isVatPayer, setIsVatPayer] = useState(false);
     const [partnersBanksExtraRatesChild, setPartnersBanksExtraRatesChild] = useState([]);
     const [paymentTerm, setPaymentTerm] = useState(10);
+    const [picturefiles, setPicturefiles] = useState<any>();
 
-    const [API_KEY_Ac, setAPI_KEY] = useState();
+    const [API_KEY_Ac, setAPI_KEY] = useState('');
 
     const toast = useRef<undefined | null | any>(null);
 
@@ -168,6 +157,7 @@ const Partner = () => {
         email?: string,
         remarks?: string,
         paymentTerm: number,
+        picture: string,
         Persons?: any,
         Address?: any,
         Banks?: any,
@@ -190,8 +180,6 @@ const Partner = () => {
 
 
     const sendPartnerData = async () => {
-        // console.log("nume", addressChild)
-        //dupa ce se salveaza partenerul, se returneaza id-ul din bd si se stocheaza local ai toate apelurile ulterioare, sa contina partnerid
 
         let addPartner: Partner = {
             name: name,
@@ -202,6 +190,7 @@ const Partner = () => {
             email: email,
             remarks: remarks,
             paymentTerm: parseInt(paymentTerm),
+            picture: "",
             Persons: {
                 "createMany":
                 {
@@ -229,6 +218,8 @@ const Partner = () => {
             isVatPayer: isVatPayer
         }
 
+        console.log(addPartner, "addPartner", formdata, "formdata")
+
         try {
             if (dbPartnerId === -1) {
                 const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/partners`,
@@ -252,7 +243,6 @@ const Partner = () => {
         }
     }
 
-    //patch  http://localhost:3000/nomenclatures/partners/5
 
     useEffect(() => {
         // console.log(addressIndex)
@@ -272,11 +262,18 @@ const Partner = () => {
 
 
 
+    const onUpload = ({ files }: any) => {
+        // console.log(files)
+        setPicturefiles(files);
+    }
+
 
 
     return (
 
         <div className="grid">
+            <Toast ref={toast} />
+
             <div className="col-12">
                 <div className="card">
                     <div>Adaugare Partener</div>
@@ -335,10 +332,16 @@ const Partner = () => {
                             <label htmlFor="legalrepresent" className="ml-2">Platitor de TVA</label>
                         </div>
 
-                        <div className="field-checkbox col-12 md:col-12"> </div>
-                        <div>
+
+
+
+                        <div className="field-checkbox col-12 md:col-2">
+
                             <Button label="Preluare Date" onClick={getCompanyData} />
                         </div>
+
+
+
                     </div>
                 </div>
                 <div className="card">

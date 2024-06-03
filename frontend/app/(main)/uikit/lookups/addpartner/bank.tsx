@@ -463,10 +463,6 @@ const PartnerBank = (
                                     options={Currency}
                                     optionLabel="code" placeholder="Select One"></Dropdown>
                             </div>
-                            {/* <div className="field col-12  md:col-12">
-                                <label htmlFor="name">IBAN</label>
-                                <InputText id="name" type="text" value={IBAN} onChange={(e) => setIBAN(e.target.value)} />
-                            </div> */}
 
                             <div className="field col-12  md:col-12">
                                 <label htmlFor="IBAN">IBAN (Format: RO49-AAAA-1B31-0075-9384-0000)</label>

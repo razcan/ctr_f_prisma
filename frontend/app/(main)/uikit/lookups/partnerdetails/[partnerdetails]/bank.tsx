@@ -2,31 +2,18 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Button } from 'primereact/button';
-import { ProgressSpinner } from 'primereact/progressspinner';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import {
-    QueryClient,
-    QueryClientProvider,
-    useQuery,
-} from '@tanstack/react-query'
 import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
-import { TabMenu } from 'primereact/tabmenu';
-import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
-import { Calendar } from 'primereact/calendar';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-import { InputTextarea } from "primereact/inputtextarea";
+import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext"
-import { usePathname } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
-import { InputSwitch } from "primereact/inputswitch";
-import { get } from 'http';
 import { MyContext } from '../../../../../../layout/context/myUserContext';
 import { Divider } from 'primereact/divider';
 import { InputNumber } from 'primereact/inputnumber';
+import { InputMask } from 'primereact/inputmask';
 
 interface Bank {
     id: number,
@@ -58,11 +45,14 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const [visibleExtraPercent, setVisibleExtraPercent] = useState<any>('');
     const [extraPercent, setExtraPercent] = useState(0);
     const [Bank, setBank] = useState<any>([]);
+    const [selectedExtraRate, setSelectedExtraRate] = useState<any>([]);
+
 
     const [Currency, setCurrency] = useState<any>([]);
     const [allCurrency, setAllCurrency] = useState<any>([]);
 
     const toast = useRef(null);
+
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -87,8 +77,14 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         setAllBanks(response);
     }
 
+
+    const fetchAllRCurrencies = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
+        setAllCurrency(response);
+    }
+
     const getCurrencyRate = (CurrencyToFind: string) => {
-        return allCurrency.find((obj: { code: string; }) => obj.code === CurrencyToFind);
+        return allCurrency.find((obj: { id: string; }) => obj.id === CurrencyToFind);
     };
 
     const fetchAllBanks = async () => {
@@ -97,12 +93,6 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         setBank(response);
     }
 
-
-
-    const fetchAllRCurrencies = async () => {
-        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
-        setAllCurrency(response);
-    }
 
 
     const fetchAllExtraRates = async () => {
@@ -140,11 +130,26 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         }
 
     }
+    const show = () => {
+        toast.current.show({ severity: 'info', summary: 'Info', detail: 'Message Content' });
+    };
 
     const showMessage = (severity, summary, detail) => {
         toast.current.show({ severity: severity, summary: summary, detail: detail });
     };
 
+
+    const showSuccess = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+        }
+    }
+
+    const showError = (message: any) => {
+        if (toast.current) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+        }
+    }
 
 
     function validateRates(fields: Record<string, any>): ValidationResult {
@@ -170,7 +175,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
             errors
         };
     }
-    const sendAddressData = async () => {
+    const sendPartnerBankData = async () => {
 
         interface Bank {
             bank: String,
@@ -233,31 +238,70 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         }
     }
 
-    const addExtraRates = () => {
+
+
+    const addExtraRates = async () => {
+
+        showSuccess('Actualizat cu succes!')
+        show();
 
         let newExtraRate: any = {
             id: myExtraRatesArray.length + 1,
-            currency: selectedCurrencyExchangeRates ? selectedCurrencyExchangeRates.id : null,
+            currencyId: selectedCurrencyExchangeRates ? selectedCurrencyExchangeRates.id : null,
             codeCurrency: selectedCurrencyExchangeRates ? selectedCurrencyExchangeRates.code : null,
             percent: extraPercent
 
         }
 
-        const validationResult = validateRates(newExtraRate);
-        if (!validationResult.isValid) {
-            showMessage('error', 'Eroare', validationResult.errors)
+
+        let toAddExtraRate: any = {
+            partnersId: parseInt(partnerid),
+            currencyId: selectedCurrencyExchangeRates ? selectedCurrencyExchangeRates.id : null,
+            percent: extraPercent
+
+        }
+
+        if (selectedExtraRate.id) {
+
+            try {
+                const response = await axios.patch(`${Backend_BASE_URL}/nomenclatures/extrarates/${selectedExtraRate.id}`,
+                    toAddExtraRate
+                );
+                setBankIndex((prevKey: number) => prevKey + 1),
+                    setVisibleBank(false)
+                showSuccess('Actualizat cu succes!')
+                show();
+                console.log(response.data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
         }
         else {
-            setMyExtraRatesArray((prevArray) => [...prevArray, newExtraRate]);
-            setVisibleExtraPercent(false);
 
-            setCurrency(null);
-            setSelectedCurrency(null);
-            setExtraPercent(0);
-            setSelectedCurrencyExchangeRates([]);
+            try {
+                const response = await axios.post(`${Backend_BASE_URL}/nomenclatures/extrarates`,
+                    toAddExtraRate
+                );
+                setBankIndex((prevKey: number) => prevKey + 1),
+                    setVisibleBank(false)
+                console.log(response.data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
         }
-    }
 
+        setMyExtraRatesArray((prevArray) => [...prevArray, newExtraRate]);
+
+
+        setVisibleExtraPercent(false);
+        setCurrency(null);
+        setSelectedCurrency(null);
+        setExtraPercent(0);
+        setSelectedCurrencyExchangeRates([]);
+
+    }
 
 
     const statusTemplate = (rowData: any) => {
@@ -269,10 +313,36 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
         );
     };
 
+    const currencyTemplate = (rowData: any) => {
+        const currency_table = getCurrencyRate(rowData.currencyId);
+        return (
+
+            <div>
+                {currency_table ? currency_table.code : null}
+            </div>
+
+        );
+    };
+
+    const deleteExtraRates = async () => {
+
+        try {
+            const response = await axios.delete(`${Backend_BASE_URL}/nomenclatures/extrarates/${selectedExtraRate.id}`,
+            );
+            setBankIndex((prevKey: number) => prevKey + 1),
+                setVisibleBank(false)
+            console.log(response.data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+    }
+
     return (
         <div className="p-fluid formgrid grid pt-2">
 
-            <Toast ref={toast} position="top-right" />
+            <Toast ref={toast} />
+            {/* <Button onClick={show} label="Show" /> */}
 
             <div className="field col-12  md:col-2">
                 <label htmlFor="paymentTerm">Termen Plata (Zile)</label>
@@ -320,7 +390,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
 
                     </DataTable>
                     : null}
-                <div className='p-2'>Rate schimb valutar</div>
+                <div className='pt-6'>Rate schimb valutar</div>
                 <Divider />
             </div>
 
@@ -337,14 +407,17 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                         selectionMode="single"
                         // selection={selectedCurrencyExchangeRates}
                         onSelectionChange={(e) => {
-                            setSelectedCurrencyExchangeRates(e.value.currency);
+                            // setSelectedCurrencyExchangeRates(e.value.currency);
+                            setSelectedCurrencyExchangeRates(getCurrencyRate(e.value.currencyId));
                             setExtraPercent(e.value.percent);
                             setVisibleExtraPercent(true);
+                            setSelectedExtraRate(e.value);
                         }}
                     >
                         <Column field="id" header="Cod"></Column>
-                        <Column field="currency.code" header="Moneda"></Column>
-                        <Column hidden field="currency" header="IdValuta"></Column>
+                        <Column field="currency.code" header="Moneda" body={currencyTemplate}></Column>
+
+                        <Column hidden field="currencyId" header="IdValuta"></Column>
                         <Column field="percent" header="Procent"></Column>
 
 
@@ -381,9 +454,14 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                                     options={Currency}
                                     optionLabel="code" placeholder="Select One"></Dropdown>
                             </div>
+
                             <div className="field col-12  md:col-12">
-                                <label htmlFor="name">IBAN</label>
-                                <InputText id="name" type="text" value={IBAN} onChange={(e) => setIBAN(e.target.value)} />
+                                <label htmlFor="IBAN">IBAN (Format: RO49-AAAA-1B31-0075-9384-0000)</label>
+                                <InputMask id="IBAN" variant="filled" value={IBAN}
+                                    onChange={(e) => setIBAN(e.target.value)}
+                                    mask="aa99-aaaa-9a99-9999-9999-9999"
+                                // placeholder="RO49-AAAA-1B31-0075-9384-0000" 
+                                />
                             </div>
                             <div className="field-checkbox col-12 md:col-12">
                                 <Checkbox id="status" onChange={e => setSelectedStatus(e.checked)} checked={selectedStatus}></Checkbox>
@@ -393,7 +471,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                             <div className='p-3 field col-2 md:col-2'>
                                 <div className='grid'>
                                     <div className='flex flex-wrap justify-content-left gap-3'>
-                                        <Button label="Salveaza" severity="success" onClick={sendAddressData} />
+                                        <Button label="Salveaza" severity="success" onClick={sendPartnerBankData} />
                                         <Button label="Sterge" severity="danger" onClick={deleteBankAccount} />
                                     </div>
                                 </div>
@@ -414,9 +492,11 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                         setSelectedCurrency(null);
                         // setSelectedCurrencyExchangeRates(null);
                         setExtraPercent(0);
+                        setSelectedExtraRate([]);
                     }}>
                     <div className="card">
                         <div className="p-fluid formgrid grid pt-2">
+                            <Toast ref={toast} />
 
                             <div className="field col-12 md:col-12">
                                 <label htmlFor="currency">Moneda</label>
@@ -424,7 +504,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                                 <Dropdown id="type"
                                     showClear
                                     value={selectedCurrencyExchangeRates}
-                                    onChange={(e) => setSelectedCurrencyExchangeRates(e.value.currency)}
+                                    onChange={(e) => setSelectedCurrencyExchangeRates(e.value)}
                                     options={allCurrency}
                                     optionLabel="code" placeholder="Select One"></Dropdown>
 
@@ -441,7 +521,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                                 <div className='grid'>
                                     <div className='flex flex-wrap justify-content-left gap-3'>
                                         <Button label="Salveaza" severity="success" onClick={addExtraRates} />
-                                        {/* <Button label="Sterge" severity="danger" onClick={deleteBank} /> */}
+                                        <Button label="Sterge" severity="danger" onClick={deleteExtraRates} />
                                     </div>
                                 </div>
                             </div>
@@ -453,7 +533,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
 
 
             </div>
-        </div>
+        </div >
     )
 }
 
