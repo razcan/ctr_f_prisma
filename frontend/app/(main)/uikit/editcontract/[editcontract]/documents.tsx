@@ -147,7 +147,7 @@ export default function Documents() {
 
     const fetchAttachmentsData = async () => {
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {
@@ -245,7 +245,7 @@ export default function Documents() {
     const deleteFile = async (file: string): Promise<void> => {
         try {
 
-            const session = sessionStorage.getItem('token');
+            const session = localStorage.getItem('token');
             const jwtToken = JSON.parse(session);
 
             if (jwtToken && jwtToken.access_token) {
@@ -298,7 +298,7 @@ export default function Documents() {
 
         try {
 
-            // const session = sessionStorage.getItem('token');
+            // const session = localStorage.getItem('token');
             // const jwtToken = JSON.parse(session);
 
             // if (jwtToken && jwtToken.access_token) {

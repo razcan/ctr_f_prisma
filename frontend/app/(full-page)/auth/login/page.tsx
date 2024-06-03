@@ -24,6 +24,9 @@ const LoginPage = () => {
     const { isLoggedIn, setIsLoggedIn } = useMyContext();
     const { nrOfTasks, setNrOfTasks } = useMyContext();
 
+    const { entity, setEntity } = useMyContext();
+
+
 
     const [pressed, setPressed] = useState(false);
     const [value, setValue] = useState('');
@@ -125,6 +128,11 @@ const LoginPage = () => {
         return initials;
     }
 
+
+
+
+
+
     const Login = async () => {
 
         try {
@@ -140,12 +148,27 @@ const LoginPage = () => {
                 GetPicture(response.data.userid);
                 GetUserTasks(response.data.userid);
 
+
                 // Remove the item from local storage
-                sessionStorage.removeItem("token");
+                //session
+                // sessionStorage.removeItem("token");
+
+                //local
+                localStorage.removeItem("token");
+
                 // Store token in local storage
-                sessionStorage.setItem("token", JSON.stringify(response.data));
+                //session
+                // sessionStorage.setItem("token", JSON.stringify(response.data));
+
+                //local
+                localStorage.setItem("token", JSON.stringify(response.data));
+
                 // Read token from local storage
-                const myStoredItem: any = sessionStorage.getItem('token');
+                //session
+                // const myStoredItem: any = localStorage.getItem('token');
+                //local
+                const myStoredItem: any = localStorage.getItem('token');
+
                 const rez = JSON.parse(myStoredItem);
                 setIsLoggedIn(true)
                 showSuccess();

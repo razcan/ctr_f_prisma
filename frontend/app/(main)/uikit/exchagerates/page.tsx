@@ -166,7 +166,7 @@ export default function ExchangeRates() {
 
         const currentDate = getCurrentDate();
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {
@@ -201,7 +201,7 @@ export default function ExchangeRates() {
     }
 
     const fetchAllFilteredExchngeRates = async (startdate, enddate, currencycode) => {
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         const wff: never[] | Record<string, any> = [];

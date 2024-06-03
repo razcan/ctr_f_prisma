@@ -2,17 +2,15 @@
 
 import Link from 'next/link';
 import { classNames } from 'primereact/utils';
-import React, { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useContext, useImperativeHandle, useRef, useState } from 'react';
 import { AppTopbarRef } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
 import { Avatar } from 'primereact/avatar';
 import { MyContext, MyProvider } from '../layout/context/myUserContext'
 import { Badge } from 'primereact/badge';
-import { Chip } from 'primereact/chip';
-import { Button } from 'primereact/button';
-import { AvatarGroup } from 'primereact/avatargroup';
 import { BreadCrumb } from 'primereact/breadcrumb';
 import AppConfig from './AppConfig';
+import { Dropdown } from 'primereact/dropdown';
 
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
@@ -27,12 +25,22 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const useMyContext = () => useContext(MyContext);
 
     const { userName, setUserName } = useMyContext();
+    const { entity, setEntity } = useMyContext();
     const { userId, setUserId } = useMyContext();
     const { picture, setPicture } = useMyContext();
     const { isLoggedIn, setIsLoggedIn } = useMyContext();
     const { nrOfTasks, setNrOfTasks } = useMyContext();
     const { BreadCrumbItems, setBreadCrumbItems } = useMyContext();
     const { Backend_BASE_URL, Frontend_BASE_URL, login } = useMyContext();
+
+    const [selectedCity, setSelectedCity] = useState(null);
+    const cities = [
+        { name: 'New York aderwrewrwerwe', code: 'NY' },
+        { name: 'Rome', code: 'RM' },
+        { name: 'London', code: 'LDN' },
+        { name: 'Istanbul', code: 'IST' },
+        { name: 'Paris', code: 'PRS' }
+    ];
 
 
     useImperativeHandle(ref, () => ({
@@ -63,39 +71,16 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                 </button>
 
                 <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
-                    {/* <button type="button" className="p-link layout-topbar-button"> */}
-                    {/* <Chip
-                        className="bluegray-900"
-                        label={` ${userName} `}
-                        image={`http://localhost:3000/nomenclatures/download/${picture}`}
-                        removable
-                    /> */}
-                    {/* <i className="pi pi-bell p-overlay-badge" style={{ fontSize: '2rem' }}>
-                        <Badge value="2"></Badge>
-                    </i> */}
 
-                    {/* </button> */}
-
-                    {/* <Avatar image={`http://localhost:3000/nomenclatures/download/${picture}`}
-                        onClick={boom}
-                        size="xlarge" shape="circle" style={{ width: '5vh', height: '5vh' }} />
-                    {` ${userName} `}
-                   */}
-                    {/* <button type="button" className="p-link layout-topbar-button">
-                        {` ${userName} `}
-                    </button> */}
+                    <Dropdown
+                        // value={entity}
+                        // onChange={(e) => setEntity(e.value)}
+                        options={entity} optionLabel="name"
+                        // placeholder="Select a City" 
+                        className="w-full md:h-3rem" />
 
 
-
-                    {/* <Avatar className="p-overlay-badge"
-                        image={`http://localhost:3000/nomenclatures/download/${picture}`}
-                        shape="circle" style={{ width: '5vh', height: '5vh' }}
-                        size="large">
-                        <Badge value={`[ ${userName} ]`} severity="danger" />
-                    </Avatar> */}
-
-
-                    <Link href="/auth/login">
+                    <Link href="/auth/login" className='pl-2'>
                         <Avatar className="p-overlay-badge"
                             image={`${Backend_BASE_URL}/nomenclatures/download/${picture}`}
                             size="large"

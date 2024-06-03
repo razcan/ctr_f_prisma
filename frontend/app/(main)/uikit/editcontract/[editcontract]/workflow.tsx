@@ -50,7 +50,7 @@ export default function Content() {
     const fetchContent = async () => {
 
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {

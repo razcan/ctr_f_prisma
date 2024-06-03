@@ -1,6 +1,6 @@
 "use client"
 import router from 'next/router';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link';
 import { LayoutContext } from './layoutcontext';
@@ -17,6 +17,7 @@ export const MyProvider = ({ children }: any) => {
     const [actualContractId, setactualContractId] = useState(0);
     const [isAdditional, setIsAdditional] = useState(false);
     const [nrOfTasks, setNrOfTasks] = useState(0);
+    const [entity, setEntity] = useState(0);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
@@ -51,14 +52,15 @@ export const MyProvider = ({ children }: any) => {
 
     const logout = () => {
         // Logic for logging out
-        sessionStorage.removeItem("token");
+        // sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
         setIsLoggedIn(false);
     };
 
     // console.log("din context: ", userRoles)
 
     const fetchWithToken = async (url, options = {}) => {
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
         const roles = jwtToken.roles;
         const entity = jwtToken.entity;
@@ -99,8 +101,10 @@ export const MyProvider = ({ children }: any) => {
         }
     };
 
+
+
     const postWithToken = async (url, data = {}, options = {}) => {
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
         const roles = jwtToken.roles;
         const entity = jwtToken.entity;
@@ -146,7 +150,7 @@ export const MyProvider = ({ children }: any) => {
 
 
     const patchWithToken = async (url, data = {}, options = {}) => {
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
         const roles = jwtToken.roles;
         const entity = jwtToken.entity;
@@ -202,8 +206,60 @@ export const MyProvider = ({ children }: any) => {
         return nrOfTasks
     }
 
+    const GetPicture = async (Id: any) => {
+
+        const picture = await fetch(`${Backend_BASE_URL}/nomenclatures/user/${Id}`).then(res => res.json())
+        if (picture.picture == 'default.jpeg') {
+            setPicture([])
+        } else {
+            setPicture(picture.picture)
+        }
+
+    }
+
+    const GetUserEntity = async (Id: any) => {
+
+        const entity2 = await fetch(`${Backend_BASE_URL}/nomenclatures/userentity/${Id}`).then(res => res.json())
+
+        console.log(entity2, "entity")
+        setEntity(entity2);
+
+    }
+
+    console.log(entity
+        , "asas"
+    )
 
 
+
+    useEffect(() => {
+
+        const session = localStorage.getItem('token');
+        if (session) {
+            const jwtToken = JSON.parse(session);
+            const roles = jwtToken.roles;
+            // const entity = jwtToken.entity;
+            const username = jwtToken.username;
+            const userid = jwtToken.userid;
+
+            console.log(entity, "entity", userid, "userid", username, "username", entity, "entity", roles, "roles");
+
+            setUserId(userid);
+            setUserName(username);
+            setUserRoles(roles);
+            // setEntity(entity);
+            GetUserTasks(userid);
+            GetPicture(userid);
+            GetUserEntity(userid);
+        }
+        else {
+            // router.push(`/auth/access`);
+        }
+
+
+    }, [])
+
+    // [userId, userName, userRoles, entity]
 
 
     // Example usage:
@@ -278,7 +334,9 @@ export const MyProvider = ({ children }: any) => {
         isAdditional,
         setIsAdditional,
         theme,
-        setTheme
+        setTheme,
+        entity,
+        setEntity
     };
 
 

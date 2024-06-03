@@ -60,7 +60,7 @@ export default function Alerts() {
 
 
     const checkUserRole = () => {
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
 
         if (!session) {
             router.push('/');

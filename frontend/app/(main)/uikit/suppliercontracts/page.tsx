@@ -122,7 +122,7 @@ function Contracts() {
     };
 
     // const fetchContracts_old = async () => {
-    //     const session: any = sessionStorage.getItem('token');
+    //     const session: any = localStorage.getItem('token');
     //     const jwtToken = JSON.parse(session);
 
     //     if (jwtToken) {
@@ -154,7 +154,8 @@ function Contracts() {
 
     const fetchContracts = async () => {
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
+        // localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {

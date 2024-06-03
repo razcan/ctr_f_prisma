@@ -22,12 +22,23 @@ const Charts = () => {
 
 
 
-  useEffect(() => {
 
-    if (!userId) {
-      // router.push(`${Frontend_BASE_URL}/auth/login`)
-      router.push(`/auth/access`);
-    }
+  useEffect(() => {
+    const delay = 1000; // Delay in milliseconds (e.g., 1000ms = 1 second)
+
+    const timeoutId = setTimeout(() => {
+
+      if (!userId) {
+        router.push(`/auth/access`);
+      }
+
+      setBreadCrumbItems([
+        {
+          label: 'Home',
+          template: () => <Link href="/">Home</Link>
+        }
+      ]);
+    }, delay);
 
     setBreadCrumbItems(
       [{
@@ -36,7 +47,10 @@ const Charts = () => {
       }]
     )
 
-  }, [])
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+
+  }, [userId])
 
 
 
@@ -97,7 +111,7 @@ const Charts = () => {
 
   const fetchContracts = async () => {
 
-    const session = sessionStorage.getItem('token');
+    const session = localStorage.getItem('token');
     const jwtToken = JSON.parse(session);
 
     if (jwtToken && jwtToken.access_token) {
@@ -423,7 +437,7 @@ const Charts = () => {
 
   const fetchCashFlow = async () => {
 
-    const session = sessionStorage.getItem('token');
+    const session = localStorage.getItem('token');
     const jwtToken = JSON.parse(session);
 
     if (jwtToken && jwtToken.access_token) {

@@ -349,7 +349,7 @@ export default function Tasks() {
 
     const approveTask = () => {
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {
@@ -389,7 +389,7 @@ export default function Tasks() {
 
     const rejectTask = () => {
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {

@@ -29,7 +29,7 @@ const Category = ({ executeFunction }: any) => {
     }
 
     const deleteCategorySelected2 = async (event: any) => {
-        const session: any = sessionStorage.getItem('token');
+        const session: any = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken) {

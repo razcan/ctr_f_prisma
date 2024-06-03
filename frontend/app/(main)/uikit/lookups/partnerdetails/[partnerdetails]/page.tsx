@@ -434,7 +434,8 @@ const Partner = () => {
                 </Dialog>
 
                 <div className="card">
-                    Conturi bancare
+                    Date Financiare
+                    <Divider />
                     <PartnerBank
                         params={partnerid}
                         key={bankIndex}

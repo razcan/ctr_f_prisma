@@ -107,7 +107,7 @@ export default function HeaderContract({ setContractId }: any) {
 
     const fetchAllUsers = async () => {
 
-        const session = sessionStorage.getItem('token');
+        const session = localStorage.getItem('token');
         const jwtToken = JSON.parse(session);
 
         if (jwtToken && jwtToken.access_token) {
