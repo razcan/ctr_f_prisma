@@ -25,7 +25,7 @@ interface Bank {
 }
 
 
-const PartnerBank = ({ params, setBankIndex }: any) => {
+const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any) => {
     const partnerid = params
     const [visibleBank, setVisibleBank] = useState<any>('');
     const [selectedBank, setSelectedBank] = useState<any>([]);
@@ -38,7 +38,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
     const [allBanks, setAllBanks] = useState<any>([]);
     const [allExtraRates, setAllExtraRates] = useState<any[]>([]);
     const [currentPaymentTerm, setCurrentPaymentTerm] = useState('10');
-    const [paymentTerm, setPaymentTerm] = useState(10);
+    // const [paymentTerm, setPaymentTerm] = useState(10);
     const [myExtraRatesArray, setMyExtraRatesArray] = useState<Bank[]>([]);
     const [myBankArray, setMyBankArray] = useState<Bank[]>([]);
     const [selectedCurrencyExchangeRates, setSelectedCurrencyExchangeRates] = useState([]);
@@ -349,7 +349,7 @@ const PartnerBank = ({ params, setBankIndex }: any) => {
                 <InputText id="paymentTerm"
                     type="text"
                     keyfilter="int"
-                    value={currentPaymentTerm}
+                    value={paymentTerm}
                     onChange={(e) => {
                         setPaymentTerm(e.target.value);
                     }} />

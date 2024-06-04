@@ -16,87 +16,50 @@ import {
 import { useSearchParams } from 'next/navigation'
 import { MyContext } from '../../../../layout/context/myUserContext'
 import { Toast } from 'primereact/toast';
+import router from 'next/router';
+import Link from 'next/link';
 
 
-function addOneDay(date: Date): Date {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() + 1);
-    return newDate;
-}
 
 export default function CustomerInvoice() {
 
-
+    const router = useRouter();
 
     const toast = useRef(null);
     const useMyContext = () => useContext(MyContext);
     const {
-        fetchWithToken, Backend_BASE_URL,
-        Frontend_BASE_URL, isPurchasing, setIsPurchasing,
-    } = useMyContext();
-
-    const { actualContractId, setactualContractId } = useMyContext();
-
-
-    const { userId, setUserId } = useMyContext();
-
-    // const { value, updateValue } = useData();
+        Backend_BASE_URL, userId, setBreadCrumbItems, Frontend_BASE_URL } = useMyContext();
 
     const [vatOnReceipt, setVatOnreceipt] = useState(false);
 
-    const router = useRouter();
-    const [contractStatus, setContractStatus] = useState([]);
-    const [contractWFStatus, setContractWFStatus] = useState([]);
     const [number, setNumber] = useState();
     const [type, setType] = useState();
-    const [contractType, setContractType] = useState([]);
     const [start, setStartDate] = useState();
     const [end, setEndDate] = useState();
     const [sign, setSignDate] = useState();
-    const [completion, setCompletionDate] = useState();
     const [remarks, setRemarks] = useState();
     const [status, setStatus] = useState();
-    const [statusWF, setStatusWF] = useState();
+    const [actualCurrencyRate, setActualCurrencyRate] = useState(1);
+    const [actualSeries, setActualSeries] = useState('SHB');
+    const [actualNumber, setActualNumber] = useState('1');
+    const [date, setDate] = useState(new Date());
+    const [dueDate, setDueDate] = useState('');
+    const [paymentTerm, setPaymentTerm] = useState(0);
 
     const [allCurrency, setAllCurrency] = useState([]);
-    const [currency, setCurrency] = useState(null);
+    const [currency, setCurrency] = useState({ id: 1, code: 'RON', name: 'LEU' });
 
     const [item, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
 
-    const [entity, setEntity] = useState([]);
     const [partner, setPartner] = useState([]);
-    const [selectedEntity, setSelectedEntity] = useState([]);
     const [selectedPartner, setSelectedPartner] = useState([]);
-    const [persons, setPersons] = useState([]);
 
-    const [partnerdetails, setPartnerdetails] = useState([]);
-    const [entitydetails, setEntitydetails] = useState([]);
-
-    const [automaticRenewalValue, setAutomaticRenewal] = useState<any>(false);
-
-    const [ent_name, setEnt_name] = useState();
-    const [ent_iban, setEnt_IBAN] = useState();
-    const [ent_address, setEnt_Address] = useState();
-    const [ent_bank, setEnt_bank] = useState();
-    const [ent_role, setEnt_role] = useState();
-    const [ent_id, setEnt_id] = useState();
-
-
-
-    const [party_name, setParty_name] = useState();
-    const [party_email, setParty_email] = useState();
-    const [party_phone, setParty_phone] = useState();
-    const [party_legal_person, setParty_legal_person] = useState();
-    const [party_iban, setParty_IBAN] = useState();
     const [party_address, setParty_Address] = useState();
-    const [party_role, setParty_role] = useState();
-    const [party_bank, setParty_bank] = useState();
-    const [party_id, setParty_id] = useState();
+
 
 
     const searchParams = useSearchParams()
-    const Id = searchParams.get("Id");
 
 
 
@@ -106,34 +69,6 @@ export default function CustomerInvoice() {
     }
 
 
-    const fetchTypeData = () => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/contracttype`)
-            .then(response => {
-                return response.json()
-            })
-            .then(type => {
-                setContractType(type)
-            })
-    }
-    const fetchStatusData = () => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/contractstatus`)
-            .then(response => {
-                return response.json()
-            })
-            .then(status => {
-                setContractStatus(status)
-            })
-    }
-
-    const fetchEntity = () => {
-        fetch(`${Backend_BASE_URL}/nomenclatures/entity`)
-            .then(response => {
-                return response.json()
-            })
-            .then(entity => {
-                setEntity(entity)
-            })
-    }
     const fetchPartners = () => {
         fetch(`${Backend_BASE_URL}/nomenclatures/partners`)
             .then(response => {
@@ -159,59 +94,72 @@ export default function CustomerInvoice() {
             await fetch(`${Backend_BASE_URL}/nomenclatures/address/${partnerId}`).
                 then(res => res.json())
         setPartnerAddress(response);
-        console.log(response)
+
     }
 
-    // fetchPartnerAddress()
+    function getFormatDate(date): string {
+        const today = new Date(date);
+        const year = today.getFullYear();
+        const month = (today.getMonth() + 1).toString().padStart(2, '0'); // Adding 1 because January is 0
+        const day = today.getDate().toString().padStart(2, '0');
 
+        return `${year}-${month}-${day}`;
+    }
 
-    function subtractDays(date: Date, days: number): Date {
+    function addDays(dateInput: Date | string, days: number): Date {
+        const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
         const result = new Date(date);
-        result.setDate(result.getDate() - days);
+        result.setDate(result.getDate() + days);
         return result;
     }
-    const [contractDetails, setContractDetails] = useState([]);
-    const [partnerbankId, setPartnerbankId] = useState('');
-    const [partneraddressId, setPartneraddressId] = useState('');
-    const [entitybankId, setEntitybankId] = useState('');
-    const [entityaddressId, setEntityaddressId] = useState('');
-    const [ent_person, setEnt_person] = useState([]);
-    const [ent_selected_person, setEnt_selected_person] = useState();
-    const [party_person, setParty_person] = useState<any>([]);
-    const [entityPersons, setEntityPersons] = useState([]);
-    const [entityBanks, setEntityBanks] = useState([]);
-    const [entityAddress, setEntityAddress] = useState([]);
-    const [partnerPersons, setPartnerPersons] = useState([]);
-    const [partnerBanks, setPartnerBanks] = useState([]);
+
+    const getExchangeRateAtDate = async (date: Date, currencycode: String) => {
+        const response =
+            await fetch(`${Backend_BASE_URL}/nomenclatures/exchangerates/${getFormatDate(date)}/${currencycode}`).
+                then(res => res.json())
+        if (response.length > 0) {
+            setActualCurrencyRate(response[0].amount);
+        }
+        else {
+            setActualCurrencyRate(0);
+        }
+
+    }
+
+
+
     const [partnerAddress, setPartnerAddress] = useState([]);
 
-    const getPersonJson = (name: string) => {
-        return entityPersons.find((obj) => obj.name === name);
-    };
-    const getPartnerPersonJson = (name: string) => {
-        return partnerPersons.find((obj) => obj.name === name);
-    };
-    const getBankJson = (iban: string) => {
-        return entityBanks.find((obj) => obj.iban === iban);
-    };
-    const getPartnerBankJson = (iban: string) => {
-        return partnerBanks.find((obj) => obj.iban === iban);
-    };
-    const getAddressJson = (id: string) => {
-        return entityAddress.find((obj) => obj.id === id);
-    };
-    // const getPartnerAddressJson = (id: string) => {
-    //     return partnerAddress.find((obj) => obj.id === id);
-    // };
+    useEffect(() => {
 
+        if (!userId) {
+            router.push(`${Frontend_BASE_URL}/auth/login`)
+        }
+
+
+        setBreadCrumbItems(
+            [{
+                label: 'Dashboard',
+                template: () => <Link href="/">Dashboard</Link>
+            },
+            {
+                label: 'Facturi Clienti',
+                template: () => {
+                    const url = `${Frontend_BASE_URL}/uikit/customercinvoices`
+                    return (
+                        <Link href={url}>Facturi Clienti</Link>
+                    )
+
+                }
+            }]
+        )
+
+    }, [])
 
 
     useEffect(() => {
         fetchItemsData(),
             fetchPartners(),
-            fetchEntity(),
-            fetchTypeData(),
-            fetchStatusData(),
             fetchAllCurrencies()
     }, [])
 
@@ -220,93 +168,12 @@ export default function CustomerInvoice() {
 
     }, [])
 
-
-    // interface ValidationResult {
-    //     isValid: boolean;
-    //     errors: string[];
-    // }
-
-    // function validateForm(fields: Record<string, any>): ValidationResult {
-    //     const errors: string[] = [];
+    const saveInvoice = () => {
+        console.log(selectedPartner, party_address, currency, actualCurrencyRate,
+            actualSeries, actualNumber, date, dueDate, remarks, vatOnReceipt, status)
+    }
 
 
-    //     if (!fields.start) {
-    //         errors.push("Trebuie sa setati o data de start a contractului!");
-    //     }
-
-    //     if (!fields.end) {
-    //         errors.push("Trebuie sa setati o data de final a contractului!");
-    //     }
-
-    //     if (fields.start > fields.end) {
-    //         errors.push("Data de start nu trebuie sa fie mai mare decat data de final!");
-    //     }
-
-    //     if (fields.sign > fields.end) {
-    //         errors.push("Data de semnare nu trebuie sa fie mai mare decat data de final!");
-    //     }
-
-    //     if (!fields.statusId) {
-    //         errors.push("Trebuie sa setati o stare a contractului!");
-    //     }
-
-    //     if (!fields.statusWFId) {
-    //         errors.push("Trebuie sa setati o stare flux contract!");
-    //     }
-
-    //     if (!fields.categoryId) {
-    //         errors.push("Trebuie sa setati o categorie!");
-    //     }
-
-    //     if (!fields.departmentId) {
-    //         errors.push("Trebuie sa setati un departament!");
-    //     }
-
-    //     if (!fields.costcenterId) {
-    //         errors.push("Trebuie sa setati un centru de cost/profit!");
-    //     }
-
-    //     if (!fields.cashflowId) {
-    //         errors.push("Trebuie sa setati o linie de CashFlow!");
-    //     }
-
-    //     if (!fields.locationId) {
-    //         errors.push("Trebuie sa setati o locatie!");
-    //     }
-
-    //     if (!fields.partnersId) {
-    //         errors.push("Trebuie sa setati un partener!");
-    //     }
-
-    //     if (!fields.entityId) {
-    //         errors.push("Trebuie sa setati o entitate!");
-    //     }
-    //     if (!fields.partnerpersonsId) {
-    //         errors.push("Trebuie sa setati o pesoana responsabila pentru partener!");
-    //     }
-    //     if (!fields.entitypersonsId) {
-    //         errors.push("Trebuie sa setati o pesoana responsabila pentru entitate!");
-    //     }
-    //     if (!fields.entityaddressId) {
-    //         errors.push("Trebuie sa setati o adresa pentru entitate!");
-    //     }
-
-    //     if (!fields.partneraddressId) {
-    //         errors.push("Trebuie sa setati o adresa pentru partener!");
-    //     }
-
-    //     const isValid = errors.length === 0;
-
-    //     return {
-    //         isValid,
-    //         errors
-    //     };
-    // }
-
-
-    const showMessage = (severity, summary, detail) => {
-        toast.current.show({ severity: severity, summary: summary, detail: detail });
-    };
 
     return (
         <div className="card">
@@ -326,6 +193,14 @@ export default function CustomerInvoice() {
                                 onChange={(e) => {
                                     setSelectedPartner(e.value);
                                     fetchPartnerAddress(e.value.id);
+                                    if (e.value.paymentTerm > 0) {
+                                        setPaymentTerm(e.value.paymentTerm);
+                                    } else {
+                                        setPaymentTerm(0);
+                                    }
+
+                                    const x = addDays(date, e.value.paymentTerm);
+                                    setDueDate(x);
                                 }}
                                 optionLabel="name"
                                 filter
@@ -367,7 +242,11 @@ export default function CustomerInvoice() {
                                 filterInputAutoFocus
                                 showClear
                                 value={currency}
-                                onChange={(e) => setCurrency(e.value)}
+                                onChange={(e) => {
+                                    setCurrency(e.value);
+                                    getExchangeRateAtDate(date, e.value.code);
+
+                                }}
                                 options={allCurrency}
                                 optionLabel="code"
                                 itemTemplate={(option) => (
@@ -378,47 +257,49 @@ export default function CustomerInvoice() {
                                 placeholder="Select One"></Dropdown>
                         </div>
                         <div className="field col-12 md:col-2">
-                            <label htmlFor="remarks" >Curs</label>
-                            <InputText id="remarks" className='max-w-screen'
-                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            <label htmlFor="actualCurrencyRate" >Rata Schimb</label>
+                            <InputText id="actualCurrencyRate" className='max-w-screen'
+                                value={actualCurrencyRate}
+                                onChange={(e) => setActualCurrencyRate(e.target.value)}
                             />
                         </div>
 
 
                         <div className="field col-12  md:col-2">
-                            <label htmlFor="number">Serie</label>
-                            <InputText id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+                            <label htmlFor="actualSeries">Serie</label>
+                            <InputText id="actualSeries" type="text" value={actualSeries} onChange={(e) => setActualSeries(e.target.value)} />
                         </div>
 
                         <div className="field col-12  md:col-2">
-                            <label htmlFor="number">Numar</label>
-                            <InputText id="number" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+                            <label htmlFor="actualNumber">Numar</label>
+                            <InputText id="actualNumber" type="text" value={actualNumber} onChange={(e) => setActualNumber(e.target.value)} />
                         </div>
 
 
                         <div className="field col-12 md:col-2">
                             <label htmlFor="remarks" >Stare</label>
-                            <InputText disabled id="remarks" className='max-w-screen'
-                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            <InputText disabled id="status" className='max-w-screen'
+                                value={status} onChange={(e) => setStatus(e.target.value)}
                             />
                         </div>
 
 
                         <div className="field col-12 md:col-2">
-                            <label htmlFor="start" className="font-bold block mb-2">
+                            <label htmlFor="date" className="font-bold block mb-2">
                                 Data Emiterii
                             </label>
-                            <Calendar id="start" value={start} onChange={(e) => {
-                                setStartDate(e.value)
+                            <Calendar id="date" value={date} onChange={(e) => {
+                                setDate(e.value);
+                                getExchangeRateAtDate(e.value, currency.code);
                             }
 
                             } showIcon dateFormat="dd/mm/yy" />
                         </div>
 
                         <div className="field col-12 md:col-2">
-                            <label htmlFor="remarks" >Zile Scadenta</label>
-                            <InputText disabled id="remarks" className='max-w-screen'
-                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                            <label htmlFor="paymentTerm" >Zile Scadenta</label>
+                            <InputText disabled id="paymentTerm" className='max-w-screen'
+                                value={paymentTerm} onChange={(e) => setPaymentTerm(e.target.value)}
                             />
                         </div>
 
@@ -426,8 +307,8 @@ export default function CustomerInvoice() {
                             <label htmlFor="start" className="font-bold block mb-2">
                                 Data Scadentei
                             </label>
-                            <Calendar id="start" value={start} onChange={(e) => {
-                                setStartDate(e.value)
+                            <Calendar id="start" value={dueDate} onChange={(e) => {
+                                setDueDate(e.value)
                             }
 
                             } showIcon dateFormat="dd/mm/yy" />
@@ -442,12 +323,13 @@ export default function CustomerInvoice() {
                         </div>
 
                         <div className="field-checkbox col-12 md:col-1">
-                            <Checkbox id="legalrepresent" onChange={e => setVatOnreceipt(e.checked)}
+                            <Checkbox id="vatOnReceipt" onChange={e => setVatOnreceipt(e.checked)}
                                 checked={vatOnReceipt}
-                            // checked={person_legalrepresent === "false" ? false : true}
                             ></Checkbox>
-                            <label htmlFor="legalrepresent" className="ml-2">TVA la incasare</label>
+                            <label htmlFor="vatOnReceipt" className="ml-2">TVA la incasare</label>
                         </div>
+
+                        <Button label="Salveaza" onClick={saveInvoice} />
 
                     </div>
                 </div>

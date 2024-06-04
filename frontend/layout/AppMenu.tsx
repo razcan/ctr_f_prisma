@@ -180,6 +180,15 @@ const AppMenu = () => {
                         router.push(`/uikit/lookups`);
                     }
                 },
+                {
+                    key: '0_4_92',
+                    label: 'Cursuri Valutare',
+                    icon: 'pi pi-fw pi-dollar',
+                    // to: '/uikit/exchagerates',
+                    command: () => {
+                        router.push(`/uikit/exchagerates`);
+                    }
+                },
 
             ]
         },
@@ -242,15 +251,7 @@ const AppMenu = () => {
                         router.push(`/uikit/users`);
                     }
                 },
-                {
-                    key: '0_5_7',
-                    label: 'Cursuri Valutare',
-                    icon: 'pi pi-fw pi-dollar',
-                    // to: '/uikit/exchagerates',
-                    command: () => {
-                        router.push(`/uikit/exchagerates`);
-                    }
-                },
+
 
                 // {
                 //     label: 'Landing page',

@@ -49,6 +49,8 @@ const Partner = () => {
     const [isVatPayer, setIsVatPayer] = useState(false);
     const [visibleLogo, setVisibleLogo] = useState(false);
     const [currentLogo, setCurrentLogo] = useState('');
+    const [paymentTerm, setPaymentTerm] = useState('');
+
 
     const useMyContext = () => useContext(MyContext);
     const {
@@ -110,6 +112,7 @@ const Partner = () => {
             setRemarks(res.remarks);
             setIsVatPayer(res.isVatPayer);
             setCurrentLogo(res.picture);
+            setPaymentTerm(res.paymentTerm);
         })
         )
     }
@@ -138,7 +141,8 @@ const Partner = () => {
         state: string,
         type: string,
         email?: string,
-        remarks?: string
+        remarks?: string,
+        paymentTerm?: number
     }
 
     const sendPartnerData = async () => {
@@ -149,7 +153,8 @@ const Partner = () => {
             state: selectedStatusType.name,
             type: selectedType.name,
             email: email,
-            remarks: remarks
+            remarks: remarks,
+            paymentTerm: parseInt(paymentTerm)
         }
 
         try {
@@ -198,7 +203,9 @@ const Partner = () => {
 
                 setName(response.data.denumire);
                 setCommercialReg(response.data.numar_reg_com);
-                setRemarks(response.data.adresa)
+                setRemarks(response.data.adresa);
+
+                console.log(response.data.paymentTerm, "xxx")
                 if (response.data.radiata == false) {
                     setStatusType({ name: "Activ", code: "01" })
                 }
@@ -440,6 +447,8 @@ const Partner = () => {
                         params={partnerid}
                         key={bankIndex}
                         setBankIndex={setBankIndex}
+                        setPaymentTerm={setPaymentTerm}
+                        paymentTerm={paymentTerm}
                     />
                 </div>
 

@@ -373,8 +373,6 @@ const Partner = () => {
                         setAddressIndex={setAddressIndex}
                         setAddressChild={setAddressChild}
                         setPartnersBanksExtraRatesChild={setPartnersBanksExtraRatesChild}
-                        setPaymentTerm={setPaymentTerm}
-
                     />
                 </div>
 
