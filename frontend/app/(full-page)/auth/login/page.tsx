@@ -23,8 +23,9 @@ const LoginPage = () => {
     const { userRoles, setUserRoles } = useMyContext();
     const { isLoggedIn, setIsLoggedIn } = useMyContext();
     const { nrOfTasks, setNrOfTasks } = useMyContext();
-
     const { entity, setEntity } = useMyContext();
+    const { selectedEntity, setSelectedEntity } = useMyContext();
+
 
 
 
@@ -121,6 +122,17 @@ const LoginPage = () => {
         return nrOfTasks
     }
 
+    const GetUserEntity = async (Id: any) => {
+
+        const entity2 = await fetch(`${Backend_BASE_URL}/nomenclatures/userentity/${Id}`).then(res => res.json())
+
+        // console.log(entity2, "entity2");
+        setEntity(entity2);
+
+        setSelectedEntity(entity2[0]);
+
+    }
+
 
     function getInitials(name) {
         const words = name.split(" ");
@@ -147,6 +159,7 @@ const LoginPage = () => {
                 setUserName(initialsUN);
                 GetPicture(response.data.userid);
                 GetUserTasks(response.data.userid);
+                GetUserEntity(response.data.userid)
 
 
                 // Remove the item from local storage

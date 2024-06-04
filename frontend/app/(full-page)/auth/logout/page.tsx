@@ -1,17 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Checkbox } from 'primereact/checkbox';
+import React, { useContext, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
-import { Password } from 'primereact/password';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
-import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Toast } from 'primereact/toast';
-import axios from 'axios';
 import { MyContext, MyProvider } from '../../../../layout/context/myUserContext'
-import { useEventListener } from 'primereact/hooks';
 
 
 
@@ -52,7 +47,8 @@ const LogoutPage = () => {
     const Logout = async () => {
 
         try {
-            sessionStorage.removeItem("token");
+            // sessionStorage.removeItem("token");
+            localStorage.removeItem("token");
             showSuccess()
 
         } catch (error) {

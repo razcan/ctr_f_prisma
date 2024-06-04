@@ -18,6 +18,8 @@ export const MyProvider = ({ children }: any) => {
     const [isAdditional, setIsAdditional] = useState(false);
     const [nrOfTasks, setNrOfTasks] = useState(0);
     const [entity, setEntity] = useState(0);
+    const [selectedEntity, setSelectedEntity] = useState(0);
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [picture, setPicture] = useState("default.jpeg");
     const [userRoles, setUserRoles] = useState([]);
@@ -221,16 +223,14 @@ export const MyProvider = ({ children }: any) => {
 
         const entity2 = await fetch(`${Backend_BASE_URL}/nomenclatures/userentity/${Id}`).then(res => res.json())
 
-        console.log(entity2, "entity")
+        console.log(entity2, "entity2");
         setEntity(entity2);
+
+        setSelectedEntity(entity2[0]);
 
     }
 
-    console.log(entity
-        , "asas"
-    )
-
-
+    // useEffect(() => { GetUserEntity(userId) }, [entity])
 
     useEffect(() => {
 
@@ -336,7 +336,9 @@ export const MyProvider = ({ children }: any) => {
         theme,
         setTheme,
         entity,
-        setEntity
+        setEntity,
+        selectedEntity,
+        setSelectedEntity
     };
 
 
