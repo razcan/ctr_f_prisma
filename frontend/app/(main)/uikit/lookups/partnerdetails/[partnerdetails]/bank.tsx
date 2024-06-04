@@ -152,29 +152,30 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
     }
 
 
-    function validateRates(fields: Record<string, any>): ValidationResult {
-        const errors: string[] = [];
+    // function validateRates(fields: Record<string, any>): ValidationResult {
+    //     const errors: string[] = [];
 
-        if (fields.codeCurrency == "undefined" || fields.codeCurrency.length < 2) {
-            errors.push("Trebuie sa setati o valuta!");
-        }
+    //     if (fields.codeCurrency == "undefined" || fields.codeCurrency.length < 2) {
+    //         errors.push("Trebuie sa setati o valuta!");
+    //     }
 
-        if (fields.percent == "undefined" || !fields.percent) {
-            errors.push("Trebuie sa selectati un procent!");
-        }
+    //     if (fields.percent == "undefined" || !fields.percent) {
+    //         errors.push("Trebuie sa selectati un procent!");
+    //     }
 
-        if (fields.percent) {
-            if (fields.percent > 100)
-                errors.push("Trebuie sa selectati un procent cu valoarea mai mica de 100%!");
-        }
+    //     if (fields.percent) {
+    //         if (fields.percent > 100)
+    //             errors.push("Trebuie sa selectati un procent cu valoarea mai mica de 100%!");
+    //     }
 
-        const isValid = errors.length === 0;
+    //     const isValid = errors.length === 0;
 
-        return {
-            isValid,
-            errors
-        };
-    }
+    //     return {
+    //         isValid,
+    //         errors
+    //     };
+    // }
+
     const sendPartnerBankData = async () => {
 
         interface Bank {

@@ -168,9 +168,9 @@ const AppMenu = () => {
                 },
                 {
                     key: '0_4_9',
-                    label: 'Tranzactii', icon: 'pi pi-fw pi-box',
+                    label: 'Serii Documente', icon: 'pi pi-fw pi-box',
                     command: () => {
-                        router.push(`/uikit/lookups`);
+                        router.push(`/uikit/lookups/documentseries`);
                     }
                 },
                 {

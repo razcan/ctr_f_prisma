@@ -143,6 +143,7 @@ const Partner = () => {
         email?: string,
         remarks?: string,
         paymentTerm?: number
+        isVatPayer?: boolean
     }
 
     const sendPartnerData = async () => {
@@ -154,8 +155,11 @@ const Partner = () => {
             type: selectedType.name,
             email: email,
             remarks: remarks,
-            paymentTerm: parseInt(paymentTerm)
+            paymentTerm: parseInt(paymentTerm),
+            isVatPayer: isVatPayer
         }
+
+        console.log(isVatPayer, "isVatPayer")
 
         try {
 
@@ -205,7 +209,6 @@ const Partner = () => {
                 setCommercialReg(response.data.numar_reg_com);
                 setRemarks(response.data.adresa);
 
-                console.log(response.data.paymentTerm, "xxx")
                 if (response.data.radiata == false) {
                     setStatusType({ name: "Activ", code: "01" })
                 }
