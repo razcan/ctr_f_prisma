@@ -45,6 +45,7 @@ export default function CustomerInvoice() {
     const [date, setDate] = useState(new Date());
     const [dueDate, setDueDate] = useState('');
     const [paymentTerm, setPaymentTerm] = useState(0);
+    const [series, setSeries] = useState([]);
 
     const [allCurrency, setAllCurrency] = useState([]);
     const [currency, setCurrency] = useState({ id: 1, code: 'RON', name: 'LEU' });
@@ -96,6 +97,42 @@ export default function CustomerInvoice() {
         setPartnerAddress(response);
 
     }
+
+
+    // const allDocumentType = [
+    //     { id: 1, name: "Facturi Vanzare" },
+    //     { id: 2, name: "Contracte Clienti" },
+    // ]
+
+    const fetchSeriesData = () => {
+        //get series only for sales invoices
+        fetch(`${Backend_BASE_URL}/nomenclatures/documentseriesbytype/${1}`
+        )
+            .then(response => {
+                return response.json()
+            })
+            .then(data => {
+                setSeries(data);
+                setActualSeries(data[0]);
+                setActualNumber(data[0].last_number + 1)
+            })
+    }
+
+    const fetchSeriesDataByIdandType = (seriesId: any) => {
+        //get series only for sales invoices
+        fetch(`${Backend_BASE_URL}/nomenclatures/documentseriesbytypeandseries/${1}/${seriesId}`
+        )
+            .then(response => {
+                return response.json()
+            })
+            .then(data => {
+                // console.log(data)
+                // setSeries(data);
+                // setActualSeries(data[0]);
+                setActualNumber(data[0].last_number + 1)
+            })
+    }
+
 
     function getFormatDate(date): string {
         const today = new Date(date);
@@ -160,7 +197,8 @@ export default function CustomerInvoice() {
     useEffect(() => {
         fetchItemsData(),
             fetchPartners(),
-            fetchAllCurrencies()
+            fetchAllCurrencies(),
+            fetchSeriesData()
     }, [])
 
 
@@ -264,10 +302,25 @@ export default function CustomerInvoice() {
                             />
                         </div>
 
+                        <div className="field col-12 md:col-2">
+                            <div className="field col-12  md:col-12">
+                                <label htmlFor="actualSeries">Serie</label>
+                                <Dropdown id="actualSeries" filter
+                                    value={actualSeries}
+                                    onChange={(e) => {
+                                        {
+                                            setActualSeries(e.target.value)
+                                            fetchSeriesDataByIdandType(e.target.value.id)
+                                        }
 
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="actualSeries">Serie</label>
-                            <InputText id="actualSeries" type="text" value={actualSeries} onChange={(e) => setActualSeries(e.target.value)} />
+                                    }}
+                                    options={series}
+                                    optionLabel="series"
+                                    placeholder="Select One">
+
+                                </Dropdown>
+
+                            </div>
                         </div>
 
                         <div className="field col-12  md:col-2">

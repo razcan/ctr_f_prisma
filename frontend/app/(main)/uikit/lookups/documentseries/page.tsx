@@ -497,8 +497,8 @@ const DocumentSeries = () => {
                                     <Column hidden field="id" header="Code"></Column>
                                     <Column sortable field="series" header="Serie"></Column>
                                     <Column sortable field="start_number" header="Start"></Column>
-                                    <Column sortable field="final_number" header="Name"></Column>
-                                    <Column sortable field="last_number" header="Name"></Column>
+                                    <Column sortable field="final_number" header="Final"></Column>
+                                    <Column sortable field="last_number" header="Ultimul"></Column>
                                     <Column sortable field="documentTypeId" header="Tip" body={documentTemplate}  ></Column>
                                     <Column sortable field="isActive" header="Activ" style={{ width: '10vh' }} body={statusTemplate}></Column>
 
