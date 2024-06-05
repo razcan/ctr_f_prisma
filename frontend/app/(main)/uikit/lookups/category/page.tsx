@@ -85,11 +85,11 @@ const CashFlow = ({ executeFunction }: any) => {
                 }
             },
             {
-                label: 'Categorii Contracte',
+                label: 'Categorii',
                 template: () => {
                     const url = `${Frontend_BASE_URL}/uikit/lookups/category`
                     return (
-                        <Link href={url}>Categorii Contracte</Link>
+                        <Link href={url}>Categorii</Link>
                     )
 
                 }

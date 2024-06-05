@@ -18,6 +18,8 @@ import { MyContext } from '../../../../layout/context/myUserContext'
 import { Toast } from 'primereact/toast';
 import router from 'next/router';
 import Link from 'next/link';
+import { Card } from 'primereact/card';
+import { InputNumber } from 'primereact/inputnumber';
 
 
 
@@ -25,12 +27,18 @@ export default function CustomerInvoice() {
 
     const router = useRouter();
 
+    const handleBack = () => {
+        router.back();
+    };
+
+
     const toast = useRef(null);
     const useMyContext = () => useContext(MyContext);
     const {
         Backend_BASE_URL, userId, setBreadCrumbItems, Frontend_BASE_URL } = useMyContext();
 
     const [vatOnReceipt, setVatOnreceipt] = useState(false);
+    const [isStorno, setIsStorno] = useState(false);
 
     const [number, setNumber] = useState();
     const [type, setType] = useState();
@@ -46,17 +54,30 @@ export default function CustomerInvoice() {
     const [dueDate, setDueDate] = useState('');
     const [paymentTerm, setPaymentTerm] = useState(0);
     const [series, setSeries] = useState([]);
+    const [price, setPrice] = useState(null);
+    const [qtty, setQtty] = useState(null);
+
+    const [vat, setVAT] = useState([]);
+    const [vatAmount, setVatAmount] = useState([]);
+    const [allVAT, setAllVAT] = useState<any>([]);
+
+    const [measuringUnit, setMeasuringUnit] = useState();
+    const [allMeasuringUnit, setAllMeasuringUnit] = useState();
+    const [amount, setAmount] = useState(null);
+    const [totalAmount, setTotalAmount] = useState(null);
+
 
     const [allCurrency, setAllCurrency] = useState([]);
     const [currency, setCurrency] = useState({ id: 1, code: 'RON', name: 'LEU' });
 
-    const [item, setItems] = useState([]);
+    const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
 
     const [partner, setPartner] = useState([]);
     const [selectedPartner, setSelectedPartner] = useState([]);
 
-    const [party_address, setParty_Address] = useState();
+    const [party_address, setParty_Address] = useState([]);
+    const [partnerAddress, setPartnerAddress] = useState([]);
 
 
 
@@ -95,7 +116,7 @@ export default function CustomerInvoice() {
             await fetch(`${Backend_BASE_URL}/nomenclatures/address/${partnerId}`).
                 then(res => res.json())
         setPartnerAddress(response);
-
+        setParty_Address(response[0]);
     }
 
 
@@ -134,6 +155,18 @@ export default function CustomerInvoice() {
     }
 
 
+    const fetchAllVAT = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/vatquota`).then(res => res.json())
+        setAllVAT(response);
+    }
+
+    const fetchAllMeasuringUnit = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/measuringunit`).then(res => res.json())
+        setAllMeasuringUnit(response);
+    }
+
+
+
     function getFormatDate(date): string {
         const today = new Date(date);
         const year = today.getFullYear();
@@ -165,7 +198,6 @@ export default function CustomerInvoice() {
 
 
 
-    const [partnerAddress, setPartnerAddress] = useState([]);
 
     useEffect(() => {
 
@@ -198,7 +230,9 @@ export default function CustomerInvoice() {
         fetchItemsData(),
             fetchPartners(),
             fetchAllCurrencies(),
-            fetchSeriesData()
+            fetchSeriesData(),
+            fetchAllVAT(),
+            fetchAllMeasuringUnit()
     }, [])
 
 
@@ -214,179 +248,339 @@ export default function CustomerInvoice() {
 
 
     return (
-        <div className="card">
+        <div className="p-d-flex p-jc-center p-ai-center">
+            <div className="card">
+
+                <div className="grid">
+                    <Button className="p-d-flex p-jc-end p-mt-3 p-1" label="Go back" icon="pi pi-arrow-left" onClick={handleBack} />
+
+                    <Toast ref={toast} position="top-right" />
 
 
-            <div className="grid">
-                <Toast ref={toast} position="top-right" />
-                <div className="col-12">
-                    <div className="p-fluid formgrid grid pt-2">
+                    <div className="col-12">
 
+                        <div className='card'>
+                            <div className="p-fluid formgrid grid pt-2">
 
-                        <div className="field col-12 md:col-3">
-                            <label htmlFor="selectedPartner">Partner</label>
-                            <Dropdown
-                                value={selectedPartner}
-                                options={partner}
-                                onChange={(e) => {
-                                    setSelectedPartner(e.value);
-                                    fetchPartnerAddress(e.value.id);
-                                    if (e.value.paymentTerm > 0) {
-                                        setPaymentTerm(e.value.paymentTerm);
-                                    } else {
-                                        setPaymentTerm(0);
-                                    }
+                                <div className="field col-12 md:col-3">
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="selectedPartner">Partner</label>
+                                        <Dropdown
+                                            value={selectedPartner}
+                                            options={partner}
+                                            onChange={(e) => {
+                                                setSelectedPartner(e.value);
+                                                fetchPartnerAddress(e.value.id);
 
-                                    const x = addDays(date, e.value.paymentTerm);
-                                    setDueDate(x);
-                                }}
-                                optionLabel="name"
-                                filter
-                                filterBy="name,fiscal_code"
-                                filterInputAutoFocus
-                                showClear
-                                itemTemplate={(option) => (
-                                    <div>
-                                        {option.name} ({option.fiscal_code})
+                                                if (e.value.paymentTerm > 0) {
+                                                    setPaymentTerm(e.value.paymentTerm);
+                                                } else {
+                                                    setPaymentTerm(0);
+                                                }
+
+                                                const x = addDays(date, e.value.paymentTerm);
+                                                setDueDate(x);
+                                            }}
+                                            optionLabel="name"
+                                            filter
+                                            filterBy="name,fiscal_code"
+                                            filterInputAutoFocus
+                                            showClear
+                                            itemTemplate={(option) => (
+                                                <div>
+                                                    {option.name} ({option.fiscal_code})
+                                                </div>
+                                            )}
+                                            placeholder="Select"
+                                        />
                                     </div>
-                                )}
-                                placeholder="Select"
-                            // filterFunction={onSearch}
-                            />
-                        </div>
+                                    <div className="field col-12 md:col-12">
 
-                        <div className="field col-12 md:col-3">
-                            <div className="field col-12  md:col-12">
-                                <label htmlFor="ent_address">Adresa</label>
-                                <Dropdown id="ent_address" filter
-                                    value={party_address}
-                                    onChange={(e) => {
-                                        setParty_Address(e.target.value)
-                                    }}
-                                    options={partnerAddress}
-                                    optionLabel="completeAddress"
-                                    placeholder="Select One">
+                                        <label htmlFor="party_address">Adresa</label>
+                                        <Dropdown id="party_address"
+                                            value={party_address}
+                                            filter
+                                            filterBy="completeAddress"
+                                            filterInputAutoFocus
+                                            showClear
+                                            onChange={(e) => {
+                                                setParty_Address(e.target.value)
+                                            }}
+                                            options={partnerAddress}
+                                            optionLabel="completeAddress"
+                                            placeholder="Select One">
 
-                                </Dropdown>
-
-                            </div>
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="currency">Moneda factura</label>
-                            <Dropdown id="currency"
-                                filter
-                                filterBy="name,code"
-                                filterInputAutoFocus
-                                showClear
-                                value={currency}
-                                onChange={(e) => {
-                                    setCurrency(e.value);
-                                    getExchangeRateAtDate(date, e.value.code);
-
-                                }}
-                                options={allCurrency}
-                                optionLabel="code"
-                                itemTemplate={(option) => (
-                                    <div>
-                                        {option.name} ({option.code})
+                                        </Dropdown>
                                     </div>
-                                )}
-                                placeholder="Select One"></Dropdown>
-                        </div>
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="actualCurrencyRate" >Rata Schimb</label>
-                            <InputText id="actualCurrencyRate" className='max-w-screen'
-                                value={actualCurrencyRate}
-                                onChange={(e) => setActualCurrencyRate(e.target.value)}
-                            />
-                        </div>
+                                </div>
 
-                        <div className="field col-12 md:col-2">
-                            <div className="field col-12  md:col-12">
-                                <label htmlFor="actualSeries">Serie</label>
-                                <Dropdown id="actualSeries" filter
-                                    value={actualSeries}
-                                    onChange={(e) => {
-                                        {
-                                            setActualSeries(e.target.value)
-                                            fetchSeriesDataByIdandType(e.target.value.id)
+                                <div className="field col-12 md:col-2">
+
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="actualSeries">Serie</label>
+                                        <Dropdown id="actualSeries" filter
+                                            value={actualSeries}
+                                            onChange={(e) => {
+                                                {
+                                                    setActualSeries(e.target.value)
+                                                    fetchSeriesDataByIdandType(e.target.value.id)
+                                                }
+
+                                            }}
+                                            options={series}
+                                            optionLabel="series"
+                                            placeholder="Select One">
+
+                                        </Dropdown>
+                                    </div>
+
+                                    <div className="field col-12  md:col-12">
+                                        <label htmlFor="actualNumber">Numar</label>
+                                        <InputText id="actualNumber" type="text" value={actualNumber} onChange={(e) => setActualNumber(e.target.value)} />
+                                    </div>
+
+
+
+
+
+                                </div>
+                                <div className="field col-12 md:col-2">
+
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="date" className="font-bold block mb-2">
+                                            Data Emiterii
+                                        </label>
+                                        <Calendar id="date" value={date} onChange={(e) => {
+                                            setDate(e.value);
+                                            getExchangeRateAtDate(e.value, currency.code);
                                         }
 
-                                    }}
-                                    options={series}
-                                    optionLabel="series"
-                                    placeholder="Select One">
+                                        } showIcon dateFormat="dd/mm/yy" />
+                                    </div>
 
-                                </Dropdown>
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="start" className="font-bold block mb-2">
+                                            Data Scadentei
+                                        </label>
+                                        <Calendar id="start" value={dueDate} onChange={(e) => {
+                                            setDueDate(e.value)
+                                        }
+
+                                        } showIcon dateFormat="dd/mm/yy" />
+                                    </div>
+
+                                </div>
+                                <div className="field col-12 md:col-2">
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="currency">Moneda</label>
+                                        <Dropdown id="currency"
+                                            filter
+                                            filterBy="name,code"
+                                            filterInputAutoFocus
+                                            showClear
+                                            value={currency}
+                                            onChange={(e) => {
+                                                setCurrency(e.value);
+                                                getExchangeRateAtDate(date, e.value.code);
+
+                                            }}
+                                            options={allCurrency}
+                                            optionLabel="code"
+                                            itemTemplate={(option) => (
+                                                <div>
+                                                    {option.name} ({option.code})
+                                                </div>
+                                            )}
+                                            placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="actualCurrencyRate" >Rata Schimb</label>
+                                        <InputText id="actualCurrencyRate" className='max-w-screen'
+                                            value={actualCurrencyRate}
+                                            onChange={(e) => setActualCurrencyRate(e.target.value)}
+                                        />
+                                    </div>
+
+                                </div>
+
+                                <div className="field col-12 md:col-2">
+
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="remarks" >Stare</label>
+                                        <InputText disabled id="status" className='max-w-screen'
+                                            value={status} onChange={(e) => setStatus(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="field col-12 md:col-12">
+                                        <label htmlFor="remarks">Note</label>
+                                        <InputText id="remarks" className='max-w-screen'
+                                            value={remarks} onChange={(e) => setRemarks(e.target.value)}
+                                        />
+                                    </div>
+
+                                </div>
+
+                                <div className="field col-12 md:col-1 pt-6">
+
+                                    <div className="field col-12 md:col-12">
+                                        <Checkbox id="vatOnReceipt" onChange={e => setVatOnreceipt(e.checked)}
+                                            checked={vatOnReceipt}
+                                        ></Checkbox>
+                                        <label htmlFor="vatOnReceipt" className="ml-2">TVA la incasare</label>
+                                    </div>
+
+                                    <div className="field col-12 md:col-12">
+                                        <Checkbox id="isStorno" onChange={e => setIsStorno(e.checked)}
+                                            checked={isStorno}
+                                        ></Checkbox>
+                                        <label htmlFor="isStorno" className="ml-2">Storno</label>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="formgroup-inline">
+                                    <div className="field-checkbox">
+                                        <Button label="Salveaza" text onClick={saveInvoice} />
+                                        <Button label="Valideaza" text onClick={saveInvoice} />
+                                        <Button label="Anuleaza" text onClick={saveInvoice} />
+                                        <Button label="Sterge" text onClick={saveInvoice} />
+                                        <Button label="Storneaza" text onClick={saveInvoice} />
+                                        <Button label="Copiaza" text onClick={saveInvoice} />
+                                        <Button label="Descarca" text onClick={saveInvoice} />
+                                        <Button label="Trimite" text onClick={saveInvoice} />
+                                        <Button label="Fisier" text onClick={saveInvoice} />
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
 
-                        <div className="field col-12  md:col-2">
-                            <label htmlFor="actualNumber">Numar</label>
-                            <InputText id="actualNumber" type="text" value={actualNumber} onChange={(e) => setActualNumber(e.target.value)} />
-                        </div>
-
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="remarks" >Stare</label>
-                            <InputText disabled id="status" className='max-w-screen'
-                                value={status} onChange={(e) => setStatus(e.target.value)}
-                            />
-                        </div>
-
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="date" className="font-bold block mb-2">
-                                Data Emiterii
-                            </label>
-                            <Calendar id="date" value={date} onChange={(e) => {
-                                setDate(e.value);
-                                getExchangeRateAtDate(e.value, currency.code);
-                            }
-
-                            } showIcon dateFormat="dd/mm/yy" />
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="paymentTerm" >Zile Scadenta</label>
-                            <InputText disabled id="paymentTerm" className='max-w-screen'
-                                value={paymentTerm} onChange={(e) => setPaymentTerm(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="field col-12 md:col-2">
-                            <label htmlFor="start" className="font-bold block mb-2">
-                                Data Scadentei
-                            </label>
-                            <Calendar id="start" value={dueDate} onChange={(e) => {
-                                setDueDate(e.value)
-                            }
-
-                            } showIcon dateFormat="dd/mm/yy" />
-                        </div>
-
-
-                        <div className="field col-12 md:col-4">
-                            <label htmlFor="remarks">Note</label>
-                            <InputText id="remarks" className='max-w-screen'
-                                value={remarks} onChange={(e) => setRemarks(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="field-checkbox col-12 md:col-1">
-                            <Checkbox id="vatOnReceipt" onChange={e => setVatOnreceipt(e.checked)}
-                                checked={vatOnReceipt}
-                            ></Checkbox>
-                            <label htmlFor="vatOnReceipt" className="ml-2">TVA la incasare</label>
-                        </div>
-
-                        <Button label="Salveaza" onClick={saveInvoice} />
-
                     </div>
+                    <div className="col-12">
+                        <div className='card'>
+                            <div className="col-12 md:col-12" style={{ width: '90%' }}>
+                                <div className="p-fluid formgrid grid pt-2">
+
+
+                                    <div className="field col-12 md:col-2">
+                                        <label htmlFor="item">Articol</label>
+                                        <Dropdown id="item"
+                                            filter
+                                            filterBy="name,code"
+                                            filterInputAutoFocus
+                                            showClear
+                                            value={selectedItem}
+                                            onChange={(e) => {
+                                                setSelectedItem(e.value);
+                                                setMeasuringUnit(e.value.measuringUnit.name);
+                                                // setVAT(`${e.value.vat.VATPercent}%`)
+                                                setVAT(e.value.vat.VATPercent)
+                                                console.log(e.value)
+
+                                            }}
+                                            options={items}
+                                            optionLabel="name"
+                                            itemTemplate={(option) => (
+                                                <div>
+                                                    {option.name} ({option.code})
+                                                </div>
+                                            )}
+                                            placeholder="Select One"></Dropdown>
+                                    </div>
+
+                                    <div className="field col-12  md:col-1">
+                                        <label htmlFor="measuringUnit">UM</label>
+                                        <InputText disabled id="measuringUnit" type="text"
+                                            value={measuringUnit} onChange={(e) => setMeasuringUnit(e.target.value)}
+                                        />
+                                    </div>
+
+
+                                    <div className="field col-12  md:col-1">
+                                        <label htmlFor="qtty">Cantitate</label>
+                                        <InputNumber inputId="minmaxfraction" value={qtty}
+                                            onValueChange={(e) => {
+                                                setQtty(e.value);
+                                                setAmount(e.value * price);
+                                                setVatAmount(e.value * price * vat / 100);
+                                                setTotalAmount((e.value * price * vat / 100 + (e.value * price)));
+                                            }}
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2} />
+
+                                    </div>
+
+                                    <div className="field col-12  md:col-1">
+                                        <label htmlFor="price">Pret unitar</label>
+                                        <InputNumber inputId="minmaxfraction"
+                                            value={price}
+                                            onValueChange={(e) => {
+                                                setPrice(e.value);
+                                                setAmount(e.value * qtty);
+                                                setVatAmount(e.value * qtty * vat / 100);
+                                                setTotalAmount((e.value * qtty * vat / 100 + (e.value * qtty)));
+                                            }}
+                                            minFractionDigits={4}
+                                            maxFractionDigits={4} />
+                                    </div>
+
+                                    <div className="field col-12  md:col-2">
+                                        <label htmlFor="amount">Valoare</label>
+                                        <InputNumber inputId="minmaxfraction"
+                                            disabled
+                                            value={amount}
+                                            // onValueChange={(e) => setAmount(e.value)}
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2} />
+                                    </div>
+
+                                    <div className="field col-12  md:col-1">
+                                        <label htmlFor="vat">TVA(%)</label>
+                                        <InputText disabled id="vat" type="text"
+                                            value={vat} onChange={(e) => setVAT(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="field col-12  md:col-1">
+                                        <label htmlFor="vat">Valoare TVA</label>
+                                        <InputText disabled id="vat" type="text"
+                                            value={vatAmount}
+                                        />
+                                    </div>
+                                    <div className="field col-12  md:col-2">
+                                        <label htmlFor="totalAmount">Valoare Finala</label>
+                                        <InputText disabled id="totalAmount" type="text"
+                                            value={totalAmount}
+                                        />
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {/* qtty            Float
+                            price           Float
+                            measuringUnit   MeasuringUnit? @relation(fields: [measuringUnitid], references: [id])
+                            measuringUnitid Int?
+                            vat             VatQuota?      @relation(fields: [vatId], references: [id])
+                            vatId           Int?
+                            vatValue        Float
+                            lineValue       Float
+                            totalValue      Float
+                            description     String
+                            item            Item?          @relation(fields: [itemId], references: [id])
+                            itemId          Int? */}
+
                 </div>
             </div>
         </div>
+
     )
 };

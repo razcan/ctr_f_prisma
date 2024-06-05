@@ -147,7 +147,7 @@ const AppMenu = () => {
                 },
                 {
                     key: '0_4_6',
-                    label: 'Categorii Contracte', icon: 'pi pi-chart-line',
+                    label: 'Categorii', icon: 'pi pi-chart-line',
                     command: () => {
                         router.push(`/uikit/lookups/category`);
                     }

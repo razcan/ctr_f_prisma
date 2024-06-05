@@ -223,7 +223,6 @@ export const MyProvider = ({ children }: any) => {
 
         const entity2 = await fetch(`${Backend_BASE_URL}/nomenclatures/userentity/${Id}`).then(res => res.json())
 
-        console.log(entity2, "entity2");
         setEntity(entity2);
 
         setSelectedEntity(entity2[0]);
@@ -242,7 +241,7 @@ export const MyProvider = ({ children }: any) => {
             const username = jwtToken.username;
             const userid = jwtToken.userid;
 
-            console.log(entity, "entity", userid, "userid", username, "username", entity, "entity", roles, "roles");
+            // console.log(entity, "entity", userid, "userid", username, "username", entity, "entity", roles, "roles");
 
             setUserId(userid);
             setUserName(username);
