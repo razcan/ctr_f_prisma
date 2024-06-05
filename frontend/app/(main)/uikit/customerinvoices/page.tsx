@@ -20,6 +20,9 @@ import router from 'next/router';
 import Link from 'next/link';
 import { Card } from 'primereact/card';
 import { InputNumber } from 'primereact/inputnumber';
+import { Tag } from 'primereact/tag';
+import { Divider } from 'primereact/divider';
+import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 
 
 
@@ -40,11 +43,7 @@ export default function CustomerInvoice() {
     const [vatOnReceipt, setVatOnreceipt] = useState(false);
     const [isStorno, setIsStorno] = useState(false);
 
-    const [number, setNumber] = useState();
-    const [type, setType] = useState();
-    const [start, setStartDate] = useState();
-    const [end, setEndDate] = useState();
-    const [sign, setSignDate] = useState();
+
     const [remarks, setRemarks] = useState();
     const [status, setStatus] = useState();
     const [actualCurrencyRate, setActualCurrencyRate] = useState(1);
@@ -54,17 +53,21 @@ export default function CustomerInvoice() {
     const [dueDate, setDueDate] = useState('');
     const [paymentTerm, setPaymentTerm] = useState(0);
     const [series, setSeries] = useState([]);
-    const [price, setPrice] = useState(null);
-    const [qtty, setQtty] = useState(null);
+    const [price, setPrice] = useState<Float>(0);
+    const [qtty, setQtty] = useState<Float>(1);
 
-    const [vat, setVAT] = useState([]);
-    const [vatAmount, setVatAmount] = useState([]);
+    const [vat, setVAT] = useState<Float>();
+    const [vatAmount, setVatAmount] = useState<Float>();
     const [allVAT, setAllVAT] = useState<any>([]);
 
     const [measuringUnit, setMeasuringUnit] = useState();
     const [allMeasuringUnit, setAllMeasuringUnit] = useState();
-    const [amount, setAmount] = useState(null);
-    const [totalAmount, setTotalAmount] = useState(null);
+    const [selectedMeasuringUnitId, setSelectedMeasuringUnitId] = useState();
+
+
+    const [amount, setAmount] = useState<Float>(0);
+    const [totalAmount, setTotalAmount] = useState<Float>(0);
+    const [lineDescription, setLineDescription] = useState('');
 
 
     const [allCurrency, setAllCurrency] = useState([]);
@@ -78,7 +81,7 @@ export default function CustomerInvoice() {
 
     const [party_address, setParty_Address] = useState([]);
     const [partnerAddress, setPartnerAddress] = useState([]);
-
+    const [invoiceLines, setInvoiceLines] = useState([]);
 
 
     const searchParams = useSearchParams()
@@ -245,11 +248,62 @@ export default function CustomerInvoice() {
             actualSeries, actualNumber, date, dueDate, remarks, vatOnReceipt, status)
     }
 
+    const handleDropDownStepUsers = async (index, value) => {
+        setSelUsers(value);
+        const to_add = [...final_users, {
+            Index: index,
+            UserId: { id: value.id, name: value.name, email: value.email, status: true }
+        }];
+
+        selectedTaskUsers[index].Index = index
+        selectedTaskUsers[index].UserId = { id: value.id, name: value.name, email: value.email, status: true }
+        setfinal_users(to_add);
+    };
+
+    // const handleStepUsers = async (index, value) => {
+    //     selectedTaskUsers[index].StepName = value
+    // }
+
+    const addInvoiceLines = () => {
+        setInvoiceLines(
+            [...invoiceLines, {
+                Index: null,
+                qtty: qtty,
+                price: price,
+                itemId: selectedItem.id,
+                measuringUnit: selectedMeasuringUnitId,
+                vatAmount: vatAmount,
+                amount: amount,
+                totalAmount: totalAmount,
+                lineDescription: lineDescription
+
+            }]
+        )
+        console.log(invoiceLines, "invoiceLines")
+    }
 
 
     return (
         <div className="p-d-flex p-jc-center p-ai-center">
             <div className="card">
+
+                {invoiceLines.map((field, index) => {
+                    // console.log(field.UserId)
+                    return (
+                        // console.log(field)
+                        <div className="grid" >
+
+                            <div className="field col-1 md:col-1 p-2">
+
+                                <Tag style={{ fontSize: 16 }} value={index + 1}></Tag>
+                            </div>
+
+                            <Divider />
+                        </div>
+
+
+                    )
+                })}
 
                 <div className="grid">
                     <Button className="p-d-flex p-jc-end p-mt-3 p-1" label="Go back" icon="pi pi-arrow-left" onClick={handleBack} />
@@ -414,7 +468,7 @@ export default function CustomerInvoice() {
                                     </div>
 
                                     <div className="field col-12 md:col-12">
-                                        <label htmlFor="remarks">Note</label>
+                                        <label htmlFor="remarks">Observatii</label>
                                         <InputText id="remarks" className='max-w-screen'
                                             value={remarks} onChange={(e) => setRemarks(e.target.value)}
                                         />
@@ -462,6 +516,7 @@ export default function CustomerInvoice() {
                     <div className="col-12">
                         <div className='card'>
                             <div className="col-12 md:col-12" style={{ width: '90%' }}>
+
                                 <div className="p-fluid formgrid grid pt-2">
 
 
@@ -476,6 +531,7 @@ export default function CustomerInvoice() {
                                             onChange={(e) => {
                                                 setSelectedItem(e.value);
                                                 setMeasuringUnit(e.value.measuringUnit.name);
+                                                setSelectedMeasuringUnitId(e.value.measuringUnit.id);
                                                 // setVAT(`${e.value.vat.VATPercent}%`)
                                                 setVAT(e.value.vat.VATPercent)
                                                 console.log(e.value)
@@ -494,7 +550,8 @@ export default function CustomerInvoice() {
                                     <div className="field col-12  md:col-1">
                                         <label htmlFor="measuringUnit">UM</label>
                                         <InputText disabled id="measuringUnit" type="text"
-                                            value={measuringUnit} onChange={(e) => setMeasuringUnit(e.target.value)}
+                                            value={measuringUnit}
+                                        // onChange={(e) => setMeasuringUnit(e.target.value)}
                                         />
                                     </div>
 
@@ -504,9 +561,12 @@ export default function CustomerInvoice() {
                                         <InputNumber inputId="minmaxfraction" value={qtty}
                                             onValueChange={(e) => {
                                                 setQtty(e.value);
-                                                setAmount(e.value * price);
-                                                setVatAmount(e.value * price * vat / 100);
-                                                setTotalAmount((e.value * price * vat / 100 + (e.value * price)));
+                                                const am = Math.round((e.value * price) * 100) / 100;
+                                                setAmount(am);
+                                                const vt = Math.round((e.value * price * vat / 100) * 100) / 100
+                                                setVatAmount(vt);
+                                                const tot_amount = Math.round((e.value * price * vat / 100 + (e.value * qtty)) * 100) / 100
+                                                setTotalAmount(tot_amount);
                                             }}
                                             minFractionDigits={2}
                                             maxFractionDigits={2} />
@@ -519,9 +579,12 @@ export default function CustomerInvoice() {
                                             value={price}
                                             onValueChange={(e) => {
                                                 setPrice(e.value);
-                                                setAmount(e.value * qtty);
-                                                setVatAmount(e.value * qtty * vat / 100);
-                                                setTotalAmount((e.value * qtty * vat / 100 + (e.value * qtty)));
+                                                const am = Math.round((e.value * qtty) * 100) / 100;
+                                                setAmount(am);
+                                                const vt = Math.round((e.value * qtty * vat / 100) * 100) / 100
+                                                setVatAmount(vt);
+                                                const tot_amount = Math.round((e.value * qtty * vat / 100 + (e.value * qtty)) * 100) / 100
+                                                setTotalAmount(tot_amount);
                                             }}
                                             minFractionDigits={4}
                                             maxFractionDigits={4} />
@@ -546,37 +609,34 @@ export default function CustomerInvoice() {
 
                                     <div className="field col-12  md:col-1">
                                         <label htmlFor="vat">Valoare TVA</label>
-                                        <InputText disabled id="vat" type="text"
+
+                                        <InputNumber inputId="minmaxfraction"
+                                            disabled
                                             value={vatAmount}
-                                        />
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2} />
                                     </div>
                                     <div className="field col-12  md:col-2">
                                         <label htmlFor="totalAmount">Valoare Finala</label>
-                                        <InputText disabled id="totalAmount" type="text"
+                                        <InputNumber inputId="totalAmount"
+                                            disabled
                                             value={totalAmount}
-                                        />
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2} />
+                                    </div>
+                                    <div className="field col-12  md:col-1 pt-4">
+                                        <Button icon="pi pi-plus" onClick={addInvoiceLines}
+                                            rounded text aria-label="Add" />
                                     </div>
 
                                 </div>
 
 
+
+
                             </div>
                         </div>
                     </div>
-
-
-                    {/* qtty            Float
-                            price           Float
-                            measuringUnit   MeasuringUnit? @relation(fields: [measuringUnitid], references: [id])
-                            measuringUnitid Int?
-                            vat             VatQuota?      @relation(fields: [vatId], references: [id])
-                            vatId           Int?
-                            vatValue        Float
-                            lineValue       Float
-                            totalValue      Float
-                            description     String
-                            item            Item?          @relation(fields: [itemId], references: [id])
-                            itemId          Int? */}
 
                 </div>
             </div>
