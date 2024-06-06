@@ -34,6 +34,7 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
     const [Branch, setBranch] = useState<any>('');
     const [IBAN, setIBAN] = useState<any>('');
     const [selectedStatus, setSelectedStatus] = useState<any>(true);
+    const [isDefault, setIsDefault] = useState<any>(true);
     const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
     const [allExtraRates, setAllExtraRates] = useState<any[]>([]);
@@ -183,7 +184,8 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
             currency: String,
             branch: String,
             iban: String,
-            status: Boolean
+            status: Boolean,
+            isDefault: Boolean,
             partner: any
         }
         if (sBank.id) {
@@ -193,6 +195,7 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
                 branch: Branch,
                 iban: IBAN,
                 status: selectedStatus,
+                isDefault: isDefault,
                 partner: {
                     "connect":
                     {
@@ -219,6 +222,7 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
                 branch: Branch,
                 iban: IBAN,
                 status: selectedStatus,
+                isDefault: isDefault,
                 partner: {
                     "connect":
                     {
@@ -372,14 +376,15 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
                     <DataTable value={allBanks} selectionMode="single"
                         // paginator rows={5} rowsPerPageOptions={[5, 10, 25, 50]}
                         selection={selectedBank} onSelectionChange={(e) => {
-                            setSelectedBank(getBank(e.value.bank))
-                            setSelectedCurrency(getCurrency(e.value.currency))
-                            setBranch(e.value.branch)
-                            setIBAN(e.value.iban)
-                            setSelectedStatus(e.value.status)
-                            setsBank(e.value)
-                            setStatus(e.value.status)
-                            setVisibleBank(true)
+                            setSelectedBank(getBank(e.value.bank));
+                            setSelectedCurrency(getCurrency(e.value.currency));
+                            setBranch(e.value.branch);
+                            setIBAN(e.value.iban);
+                            setSelectedStatus(e.value.status);
+                            setIsDefault(e.value.isDefault);
+                            setsBank(e.value);
+                            setStatus(e.value.status);
+                            setVisibleBank(true);
                         }}>
                         <Column field="id" header="Cod"></Column>
                         <Column field="bank" header="Banca"></Column>
@@ -468,6 +473,13 @@ const PartnerBank = ({ params, setBankIndex, paymentTerm, setPaymentTerm }: any)
                                 <Checkbox id="status" onChange={e => setSelectedStatus(e.checked)} checked={selectedStatus}></Checkbox>
                                 <label htmlFor="status" className="ml-2">Cont Activ</label>
                             </div>
+
+                            <div className="field-checkbox col-12 md:col-12">
+                                <Checkbox id="status" onChange={e => setIsDefault(e.checked)} checked={isDefault}></Checkbox>
+                                <label htmlFor="status" className="ml-2">Cont Implicit</label>
+                            </div>
+
+                            setIsDefault
 
                             <div className='p-3 field col-2 md:col-2'>
                                 <div className='grid'>

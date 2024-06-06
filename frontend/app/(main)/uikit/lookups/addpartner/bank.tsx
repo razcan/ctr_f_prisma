@@ -21,7 +21,8 @@ interface Bank {
     currency: String,
     branch: String,
     iban: String,
-    status: Boolean
+    status: Boolean,
+    isDefault: Boolean
 }
 
 
@@ -40,6 +41,7 @@ const PartnerBank = (
     const [Branch, setBranch] = useState<any>('');
     const [IBAN, setIBAN] = useState<any>('');
     const [selectedStatus, setSelectedStatus] = useState<any>(true);
+    const [isDefault, setIsDefault] = useState<any>(true);
     const [Status, setStatus] = useState<any>(true);
     const [allBanks, setAllBanks] = useState<any>([]);
 
@@ -229,7 +231,8 @@ const PartnerBank = (
             currency: selectedCurrency ? selectedCurrency.code : '0',
             branch: Branch,
             iban: IBAN,
-            status: selectedStatus
+            status: selectedStatus,
+            isDefault: isDefault
         }
 
         const newBankToBeSent: any = {
@@ -237,7 +240,8 @@ const PartnerBank = (
             currency: selectedCurrency.code,
             branch: Branch,
             iban: IBAN,
-            status: selectedStatus
+            status: selectedStatus,
+            isDefault: isDefault
         }
 
         const validationResult = validateForm(newBank);
@@ -257,14 +261,15 @@ const PartnerBank = (
                 myBankArray[bankindex] = newBank;
                 myBankArray[bankindex].id = sBank.id;
             }
-            setSelectedBank('')
-            setSelectedCurrency('')
-            setBranch('')
-            setIBAN('')
-            setSelectedStatus('')
-            setsBank('')
-            setStatus('')
-            setVisibleBank(false)
+            setSelectedBank('');
+            setSelectedCurrency('');
+            setBranch('');
+            setIBAN('');
+            setSelectedStatus('');
+            setIsDefault('');
+            setsBank('');
+            setStatus('');
+            setVisibleBank(false);
 
         }
     }
@@ -317,14 +322,15 @@ const PartnerBank = (
             console.log(`Address with id ${sBank.id} not found in the array`);
         }
 
-        setSelectedBank('')
-        setSelectedCurrency('')
-        setBranch('')
-        setIBAN('')
-        setSelectedStatus('')
-        setsBank('')
-        setStatus('')
-        setVisibleBank(false)
+        setSelectedBank('');
+        setSelectedCurrency('');
+        setBranch('');
+        setIBAN('');
+        setSelectedStatus('');
+        setIsDefault('');
+        setsBank('');
+        setStatus('');
+        setVisibleBank(false);
 
     }
 
@@ -384,6 +390,7 @@ const PartnerBank = (
                             setBranch(e.value.branch)
                             setIBAN(e.value.iban)
                             setSelectedStatus(e.value.status)
+                            setIsDefault(e.value.isDefault)
                             setsBank(e.value)
                             setStatus(e.value.status)
                             setVisibleBank(true)
@@ -479,6 +486,13 @@ const PartnerBank = (
 
                                 <Checkbox id="status" onChange={e => setSelectedStatus(e.checked)} checked={selectedStatus}></Checkbox>
                                 <label htmlFor="status" className="ml-2">Cont Activ</label>
+                            </div>
+
+
+                            <div className="field-checkbox col-12 md:col-12">
+
+                                <Checkbox id="status" onChange={e => setIsDefault(e.checked)} checked={isDefault}></Checkbox>
+                                <label htmlFor="status" className="ml-2">Cont Implicit</label>
                             </div>
 
                             <div className='p-3 field col-2 md:col-2'>

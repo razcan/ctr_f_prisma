@@ -36,15 +36,23 @@ export default function CustomerInvoice() {
 
 
     const toast = useRef(null);
+
     const useMyContext = () => useContext(MyContext);
     const {
-        Backend_BASE_URL, userId, setBreadCrumbItems, Frontend_BASE_URL } = useMyContext();
+        fetchWithToken, Backend_BASE_URL,
+        Frontend_BASE_URL, isPurchasing, setIsPurchasing
+        , isLoggedIn, login, userId, selectedEntity, setBreadCrumbItems
+    } = useMyContext();
+
 
     const [vatOnReceipt, setVatOnreceipt] = useState(false);
     const [isStorno, setIsStorno] = useState(false);
 
 
-    const [remarks, setRemarks] = useState();
+    const [remarks, setRemarks] = useState('');
+    const [itemRemarks, setItemRemarks] = useState('');
+
+    const [entityBank, setEntityBank] = useState<any>();
     const [status, setStatus] = useState();
     const [actualCurrencyRate, setActualCurrencyRate] = useState(1);
     const [actualSeries, setActualSeries] = useState('SHB');
@@ -53,8 +61,8 @@ export default function CustomerInvoice() {
     const [dueDate, setDueDate] = useState('');
     const [paymentTerm, setPaymentTerm] = useState(0);
     const [series, setSeries] = useState([]);
-    const [price, setPrice] = useState<Float>(0);
-    const [qtty, setQtty] = useState<Float>(1);
+    const [price, setPrice] = useState<Float>();
+    const [qtty, setQtty] = useState<Float>();
 
     const [vat, setVAT] = useState<Float>();
     const [vatAmount, setVatAmount] = useState<Float>();
@@ -65,13 +73,22 @@ export default function CustomerInvoice() {
     const [selectedMeasuringUnitId, setSelectedMeasuringUnitId] = useState();
 
 
-    const [amount, setAmount] = useState<Float>(0);
-    const [totalAmount, setTotalAmount] = useState<Float>(0);
+    const [amount, setAmount] = useState<Float>();
+    const [totalAmount, setTotalAmount] = useState<Float>();
     const [lineDescription, setLineDescription] = useState('');
+
+    const [totalInvoice, setTotalInvoice] = useState<any>({ amount: 0, totalAmount: 0, vatAmount: 0 });
 
 
     const [allCurrency, setAllCurrency] = useState([]);
     const [currency, setCurrency] = useState({ id: 1, code: 'RON', name: 'LEU' });
+
+    const [allInvoiceStatus, setAllInvoiceStatus] = useState([]);
+    const [selectedInvoiceStatus, setSelectedInvoiceStatus] = useState({
+        "id": 1,
+        "name": "In lucru"
+    });
+
 
     const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
@@ -82,9 +99,9 @@ export default function CustomerInvoice() {
     const [party_address, setParty_Address] = useState([]);
     const [partnerAddress, setPartnerAddress] = useState([]);
     const [invoiceLines, setInvoiceLines] = useState([{
-        index: 0,
-        qtty: 1,
-        price: 0,
+        index: 999,
+        qtty: null,
+        price: null,
         itemId: null,
         measuringUnit: null,
         vatPercent: 0,
@@ -103,6 +120,11 @@ export default function CustomerInvoice() {
     const fetchAllCurrencies = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/allcurrencies`).then(res => res.json())
         setAllCurrency(response);
+    }
+
+    const fetchEntityBank = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/entitybank/${selectedEntity.id}`).then(res => res.json())
+        setEntityBank(response);
     }
 
 
@@ -162,9 +184,6 @@ export default function CustomerInvoice() {
                 return response.json()
             })
             .then(data => {
-                // console.log(data)
-                // setSeries(data);
-                // setActualSeries(data[0]);
                 setActualNumber(data[0].last_number + 1)
             })
     }
@@ -175,12 +194,15 @@ export default function CustomerInvoice() {
         setAllVAT(response);
     }
 
+    const fetchAlInvoiceStatus = async () => {
+        const response = await fetch(`${Backend_BASE_URL}/nomenclatures/invoicestatus`).then(res => res.json())
+        setAllInvoiceStatus(response);
+    }
+
     const fetchAllMeasuringUnit = async () => {
         const response = await fetch(`${Backend_BASE_URL}/nomenclatures/measuringunit`).then(res => res.json())
         setAllMeasuringUnit(response);
     }
-
-
 
     function getFormatDate(date): string {
         const today = new Date(date);
@@ -212,15 +234,11 @@ export default function CustomerInvoice() {
     }
 
 
-
-
     useEffect(() => {
 
         if (!userId) {
             router.push(`${Frontend_BASE_URL}/auth/login`)
         }
-
-
         setBreadCrumbItems(
             [{
                 label: 'Dashboard',
@@ -233,11 +251,8 @@ export default function CustomerInvoice() {
                     return (
                         <Link href={url}>Facturi Clienti</Link>
                     )
-
                 }
-            }]
-        )
-
+            }])
     }, [])
 
 
@@ -247,42 +262,50 @@ export default function CustomerInvoice() {
             fetchAllCurrencies(),
             fetchSeriesData(),
             fetchAllVAT(),
-            fetchAllMeasuringUnit()
+            fetchAllMeasuringUnit(),
+            fetchAlInvoiceStatus(),
+            fetchEntityBank()
     }, [])
 
-
-    useEffect(() => {
-
-    }, [])
 
     const saveInvoice = () => {
-        console.log(selectedPartner, party_address, currency, actualCurrencyRate,
-            actualSeries, actualNumber, date, dueDate, remarks, vatOnReceipt, status)
+        console.log("header", selectedPartner, party_address, currency, actualCurrencyRate,
+            actualSeries, actualNumber, date, dueDate, remarks, vatOnReceipt, status, isStorno,
+            totalInvoice)
+
+        console.log("detalii", invoiceLines)
+
+        const toAddHeader = {
+            partnerId: selectedPartner.id,
+            entityId: selectedEntity.id,
+            number: actualNumber,
+            date: date,
+            duedate: dueDate,
+            totalAmount: totalInvoice.amount,
+            vatAmount: totalInvoice.vatAmount,
+            totalPayment: totalInvoice.totalAmount,
+            typeId: 1,
+            transactionTypeId: 1,
+            statusId: selectedInvoiceStatus.id,
+            entitybankId: entityBank[0].id,
+            partneraddressId: party_address.id,
+            currencyRate: actualCurrencyRate,
+            userId: userId,
+            currencyId: currency.id,
+            remarks: remarks
+        }
+
+        console.log(toAddHeader, "toAddHeader")
     }
 
-    // const handleDropDownStepUsers = async (index, value) => {
-    //     setSelUsers(value);
-    //     const to_add = [...final_users, {
-    //         Index: index,
-    //         UserId: { id: value.id, name: value.name, email: value.email, status: true }
-    //     }];
-
-    //     selectedTaskUsers[index].Index = index
-    //     selectedTaskUsers[index].UserId = { id: value.id, name: value.name, email: value.email, status: true }
-    //     setfinal_users(to_add);
-    // };
-
-    // const handleStepUsers = async (index, value) => {
-    //     selectedTaskUsers[index].StepName = value
-    // }
 
     const addInvoiceLines = () => {
         setInvoiceLines(
             [...invoiceLines,
             {
-                index: 0,
-                qtty: 1,
-                price: 0,
+                index: 999,
+                qtty: null,
+                price: null,
                 itemId: null,
                 measuringUnit: null,
                 vatPercent: 0,
@@ -291,32 +314,15 @@ export default function CustomerInvoice() {
                 totalAmount: 0,
                 lineDescription: ''
             }
-                //     {
-                //     index: 0,
-                //     qtty: qtty,
-                //     price: price,
-                //     itemId: selectedItem.id,
-                //     measuringUnit: selectedMeasuringUnitId,
-                //     vatAmount: vatAmount,
-                //     amount: amount,
-                //     totalAmount: totalAmount,
-                //     lineDescription: lineDescription
-                // }
             ]
         )
-        console.log(invoiceLines, "invoiceLines")
+        // console.log(invoiceLines, "invoiceLines")
     }
 
     const handleItemChange = (index, value) => {
 
         const newFormData = [...invoiceLines];
         setSelectedItem(value);
-
-
-        // setMeasuringUnit(value.measuringUnit.name);
-        // setSelectedMeasuringUnitId(value.measuringUnit.id);
-        // setVAT(value.vat.VATPercent);
-
 
         newFormData[index].itemId = value;
         newFormData[index].index = index;
@@ -329,17 +335,10 @@ export default function CustomerInvoice() {
 
     const handleQttyChange = async (index, value) => {
 
-
-
-        // setQtty(value);
-
         const am = Math.round((value * invoiceLines[index].price) * 100) / 100;
-        // setAmount(am);
-
         const vt = Math.round((value * invoiceLines[index].price * invoiceLines[index].vatPercent / 100) * 100) / 100
-        // setVatAmount(vt);
         const tot_amount = Math.round((value * invoiceLines[index].price * invoiceLines[index].vatPercent / 100 + (value * invoiceLines[index].price)) * 100) / 100
-        // setTotalAmount(tot_amount);
+
 
         const newFormData = [...invoiceLines];
 
@@ -356,15 +355,9 @@ export default function CustomerInvoice() {
 
     const handlePriceChange = async (index, value) => {
 
-        // invoiceLines[index].price = value;
-
-        // setPrice(value);
         const am = Math.round((value * invoiceLines[index].qtty) * 100) / 100;
-        // setAmount(am);
         const vt = Math.round((value * invoiceLines[index].qtty * invoiceLines[index].vatPercent / 100) * 100) / 100
-        // setVatAmount(vt);
         const tot_amount = Math.round((value * invoiceLines[index].qtty * invoiceLines[index].vatPercent / 100 + (value * invoiceLines[index].qtty)) * 100) / 100
-        // setTotalAmount(tot_amount);
 
         const newFormData = [...invoiceLines];
 
@@ -378,7 +371,34 @@ export default function CustomerInvoice() {
 
     }
 
-    // console.log(invoiceLines, "invoiceLines")
+    const handleItemDescription = async (index, value) => {
+
+        const newFormData = [...invoiceLines];
+
+        newFormData[index].lineDescription = value;
+
+        setInvoiceLines(newFormData);
+
+    }
+
+    useEffect(() => {
+
+        const result = invoiceLines.reduce((acc, curr) => {
+            acc.amount += curr.amount;
+            acc.totalAmount += curr.totalAmount;
+            acc.vatAmount += curr.vatAmount;
+            return acc;
+        }, { amount: 0, totalAmount: 0, vatAmount: 0 });
+        setTotalInvoice(result);
+
+    }, [invoiceLines])
+
+
+    const removeInvoiceLine = (index) => {
+
+        const newFormData = invoiceLines.filter(line => line.index !== index);
+        setInvoiceLines(newFormData);
+    };
 
 
     return (
@@ -541,9 +561,10 @@ export default function CustomerInvoice() {
                                 <div className="field col-12 md:col-2">
 
                                     <div className="field col-12 md:col-12">
-                                        <label htmlFor="remarks" >Stare</label>
+                                        <label htmlFor="status" >Stare</label>
                                         <InputText disabled id="status" className='max-w-screen'
-                                            value={status} onChange={(e) => setStatus(e.target.value)}
+                                            value={selectedInvoiceStatus.name}
+                                        // onChange={(e) => setStatus(e.target.value)}
                                         />
                                     </div>
 
@@ -593,266 +614,195 @@ export default function CustomerInvoice() {
 
                     </div>
 
-                    {invoiceLines.map((field, index) => {
-                        // console.log(field)
-                        return (
-                            <div className="col-12" key={index}>
-                                <div className='card'>
-                                    <div className="col-12 md:col-12" style={{ width: '90%' }}>
 
-                                        <div className="p-fluid formgrid grid pt-2">
+                    <div className="col-12">
+                        <div className='card' >
+                            <div className="p-fluid formgrid grid pt-2">
+                                {invoiceLines.map((field, index) => {
+                                    // console.log(field)
+                                    return (
+                                        <div className="col-12" key={index}>
 
-                                            {/* <div className="field col-12 md:col-1 p-2">
+                                            <div className="col-12 md:col-12">
+
+                                                <div className="p-fluid formgrid grid pt-2">
+
+                                                    {/* <div className="field col-12 md:col-1 p-2">
                                                 <Tag style={{ fontSize: 16 }} value={index + 1}></Tag>
                                             </div> */}
 
-                                            <div className="field col-12 md:col-2">
-                                                <label htmlFor="item">Articol</label>
-                                                <Dropdown id="item"
-                                                    filter
-                                                    filterBy="name,code"
-                                                    filterInputAutoFocus
-                                                    showClear
-                                                    // value={selectedItem}
-                                                    value={field.itemId}
-                                                    onChange={(e) => {
+                                                    <div className="field col-12 md:col-2">
+                                                        <label htmlFor="item">Articol</label>
+                                                        <Dropdown id="item"
+                                                            filter
+                                                            filterBy="name,code"
+                                                            filterInputAutoFocus
+                                                            showClear
+                                                            // value={selectedItem}
+                                                            value={field.itemId}
+                                                            onChange={(e) => {
 
-                                                        handleItemChange(index, e.value);
-                                                        setMeasuringUnit(e.value.measuringUnit.name);
-                                                        setSelectedMeasuringUnitId(e.value.measuringUnit.id);
-                                                        // setVAT(`${e.value.vat.VATPercent}%`)
-                                                        setVAT(e.value.vat.VATPercent);
-                                                        addInvoiceLines();
-
-
-                                                    }}
-                                                    options={items}
-                                                    optionLabel="name"
-                                                    itemTemplate={(option) => (
-                                                        <div>
-                                                            {option.name} ({option.code})
-                                                        </div>
-                                                    )}
-                                                    placeholder="Select One"></Dropdown>
-                                            </div>
-
-                                            <div className="field col-12  md:col-1">
-                                                <label htmlFor="measuringUnit">UM</label>
-                                                <InputText disabled id="measuringUnit" type="text"
-                                                    value={field.measuringUnit}
-                                                // onChange={(e) => setMeasuringUnit(e.target.value)}
-                                                />
-                                            </div>
+                                                                handleItemChange(index, e.value);
+                                                                setMeasuringUnit(e.value.measuringUnit.name);
+                                                                setSelectedMeasuringUnitId(e.value.measuringUnit.id);
+                                                                // setVAT(`${e.value.vat.VATPercent}%`)
+                                                                setVAT(e.value.vat.VATPercent);
+                                                                addInvoiceLines();
 
 
-                                            <div className="field col-12  md:col-1">
-                                                <label htmlFor="qtty">Cantitate</label>
-                                                <InputNumber inputId="minmaxfraction"
-                                                    value={field.qtty}
-                                                    onValueChange={(e) => {
-                                                        handleQttyChange(index, e.value)
+                                                            }}
+                                                            options={items}
+                                                            optionLabel="name"
+                                                            itemTemplate={(option) => (
+                                                                <div>
+                                                                    {option.name} ({option.code})
+                                                                </div>
+                                                            )}
+                                                            placeholder="Select One"></Dropdown>
+                                                    </div>
 
-                                                    }}
-                                                    minFractionDigits={2}
-                                                    maxFractionDigits={2} />
-
-                                            </div>
-
-                                            <div className="field col-12  md:col-1">
-                                                <label htmlFor="price">Pret unitar</label>
-                                                <InputNumber inputId="minmaxfraction"
-                                                    value={field.price}
-                                                    onValueChange={(e) => {
-
-                                                        handlePriceChange(index, e.value)
-                                                        // setPrice(e.value);
-                                                        // const am = Math.round((e.value * qtty) * 100) / 100;
-                                                        // setAmount(am);
-                                                        // const vt = Math.round((e.value * qtty * vat / 100) * 100) / 100
-                                                        // setVatAmount(vt);
-                                                        // const tot_amount = Math.round((e.value * qtty * vat / 100 + (e.value * qtty)) * 100) / 100
-                                                        // setTotalAmount(tot_amount);
-                                                    }}
-                                                    minFractionDigits={4}
-                                                    maxFractionDigits={4} />
-                                            </div>
-
-                                            <div className="field col-12  md:col-2">
-                                                <label htmlFor="amount">Valoare</label>
-                                                <InputNumber inputId="minmaxfraction"
-                                                    disabled
-                                                    value={field.amount}
-                                                    // onValueChange={(e) => setAmount(e.value)}
-                                                    minFractionDigits={2}
-                                                    maxFractionDigits={2} />
-                                            </div>
-
-                                            <div className="field col-12  md:col-1">
-                                                <label htmlFor="vat">TVA(%)</label>
-                                                <InputText disabled id="vat" type="text"
-                                                    value={field.vatPercent}
-                                                // onChange={(e) => setVAT(e.target.value)}
-                                                />
-                                            </div>
-
-                                            <div className="field col-12  md:col-1">
-                                                <label htmlFor="vat">Valoare TVA</label>
-
-                                                <InputNumber inputId="minmaxfraction"
-                                                    disabled
-                                                    value={field.vatAmount}
-                                                    minFractionDigits={2}
-                                                    maxFractionDigits={2} />
-                                            </div>
-                                            <div className="field col-12  md:col-2">
-                                                <label htmlFor="totalAmount">Valoare Finala</label>
-                                                <InputNumber inputId="totalAmount"
-                                                    disabled
-                                                    value={field.totalAmount}
-                                                    minFractionDigits={2}
-                                                    maxFractionDigits={2} />
-                                            </div>
-                                            <div className="field col-12  md:col-1 pt-4">
-                                                <Button icon="pi pi-times" onClick={addInvoiceLines}
-                                                    rounded text aria-label="Add" severity="danger" />
-                                            </div>
+                                                    <div className="field col-12 md:col-2">
+                                                        <label htmlFor="remarks">Nota Articol</label>
+                                                        <InputText id="remarks" className='max-w-screen'
+                                                            value={field.lineDescription} onChange={(e) => handleItemDescription(index, e.target.value)}
+                                                        />
+                                                    </div>
 
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="measuringUnit">UM</label>
+                                                        <InputText disabled id="measuringUnit" type="text"
+                                                            value={field.measuringUnit}
+                                                        // onChange={(e) => setMeasuringUnit(e.target.value)}
+                                                        />
+                                                    </div>
 
 
-                        )
-                    })}
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="qtty">Cantitate</label>
+                                                        <InputNumber inputId="minmaxfraction"
+                                                            value={field.qtty}
+                                                            onValueChange={(e) => {
+                                                                handleQttyChange(index, e.value)
 
-                    {/* <div className="col-12">
-                        <div className='card'>
-                            <div className="col-12 md:col-12" style={{ width: '90%' }}>
+                                                            }}
+                                                            minFractionDigits={2}
+                                                            maxFractionDigits={2} />
 
-                                <div className="p-fluid formgrid grid pt-2">
+                                                    </div>
+
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="price">Pret unitar</label>
+                                                        <InputNumber inputId="minmaxfraction"
+                                                            value={field.price}
+                                                            onValueChange={(e) => {
+
+                                                                handlePriceChange(index, e.value)
+
+                                                            }}
+                                                            minFractionDigits={4}
+                                                            maxFractionDigits={4} />
+                                                    </div>
+
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="amount">Valoare</label>
+                                                        <InputText id="amount"
+                                                            // disabled
+                                                            value={field.amount}
+
+                                                        />
+                                                    </div>
+
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="vat">TVA(%)</label>
+                                                        <InputText
+                                                            // disabled 
+                                                            id="vat" type="text"
+                                                            value={field.vatPercent}
+                                                        />
+                                                    </div>
+
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="vatAmount">Valoare TVA</label>
+
+                                                        <InputText id="vatAmount"
+
+                                                            value={field.vatAmount}
+
+                                                        />
+                                                    </div>
+                                                    <div className="field col-12  md:col-1">
+                                                        <label htmlFor="totalAmount">Valoare Finala</label>
+                                                        <InputText id="totalAmount"
+                                                            // disabled
+                                                            value={field.totalAmount}
+                                                        />
+                                                    </div>
+                                                    <div className="field col-12  md:col-1 pt-4">
+                                                        <Button icon="pi pi-times" onClick={() => removeInvoiceLine(index)}
+                                                            rounded text aria-label="Add" severity="danger" />
+                                                    </div>
 
 
-                                    <div className="field col-12 md:col-2">
-                                        <label htmlFor="item">Articol</label>
-                                        <Dropdown id="item"
-                                            filter
-                                            filterBy="name,code"
-                                            filterInputAutoFocus
-                                            showClear
-                                            value={selectedItem}
-                                            onChange={(e) => {
-                                                setSelectedItem(e.value);
-                                                // handleItemChange(index, e.value);
-                                                setMeasuringUnit(e.value.measuringUnit.name);
-                                                setSelectedMeasuringUnitId(e.value.measuringUnit.id);
-                                                // setVAT(`${e.value.vat.VATPercent}%`)
-                                                setVAT(e.value.vat.VATPercent)
-                                                console.log(e.value);
-                                                addInvoiceLines();
-
-                                            }}
-                                            options={items}
-                                            optionLabel="name"
-                                            itemTemplate={(option) => (
-                                                <div>
-                                                    {option.name} ({option.code})
                                                 </div>
-                                            )}
-                                            placeholder="Select One"></Dropdown>
-                                    </div>
+                                            </div>
+                                        </div>
 
-                                    <div className="field col-12  md:col-1">
-                                        <label htmlFor="measuringUnit">UM</label>
-                                        <InputText disabled id="measuringUnit" type="text"
-                                            value={measuringUnit}
-                                        // onChange={(e) => setMeasuringUnit(e.target.value)}
+
+
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-12">
+                        <div className="flex flex-row-reverse flex-wrap" style={{ gap: '1px' }}>
+                            <div className="p-fluid formgrid grid pt-2">
+
+                                <div className="align-items-end font-bold">
+                                    <div className="field col-12 md:col-6">
+                                        <label htmlFor="vatAmount">Total TVA</label>
+                                        <InputNumber
+                                            inputId="vatAmount"
+                                            disabled
+                                            value={totalInvoice.vatAmount}
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2}
                                         />
                                     </div>
-
-
-                                    <div className="field col-12  md:col-1">
-                                        <label htmlFor="qtty">Cantitate</label>
-                                        <InputNumber inputId="minmaxfraction" value={qtty}
-                                            onValueChange={(e) => {
-                                                setQtty(e.value);
-                                                const am = Math.round((e.value * price) * 100) / 100;
-                                                setAmount(am);
-                                                const vt = Math.round((e.value * price * vat / 100) * 100) / 100
-                                                setVatAmount(vt);
-                                                const tot_amount = Math.round((e.value * price * vat / 100 + (e.value * qtty)) * 100) / 100
-                                                setTotalAmount(tot_amount);
-                                            }}
-                                            minFractionDigits={2}
-                                            maxFractionDigits={2} />
-
-                                    </div>
-
-                                    <div className="field col-12  md:col-1">
-                                        <label htmlFor="price">Pret unitar</label>
-                                        <InputNumber inputId="minmaxfraction"
-                                            value={price}
-                                            onValueChange={(e) => {
-                                                setPrice(e.value);
-                                                const am = Math.round((e.value * qtty) * 100) / 100;
-                                                setAmount(am);
-                                                const vt = Math.round((e.value * qtty * vat / 100) * 100) / 100
-                                                setVatAmount(vt);
-                                                const tot_amount = Math.round((e.value * qtty * vat / 100 + (e.value * qtty)) * 100) / 100
-                                                setTotalAmount(tot_amount);
-                                            }}
-                                            minFractionDigits={4}
-                                            maxFractionDigits={4} />
-                                    </div>
-
-                                    <div className="field col-12  md:col-2">
-                                        <label htmlFor="amount">Valoare</label>
-                                        <InputNumber inputId="minmaxfraction"
-                                            disabled
-                                            value={amount}
-                                            // onValueChange={(e) => setAmount(e.value)}
-                                            minFractionDigits={2}
-                                            maxFractionDigits={2} />
-                                    </div>
-
-                                    <div className="field col-12  md:col-1">
-                                        <label htmlFor="vat">TVA(%)</label>
-                                        <InputText disabled id="vat" type="text"
-                                            value={vat} onChange={(e) => setVAT(e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div className="field col-12  md:col-1">
-                                        <label htmlFor="vat">Valoare TVA</label>
-
-                                        <InputNumber inputId="minmaxfraction"
-                                            disabled
-                                            value={vatAmount}
-                                            minFractionDigits={2}
-                                            maxFractionDigits={2} />
-                                    </div>
-                                    <div className="field col-12  md:col-2">
-                                        <label htmlFor="totalAmount">Valoare Finala</label>
-                                        <InputNumber inputId="totalAmount"
-                                            disabled
-                                            value={totalAmount}
-                                            minFractionDigits={2}
-                                            maxFractionDigits={2} />
-                                    </div>
-                                    <div className="field col-12  md:col-1 pt-4">
-                                        <Button icon="pi pi-times" onClick={addInvoiceLines}
-                                            rounded text aria-label="Add" severity="danger" />
-                                    </div>
-
                                 </div>
 
+                                <div className="align-items-end font-bold">
+                                    <div className="field col-12 md:col-6">
+                                        <label htmlFor="amount">Total Valoare</label>
+                                        <InputNumber
+                                            inputId="amount"
+                                            disabled
+                                            value={totalInvoice.amount}
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2}
+                                        />
+                                    </div>
+                                </div>
 
-
+                                <div className="align-items-end font-bold">
+                                    <div className="field col-12 md:col-6">
+                                        <label htmlFor="totalAmount">Valoare de plata</label>
+                                        <InputNumber
+                                            inputId="totalAmount"
+                                            disabled
+                                            value={totalInvoice.totalAmount}
+                                            minFractionDigits={2}
+                                            maxFractionDigits={2}
+                                        />
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
-                    </div> */}
+                    </div>
+
 
                 </div>
             </div>
