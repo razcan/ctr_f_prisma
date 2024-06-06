@@ -113,8 +113,11 @@ const EditContract = () => {
     }, [idxp]);
 
     useEffect(() => {
-
-        router.push(`/uikit/editcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
+        if (activeIndex) {
+            router.push(`/uikit/editcontract/ctr?Id=${Id}&idxp=${activeIndex}`)
+        } else {
+            router.push(`/uikit/editcontract/ctr?Id=${Id}&idxp=${0}`)
+        }
 
     }, [activeIndex]);
 

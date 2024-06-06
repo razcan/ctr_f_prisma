@@ -55,7 +55,7 @@ export default function CustomerInvoice() {
     const [entityBank, setEntityBank] = useState<any>();
     const [status, setStatus] = useState();
     const [actualCurrencyRate, setActualCurrencyRate] = useState(1);
-    const [actualSeries, setActualSeries] = useState('SHB');
+    const [actualSeries, setActualSeries] = useState('');
     const [actualNumber, setActualNumber] = useState('1');
     const [date, setDate] = useState(new Date());
     const [dueDate, setDueDate] = useState('');
@@ -99,7 +99,7 @@ export default function CustomerInvoice() {
     const [party_address, setParty_Address] = useState([]);
     const [partnerAddress, setPartnerAddress] = useState([]);
     const [invoiceLines, setInvoiceLines] = useState([{
-        index: 999,
+        index: 9999,
         qtty: null,
         price: null,
         itemId: null,
@@ -267,6 +267,12 @@ export default function CustomerInvoice() {
             fetchEntityBank()
     }, [])
 
+    function roundTo(num: number, decimalPlaces: number): number {
+        const factor: number = Math.pow(10, decimalPlaces);
+        return Math.round(num * factor) / factor;
+    }
+    // let num: number = 3.14159;
+    // let rounded: number = roundTo(num, 2);
 
     const saveInvoice = () => {
         console.log("header", selectedPartner, party_address, currency, actualCurrencyRate,
@@ -288,14 +294,36 @@ export default function CustomerInvoice() {
             transactionTypeId: 1,
             statusId: selectedInvoiceStatus.id,
             entitybankId: entityBank[0].id,
-            partneraddressId: party_address.id,
+            partneraddressId: party_address ? party_address.id : null,
             currencyRate: actualCurrencyRate,
             userId: userId,
             currencyId: currency.id,
-            remarks: remarks
+            remarks: remarks,
+            series: actualSeries.id,
+            serialNumber: (actualSeries.series + actualNumber),
+            eqvTotalAmount: roundTo(totalInvoice.amount * actualCurrencyRate, 2),
+            eqvVatAmount: roundTo(totalInvoice.vatAmount * actualCurrencyRate, 2),
+            eqvTotalPayment: roundTo(totalInvoice.totalAmount * actualCurrencyRate, 2),
+            vatOnReceipt: vatOnReceipt
         }
 
         console.log(toAddHeader, "toAddHeader")
+
+
+        //         const toAddDetail = {
+        //   invoiceId       
+        //   entityId        
+
+        //   qtty            
+        //   price           
+        //   measuringUnitid  
+        //   vatId            
+        //   vatValue        
+        //   lineValue       
+        //   totalValue      
+        //   description     
+        //   itemId          
+
     }
 
 
@@ -303,7 +331,7 @@ export default function CustomerInvoice() {
         setInvoiceLines(
             [...invoiceLines,
             {
-                index: 999,
+                index: 9999,
                 qtty: null,
                 price: null,
                 itemId: null,
@@ -586,12 +614,12 @@ export default function CustomerInvoice() {
                                         <label htmlFor="vatOnReceipt" className="ml-2">TVA la incasare</label>
                                     </div>
 
-                                    <div className="field col-12 md:col-12">
+                                    {/* <div className="field col-12 md:col-12">
                                         <Checkbox id="isStorno" onChange={e => setIsStorno(e.checked)}
                                             checked={isStorno}
                                         ></Checkbox>
                                         <label htmlFor="isStorno" className="ml-2">Storno</label>
-                                    </div>
+                                    </div> */}
 
                                 </div>
 
