@@ -87,7 +87,6 @@ export default function CustomerInvoice() {
         price: 0,
         itemId: null,
         measuringUnit: null,
-        vatPercent: 0,
         vatAmount: 0,
         amount: 0,
         totalAmount: 0,
@@ -260,21 +259,6 @@ export default function CustomerInvoice() {
             actualSeries, actualNumber, date, dueDate, remarks, vatOnReceipt, status)
     }
 
-    // const handleDropDownStepUsers = async (index, value) => {
-    //     setSelUsers(value);
-    //     const to_add = [...final_users, {
-    //         Index: index,
-    //         UserId: { id: value.id, name: value.name, email: value.email, status: true }
-    //     }];
-
-    //     selectedTaskUsers[index].Index = index
-    //     selectedTaskUsers[index].UserId = { id: value.id, name: value.name, email: value.email, status: true }
-    //     setfinal_users(to_add);
-    // };
-
-    // const handleStepUsers = async (index, value) => {
-    //     selectedTaskUsers[index].StepName = value
-    // }
 
     const addInvoiceLines = () => {
         setInvoiceLines(
@@ -285,7 +269,6 @@ export default function CustomerInvoice() {
                 price: 0,
                 itemId: null,
                 measuringUnit: null,
-                vatPercent: 0,
                 vatAmount: 0,
                 amount: 0,
                 totalAmount: 0,
@@ -308,49 +291,46 @@ export default function CustomerInvoice() {
     }
 
     const handleItemChange = (index, value) => {
-
         const newFormData = [...invoiceLines];
         setSelectedItem(value);
 
 
-        // setMeasuringUnit(value.measuringUnit.name);
-        // setSelectedMeasuringUnitId(value.measuringUnit.id);
-        // setVAT(value.vat.VATPercent);
-
+        setMeasuringUnit(value.measuringUnit.name);
+        setSelectedMeasuringUnitId(value.measuringUnit.id);
+        setVAT(value.vat.VATPercent);
+        setInvoiceLines(newFormData);
+        addInvoiceLines();
 
         newFormData[index].itemId = value;
         newFormData[index].index = index;
-        newFormData[index].measuringUnit = value.measuringUnit.name;
-        newFormData[index].vatPercent = value.vat.VATPercent;
 
-        setInvoiceLines(newFormData);
-        addInvoiceLines();
+
+        // console.log("index", index, "value", value, invoiceLines, "invoiceLines")
+
     };
 
     const handleQttyChange = async (index, value) => {
 
+        // invoiceLines[index].qtty = value;
 
+        setQtty(value);
+        const am = Math.round((value * price) * 100) / 100;
+        setAmount(am);
 
-        // setQtty(value);
+        const vt = Math.round((value * price * vat / 100) * 100) / 100
+        setVatAmount(vt);
 
-        const am = Math.round((value * invoiceLines[index].price) * 100) / 100;
-        // setAmount(am);
-
-        const vt = Math.round((value * invoiceLines[index].price * invoiceLines[index].vatPercent / 100) * 100) / 100
-        // setVatAmount(vt);
-        const tot_amount = Math.round((value * invoiceLines[index].price * invoiceLines[index].vatPercent / 100 + (value * invoiceLines[index].price)) * 100) / 100
-        // setTotalAmount(tot_amount);
+        const tot_amount = Math.round((value * price * vat / 100 + (value * value)) * 100) / 100
+        setTotalAmount(tot_amount);
 
         const newFormData = [...invoiceLines];
 
         newFormData[index].qtty = value;
         newFormData[index].amount = am;
-        newFormData[index].vatAmount = vt;
-        newFormData[index].totalAmount = tot_amount;
-
+        newFormData[index].totalAmount = tot_amount
+        newFormData[index].vatAmount = vt
 
         setInvoiceLines(newFormData);
-
 
     }
 
@@ -358,21 +338,20 @@ export default function CustomerInvoice() {
 
         // invoiceLines[index].price = value;
 
-        // setPrice(value);
-        const am = Math.round((value * invoiceLines[index].qtty) * 100) / 100;
-        // setAmount(am);
-        const vt = Math.round((value * invoiceLines[index].qtty * invoiceLines[index].vatPercent / 100) * 100) / 100
-        // setVatAmount(vt);
-        const tot_amount = Math.round((value * invoiceLines[index].qtty * invoiceLines[index].vatPercent / 100 + (value * invoiceLines[index].qtty)) * 100) / 100
-        // setTotalAmount(tot_amount);
+        setPrice(value);
+        const am = Math.round((value * qtty) * 100) / 100;
+        setAmount(am);
+        const vt = Math.round((value * qtty * vat / 100) * 100) / 100
+        setVatAmount(vt);
+        const tot_amount = Math.round((value * qtty * vat / 100 + (value * qtty)) * 100) / 100
+        setTotalAmount(tot_amount);
 
         const newFormData = [...invoiceLines];
 
         newFormData[index].price = value;
         newFormData[index].amount = am;
-        newFormData[index].vatAmount = vt;
-        newFormData[index].totalAmount = tot_amount;
-
+        newFormData[index].totalAmount = tot_amount
+        newFormData[index].vatAmount = vt
 
         setInvoiceLines(newFormData);
 
@@ -618,11 +597,7 @@ export default function CustomerInvoice() {
                                                     onChange={(e) => {
 
                                                         handleItemChange(index, e.value);
-                                                        setMeasuringUnit(e.value.measuringUnit.name);
-                                                        setSelectedMeasuringUnitId(e.value.measuringUnit.id);
-                                                        // setVAT(`${e.value.vat.VATPercent}%`)
-                                                        setVAT(e.value.vat.VATPercent);
-                                                        addInvoiceLines();
+
 
 
                                                     }}
@@ -681,7 +656,7 @@ export default function CustomerInvoice() {
                                                 <label htmlFor="amount">Valoare</label>
                                                 <InputNumber inputId="minmaxfraction"
                                                     disabled
-                                                    value={field.amount}
+                                                    value={amount}
                                                     // onValueChange={(e) => setAmount(e.value)}
                                                     minFractionDigits={2}
                                                     maxFractionDigits={2} />
@@ -690,8 +665,7 @@ export default function CustomerInvoice() {
                                             <div className="field col-12  md:col-1">
                                                 <label htmlFor="vat">TVA(%)</label>
                                                 <InputText disabled id="vat" type="text"
-                                                    value={field.vatPercent}
-                                                // onChange={(e) => setVAT(e.target.value)}
+                                                    value={vat} onChange={(e) => setVAT(e.target.value)}
                                                 />
                                             </div>
 
@@ -700,7 +674,7 @@ export default function CustomerInvoice() {
 
                                                 <InputNumber inputId="minmaxfraction"
                                                     disabled
-                                                    value={field.vatAmount}
+                                                    value={vatAmount}
                                                     minFractionDigits={2}
                                                     maxFractionDigits={2} />
                                             </div>
@@ -708,7 +682,7 @@ export default function CustomerInvoice() {
                                                 <label htmlFor="totalAmount">Valoare Finala</label>
                                                 <InputNumber inputId="totalAmount"
                                                     disabled
-                                                    value={field.totalAmount}
+                                                    value={totalAmount}
                                                     minFractionDigits={2}
                                                     maxFractionDigits={2} />
                                             </div>
