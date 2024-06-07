@@ -58,7 +58,7 @@ export default function CustomerInvoice() {
     const [actualSeries, setActualSeries] = useState('');
     const [actualNumber, setActualNumber] = useState('1');
     const [date, setDate] = useState(new Date());
-    const [dueDate, setDueDate] = useState('');
+    const [dueDate, setDueDate] = useState(new Date());
     const [paymentTerm, setPaymentTerm] = useState(0);
     const [series, setSeries] = useState([]);
     const [price, setPrice] = useState<Float>();
@@ -75,6 +75,7 @@ export default function CustomerInvoice() {
 
     const [amount, setAmount] = useState<Float>();
     const [totalAmount, setTotalAmount] = useState<Float>();
+
     const [lineDescription, setLineDescription] = useState('');
 
     const [totalInvoice, setTotalInvoice] = useState<any>({ amount: 0, totalAmount: 0, vatAmount: 0 });
@@ -100,20 +101,32 @@ export default function CustomerInvoice() {
     const [partnerAddress, setPartnerAddress] = useState([]);
     const [invoiceLines, setInvoiceLines] = useState([{
         index: 9999,
-        qtty: null,
-        price: null,
-        itemId: null,
-        measuringUnit: null,
+        invoiceId: 0,
+        measuringUnitid: 0,
+        vatId: 0,
+        vatValue: 0,
+        entityId: 0,
+        qtty: '',
+        price: '',
+        measuringUnit: '',
         vatPercent: 0,
         vatAmount: 0,
         amount: 0,
         totalAmount: 0,
-        lineDescription: ''
+        lineDescription: '',
+        lineValue: 0,
+        totalValue: 0,
+        description: '',
+        itemId: ''
 
     }]);
     const [itemsArray, setItemsArray] = useState([]);
 
     const searchParams = useSearchParams()
+
+    let showMessage = (severity, summary, detail) => {
+        toast.current.show({ severity: severity, summary: summary, detail: detail });
+    };
 
 
 
@@ -185,6 +198,8 @@ export default function CustomerInvoice() {
             })
             .then(data => {
                 setActualNumber(data[0].last_number + 1)
+                const x = (data[0].last_number + 1)
+                return x;
             })
     }
 
@@ -274,17 +289,77 @@ export default function CustomerInvoice() {
     // let num: number = 3.14159;
     // let rounded: number = roundTo(num, 2);
 
-    const saveInvoice = () => {
-        console.log("header", selectedPartner, party_address, currency, actualCurrencyRate,
-            actualSeries, actualNumber, date, dueDate, remarks, vatOnReceipt, status, isStorno,
-            totalInvoice)
+    interface ValidationResult {
+        isValid: boolean;
+        errors: string[];
+    }
 
-        console.log("detalii", invoiceLines)
+    function validateForm(fields: Record<string, any>): ValidationResult {
+        const errors: string[] = [];
+
+        console.log(fields)
+
+
+        if (fields[1].length === 0) {
+            errors.push("Trebuie sa aveti minim un articol pe factura!");
+            // addInvoiceLines();
+        }
+
+        if (!fields[0].entityId) {
+            errors.push("Trebuie sa setati o entitate!");
+        }
+
+        if (!fields[0].partnerId) {
+            errors.push("Trebuie sa setati un partener!");
+        }
+
+        for (let i = 0; i < fields[1].length; i++) {
+            if (!fields[1][i].itemId) {
+                errors.push("Toate liniile trebuie sa contina un articol!");
+            }
+            if (!fields[1][i].qtty) {
+                errors.push("Toate liniile trebuie sa contina cantitate!");
+            }
+            if (!fields[1][i].price) {
+                errors.push("Toate liniile trebuie sa contina pret!");
+            }
+        }
+
+        const isValid = errors.length === 0;
+
+        return {
+            isValid,
+            errors
+        };
+    }
+
+
+    const saveInvoice = async () => {
+
+        const current_db__number = fetch(`${Backend_BASE_URL}/nomenclatures/documentseriesbytypeandseries/${1}/${actualSeries.id}`
+        )
+            .then(response => {
+                return response.json()
+            })
+            .then(data => {
+                setActualNumber(data[0].last_number + 1)
+                const x = (data[0].last_number + 1)
+                return x;
+            })
+
+
+        if (actualNumber != await current_db__number) {
+            setActualNumber(await current_db__number)
+            showMessage('warning', 'Info numar document', "Numarul a fost actualizat cu ultimul numar disponibil din seria selectata!")
+
+        } else {
+            console.log("sunt ok")
+        }
 
         const toAddHeader = {
             partnerId: selectedPartner.id,
             entityId: selectedEntity.id,
-            number: actualNumber,
+            number: String(await current_db__number),
             date: date,
             duedate: dueDate,
             totalAmount: totalInvoice.amount,
@@ -299,7 +374,7 @@ export default function CustomerInvoice() {
             userId: userId,
             currencyId: currency.id,
             remarks: remarks,
-            series: actualSeries.id,
+            seriesId: parseInt(actualSeries.id),
             serialNumber: (actualSeries.series + actualNumber),
             eqvTotalAmount: roundTo(totalInvoice.amount * actualCurrencyRate, 2),
             eqvVatAmount: roundTo(totalInvoice.vatAmount * actualCurrencyRate, 2),
@@ -307,23 +382,99 @@ export default function CustomerInvoice() {
             vatOnReceipt: vatOnReceipt
         }
 
-        console.log(toAddHeader, "toAddHeader")
+        // console.log(toAddHeader, "toAddHeader")
+        // https://www.youtube.com/watch?v=vK2zHBVnsF8
 
 
-        //         const toAddDetail = {
-        //   invoiceId       
-        //   entityId        
+        const idToCheck = 0;
 
-        //   qtty            
-        //   price           
-        //   measuringUnitid  
-        //   vatId            
-        //   vatValue        
-        //   lineValue       
-        //   totalValue      
-        //   description     
-        //   itemId          
+        // Check if the array contains an item with the specified id and if its length is greater than 1
+        const idExists = invoiceLines.some(item => item.invoiceId === idToCheck);
+        const isArrayLengthGreaterThanOne = invoiceLines.length > 1;
 
+
+        if (idExists && isArrayLengthGreaterThanOne) {
+            // console.log(`The id ${idToCheck} exists in the array and the array length is greater than 1.`);
+            const invoiceLinesFinal = invoiceLines.filter(line => line.index !== 9999);
+
+            const newLinseArray = invoiceLinesFinal.map(item => ({
+                invoiceId: item.invoiceId,
+                entityId: item.entityId,
+                qtty: item.qtty,
+                price: item.price,
+                measuringUnitid: item.measuringUnitid,
+                vatId: item.vatId,
+                vatValue: item.vatValue,
+                lineValue: item.lineValue,
+                totalValue: item.totalValue,
+                description: item.description,
+                itemId: item.itemId.id
+            }));
+
+            setInvoiceLines(invoiceLinesFinal);
+
+            const toAdd = []
+
+            toAdd.push(toAddHeader);
+            toAdd.push(newLinseArray);
+
+            const validationResult = validateForm(toAdd);
+
+
+
+            if (!validationResult.isValid) {
+                showMessage('error', 'Eroare', validationResult.errors)
+            } else {
+                try {
+                    const response_update = await axios.post(`${Backend_BASE_URL}/invoice`,
+                        toAdd
+                    );
+                    console.log('Content added:', response_update.data);
+
+                } catch (error) {
+                    console.error('Error creating content:', error);
+                }
+            }
+        }
+        else {
+
+            const newLinseArray = invoiceLines.map(item => ({
+                invoiceId: item.invoiceId,
+                entityId: item.entityId,
+                qtty: item.qtty,
+                price: item.price,
+                measuringUnitid: item.measuringUnitid,
+                vatId: item.vatId,
+                vatValue: item.vatValue,
+                lineValue: item.lineValue,
+                totalValue: item.totalValue,
+                description: item.description,
+                itemId: item.itemId.id
+            }));
+
+            setInvoiceLines(invoiceLines);
+
+            const toAdd = []
+
+            toAdd.push(toAddHeader);
+            toAdd.push(newLinseArray);
+
+            const validationResult = validateForm(toAdd);
+
+            if (!validationResult.isValid) {
+                showMessage('error', 'Eroare', validationResult.errors)
+            } else {
+                try {
+                    const response_update = await axios.post(`${Backend_BASE_URL}/invoice`,
+                        toAdd
+                    );
+                    console.log('Content added:', response_update.data);
+
+                } catch (error) {
+                    console.error('Error creating content:', error);
+                }
+            }
+        }
     }
 
 
@@ -332,15 +483,23 @@ export default function CustomerInvoice() {
             [...invoiceLines,
             {
                 index: 9999,
-                qtty: null,
-                price: null,
-                itemId: null,
-                measuringUnit: null,
+                invoiceId: 0,
+                measuringUnitid: 0,
+                vatId: 0,
+                vatValue: 0,
+                entityId: 0,
+                qtty: '',
+                price: '',
+                measuringUnit: '',
                 vatPercent: 0,
                 vatAmount: 0,
                 amount: 0,
                 totalAmount: 0,
-                lineDescription: ''
+                lineDescription: '',
+                lineValue: 0,
+                totalValue: 0,
+                description: '',
+                itemId: ''
             }
             ]
         )
@@ -355,10 +514,13 @@ export default function CustomerInvoice() {
         newFormData[index].itemId = value;
         newFormData[index].index = index;
         newFormData[index].measuringUnit = value.measuringUnit.name;
+        newFormData[index].measuringUnitid = value.measuringUnit.id;
         newFormData[index].vatPercent = value.vat.VATPercent;
+        newFormData[index].vatId = value.vat.id;
+        newFormData[index].entityId = selectedEntity.id;
 
         setInvoiceLines(newFormData);
-        addInvoiceLines();
+        // addInvoiceLines();
     };
 
     const handleQttyChange = async (index, value) => {
@@ -375,6 +537,9 @@ export default function CustomerInvoice() {
         newFormData[index].vatAmount = vt;
         newFormData[index].totalAmount = tot_amount;
 
+        newFormData[index].vatValue = vt;
+        newFormData[index].lineValue = am;
+        newFormData[index].totalValue = tot_amount;
 
         setInvoiceLines(newFormData);
 
@@ -394,6 +559,10 @@ export default function CustomerInvoice() {
         newFormData[index].vatAmount = vt;
         newFormData[index].totalAmount = tot_amount;
 
+        newFormData[index].vatValue = vt;
+        newFormData[index].lineValue = am;
+        newFormData[index].totalValue = tot_amount;
+
 
         setInvoiceLines(newFormData);
 
@@ -404,6 +573,7 @@ export default function CustomerInvoice() {
         const newFormData = [...invoiceLines];
 
         newFormData[index].lineDescription = value;
+        newFormData[index].description = value;
 
         setInvoiceLines(newFormData);
 
@@ -432,7 +602,7 @@ export default function CustomerInvoice() {
     return (
         <div className="p-d-flex p-jc-center p-ai-center">
             <div className="card">
-
+                <Toast ref={toast} />
                 <div className="grid">
                     <Button className="p-d-flex p-jc-end p-mt-3 p-1" label="Go back" icon="pi pi-arrow-left" onClick={handleBack} />
 
@@ -607,12 +777,12 @@ export default function CustomerInvoice() {
 
                                 <div className="field col-12 md:col-1 pt-6">
 
-                                    <div className="field col-12 md:col-12">
+                                    {/* <div className="field col-12 md:col-12">
                                         <Checkbox id="vatOnReceipt" onChange={e => setVatOnreceipt(e.checked)}
                                             checked={vatOnReceipt}
                                         ></Checkbox>
                                         <label htmlFor="vatOnReceipt" className="ml-2">TVA la incasare</label>
-                                    </div>
+                                    </div> */}
 
                                     {/* <div className="field col-12 md:col-12">
                                         <Checkbox id="isStorno" onChange={e => setIsStorno(e.checked)}
@@ -675,7 +845,7 @@ export default function CustomerInvoice() {
                                                                 setSelectedMeasuringUnitId(e.value.measuringUnit.id);
                                                                 // setVAT(`${e.value.vat.VATPercent}%`)
                                                                 setVAT(e.value.vat.VATPercent);
-                                                                addInvoiceLines();
+                                                                // addInvoiceLines();
 
 
                                                             }}
@@ -768,7 +938,9 @@ export default function CustomerInvoice() {
                                                     </div>
                                                     <div className="field col-12  md:col-1 pt-4">
                                                         <Button icon="pi pi-times" onClick={() => removeInvoiceLine(index)}
-                                                            rounded text aria-label="Add" severity="danger" />
+                                                            rounded text aria-label="remove" severity="danger" />
+                                                        <Button icon="pi pi-plus" onClick={() => addInvoiceLines()}
+                                                            rounded text aria-label="Add" severity="success" />
                                                     </div>
 
 
