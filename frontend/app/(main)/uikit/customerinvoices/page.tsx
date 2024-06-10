@@ -23,7 +23,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Tag } from 'primereact/tag';
 import { Divider } from 'primereact/divider';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
-
+import { saveAs } from 'file-saver';
 
 
 export default function CustomerInvoice() {
@@ -120,6 +120,7 @@ export default function CustomerInvoice() {
         itemId: ''
 
     }]);
+    const [invoiceHeader, setInvoiceHeader] = useState([]);
     const [itemsArray, setItemsArray] = useState([]);
 
     const searchParams = useSearchParams()
@@ -382,6 +383,8 @@ export default function CustomerInvoice() {
             vatOnReceipt: vatOnReceipt
         }
 
+        setInvoiceHeader(toAddHeader);
+
         // console.log(toAddHeader, "toAddHeader")
         // https://www.youtube.com/watch?v=vK2zHBVnsF8
 
@@ -598,6 +601,33 @@ export default function CustomerInvoice() {
         setInvoiceLines(newFormData);
     };
 
+    const downloadInvoice = async () => {
+        const data = [];
+        data.push(invoiceHeader);
+        data.push(invoiceLines)
+        try {
+            const response = await fetch(`${Backend_BASE_URL}/createpdf/file3`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+
+            if (response.ok) {
+                const pdfBytes = await response.arrayBuffer();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                saveAs(blob, `invoice_${new Date()}.pdf`);
+            } else {
+                console.error('Failed to generate invoice.');
+            }
+
+
+        } catch (error) {
+            console.error('Error creating content:', error);
+        }
+    }
 
     return (
         <div className="p-d-flex p-jc-center p-ai-center">
@@ -801,7 +831,7 @@ export default function CustomerInvoice() {
                                         <Button label="Sterge" text onClick={saveInvoice} />
                                         <Button label="Storneaza" text onClick={saveInvoice} />
                                         <Button label="Copiaza" text onClick={saveInvoice} />
-                                        <Button label="Descarca" text onClick={saveInvoice} />
+                                        <Button label="Descarca" text onClick={downloadInvoice} />
                                         <Button label="Trimite" text onClick={saveInvoice} />
                                         <Button label="Fisier" text onClick={saveInvoice} />
                                     </div>
@@ -1010,3 +1040,4 @@ export default function CustomerInvoice() {
 
     )
 };
+
